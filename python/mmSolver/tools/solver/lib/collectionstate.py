@@ -1023,6 +1023,38 @@ def set_solver_scene_graph_mode_on_collection(col, value):
 #######################################################################
 
 
+def get_solver_type_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: int
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_TYPE_ATTR,
+        attr_type=const.SOLVER_TYPE_ATTR_TYPE,
+        default_value=const.SOLVER_TYPE_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_type_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: int
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_TYPE_ATTR,
+        value,
+        attr_type=const.SOLVER_TYPE_ATTR_TYPE,
+        default_value=const.SOLVER_TYPE_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
 def get_solver_origin_frame_from_collection(col):
     """
     :type col: Collection

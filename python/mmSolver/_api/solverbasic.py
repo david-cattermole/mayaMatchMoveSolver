@@ -139,9 +139,29 @@ class SolverBasic(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_solver_version(self):
+        """
+        Get 'Solver Version' value.
+
+        :rtype: int
+        """
+        return self._data.get('solver_version', const.SOLVER_VERSION_DEFAULT)
+
+    def set_solver_version(self, value):
+        """
+        Set 'Solver Version' value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
+        assert isinstance(value, int)
+        self._data['solver_version'] = value
+
+    ############################################################################
+
     def get_solver_type(self):
         """
-        Get 'Scene Graph Mode' value.
+        Get 'Solver Type' value.
 
         :rtype: int
         """
@@ -149,7 +169,7 @@ class SolverBasic(solverbase.SolverBase):
 
     def set_solver_type(self, value):
         """
-        Set 'Scene Graph Mode' value.
+        Set 'Solver Type' value.
 
         :param value: Value to be set.
         :type value: int
@@ -409,6 +429,7 @@ class SolverBasic(solverbase.SolverBase):
         eval_complex_graphs = self.get_eval_complex_graphs()
         solve_focal_length = self.get_solve_focal_length()
         solve_lens_distortion = self.get_solve_lens_distortion()
+        solver_version = self.get_solver_version()
         solver_type = self.get_solver_type()
         scene_graph_mode = self.get_scene_graph_mode()
         precomputed_data = self.get_precomputed_data()
@@ -464,6 +485,7 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_solver_version(solver_version)
             sol.set_solver_type(solver_type)
             sol.set_scene_graph_mode(scene_graph_mode)
             sol.set_time_eval_mode(time_eval_mode)
@@ -494,6 +516,7 @@ class SolverBasic(solverbase.SolverBase):
                     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
                     sol.set_use_smoothness(not is_first_frame)
                     sol.set_use_stiffness(not is_first_frame)
+                    sol.set_solver_version(solver_version)
                     sol.set_solver_type(solver_type)
                     sol.set_scene_graph_mode(scene_graph_mode)
                     sol.set_time_eval_mode(time_eval_mode)
@@ -521,6 +544,7 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
                 sol.set_use_smoothness(use_smooth_stiff)
                 sol.set_use_stiffness(use_smooth_stiff)
+                sol.set_solver_version(solver_version)
                 sol.set_solver_type(solver_type)
                 sol.set_scene_graph_mode(scene_graph_mode)
                 sol.set_time_eval_mode(time_eval_mode)

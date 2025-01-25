@@ -132,6 +132,7 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
     dataChanged = QtCore.Signal()
     globalSolveChanged = QtCore.Signal()
     onlyRootFramesChanged = QtCore.Signal()
+    solverTypeChanged = QtCore.Signal()
     sceneGraphModeChanged = QtCore.Signal()
     evalComplexGraphsChanged = QtCore.Signal()
     sendWarning = QtCore.Signal(str)
@@ -147,6 +148,16 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
         self.rootFrames_widget = StandardRootFrameWidget(self)
         self.rootFrames_layout.addWidget(self.rootFrames_widget)
 
+        # Solver Type Combo Box.
+        self.solverType_model = uimodels.StringDataListModel()
+        self.solverType_model.setStringDataList(const.SOLVER_TYPE_LABEL_VALUE_LIST)
+        self.solverType_comboBox.setModel(self.solverType_model)
+        self.solverType_comboBox.currentIndexChanged.connect(
+            self.solverTypeIndexChanged
+        )
+        self.solverType_comboBox.setVisible(const.SOLVER_TYPE_WIDGET_VISIBLE)
+        self.solverType_label.setVisible(const.SOLVER_TYPE_WIDGET_VISIBLE)
+
         # Scene Graph Mode Combo Box.
         self.sceneGraphMode_model = uimodels.StringDataListModel()
         self.sceneGraphMode_model.setStringDataList(
@@ -156,7 +167,6 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
         self.sceneGraphMode_comboBox.currentIndexChanged.connect(
             self.sceneGraphModeIndexChanged
         )
-
         self.sceneGraphMode_comboBox.setVisible(const.SCENE_GRAPH_MODE_WIDGET_VISIBLE)
         self.sceneGraphMode_label.setVisible(const.SCENE_GRAPH_MODE_WIDGET_VISIBLE)
 
@@ -182,6 +192,14 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
 
     def getDescriptionText(self):
         return const.SOLVER_STD_DESC_DEFAULT
+
+    def getSolverTypeValue(self, col):
+        value = lib_col_state.get_solver_type_from_collection(col)
+        return value
+
+    def setSolverTypeValue(self, col, value):
+        lib_col_state.set_solver_type_on_collection(col, value)
+        return
 
     def getSceneGraphModeValue(self, col):
         value = lib_col_state.get_solver_scene_graph_mode_from_collection(col)
@@ -231,6 +249,23 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
         lib_col_state.set_solver_solve_lens_distortion_on_collection(col, value)
         return
 
+    def getSolverTypeActiveIndex(self, model, col):
+        valid = uiutils.isValidQtObject(model)
+        if valid is False:
+            return
+        if col is None:
+            return None
+        active_node = col.get_node()
+        if active_node is None:
+            return None
+        value = self.getSolverTypeValue(col)
+        string_data_list = model.stringDataList()
+        data_list = [data for string, data in string_data_list]
+        index = None
+        if value in data_list:
+            index = data_list.index(value)
+        return index
+
     def getSceneGraphActiveIndex(self, model, col):
         valid = uiutils.isValidQtObject(model)
         if valid is False:
@@ -254,6 +289,12 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
 
         col = lib_state.get_active_collection()
         if col is None:
+            return
+
+        solver_type_value = self.getSolverTypeValue(col)
+        solver_type_index = self.getSolverTypeActiveIndex(self.solverType_model, col)
+        if solver_type_index is None:
+            LOG.error('Could not get the active solver type index.')
             return
 
         scene_graph_mode = self.getSceneGraphActiveIndex(self.sceneGraphMode_model, col)
@@ -297,6 +338,7 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
         self.globalSolve_checkBox.setEnabled(global_solve_enabled)
         self.onlyRootFrames_checkBox.setChecked(only_root_frames)
         self.onlyRootFrames_checkBox.setEnabled(only_root_frames_enabled)
+        self.solverType_comboBox.setCurrentIndex(solver_type_index)
         self.sceneGraphMode_comboBox.setCurrentIndex(scene_graph_mode)
         self.evalComplexGraphs_checkBox.setChecked(eval_complex_graphs)
         self.evalComplexGraphs_checkBox.setEnabled(eval_complex_graphs_enabled)
@@ -308,6 +350,7 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
 
         self.setGlobalSolveValue(col, global_solve)
         self.setOnlyRootFramesValue(col, only_root_frames)
+        self.setSolverTypeValue(col, solver_type_value)
         self.setSceneGraphModeValue(col, scene_graph_mode)
         self.setEvalComplexGraphsValue(col, eval_complex_graphs)
         self.setSolveFocalLengthValue(col, solve_focal_length)
@@ -354,6 +397,22 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
 
         self.setGlobalSolveValue(col, value)
         self.globalSolveChanged.emit()
+        return
+
+    @QtCore.Slot(int)
+    def solverTypeIndexChanged(self, index):
+        if index < 0:
+            return
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        model_index = self.solverType_model.index(index, 0)
+        data = self.solverType_model.data(model_index, role=QtCore.Qt.UserRole)
+        if data is None:
+            return
+        assert isinstance(data, pycompat.INT_TYPES)
+        self.setSolverTypeValue(col, data)
+        self.solverTypeChanged.emit()
         return
 
     @QtCore.Slot(int)

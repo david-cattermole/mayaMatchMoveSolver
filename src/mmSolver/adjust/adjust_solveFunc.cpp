@@ -210,7 +210,7 @@ void determineMarkersToBeEvaluated(
     // Find if a marker does not need to be updated at all.
     for (int i = 0; i < numberOfParameters; ++i) {
         bool changed = paramChangedList[i];
-        if (noneChanged == true) {
+        if (noneChanged) {
             changed = true;
         }
         for (int j = 0; j < numberOfMarkers; ++j) {
@@ -495,7 +495,9 @@ int solveFunc_calculateJacobianMatrix(
     const int numberOfParameters, const int numberOfErrors,
     const double *parameters, double *errors, double *jacobian,
     SolverData *userData, SolverTimer &timer) {
-    assert(userData->solverOptions->solverType == SOLVER_TYPE_CMINPACK_LMDER);
+    assert(
+        (userData->solverOptions->solverType == SOLVER_TYPE_CMINPACK_LMDER) ||
+        (userData->solverOptions->solverType == SOLVER_TYPE_CERES_LMDIF));
     int autoDiffType = userData->solverOptions->autoDiffType;
 
     // Get longest dimension for jacobian matrix
@@ -533,7 +535,7 @@ int solveFunc_calculateJacobianMatrix(
     return SOLVE_FUNC_SUCCESS;
 }
 
-// Function run by cminpack algorithm to test the input parameters,
+// Function run by solver algorithm to test the input parameters,
 // 'parameters', and compute the output errors, 'errors'.
 int solveFunc(const int numberOfParameters, const int numberOfErrors,
               const double *parameters, double *errors, double *jacobian,
@@ -574,7 +576,7 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     }
 
     if (userData->computation->isInterruptRequested()) {
-        MMSOLVER_MAYA_WRN("User wants to cancel the evaluation!");
+        MMSOLVER_MAYA_WRN("User wants to cancel the solve!");
         userData->userInterrupted = true;
         return SOLVE_FUNC_FAILURE;
     }

@@ -115,6 +115,7 @@ class TestSolve(test_api_utils.APITestCase):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
+        scene_graph_name = mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode]
         scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
         print('Scene Graph:', scene_graph_label)
 
@@ -178,7 +179,10 @@ class TestSolve(test_api_utils.APITestCase):
         mmapi.update_deviation_on_collection(col, results)
 
         # save the output
-        path = self.get_data_path('test_solve_init_solverstandard_after.ma')
+        file_name = 'test_solve_init_solverstandard_{}_{}_after.ma'.format(
+            solver_name, scene_graph_name
+        )
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -190,15 +194,17 @@ class TestSolve(test_api_utils.APITestCase):
         # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
         return
 
-    # def test_init_solverstandard_ceres_maya_dag(self):
-    #     self.do_solve_init_solverstandard(
-    #         'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG
-    #     )
+    def test_init_solverstandard_ceres_lmdif_maya_dag(self):
+        self.do_solve_init_solverstandard(
+            'ceres_lmdif',
+            mmapi.SOLVER_TYPE_CERES_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
-    # def test_init_solverstandard_ceres_mmscenegraph(self):
-    #     self.do_solve_init_solverstandard(
-    #         'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_AUTO
-    #     )
+    def test_init_solverstandard_ceres_lmdif_mmscenegraph(self):
+        self.do_solve_init_solverstandard(
+            'ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF, mmapi.SCENE_GRAPH_MODE_AUTO
+        )
 
     # def test_init_solverstandard_cminpack_lmdif_maya_dag(self):
     #     self.do_solve_init_solverstandard(

@@ -134,12 +134,18 @@ class TestSolver4(solverUtils.SolverTestCase):
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
 
-    def test_init_ceres_maya_dag(self):
-        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
-
-    def test_init_ceres_mmscenegraph(self):
+    def test_init_ceres_lmdif_maya_dag(self):
         self.do_solve(
-            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+            'ceres_lmdif',
+            mmapi.SOLVER_TYPE_CERES_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
+
+    def test_init_ceres_lmdif_mmscenegraph(self):
+        self.do_solve(
+            'ceres_lmdif',
+            mmapi.SOLVER_TYPE_CERES_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
         )
 
     def test_init_cminpack_lmdif_maya_dag(self):

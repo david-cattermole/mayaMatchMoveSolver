@@ -157,38 +157,38 @@ class TestSolver12(solverUtils.SolverTestCase):
         self.assertApproxEqual(tx, -6.0)
         self.assertApproxEqual(ty, 3.6)
 
-    def test_init_ceres_maya_dag_single_frame(self):
+    def test_init_ceres_lmdif_maya_dag_single_frame(self):
         single_frame = True
         self.do_solve(
             'ceres',
-            mmapi.SOLVER_TYPE_CERES,
+            mmapi.SOLVER_TYPE_CERES_LMDIF,
             mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
             single_frame,
         )
 
-    def test_init_ceres_maya_dag_multi_frame(self):
+    def test_init_ceres_lmdif_maya_dag_multi_frame(self):
         single_frame = False
         self.do_solve(
             'ceres',
-            mmapi.SOLVER_TYPE_CERES,
+            mmapi.SOLVER_TYPE_CERES_LMDIF,
             mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
             single_frame,
         )
 
-    def test_init_ceres_mmscenegraph_single_frame(self):
+    def test_init_ceres_lmdif_mmscenegraph_single_frame(self):
         single_frame = True
         self.do_solve(
             'ceres',
-            mmapi.SOLVER_TYPE_CERES,
+            mmapi.SOLVER_TYPE_CERES_LMDIF,
             mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
             single_frame,
         )
 
-    def test_init_ceres_mmscenegraph_multi_frame(self):
+    def test_init_ceres_lmdif_mmscenegraph_multi_frame(self):
         single_frame = False
         self.do_solve(
             'ceres',
-            mmapi.SOLVER_TYPE_CERES,
+            mmapi.SOLVER_TYPE_CERES_LMDIF,
             mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
             single_frame,
         )

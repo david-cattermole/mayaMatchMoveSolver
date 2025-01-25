@@ -388,11 +388,24 @@ class SolveResult(object):
 
     def __init__(self, *args, **kwargs):
         """
-        Create a new SolveResult using command data from
-        *maya.cmds.mmSolver* command.
+        Create a new SolveResult using data from
+        "maya.cmds.mmSolver*" commands.
 
-        :param cmd_data: Command data from mmSolver.
+        This class has two possible data sources; a list of strings,
+        or a Maya node.
+
+        When a Maya node name is given (as a str) the node is expected
+        to have attributes with specific names that are looked up.
+
+        When a list of strings is given (as a list of str), the list
+        of strings is parsed and names are expected to be looked up
+
+        :param cmd_data: Command data from mmSolver (v1) command.
         :type cmd_data: [[str, ..], ..]
+
+        :param cmd_data: Maya node name containing attributes filled
+            in by 'mmSolver_v2' command.
+        :type cmd_data: str
         """
         if isinstance(args[0], pycompat.TEXT_TYPE) is True:
             self._input_mode = 0

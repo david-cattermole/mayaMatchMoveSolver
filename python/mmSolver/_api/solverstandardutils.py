@@ -108,6 +108,7 @@ def _compile_multi_root_frames(
     root_iter_num,
     use_attr_blocks,
     remove_unused_objects,
+    solver_version,
     solver_type,
     scene_graph_mode,
     precomputed_data,
@@ -138,6 +139,11 @@ def _compile_multi_root_frames(
         the solver?
     :type remove_unused_objects: bool
 
+    :param solver_version:
+        Which Solver Version should be used?
+        A value in mmSolver.api.SOLVER_VERSION_LIST.
+    :type solver_version: int
+
     :param solver_type:
         Which Solver type should be used?
         A value in mmSolver.api.SOLVER_TYPE_*.
@@ -162,10 +168,13 @@ def _compile_multi_root_frames(
     """
     assert isinstance(root_iter_num, int)
     assert isinstance(remove_unused_objects, bool)
+    assert isinstance(solver_version, int)
     assert isinstance(solver_type, int)
     assert isinstance(scene_graph_mode, int)
     assert isinstance(withtest, bool)
     assert isinstance(verbose, bool)
+    assert solver_version in const.SOLVER_VERSION_LIST
+    assert solver_type in const.SOLVER_TYPE_LIST
 
     # Solve root frames.
     for frm_list in batch_frame_list:
@@ -193,6 +202,7 @@ def _compile_multi_root_frames(
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_solver_version(solver_version)
         sol.set_solver_type(solver_type)
         sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
@@ -270,6 +280,7 @@ def _compile_multi_inbetween_frames(
     anim_iter_num,
     use_attr_blocks,
     remove_unused_objects,
+    solver_version,
     solver_type,
     scene_graph_mode,
     precomputed_data,
@@ -311,6 +322,11 @@ def _compile_multi_inbetween_frames(
         the solver?
     :type remove_unused_objects: bool
 
+    :param solver_version:
+        Which Solver Version should be used?
+        A value in mmSolver.api.SOLVER_VERSION_LIST.
+    :type solver_version: int
+
     :param solver_type:
         Which Solver type should be used?
         A value in mmSolver.api.SOLVER_TYPE_*.
@@ -337,11 +353,14 @@ def _compile_multi_inbetween_frames(
     assert isinstance(eval_complex_graphs, bool)
     assert isinstance(anim_iter_num, int)
     assert isinstance(remove_unused_objects, bool)
+    assert isinstance(solver_version, int)
     assert isinstance(solver_type, int)
     assert isinstance(scene_graph_mode, int)
     assert isinstance(precomputed_data, dict)
     assert isinstance(withtest, bool)
     assert isinstance(verbose, bool)
+    assert solver_version in const.SOLVER_VERSION_LIST
+    assert solver_type in const.SOLVER_TYPE_LIST
 
     attr_blocks = solverutils.create_attr_blocks(use_attr_blocks, attr_list)
 
@@ -355,6 +374,7 @@ def _compile_multi_inbetween_frames(
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_solver_version(solver_version)
         sol.set_solver_type(solver_type)
         sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
@@ -387,6 +407,7 @@ def _compile_multi_inbetween_frames(
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
                 sol.set_use_smoothness(not is_first_frame)
                 sol.set_use_stiffness(not is_first_frame)
+                sol.set_solver_version(solver_version)
                 sol.set_solver_type(solver_type)
                 sol.set_scene_graph_mode(scene_graph_mode)
                 sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
@@ -414,6 +435,7 @@ def _compile_multi_inbetween_frames(
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(use_smooth_stiff)
             sol.set_use_stiffness(use_smooth_stiff)
+            sol.set_solver_version(solver_version)
             sol.set_solver_type(solver_type)
             sol.set_scene_graph_mode(scene_graph_mode)
             sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_PER_FRAME)
@@ -447,6 +469,7 @@ def compile_multi_frame(
     triangulate_bundles,
     use_euler_filter,
     remove_unused_objects,
+    solver_version,
     solver_type,
     scene_graph_mode,
     precomputed_data,
@@ -525,6 +548,11 @@ def compile_multi_frame(
         the solver?
     :type remove_unused_objects: bool
 
+    :param solver_version:
+        Which Solver Version should be used?
+        A value in mmSolver.api.SOLVER_VERSION_LIST.
+    :type solver_version: int
+
     :param solver_type:
         Which Solver type should be used?
         A value in mmSolver.api.SOLVER_TYPE_*.
@@ -553,15 +581,19 @@ def compile_multi_frame(
     assert isinstance(root_iter_num, int)
     assert isinstance(anim_iter_num, int)
     assert isinstance(global_solve, bool)
-    assert root_frame_strategy in const.ROOT_FRAME_STRATEGY_VALUE_LIST
+    assert isinstance(root_frame_strategy, int)
     assert isinstance(triangulate_bundles, bool)
     assert isinstance(use_euler_filter, bool)
     assert isinstance(remove_unused_objects, bool)
+    assert isinstance(solver_version, int)
     assert isinstance(solver_type, int)
     assert isinstance(scene_graph_mode, int)
     assert isinstance(precomputed_data, dict)
     assert isinstance(withtest, bool)
     assert isinstance(verbose, bool)
+    assert root_frame_strategy in const.ROOT_FRAME_STRATEGY_VALUE_LIST
+    assert solver_version in const.SOLVER_VERSION_LIST
+    assert solver_type in const.SOLVER_TYPE_LIST
 
     # Get Frame numbers.
     root_frame_list_num = [x.get_number() for x in root_frame_list]
@@ -634,6 +666,7 @@ def compile_multi_frame(
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_solver_version(solver_version)
         sol.set_solver_type(solver_type)
         sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
@@ -723,6 +756,7 @@ def compile_multi_frame(
         anim_iter_num,
         use_attr_blocks,
         remove_unused_objects,
+        solver_version,
         solver_type,
         scene_graph_mode,
         precomputed_data,
@@ -743,6 +777,7 @@ def compile_single_frame(
     lineup_iter_num,
     use_attr_blocks,
     remove_unused_objects,
+    solver_version,
     solver_type,
     scene_graph_mode,
     precomputed_data,
@@ -782,6 +817,11 @@ def compile_single_frame(
         the solver?
     :type remove_unused_objects: bool
 
+    :param solver_version:
+        Which Solver Version should be used?
+        A value in mmSolver.api.SOLVER_VERSION_LIST.
+    :type solver_version: int
+
     :param solver_type:
         Which Solver type should be used?
         A value in mmSolver.api.SOLVER_TYPE_*.
@@ -808,6 +848,7 @@ def compile_single_frame(
     assert isinstance(block_iter_num, int)
     assert isinstance(lineup_iter_num, int)
     assert isinstance(remove_unused_objects, bool)
+    assert isinstance(solver_version, int)
     assert isinstance(solver_type, int)
     assert isinstance(scene_graph_mode, int)
     assert isinstance(precomputed_data, dict)
@@ -825,6 +866,7 @@ def compile_single_frame(
     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
     sol.set_use_smoothness(False)
     sol.set_use_stiffness(False)
+    sol.set_solver_version(solver_version)
     sol.set_solver_type(solver_type)
     sol.set_scene_graph_mode(scene_graph_mode)
     sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)

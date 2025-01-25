@@ -234,7 +234,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.assertApproxEqual(rx, 360.0, eps=0.01)
         self.assertApproxEqual(ry, 360.0, eps=0.01)
 
-    def test_init_ceres(self):
+    def test_init_ceres_lmdif(self):
         """
         Solve nodal camera on a single frame, using ceres.
         """

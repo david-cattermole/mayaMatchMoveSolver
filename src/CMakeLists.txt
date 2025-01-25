@@ -26,6 +26,7 @@ set(CMAKE_MACOSX_RPATH 1)
 # Source
 set(SOURCE_FILES
   mmSolver/adjust/adjust_base.cpp
+  mmSolver/adjust/adjust_ceres_lmdif.cpp
   mmSolver/adjust/adjust_cminpack_base.cpp
   mmSolver/adjust/adjust_cminpack_lmder.cpp
   mmSolver/adjust/adjust_cminpack_lmdif.cpp
@@ -238,6 +239,7 @@ target_link_libraries(mmSolver
 
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CMINPACK)
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_OPENMVG)
+target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CERES)
 
 install_target_plugin_to_module(mmSolver "${MODULE_FULL_NAME}")
 

@@ -59,6 +59,7 @@ def _compile_camera_solve(
     anim_iter_num,
     adjust_every_n_poses,
     triangulate_bundles,
+    solver_version,
     solver_type,
     precomputed_data,
     withtest,
@@ -89,9 +90,12 @@ def _compile_camera_solve(
     assert isinstance(end_frame, int)
     assert isinstance(adjust_every_n_poses, int)
     assert isinstance(triangulate_bundles, bool)
+    assert isinstance(solver_version, int)
     assert isinstance(solver_type, int)
     assert isinstance(withtest, bool)
     assert isinstance(verbose, bool)
+    assert solver_version in const.SOLVER_VERSION_LIST
+    assert solver_type in const.SOLVER_TYPE_LIST
 
     # Find the camera node in the attr_list.
     attr_nodes = [x.get_node() for x in attr_list]
@@ -169,6 +173,7 @@ def _compile_camera_solve(
         root_iter_num,
         anim_iter_num,
         adjust_every_n_poses,
+        solver_version,
         solver_type,
     ]
     kwargs = {}
@@ -218,9 +223,29 @@ class SolverCamera(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_solver_version(self):
+        """
+        Get 'Solver Version' value.
+
+        :rtype: int
+        """
+        return self._data.get('solver_version', const.SOLVER_VERSION_DEFAULT)
+
+    def set_solver_version(self, value):
+        """
+        Set 'Solver Version' value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
+        assert isinstance(value, int)
+        self._data['solver_version'] = value
+
+    ############################################################################
+
     def get_solver_type(self):
         """
-        Get 'Scene Graph Mode' value.
+        Get 'Solver Type' value.
 
         :rtype: int
         """
@@ -228,7 +253,7 @@ class SolverCamera(solverbase.SolverBase):
 
     def set_solver_type(self, value):
         """
-        Set 'Scene Graph Mode' value.
+        Set 'Solver Type' value.
 
         :param value: Value to be set.
         :type value: int
@@ -586,8 +611,8 @@ class SolverCamera(solverbase.SolverBase):
 
     def compile(self, col, mkr_list, attr_list, withtest=False):
         # Options to affect how the solve is constructed.
+        solver_version = self.get_solver_version()
         solver_type = self.get_solver_type()
-
         bundle_iter_num = self.get_bundle_iteration_num()
         root_iter_num = self.get_root_iteration_num()
         anim_iter_num = self.get_anim_iteration_num()
@@ -630,6 +655,7 @@ class SolverCamera(solverbase.SolverBase):
             anim_iter_num,
             adjust_every_n_poses,
             triangulate_bundles,
+            solver_version,
             solver_type,
             precomputed_data,
             withtest,

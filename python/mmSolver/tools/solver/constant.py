@@ -19,6 +19,8 @@
 Holds all constant data needed for the solver tool and UI.
 """
 
+import mmSolver._api.constant as mmapi_const
+
 # Window Title Bar format.
 WINDOW_TITLE_BAR = '{collection} | mmSolver v{version}'
 
@@ -358,6 +360,49 @@ SOLVER_EVAL_COMPLEX_GRAPHS_ATTR = 'solver_eval_complex_node_graphs'
 SOLVER_EVAL_COMPLEX_GRAPHS_ATTR_TYPE = 'bool'
 SOLVER_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE = False
 
+
+# Solver Type Mode
+#
+# The plug-in doesn't actually define a 'default' with an index, so
+# this is a special value for the solver UI only.
+SOLVER_TYPE_DEFAULT = 255
+SOLVER_TYPE_CMINPACK_LMDIF = mmapi_const.SOLVER_TYPE_CMINPACK_LMDIF
+SOLVER_TYPE_CMINPACK_LMDER = mmapi_const.SOLVER_TYPE_CMINPACK_LMDER
+SOLVER_TYPE_CERES_LMDIF = mmapi_const.SOLVER_TYPE_CERES_LMDIF
+SOLVER_TYPE_LIST = [
+    SOLVER_TYPE_DEFAULT,
+    SOLVER_TYPE_CMINPACK_LMDIF,
+    SOLVER_TYPE_CMINPACK_LMDER,
+    SOLVER_TYPE_CERES_LMDIF,
+]
+
+SOLVER_TYPE_DEFAULT_LABEL = 'Default'
+SOLVER_TYPE_CMINPACK_LMDIF_LABEL = 'CMinpack LMDIF'
+SOLVER_TYPE_CMINPACK_LMDER_LABEL = 'CMinpack LMDER'
+SOLVER_TYPE_CERES_LMDIF_LABEL = 'Ceres LMDIF'
+SOLVER_TYPE_LABEL_LIST = [
+    SOLVER_TYPE_DEFAULT_LABEL,
+    SOLVER_TYPE_CMINPACK_LMDIF_LABEL,
+    SOLVER_TYPE_CMINPACK_LMDER_LABEL,
+    SOLVER_TYPE_CERES_LMDIF_LABEL,
+]
+
+SOLVER_TYPE_LABEL_VALUE_LIST = [
+    (SOLVER_TYPE_DEFAULT_LABEL, SOLVER_TYPE_DEFAULT),
+    (SOLVER_TYPE_CMINPACK_LMDIF_LABEL, SOLVER_TYPE_CMINPACK_LMDIF),
+    (SOLVER_TYPE_CMINPACK_LMDER_LABEL, SOLVER_TYPE_CMINPACK_LMDER),
+    (SOLVER_TYPE_CERES_LMDIF_LABEL, SOLVER_TYPE_CERES_LMDIF),
+]
+
+# Hide the Solver Type mode in the UI.
+SOLVER_TYPE_WIDGET_VISIBLE = False
+
+# Solver Scene Graph (stored on Collection node)
+SOLVER_TYPE_ATTR = 'solver_type'
+SOLVER_TYPE_ATTR_TYPE = 'long'
+SOLVER_TYPE_DEFAULT_VALUE = SOLVER_TYPE_DEFAULT
+
+
 # Solver Scene Graph Mode
 SCENE_GRAPH_MODE_AUTO = 0
 SCENE_GRAPH_MODE_MAYA_DAG = 1
@@ -383,8 +428,8 @@ SCENE_GRAPH_MODE_LABEL_VALUE_LIST = [
     (SCENE_GRAPH_MODE_MM_SCENE_GRAPH_LABEL, SCENE_GRAPH_MODE_MM_SCENE_GRAPH),
 ]
 
-# Hide the Scene Graph mode, the value defaults to 'auto', which
-# should do work out the fastest scene graph by default.
+# Hide the Scene Graph mode in the UI, the value defaults to 'auto',
+# which should do work out the fastest scene graph by default.
 SCENE_GRAPH_MODE_WIDGET_VISIBLE = False
 
 # Solver Scene Graph (stored on Collection node)

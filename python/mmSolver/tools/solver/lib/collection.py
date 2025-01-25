@@ -364,7 +364,7 @@ def __get_collection_root_frame_numbers(col):
     return root_frame_nums
 
 
-def __compile_solver_basic_tab(col, scene_graph_mode):
+def __compile_solver_basic_tab(col, solver_type, scene_graph_mode):
     sol_list = []
     sol = mmapi.SolverBasic()
     range_type = col_state.get_solver_range_type_from_collection(col)
@@ -393,6 +393,7 @@ def __compile_solver_basic_tab(col, scene_graph_mode):
         # scene graph.
         scene_graph_mode = const.SCENE_GRAPH_MODE_MAYA_DAG
 
+    sol.set_solver_type(solver_type)
     sol.set_scene_graph_mode(scene_graph_mode)
     sol.set_eval_complex_graphs(eval_complex_graphs)
     sol.set_solve_focal_length(solve_focal_length)
@@ -401,7 +402,7 @@ def __compile_solver_basic_tab(col, scene_graph_mode):
     return sol_list
 
 
-def __compile_solver_standard_tab(col, scene_graph_mode):
+def __compile_solver_standard_tab(col, solver_type, scene_graph_mode):
     sol_list = []
     sol = mmapi.SolverStandard()
     range_type = col_state.get_solver_range_type_from_collection(col)
@@ -435,6 +436,7 @@ def __compile_solver_standard_tab(col, scene_graph_mode):
 
     sol.set_global_solve(global_solve)
     sol.set_only_root_frames(only_root)
+    sol.set_solver_type(solver_type)
     sol.set_scene_graph_mode(scene_graph_mode)
     sol.set_eval_complex_graphs(eval_complex_graphs)
     sol.set_solve_focal_length(solve_focal_length)
@@ -443,7 +445,7 @@ def __compile_solver_standard_tab(col, scene_graph_mode):
     return sol_list
 
 
-def __compile_solver_camera_tab(col):
+def __compile_solver_camera_tab(col, solver_type):
     sol_list = []
     sol = mmapi.SolverCamera()
     range_type = col_state.get_solver_range_type_from_collection(col)
@@ -497,16 +499,20 @@ def compile_collection(col, prog_fn=None):
     s = time.time()
     sol_list = []
 
+    solver_type = col_state.get_solver_type_from_collection(col)
+    if solver_type == const.SOLVER_TYPE_DEFAULT:
+        solver_type = mmapi.SOLVER_TYPE_DEFAULT
+
     scene_graph_mode = col_state.get_solver_scene_graph_mode_from_collection(col)
 
     solver_tab = col_state.get_solver_tab_from_collection(col)
     assert isinstance(solver_tab, pycompat.TEXT_TYPE)
     if solver_tab == const.SOLVER_TAB_BASIC_VALUE:
-        sol_list = __compile_solver_basic_tab(col, scene_graph_mode)
+        sol_list = __compile_solver_basic_tab(col, solver_type, scene_graph_mode)
     elif solver_tab == const.SOLVER_TAB_STANDARD_VALUE:
-        sol_list = __compile_solver_standard_tab(col, scene_graph_mode)
+        sol_list = __compile_solver_standard_tab(col, solver_type, scene_graph_mode)
     elif solver_tab == const.SOLVER_TAB_CAMERA_VALUE:
-        sol_list = __compile_solver_camera_tab(col)
+        sol_list = __compile_solver_camera_tab(col, solver_type)
     else:
         msg = 'Solver tab value is invalid: %r'
         raise TypeError(msg % solver_tab)

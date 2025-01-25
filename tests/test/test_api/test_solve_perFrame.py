@@ -183,13 +183,17 @@ class TestSolvePerFrame(test_api_utils.APITestCase):
         self.checkSolveResults(results, allow_max_avg_error=1.0, allow_max_error=1.0)
         return
 
-    # def test_per_frame_ceres_maya_dag(self):
-    #     self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+    def test_per_frame_ceres_lmdif_maya_dag(self):
+        self.do_solve(
+            'ceres_lmdif',
+            mmapi.SOLVER_TYPE_CERES_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
-    # def test_per_frame_ceres_mmscenegraph(self):
-    #     self.do_solve(
-    #         'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_AUTO
-    #     )
+    def test_per_frame_ceres_lmdif_mmscenegraph(self):
+        self.do_solve(
+            'ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF, mmapi.SCENE_GRAPH_MODE_AUTO
+        )
 
     # def test_per_frame_cminpack_lmdif_maya_dag(self):
     #     self.do_solve(

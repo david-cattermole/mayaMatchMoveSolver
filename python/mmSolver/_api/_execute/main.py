@@ -464,6 +464,9 @@ def execute(
                     # to be reset.
                     save_node_attrs = []
 
+            # TODO: Allow the solver version to be passed in.
+            solver_version = const.SOLVER_VERSION_DEFAULT
+
             # Create SolveResult.
             solres = None
             if solve_data is not None:
@@ -477,7 +480,7 @@ def execute(
                 elif func_is_scene_graph is True:
                     solres = solve_data
                 elif func_is_camera_solve is True:
-                    if const.SOLVER_VERSION_DEFAULT == const.SOLVER_VERSION_TWO:
+                    if solver_version == const.SOLVER_VERSION_TWO:
                         solve_data = args[0]  # Get the collection node.
                     solres = solveresult.SolveResult(solve_data)
                     solres_list.append(solres)

@@ -273,14 +273,39 @@ class SolverStandard(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_solver_version(self):
+        """
+        Get 'Solver Version' value.
+
+        :rtype: int
+        """
+        return self._data.get('solver_version', const.SOLVER_VERSION_DEFAULT)
+
+    def set_solver_version(self, value):
+        """
+        Set 'Solver Version' value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
+        assert isinstance(value, int)
+        self._data['solver_version'] = value
+
+    ############################################################################
+
     def get_solver_type(self):
         """
+        Get 'Solver Type' value.
+
         :rtype: int
         """
         return self._data.get('solver_type', const.SOLVER_STD_SOLVER_TYPE_DEFAULT_VALUE)
 
     def set_solver_type(self, value):
         """
+        Set 'Solver Type' value.
+
+        :param value: Value to be set.
         :type value: int
         """
         assert isinstance(value, int)
@@ -640,6 +665,7 @@ class SolverStandard(solverbase.SolverBase):
         use_attr_blocks = self.get_use_attr_blocks()
         remove_unused_objects = True
         eval_complex_graphs = self.get_eval_complex_graphs()
+        solver_version = self.get_solver_version()
         solver_type = self.get_solver_type()
         scene_graph_mode = self.get_scene_graph_mode()
         block_iter_num = self.get_block_iteration_num()
@@ -703,6 +729,7 @@ class SolverStandard(solverbase.SolverBase):
                 lineup_iter_num,
                 use_attr_blocks,
                 remove_unused_objects,
+                solver_version,
                 solver_type,
                 scene_graph_mode,
                 precomputed_data,
@@ -729,6 +756,7 @@ class SolverStandard(solverbase.SolverBase):
                 triangulate_bundles,
                 use_euler_filter,
                 remove_unused_objects,
+                solver_version,
                 solver_type,
                 scene_graph_mode,
                 precomputed_data,

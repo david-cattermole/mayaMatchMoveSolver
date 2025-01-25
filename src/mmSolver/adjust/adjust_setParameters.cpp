@@ -99,8 +99,12 @@ MStatus setParameters_mayaDag(const int numberOfParameters,
         const double xmin = attr->getMinimumValue();
         const double xmax = attr->getMaximumValue();
         const double solver_value = parameters[i];
-        const double real_value = parameterBoundFromInternalToExternal(
-            solver_value, xmin, xmax, offset, scale);
+
+        double real_value = solver_value;
+        if (ud->solverOptions->solverSupportsParameterBounds) {
+            real_value = parameterBoundFromInternalToExternal(
+                solver_value, xmin, xmax, offset, scale);
+        }
 
 #if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MAYA_DAG == 1
         const auto object_type = attr->getObjectType();
@@ -192,8 +196,12 @@ MStatus setParameters_mmSceneGraph(const int numberOfParameters,
         // result, but is not the true value that will be set on the
         // attribute at the end of the solve.
         const double solver_value = parameters[i];
-        const double real_value = parameterBoundFromInternalToExternal(
-            solver_value, xmin, xmax, offset, scale);
+
+        double real_value = solver_value;
+        if (ud->solverOptions->solverSupportsParameterBounds) {
+            real_value = parameterBoundFromInternalToExternal(
+                solver_value, xmin, xmax, offset, scale);
+        }
 
 #if MMSOLVER_LENS_DISTORTION == 1 && \
     MMSOLVER_LENS_DISTORTION_MM_SCENE_GRAPH == 1

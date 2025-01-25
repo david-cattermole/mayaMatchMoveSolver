@@ -154,8 +154,8 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
         self.assertEqual(len(attributes_unused), 2)
         return
 
-    def test_init_ceres(self):
-        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES)
+    def test_init_ceres_lmdif(self):
+        self.do_solve('ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF)
 
     def test_init_cminpack_lmdif(self):
         self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF)

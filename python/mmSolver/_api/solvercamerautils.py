@@ -240,6 +240,7 @@ def _sub_bundle_adjustment(
     adjust_lens_distortion=None,
     iteration_num=None,
     per_frame_solve=None,
+    solver_version=None,
     solver_type=None,
 ):
     # LOG.debug('_sub_bundle_adjustment')
@@ -248,6 +249,15 @@ def _sub_bundle_adjustment(
     assert isinstance(adjust_bundle_positions, bool)
     assert isinstance(adjust_camera_intrinsics, bool)
     assert isinstance(adjust_lens_distortion, bool)
+
+    if solver_version is None:
+        solver_version = const.SOLVER_VERSION_DEFAULT
+    if solver_type is None:
+        solver_type = const.SOLVER_TYPE_DEFAULT
+    assert isinstance(solver_version, int)
+    assert isinstance(solver_type, int)
+    assert solver_version in const.SOLVER_VERSION_LIST
+    assert solver_type in const.SOLVER_TYPE_LIST
 
     frame_solve_mode = const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
     if per_frame_solve is True:
@@ -351,7 +361,7 @@ def _sub_bundle_adjustment(
     # mmSolver refinement with 'MM Scene Graph', solving the
     # camera position, rotation and bundle positions.
     result = None
-    if const.SOLVER_VERSION_DEFAULT == const.SOLVER_VERSION_ONE:
+    if solver_version == const.SOLVER_VERSION_ONE:
         result = maya.cmds.mmSolver(
             frame=frames,
             solverType=solver_type,
@@ -361,7 +371,7 @@ def _sub_bundle_adjustment(
             **kwargs
         )
         assert result[0] == 'success=1'
-    elif const.SOLVER_VERSION_DEFAULT == const.SOLVER_VERSION_TWO:
+    elif solver_version == const.SOLVER_VERSION_TWO:
         result = maya.cmds.mmSolver_v2(
             frame=frames,
             solverType=solver_type,
@@ -392,6 +402,7 @@ def _bundle_adjust(
     adjust_lens_distortion=None,
     iteration_num=None,
     per_frame_solve=None,
+    solver_version=None,
     solver_type=None,
 ):
     LOG.debug('_bundle_adjust')
@@ -417,6 +428,8 @@ def _bundle_adjust(
         iteration_num = 100
     if per_frame_solve is None:
         per_frame_solve = False
+    if solver_version is None:
+        solver_version = const.SOLVER_VERSION_DEFAULT
     if solver_type is None:
         solver_type = const.SOLVER_TYPE_CMINPACK_LMDER
     assert isinstance(adjust_camera_translate, bool)
@@ -424,7 +437,11 @@ def _bundle_adjust(
     assert isinstance(adjust_bundle_positions, bool)
     assert isinstance(adjust_camera_intrinsics, bool)
     assert isinstance(adjust_lens_distortion, bool)
+    assert isinstance(solver_version, int)
+    assert isinstance(solver_type, int)
     assert len(mkr_nodes) > 0
+    assert solver_version in const.SOLVER_VERSION_LIST
+    assert solver_type in const.SOLVER_TYPE_LIST
 
     result = None
     if adjust_lens_distortion is False:
@@ -443,6 +460,7 @@ def _bundle_adjust(
             adjust_lens_distortion=adjust_lens_distortion,
             iteration_num=iteration_num,
             per_frame_solve=per_frame_solve,
+            solver_version=solver_version,
             solver_type=solver_type,
         )
 
@@ -470,6 +488,7 @@ def _bundle_adjust(
             adjust_lens_distortion=False,
             iteration_num=iteration_num_a,
             per_frame_solve=per_frame_solve,
+            solver_version=solver_version,
             solver_type=solver_type,
         )
 
@@ -489,6 +508,7 @@ def _bundle_adjust(
             adjust_lens_distortion=False,
             iteration_num=iteration_num_b,
             per_frame_solve=per_frame_solve,
+            solver_version=solver_version,
             solver_type=solver_type,
         )
 
@@ -508,6 +528,7 @@ def _bundle_adjust(
             adjust_lens_distortion=adjust_lens_distortion,
             iteration_num=iteration_num_c,
             per_frame_solve=per_frame_solve,
+            solver_version=solver_version,
             solver_type=solver_type,
         )
 
@@ -527,6 +548,7 @@ def _bundle_adjust(
             adjust_lens_distortion=False,
             iteration_num=iteration_num_d,
             per_frame_solve=per_frame_solve,
+            solver_version=solver_version,
             solver_type=solver_type,
         )
 
@@ -546,6 +568,7 @@ def _bundle_adjust(
             adjust_lens_distortion=adjust_lens_distortion,
             iteration_num=iteration_num_e,
             per_frame_solve=per_frame_solve,
+            solver_version=solver_version,
             solver_type=solver_type,
         )
 
@@ -565,6 +588,7 @@ def _bundle_adjust(
             adjust_lens_distortion=adjust_lens_distortion,
             iteration_num=iteration_num_f,
             per_frame_solve=per_frame_solve,
+            solver_version=solver_version,
             solver_type=solver_type,
         )
 
@@ -971,6 +995,7 @@ def camera_solve(
     root_iter_num,
     anim_iter_num,
     adjust_every_n_poses,
+    solver_version,
     solver_type,
 ):
     assert isinstance(col_node, pycompat.TEXT_TYPE)
@@ -986,7 +1011,11 @@ def camera_solve(
     assert isinstance(adjust_every_n_poses, int)
     assert isinstance(cam_shp_node_attrs, list)
     assert isinstance(lens_node_attrs, list)
+    assert isinstance(solver_version, int)
+    assert isinstance(solver_type, int)
     assert len(mkr_nodes) > 0
+    assert solver_version in const.SOLVER_VERSION_LIST
+    assert solver_type in const.SOLVER_TYPE_LIST
 
     # TODO: Categorize the marker/bundle nodes that are given to this
     # function and output the categories. This will allow the caller
@@ -1010,6 +1039,7 @@ def camera_solve(
     LOG.debug('root_iter_num: %s', root_iter_num)
     LOG.debug('bundle_iter_num: %s', bundle_iter_num)
     LOG.debug('anim_iter_num: %s', anim_iter_num)
+    LOG.debug('solver_version: %s', solver_version)
     LOG.debug('solver_type: %s', solver_type)
 
     (
@@ -1133,6 +1163,8 @@ def camera_solve(
                 adjust_camera_intrinsics=False,
                 adjust_lens_distortion=False,
                 iteration_num=5,
+                solver_version=solver_version,
+                solver_type=solver_type,
             )
 
         adjust_mkr_nodes = set()
@@ -1158,6 +1190,8 @@ def camera_solve(
             adjust_camera_intrinsics=True,
             adjust_lens_distortion=True,
             iteration_num=100,
+            solver_version=solver_version,
+            solver_type=solver_type,
         )
 
     # Triangulate Bundles that were not solved with camera relative
@@ -1206,6 +1240,8 @@ def camera_solve(
                 adjust_camera_intrinsics=False,
                 adjust_lens_distortion=False,
                 iteration_num=5,
+                solver_version=solver_version,
+                solver_type=solver_type,
             )
 
         adjust_mkr_nodes = set()
@@ -1231,6 +1267,8 @@ def camera_solve(
             adjust_camera_intrinsics=True,
             adjust_lens_distortion=True,
             iteration_num=100,
+            solver_version=solver_version,
+            solver_type=solver_type,
         )
 
     # Get all valid frames and markers to be solved per-frame.
@@ -1277,6 +1315,8 @@ def camera_solve(
             adjust_lens_distortion=True,
             iteration_num=10,
             per_frame_solve=True,
+            solver_version=solver_version,
+            solver_type=solver_type,
         )
 
     _set_camera_origin_frame(

@@ -113,6 +113,14 @@ MStatus parseSolveInfoArguments_solverType(
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
+    // Tau values represent the range of values that the solver can
+    // explore. Larger values take bigger "steps", while smaller
+    // values take smaller "steps".
+    //
+    // Tau value ranges are dependent on the implementation for each
+    // solver.
+    double tau_min_value = 0.0;
+    double tau_max_value = 0.0;
     // Set defaults based on solver type chosen.
     if (out_solverType == SOLVER_TYPE_CMINPACK_LMDIF) {
         out_iterations = CMINPACK_LMDIF_ITERATIONS_DEFAULT_VALUE;
@@ -132,6 +140,9 @@ MStatus parseSolveInfoArguments_solverType(
         out_supportParameterBounds =
             CMINPACK_LMDIF_SUPPORT_PARAMETER_BOUNDS_VALUE;
         out_supportRobustLoss = CMINPACK_LMDIF_SUPPORT_ROBUST_LOSS_VALUE;
+
+        tau_min_value = 0.0;
+        tau_max_value = 1.0;
     } else if (out_solverType == SOLVER_TYPE_CMINPACK_LMDER) {
         out_iterations = CMINPACK_LMDER_ITERATIONS_DEFAULT_VALUE;
         out_tau = CMINPACK_LMDER_TAU_DEFAULT_VALUE;
@@ -150,6 +161,32 @@ MStatus parseSolveInfoArguments_solverType(
         out_supportParameterBounds =
             CMINPACK_LMDER_SUPPORT_PARAMETER_BOUNDS_VALUE;
         out_supportRobustLoss = CMINPACK_LMDER_SUPPORT_ROBUST_LOSS_VALUE;
+
+        tau_min_value = 0.0;
+        tau_max_value = 1.0;
+    } else if (out_solverType == SOLVER_TYPE_CERES_LMDIF) {
+        out_iterations = CERES_LMDIF_ITERATIONS_DEFAULT_VALUE;
+        out_tau = CERES_LMDIF_TAU_DEFAULT_VALUE;
+        out_epsilon1 = CERES_LMDIF_EPSILON1_DEFAULT_VALUE;
+        out_epsilon2 = CERES_LMDIF_EPSILON2_DEFAULT_VALUE;
+        out_epsilon3 = CERES_LMDIF_EPSILON3_DEFAULT_VALUE;
+        out_delta = CERES_LMDIF_DELTA_DEFAULT_VALUE;
+        out_autoDiffType = CERES_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE;
+        out_autoParamScale = CERES_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+        out_robustLossType = CERES_LMDIF_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
+        out_robustLossScale = CERES_LMDIF_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        out_supportAutoDiffForward =
+            CERES_LMDIF_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
+        out_supportAutoDiffCentral =
+            CERES_LMDIF_SUPPORT_AUTO_DIFF_CENTRAL_VALUE;
+        out_supportParameterBounds = CERES_LMDIF_SUPPORT_PARAMETER_BOUNDS_VALUE;
+        out_supportRobustLoss = CERES_LMDIF_SUPPORT_ROBUST_LOSS_VALUE;
+
+        // http://ceres-solver.org/nnls_solving.html#_CPPv4N5ceres6Solver7Options23min_trust_region_radiusE
+        tau_min_value = 1e-32;
+
+        // http://ceres-solver.org/nnls_solving.html#_CPPv4N5ceres6Solver7Options23max_trust_region_radiusE
+        tau_max_value = 1e16;
     } else if (out_solverType == SOLVER_TYPE_LEVMAR) {
         out_iterations = LEVMAR_ITERATIONS_DEFAULT_VALUE;
         out_tau = LEVMAR_TAU_DEFAULT_VALUE;
@@ -165,15 +202,26 @@ MStatus parseSolveInfoArguments_solverType(
         out_supportAutoDiffCentral = LEVMAR_SUPPORT_AUTO_DIFF_CENTRAL_VALUE;
         out_supportParameterBounds = LEVMAR_SUPPORT_PARAMETER_BOUNDS_VALUE;
         out_supportRobustLoss = LEVMAR_SUPPORT_ROBUST_LOSS_VALUE;
+
+        tau_min_value = 0.0;
+        tau_max_value = 1.0;
     } else {
         MMSOLVER_MAYA_ERR(
             "Solver Type is invalid. "
-            << "Value may be 0 or 1 (0 == levmar, 1 == cminpack_lm);"
+            "Value may be 0 to 3 "
+            "(0 == levmar, "
+            "1 == cminpack_lmdif, "
+            "2 == cminpack_lmder, "
+            "3 == ceres_lmdif); "
             << "value=" << out_solverType);
         status = MS::kFailure;
         status.perror(
-            "Solver Type is invalid. Value may be 0 or 1 (0 == levmar, 1 == "
-            "cminpack_lm).");
+            "Solver Type is invalid. "
+            "Value may be 0 to 3 "
+            "(0 == levmar, "
+            "1 == cminpack_lmdif, "
+            "2 == cminpack_lmder, "
+            "3 == ceres_lmdif).");
         return status;
     }
 
@@ -188,9 +236,9 @@ MStatus parseSolveInfoArguments_solverType(
         status = argData.getFlagArgument(TAU_FLAG, 0, out_tau);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
-    out_tau = std::max(0.0, out_tau);
-    out_tau = std::min(out_tau, 1.0);
-    assert((out_tau >= 0.0) && (out_tau <= 1.0));
+    out_tau = std::max(tau_min_value, out_tau);
+    out_tau = std::min(out_tau, tau_max_value);
+    assert((out_tau >= tau_min_value) && (out_tau <= tau_max_value));
 
     // Get 'Epsilon1'
     if (argData.isFlagSet(EPSILON1_FLAG)) {

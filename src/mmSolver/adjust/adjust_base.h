@@ -90,6 +90,7 @@ bool get_initial_parameters(const int numberOfParameters,
                             std::vector<double> &paramList,
                             std::vector<std::pair<int, int> > &paramToAttrList,
                             const AttrPtrList &attrList, MTimeArray &frameList,
+                            const bool solverSupportsParameterBounds,
                             SolverResult &out_solverResult);
 
 bool set_maya_attribute_values(

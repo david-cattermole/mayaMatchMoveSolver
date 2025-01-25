@@ -56,6 +56,7 @@
 #include <mmsolverlibs/debug.h>
 
 // MM Solver
+#include "adjust_ceres_lmdif.h"
 #include "adjust_cminpack_lmder.h"
 #include "adjust_cminpack_lmdif.h"
 #include "adjust_measureErrors.h"
@@ -82,11 +83,15 @@ std::vector<SolverTypePair> getSolverTypes() {
     std::pair<int, std::string> solverType;
 
     solverType.first = SOLVER_TYPE_CMINPACK_LMDIF;
-    solverType.second = SOLVER_TYPE_CMINPACK_LM_DIF_NAME;
+    solverType.second = SOLVER_TYPE_CMINPACK_LMDIF_NAME;
     solverTypes.push_back(solverType);
 
     solverType.first = SOLVER_TYPE_CMINPACK_LMDER;
-    solverType.second = SOLVER_TYPE_CMINPACK_LM_DER_NAME;
+    solverType.second = SOLVER_TYPE_CMINPACK_LMDER_NAME;
+    solverTypes.push_back(solverType);
+
+    solverType.first = SOLVER_TYPE_CERES_LMDIF;
+    solverType.second = SOLVER_TYPE_CERES_LMDIF_NAME;
     solverTypes.push_back(solverType);
 
     return solverTypes;
@@ -118,9 +123,9 @@ SolverTypePair getSolverTypeDefault() {
             MMSOLVER_MAYA_ERR(
                 "MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
                 << "Value may be "
-                << "\"cminpack_lm\", "
-                << "\"cminpack_lmder\", "
-                << "or \"ceres\"; "
+                << "\"" << SOLVER_TYPE_CMINPACK_LMDIF_NAME << "\", "
+                << "\"" << SOLVER_TYPE_CMINPACK_LMDER_NAME << "\", "
+                << "or \"" << SOLVER_TYPE_CERES_LMDIF_NAME << "\"; "
                 << "; value=" << defaultSolver);
         }
     }
@@ -260,12 +265,13 @@ bool get_initial_parameters(
     const int numberOfParameters, std::vector<double> &paramList,
     const std::vector<std::pair<int, int>> &paramToAttrList,
     const AttrPtrList &attrList, const MTimeArray &frameList,
-    SolverResult &out_solverResult) {
+    const bool solverSupportsParameterBounds, SolverResult &out_solverResult) {
     MStatus status = MS::kSuccess;
+
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     MTime currentFrame = MAnimControl::currentTime();
     for (int i = 0; i < numberOfParameters; ++i) {
-        IndexPair attrPair = paramToAttrList[i];
+        const IndexPair attrPair = paramToAttrList[i];
         AttrPtr attr = attrList[attrPair.first];
 
         // Get frame time
@@ -282,12 +288,16 @@ bool get_initial_parameters(
             return false;
         }
 
-        double xoffset = attr->getOffsetValue();
-        double xscale = attr->getScaleValue();
-        double xmin = attr->getMinimumValue();
-        double xmax = attr->getMaximumValue();
-        value = parameterBoundFromExternalToInternal(value, xmin, xmax, xoffset,
-                                                     xscale);
+        if (solverSupportsParameterBounds) {
+            const double xoffset = attr->getOffsetValue();
+            const double xscale = attr->getScaleValue();
+            const double xmin = attr->getMinimumValue();
+            const double xmax = attr->getMaximumValue();
+
+            value = parameterBoundFromExternalToInternal(value, xmin, xmax,
+                                                         xoffset, xscale);
+        }
+
         paramList[i] = value;
     }
     return true;
@@ -1130,7 +1140,8 @@ MStatus solveFrames(
     MMSOLVER_MAYA_VRB("Get Initial parameters...");
     const bool initial_ok = get_initial_parameters(
         numberOfParameters, out_paramList, out_paramToAttrList, usedAttrList,
-        frameList, out_cmdResult.solverResult);
+        frameList, solverOptions.solverSupportsParameterBounds,
+        out_cmdResult.solverResult);
     if (!initial_ok) {
         MMSOLVER_MAYA_ERR("Failed to get initial parameters.");
         out_cmdResult.solverResult.success = false;
@@ -1173,6 +1184,10 @@ MStatus solveFrames(
                                 numberOfErrors, out_paramList, out_errorList,
                                 paramWeightList, userData,
                                 out_cmdResult.solverResult);
+    } else if (solverOptions.solverType == SOLVER_TYPE_CERES_LMDIF) {
+        solve_3d_ceres_lmdif(solverOptions, numberOfParameters, numberOfErrors,
+                             out_paramList, out_errorList, paramWeightList,
+                             userData, out_cmdResult.solverResult);
     } else {
         MMSOLVER_MAYA_ERR(
             "Solver Type is invalid. solverType=" << solverOptions.solverType);

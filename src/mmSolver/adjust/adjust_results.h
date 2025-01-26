@@ -770,38 +770,6 @@ struct SolverObjectUsageResult {
                                              Self::attributes_used);
         add_attribute_names_to_unordered_set(unusedAttrList,
                                              Self::attributes_unused);
-
-        // for (MarkerPtrListCIt mit = usedMarkerList.cbegin();
-        //      mit != usedMarkerList.cend(); ++mit) {
-        //     MarkerPtr marker = *mit;
-        //     auto marker_name = marker->getLongNodeName();
-        //     auto marker_name_char = marker_name.asChar();
-        //     Self::markers_used.insert(std::string(marker_name_char));
-        // }
-
-        // for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
-        //      mit != unusedMarkerList.cend(); ++mit) {
-        //     MarkerPtr marker = *mit;
-        //     auto marker_name = marker->getLongNodeName();
-        //     auto marker_name_char = marker_name.asChar();
-        //     Self::markers_unused.insert(std::string(marker_name_char));
-        // }
-
-        // for (AttrPtrListCIt ait = usedAttrList.cbegin();
-        //      ait != usedAttrList.cend(); ++ait) {
-        //     AttrPtr attr = *ait;
-        //     auto attr_name = attr->getLongName();
-        //     auto attr_name_char = attr_name.asChar();
-        //     Self::attributes_used.insert(std::string(attr_name_char));
-        // }
-
-        // for (AttrPtrListCIt ait = unusedAttrList.cbegin();
-        //      ait != unusedAttrList.cend(); ++ait) {
-        //     AttrPtr attr = *ait;
-        //     auto attr_name = attr->getLongName();
-        //     auto attr_name_char = attr_name.asChar();
-        //     Self::attributes_unused.insert(std::string(attr_name_char));
-        // }
     }
 
     void add(const Self &other) {
@@ -811,36 +779,6 @@ struct SolverObjectUsageResult {
         combine_used_unordered_set_values<std::string>(
             Self::attributes_used, Self::attributes_unused,
             other.attributes_used, other.attributes_unused);
-
-        // for (const auto &value : other.markers_used) {
-        //     Self::markers_used.insert(value);
-
-        //     // If the Marker is now used, we must ensure it's removed
-        //     // from the '_unused' set.
-        //     auto search_unused = Self::markers_unused.find(value);
-        //     if (search_unused != markers_unused.end()) {
-        //         Self::markers_unused.erase(search_unused);
-        //     }
-        // }
-
-        // for (const auto &value : other.markers_unused) {
-        //     Self::markers_unused.insert(value);
-        // }
-
-        // for (const auto &value : other.attributes_used) {
-        //     Self::attributes_used.insert(value);
-
-        //     // If the Marker is now used, we must ensure it's removed
-        //     // from the '_unused' set.
-        //     auto search_unused = Self::attributes_unused.find(value);
-        //     if (search_unused != attributes_unused.end()) {
-        //         Self::attributes_unused.erase(search_unused);
-        //     }
-        // }
-
-        // for (const auto &value : other.attributes_unused) {
-        //     Self::attributes_unused.insert(value);
-        // }
     }
 
     void appendToMStringArray(MStringArray &result) {

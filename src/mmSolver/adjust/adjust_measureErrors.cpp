@@ -259,16 +259,6 @@ void measureErrors_mayaDag(const int numberOfErrors,
         }
 #endif
 
-        // Is the bundle behind the camera?
-        bool behind_camera = false;
-        double behind_camera_error_factor = 1.0;
-        double cam_dot_bnd = cam_dir * bnd_dir;
-        // MMSOLVER_MAYA_WRN("Camera DOT Bundle: " << cam_dot_bnd);
-        if (cam_dot_bnd < 0.0) {
-            behind_camera = true;
-            behind_camera_error_factor = 1e+6;
-        }
-
         // According to the Ceres solver 'circle_fit.cc'
         // example, using the 'sqrt' distance error function is a
         // bad idea as it will introduce non-linearities, we are
@@ -279,13 +269,13 @@ void measureErrors_mayaDag(const int numberOfErrors,
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
-        errors[errorIndex_x] = dx * mkr_weight * behind_camera_error_factor;
-        errors[errorIndex_y] = dy * mkr_weight * behind_camera_error_factor;
+        errors[errorIndex_x] = dx * mkr_weight;
+        errors[errorIndex_y] = dy * mkr_weight;
 
         // 'ud->errorList' is the deviation shown to the user, it
         // should not have any loss functions or scaling applied to it.
-        ud->errorList[errorIndex_x] = dx * behind_camera_error_factor;
-        ud->errorList[errorIndex_y] = dy * behind_camera_error_factor;
+        ud->errorList[errorIndex_x] = dx;
+        ud->errorList[errorIndex_y] = dy;
 
         const double d =
             distance_2d(mkr_x, mkr_y, point_x, point_y) * imageWidth;
@@ -447,10 +437,6 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
                0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
         mkr_weight = std::sqrt(mkr_weight);
 
-        // TODO: Calculate 'behind_camera_error_factor', the same as
-        // the Maya DAG function.
-        double behind_camera_error_factor = 1.0;
-
         auto mkrIndex_x = ((markerIndex * num_frames * 2) + (frameIndex * 2));
         auto mkrIndex_y = mkrIndex_x + 1;
         auto mkr_x = out_marker_list[mkrIndex_x];
@@ -485,15 +471,13 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
-        errors[errorIndex_x] =
-            dx_pixels * mkr_weight * behind_camera_error_factor;
-        errors[errorIndex_y] =
-            dy_pixels * mkr_weight * behind_camera_error_factor;
+        errors[errorIndex_x] = dx_pixels * mkr_weight;
+        errors[errorIndex_y] = dy_pixels * mkr_weight;
 
         // 'ud->errorList' is the deviation shown to the user, it
         // should not have any loss functions or scaling applied to it.
-        ud->errorList[errorIndex_x] = dx_pixels * behind_camera_error_factor;
-        ud->errorList[errorIndex_y] = dy_pixels * behind_camera_error_factor;
+        ud->errorList[errorIndex_x] = dx_pixels;
+        ud->errorList[errorIndex_y] = dy_pixels;
 
         const double d = std::sqrt((dx * dx) + (dy * dy)) * imageWidth;
         ud->errorDistanceList[i] = d;

@@ -149,7 +149,6 @@ class TestSolver10(solverUtils.SolverTestCase):
             mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
         )
 
-        
     def test_init_ceres_lmdif_maya_dag(self):
         self.do_solve(
             'ceres_lmdif',

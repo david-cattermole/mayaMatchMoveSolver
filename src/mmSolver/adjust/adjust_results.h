@@ -602,10 +602,10 @@ struct AffectsResult {
 
     void fill(const MarkerPtrList &markerList, const AttrPtrList &attrList,
               const mmsolver::MatrixBool2D &markerToAttrMatrix) {
-        for (uint32_t markerIndex = 0;
-             markerIndex < markerToAttrMatrix.width(); ++markerIndex) {
-            for (uint32_t attrIndex = 0; attrIndex < markerToAttrMatrix.height();
-                 ++attrIndex) {
+        for (uint32_t markerIndex = 0; markerIndex < markerToAttrMatrix.width();
+             ++markerIndex) {
+            for (uint32_t attrIndex = 0;
+                 attrIndex < markerToAttrMatrix.height(); ++attrIndex) {
                 MarkerPtr marker = markerList[markerIndex];
                 AttrPtr attr = attrList[attrIndex];
 

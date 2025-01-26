@@ -193,7 +193,6 @@
 #define CERES_LMDER_SUPPORT_PARAMETER_BOUNDS_VALUE true
 #define CERES_LMDER_SUPPORT_ROBUST_LOSS_VALUE false
 
-
 // Levmar Solver default flag values
 //
 #define LEVMAR_ITERATIONS_DEFAULT_VALUE (100)

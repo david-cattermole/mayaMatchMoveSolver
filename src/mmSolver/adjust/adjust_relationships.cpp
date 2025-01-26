@@ -228,7 +228,6 @@ int countUpNumberOfUnknownParameters(
     std::vector<double> &out_paramWeightList,
     IndexPairList &out_paramToAttrList,
     mmsolver::MatrixBool2D &out_paramFrameList, MStatus &out_status) {
-
     out_status = MStatus::kSuccess;
 
     const auto frameCount = frameList.length();

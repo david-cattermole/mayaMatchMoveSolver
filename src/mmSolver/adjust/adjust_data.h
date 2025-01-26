@@ -134,9 +134,9 @@ struct PrintStatOptions {
 struct SolverOptions {
     int iterMax;
     double tau;
-    double eps1;
-    double eps2;
-    double eps3;
+    double function_tolerance;
+    double parameter_tolerance;
+    double gradient_tolerance;
     double delta;
     int autoDiffType;
     int autoParamScale;
@@ -163,9 +163,9 @@ struct SolverOptions {
     SolverOptions()
         : iterMax(0)
         , tau(0.0)
-        , eps1(0.0)
-        , eps2(0.0)
-        , eps3(0.0)
+        , function_tolerance(0.0)
+        , parameter_tolerance(0.0)
+        , gradient_tolerance(0.0)
         , delta(0.0)
         , autoDiffType(AUTO_DIFF_TYPE_FORWARD)
         , autoParamScale(0)

@@ -98,9 +98,9 @@ bool solve_3d_cminpack_lmdif(SolverOptions &solverOptions,
         ldfjac = numberOfParameters;
     }
 
-    double ftol = solverOptions.eps1;
-    double xtol = solverOptions.eps2;
-    double gtol = solverOptions.eps3;
+    double ftol = solverOptions.function_tolerance;
+    double xtol = solverOptions.parameter_tolerance;
+    double gtol = solverOptions.gradient_tolerance;
 
     // Change the sign of the delta
     // Note: lmdif only supports auto-diff 'forward' mode.

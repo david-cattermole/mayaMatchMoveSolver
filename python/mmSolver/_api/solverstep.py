@@ -680,17 +680,17 @@ class SolverStep(solverbase.SolverBase):
         if tau_factor is not None:
             kwargs['tauFactor'] = tau_factor
 
-        gradient_error_factor = self.get_gradient_error_factor()
-        if gradient_error_factor is not None:
-            kwargs['epsilon1'] = gradient_error_factor
+        function_error_factor = self.get_error_factor()
+        if function_error_factor is not None:
+            kwargs['function_tolerance'] = function_error_factor
 
         parameter_error_factor = self.get_parameter_error_factor()
         if parameter_error_factor is not None:
-            kwargs['epsilon2'] = parameter_error_factor
+            kwargs['parameter_tolerance'] = parameter_error_factor
 
-        error_factor = self.get_error_factor()
-        if error_factor is not None:
-            kwargs['epsilon3'] = error_factor
+        gradient_error_factor = self.get_gradient_error_factor()
+        if gradient_error_factor is not None:
+            kwargs['gradient_tolerance'] = gradient_error_factor
 
         robust_loss_type = self.get_robust_loss_type()
         if robust_loss_type is not None:

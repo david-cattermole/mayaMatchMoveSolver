@@ -14,27 +14,27 @@ The command can be run in both MEL and Python.
 
 Here is a table of command flags, as currently specified in the command.
 
-======================== ========================================== ======================================================================= ==============
-Flag                     Type                                       Description                                                             Default Value
-======================== ========================================== ======================================================================= ==============
--camera (-c)             string, string                             Camera transform and shape nodes                                        None
--marker (-m)             string, string, string                     Marker, Camera, Bundle                                                  None
--attr (-a)               string, string, string, string, string     Node attribute, min value, max value, offset and scale                  None
--frame (-f)              long int                                   Frame number to solve with                                              1
--attrStiffness (-asf)    string, string, string, string             Node attribute, weight plug name, variance plug name, value plug name.  None
--attrSmoothness (-asm)   string, string, string, string             Node attribute, weight plug name, variance plug name, value plug name.  None
--solverType (-st)        unsigned int                               Type of solver to use.                                                  <auto detected>
--sceneGraphMode (-sgm)   unsigned int                               The Scene Graph used; 0=Maya DAG, 1=MM Scene Graph                      0 (Maya DAG)
--timeEvalMode (-tem)     unsigned int                               How to evalulate values at different times, 0=DG Context 1=Set TIme     0 (DG Context)
--iterations (-it)        unsigned int                               Maximum number of iterations                                            20
--tauFactor (-t)          double                                     Initial Damping Factor                                                  1E-03
--epsilon1 (-e1)          double                                     Acceptable gradient change                                              1E-06
--epsilon2 (-e2)          double                                     Acceptable parameter change                                             1E-06
--epsilon3 (-e3)          double                                     Acceptable error                                                        1E-06
--delta (-dt)             double                                     Change to the guessed parameters each iteration                         1E-04
--autoDiffType (-adt)     unsigned int                               Auto-differencing type 0=forward 1=central                              0 (forward)
--verbose (-v)            bool                                       Prints more information                                                 False
-======================== ========================================== ======================================================================= ==============
+======================== ===================== ========================================== ======================================================================= ==============
+Command Flag             Command Flag (short)  Type                                       Description                                                             Default Value
+======================== ===================== ========================================== ======================================================================= ==============
+-camera                  -c                    string, string                             Camera transform and shape nodes.                                       None
+-marker                  -m                    string, string, string                     Marker, Camera, Bundle.                                                 None
+-attr                    -a                    string, string, string, string, string     Node attribute, min value, max value, offset and scale.                 None
+-frame                   -f                    long int                                   Frame number to solve with.                                             1
+-attrStiffness           -asf                  string, string, string, string             Node attribute, weight plug name, variance plug name, value plug name.  None
+-attrSmoothness          -asm                  string, string, string, string             Node attribute, weight plug name, variance plug name, value plug name.  None
+-solverType              -st                   unsigned int                               Type of solver to use.                                                  <auto detected>
+-sceneGraphMode          -sgm                  unsigned int                               The Scene Graph used; 0=Maya DAG, 1=MM Scene Graph.                     0 (Maya DAG)
+-timeEvalMode            -tem                  unsigned int                               How to evalulate values at different times, 0=DG Context 1=Set Time.    0 (DG Context)
+-iterations              -it                   unsigned int                               Maximum number of iterations.                                           20
+-tauFactor               -t                    double                                     Initial Damping Factor.                                                 1E-03
+-functionTolerance       -ftl                  double                                     Acceptable function change.                                             1E-06
+-parameterTolerance      -ptl                  double                                     Acceptable parameter change.                                            1E-06
+-gradientTolerance       -gtl                  double                                     Acceptable gradient error.                                              1E-06
+-delta                   -dt                   double                                     Change to the guessed parameters each iteration.                        1E-04
+-autoDiffType            -adt                  unsigned int                               Auto-differencing type 0=forward 1=central.                             0 (forward)
+-verbose                 -v                    bool                                       Prints more information.                                                False
+======================== ===================== ========================================== ======================================================================= ==============
 
 Return
 ------
@@ -102,7 +102,7 @@ Python Example:
    solvers = maya.cmds.mmSolverType(query=True, list=True)
    default_solver = maya.cmds.mmSolverType(query=True, default=True)
 
-   
+
 ``mmSolverAffects`` Command
 +++++++++++++++++++++++++++
 

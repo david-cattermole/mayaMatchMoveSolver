@@ -910,9 +910,12 @@ MStatus solveFrames(
         MMSOLVER_MAYA_INFO("Solver Type=" << solverOptions.solverType);
         MMSOLVER_MAYA_INFO("Maximum Iterations=" << solverOptions.iterMax);
         MMSOLVER_MAYA_INFO("Tau=" << solverOptions.tau);
-        MMSOLVER_MAYA_INFO("Epsilon1=" << solverOptions.eps1);
-        MMSOLVER_MAYA_INFO("Epsilon2=" << solverOptions.eps2);
-        MMSOLVER_MAYA_INFO("Epsilon3=" << solverOptions.eps3);
+        MMSOLVER_MAYA_INFO(
+            "Function Tolerance=" << solverOptions.function_tolerance);
+        MMSOLVER_MAYA_INFO(
+            "Parameter Tolerance=" << solverOptions.parameter_tolerance);
+        MMSOLVER_MAYA_INFO(
+            "Gradient Tolerance=" << solverOptions.gradient_tolerance);
         MMSOLVER_MAYA_INFO("Delta=" << fabs(solverOptions.delta));
         MMSOLVER_MAYA_INFO(
             "Auto Differencing Type=" << solverOptions.autoDiffType);

@@ -41,9 +41,12 @@ namespace mmsolver {
 
 void createSolveInfoSyntax_solverType(MSyntax &syntax) {
     syntax.addFlag(TAU_FLAG, TAU_FLAG_LONG, MSyntax::kDouble);
-    syntax.addFlag(EPSILON1_FLAG, EPSILON1_FLAG_LONG, MSyntax::kDouble);
-    syntax.addFlag(EPSILON2_FLAG, EPSILON2_FLAG_LONG, MSyntax::kDouble);
-    syntax.addFlag(EPSILON3_FLAG, EPSILON3_FLAG_LONG, MSyntax::kDouble);
+    syntax.addFlag(FUNCTION_TOLERANCE_FLAG, FUNCTION_TOLERANCE_FLAG_LONG,
+                   MSyntax::kDouble);
+    syntax.addFlag(PARAMETER_TOLERANCE_FLAG, PARAMETER_TOLERANCE_FLAG_LONG,
+                   MSyntax::kDouble);
+    syntax.addFlag(GRADIENT_TOLERANCE_FLAG, GRADIENT_TOLERANCE_FLAG_LONG,
+                   MSyntax::kDouble);
     syntax.addFlag(DELTA_FLAG, DELTA_FLAG_LONG, MSyntax::kDouble);
     syntax.addFlag(AUTO_DIFF_TYPE_FLAG, AUTO_DIFF_TYPE_FLAG_LONG,
                    MSyntax::kUnsigned);
@@ -98,9 +101,10 @@ void createSolveInfoSyntax(MSyntax &syntax, const int command_version = 0) {
 
 MStatus parseSolveInfoArguments_solverType(
     const MArgDatabase &argData, int &out_iterations, double &out_tau,
-    double &out_epsilon1, double &out_epsilon2, double &out_epsilon3,
-    double &out_delta, int &out_autoDiffType, int &out_autoParamScale,
-    int &out_robustLossType, double &out_robustLossScale, int &out_solverType,
+    double &out_function_tolerance, double &out_parameter_tolerance,
+    double &out_gradient_tolerance, double &out_delta, int &out_autoDiffType,
+    int &out_autoParamScale, int &out_robustLossType,
+    double &out_robustLossScale, int &out_solverType,
     bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
     bool &out_supportParameterBounds, bool &out_supportRobustLoss) {
     MStatus status = MStatus::kSuccess;
@@ -126,9 +130,12 @@ MStatus parseSolveInfoArguments_solverType(
     if (out_solverType == SOLVER_TYPE_CMINPACK_LMDIF) {
         out_iterations = CMINPACK_LMDIF_ITERATIONS_DEFAULT_VALUE;
         out_tau = CMINPACK_LMDIF_TAU_DEFAULT_VALUE;
-        out_epsilon1 = CMINPACK_LMDIF_EPSILON1_DEFAULT_VALUE;
-        out_epsilon2 = CMINPACK_LMDIF_EPSILON2_DEFAULT_VALUE;
-        out_epsilon3 = CMINPACK_LMDIF_EPSILON3_DEFAULT_VALUE;
+        out_function_tolerance =
+            CMINPACK_LMDIF_FUNCTION_TOLERANCE_DEFAULT_VALUE;
+        out_parameter_tolerance =
+            CMINPACK_LMDIF_PARAMETER_TOLERANCE_DEFAULT_VALUE;
+        out_gradient_tolerance =
+            CMINPACK_LMDIF_GRADIENT_TOLERANCE_DEFAULT_VALUE;
         out_delta = CMINPACK_LMDIF_DELTA_DEFAULT_VALUE;
         out_autoDiffType = CMINPACK_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE;
         out_autoParamScale = CMINPACK_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE;
@@ -147,9 +154,12 @@ MStatus parseSolveInfoArguments_solverType(
     } else if (out_solverType == SOLVER_TYPE_CMINPACK_LMDER) {
         out_iterations = CMINPACK_LMDER_ITERATIONS_DEFAULT_VALUE;
         out_tau = CMINPACK_LMDER_TAU_DEFAULT_VALUE;
-        out_epsilon1 = CMINPACK_LMDER_EPSILON1_DEFAULT_VALUE;
-        out_epsilon2 = CMINPACK_LMDER_EPSILON2_DEFAULT_VALUE;
-        out_epsilon3 = CMINPACK_LMDER_EPSILON3_DEFAULT_VALUE;
+        out_function_tolerance =
+            CMINPACK_LMDER_FUNCTION_TOLERANCE_DEFAULT_VALUE;
+        out_parameter_tolerance =
+            CMINPACK_LMDER_PARAMETER_TOLERANCE_DEFAULT_VALUE;
+        out_gradient_tolerance =
+            CMINPACK_LMDER_GRADIENT_TOLERANCE_DEFAULT_VALUE;
         out_delta = CMINPACK_LMDER_DELTA_DEFAULT_VALUE;
         out_autoDiffType = CMINPACK_LMDER_AUTO_DIFF_TYPE_DEFAULT_VALUE;
         out_autoParamScale = CMINPACK_LMDER_AUTO_PARAM_SCALE_DEFAULT_VALUE;
@@ -168,9 +178,9 @@ MStatus parseSolveInfoArguments_solverType(
     } else if (out_solverType == SOLVER_TYPE_CERES_LMDIF) {
         out_iterations = CERES_LMDIF_ITERATIONS_DEFAULT_VALUE;
         out_tau = CERES_LMDIF_TAU_DEFAULT_VALUE;
-        out_epsilon1 = CERES_LMDIF_EPSILON1_DEFAULT_VALUE;
-        out_epsilon2 = CERES_LMDIF_EPSILON2_DEFAULT_VALUE;
-        out_epsilon3 = CERES_LMDIF_EPSILON3_DEFAULT_VALUE;
+        out_function_tolerance = CERES_LMDIF_FUNCTION_TOLERANCE_DEFAULT_VALUE;
+        out_parameter_tolerance = CERES_LMDIF_PARAMETER_TOLERANCE_DEFAULT_VALUE;
+        out_gradient_tolerance = CERES_LMDIF_GRADIENT_TOLERANCE_DEFAULT_VALUE;
         out_delta = CERES_LMDIF_DELTA_DEFAULT_VALUE;
         out_autoDiffType = CERES_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE;
         out_autoParamScale = CERES_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE;
@@ -191,9 +201,9 @@ MStatus parseSolveInfoArguments_solverType(
     } else if (out_solverType == SOLVER_TYPE_CERES_LMDER) {
         out_iterations = CERES_LMDER_ITERATIONS_DEFAULT_VALUE;
         out_tau = CERES_LMDER_TAU_DEFAULT_VALUE;
-        out_epsilon1 = CERES_LMDER_EPSILON1_DEFAULT_VALUE;
-        out_epsilon2 = CERES_LMDER_EPSILON2_DEFAULT_VALUE;
-        out_epsilon3 = CERES_LMDER_EPSILON3_DEFAULT_VALUE;
+        out_function_tolerance = CERES_LMDER_FUNCTION_TOLERANCE_DEFAULT_VALUE;
+        out_parameter_tolerance = CERES_LMDER_PARAMETER_TOLERANCE_DEFAULT_VALUE;
+        out_gradient_tolerance = CERES_LMDER_GRADIENT_TOLERANCE_DEFAULT_VALUE;
         out_delta = CERES_LMDER_DELTA_DEFAULT_VALUE;
         out_autoDiffType = CERES_LMDER_AUTO_DIFF_TYPE_DEFAULT_VALUE;
         out_autoParamScale = CERES_LMDER_AUTO_PARAM_SCALE_DEFAULT_VALUE;
@@ -217,9 +227,9 @@ MStatus parseSolveInfoArguments_solverType(
     } else if (out_solverType == SOLVER_TYPE_LEVMAR) {
         out_iterations = LEVMAR_ITERATIONS_DEFAULT_VALUE;
         out_tau = LEVMAR_TAU_DEFAULT_VALUE;
-        out_epsilon1 = LEVMAR_EPSILON1_DEFAULT_VALUE;
-        out_epsilon2 = LEVMAR_EPSILON2_DEFAULT_VALUE;
-        out_epsilon3 = LEVMAR_EPSILON3_DEFAULT_VALUE;
+        out_function_tolerance = LEVMAR_FUNCTION_TOLERANCE_DEFAULT_VALUE;
+        out_parameter_tolerance = LEVMAR_PARAMETER_TOLERANCE_DEFAULT_VALUE;
+        out_gradient_tolerance = LEVMAR_GRADIENT_TOLERANCE_DEFAULT_VALUE;
         out_delta = LEVMAR_DELTA_DEFAULT_VALUE;
         out_autoDiffType = LEVMAR_AUTO_DIFF_TYPE_DEFAULT_VALUE;
         out_autoParamScale = LEVMAR_AUTO_PARAM_SCALE_DEFAULT_VALUE;
@@ -269,21 +279,24 @@ MStatus parseSolveInfoArguments_solverType(
     out_tau = std::min(out_tau, tau_max_value);
     assert((out_tau >= tau_min_value) && (out_tau <= tau_max_value));
 
-    // Get 'Epsilon1'
-    if (argData.isFlagSet(EPSILON1_FLAG)) {
-        status = argData.getFlagArgument(EPSILON1_FLAG, 0, out_epsilon1);
+    // Get 'Function_Tolerance'
+    if (argData.isFlagSet(FUNCTION_TOLERANCE_FLAG)) {
+        status = argData.getFlagArgument(FUNCTION_TOLERANCE_FLAG, 0,
+                                         out_function_tolerance);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    // Get 'Epsilon2'
-    if (argData.isFlagSet(EPSILON2_FLAG)) {
-        status = argData.getFlagArgument(EPSILON2_FLAG, 0, out_epsilon2);
+    // Get 'Parameter_Tolerance'
+    if (argData.isFlagSet(PARAMETER_TOLERANCE_FLAG)) {
+        status = argData.getFlagArgument(PARAMETER_TOLERANCE_FLAG, 0,
+                                         out_parameter_tolerance);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    // Get 'Epsilon3'
-    if (argData.isFlagSet(EPSILON3_FLAG)) {
-        status = argData.getFlagArgument(EPSILON3_FLAG, 0, out_epsilon3);
+    // Get 'Gradient_Tolerance'
+    if (argData.isFlagSet(GRADIENT_TOLERANCE_FLAG)) {
+        status = argData.getFlagArgument(GRADIENT_TOLERANCE_FLAG, 0,
+                                         out_gradient_tolerance);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -395,9 +408,10 @@ MStatus parseSolveInfoArguments_other(const MArgDatabase &argData,
 
 MStatus parseSolveInfoArguments_v1(
     const MArgDatabase &argData, int &out_iterations, double &out_tau,
-    double &out_epsilon1, double &out_epsilon2, double &out_epsilon3,
-    double &out_delta, int &out_autoDiffType, int &out_autoParamScale,
-    int &out_robustLossType, double &out_robustLossScale, int &out_solverType,
+    double &out_function_tolerance, double &out_parameter_tolerance,
+    double &out_gradient_tolerance, double &out_delta, int &out_autoDiffType,
+    int &out_autoParamScale, int &out_robustLossType,
+    double &out_robustLossScale, int &out_solverType,
     SceneGraphMode &out_sceneGraphMode, int &out_timeEvalMode,
     bool &out_acceptOnlyBetter, FrameSolveMode &out_frameSolveMode,
     bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
@@ -405,11 +419,12 @@ MStatus parseSolveInfoArguments_v1(
     bool &out_removeUnusedMarkers, bool &out_removeUnusedAttributes,
     double &out_imageWidth) {
     MStatus status = parseSolveInfoArguments_solverType(
-        argData, out_iterations, out_tau, out_epsilon1, out_epsilon2,
-        out_epsilon3, out_delta, out_autoDiffType, out_autoParamScale,
-        out_robustLossType, out_robustLossScale, out_solverType,
-        out_supportAutoDiffForward, out_supportAutoDiffCentral,
-        out_supportParameterBounds, out_supportRobustLoss);
+        argData, out_iterations, out_tau, out_function_tolerance,
+        out_parameter_tolerance, out_gradient_tolerance, out_delta,
+        out_autoDiffType, out_autoParamScale, out_robustLossType,
+        out_robustLossScale, out_solverType, out_supportAutoDiffForward,
+        out_supportAutoDiffCentral, out_supportParameterBounds,
+        out_supportRobustLoss);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveInfoArguments_other(
@@ -425,20 +440,22 @@ MStatus parseSolveInfoArguments_v1(
 
 MStatus parseSolveInfoArguments_v2(
     const MArgDatabase &argData, int &out_iterations, double &out_tau,
-    double &out_epsilon1, double &out_epsilon2, double &out_epsilon3,
-    double &out_delta, int &out_autoDiffType, int &out_autoParamScale,
-    int &out_robustLossType, double &out_robustLossScale, int &out_solverType,
+    double &out_function_tolerance, double &out_parameter_tolerance,
+    double &out_gradient_tolerance, double &out_delta, int &out_autoDiffType,
+    int &out_autoParamScale, int &out_robustLossType,
+    double &out_robustLossScale, int &out_solverType,
     SceneGraphMode &out_sceneGraphMode, int &out_timeEvalMode,
     bool &out_acceptOnlyBetter, FrameSolveMode &out_frameSolveMode,
     bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
     bool &out_supportParameterBounds, bool &out_supportRobustLoss,
     double &out_imageWidth) {
     MStatus status = parseSolveInfoArguments_solverType(
-        argData, out_iterations, out_tau, out_epsilon1, out_epsilon2,
-        out_epsilon3, out_delta, out_autoDiffType, out_autoParamScale,
-        out_robustLossType, out_robustLossScale, out_solverType,
-        out_supportAutoDiffForward, out_supportAutoDiffCentral,
-        out_supportParameterBounds, out_supportRobustLoss);
+        argData, out_iterations, out_tau, out_function_tolerance,
+        out_parameter_tolerance, out_gradient_tolerance, out_delta,
+        out_autoDiffType, out_autoParamScale, out_robustLossType,
+        out_robustLossScale, out_solverType, out_supportAutoDiffForward,
+        out_supportAutoDiffCentral, out_supportParameterBounds,
+        out_supportRobustLoss);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveInfoArguments_other(

@@ -213,9 +213,9 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
     options.max_num_consecutive_invalid_steps = 5;  // Allow some invalid steps.
 
     options.max_num_iterations = solverOptions.iterMax;
-    options.function_tolerance = solverOptions.eps1;
-    options.parameter_tolerance = solverOptions.eps2;
-    options.gradient_tolerance = solverOptions.eps3;
+    options.function_tolerance = solverOptions.function_tolerance;
+    options.parameter_tolerance = solverOptions.parameter_tolerance;
+    options.gradient_tolerance = solverOptions.gradient_tolerance;
     options.initial_trust_region_radius = solverOptions.tau;
     options.jacobi_scaling = true;
     options.num_threads = 1;

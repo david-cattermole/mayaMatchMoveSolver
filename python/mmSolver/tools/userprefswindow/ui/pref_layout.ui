@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1144</width>
-    <height>826</height>
+    <width>277</width>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -64,6 +64,16 @@
         </item>
         <item row="0" column="1">
          <widget class="QComboBox" name="minimalUIWhileSolvingComboBox"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="solverOptionsLabel">
+          <property name="text">
+           <string>Solver Options</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="solverOptionsComboBox"/>
         </item>
        </layout>
       </item>

@@ -92,12 +92,13 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveInfoArguments_v1(
-        argData, m_iterations, m_tau, m_epsilon1, m_epsilon2, m_epsilon3,
-        m_delta, m_autoDiffType, m_autoParamScale, m_robustLossType,
-        m_robustLossScale, m_solverType, m_sceneGraphMode, m_timeEvalMode,
-        m_acceptOnlyBetter, m_frameSolveMode, m_supportAutoDiffForward,
-        m_supportAutoDiffCentral, m_supportParameterBounds, m_supportRobustLoss,
-        m_removeUnusedMarkers, m_removeUnusedAttributes, m_imageWidth);
+        argData, m_iterations, m_tau, m_function_tolerance,
+        m_parameter_tolerance, m_gradient_tolerance, m_delta, m_autoDiffType,
+        m_autoParamScale, m_robustLossType, m_robustLossScale, m_solverType,
+        m_sceneGraphMode, m_timeEvalMode, m_acceptOnlyBetter, m_frameSolveMode,
+        m_supportAutoDiffForward, m_supportAutoDiffCentral,
+        m_supportParameterBounds, m_supportRobustLoss, m_removeUnusedMarkers,
+        m_removeUnusedAttributes, m_imageWidth);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveLogArguments_v1(argData, m_printStatsList, m_logLevel);
@@ -136,9 +137,9 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     SolverOptions solverOptions;
     solverOptions.iterMax = m_iterations;
     solverOptions.tau = m_tau;
-    solverOptions.eps1 = m_epsilon1;
-    solverOptions.eps2 = m_epsilon2;
-    solverOptions.eps3 = m_epsilon3;
+    solverOptions.function_tolerance = m_function_tolerance;
+    solverOptions.parameter_tolerance = m_parameter_tolerance;
+    solverOptions.gradient_tolerance = m_gradient_tolerance;
     solverOptions.delta = m_delta;
     solverOptions.autoDiffType = m_autoDiffType;
     solverOptions.autoParamScale = m_autoParamScale;

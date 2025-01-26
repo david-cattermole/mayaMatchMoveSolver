@@ -41,8 +41,17 @@ import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.widget.ui_solver_basic_widget as ui_solver_basic_widget
 import mmSolver.tools.solver.widget.framerange_widget as framerange_widget
 import mmSolver.tools.solver.constant as const
+import mmSolver.tools.userpreferences.constant as userprefs_const
+import mmSolver.tools.userpreferences.lib as userprefs_lib
 
 LOG = mmSolver.logger.get_logger()
+
+
+def get_user_prefs_solver_options_as_developer():
+    config = userprefs_lib.get_config()
+    key = userprefs_const.SOLVER_UI_SOLVER_OPTIONS_KEY
+    value = userprefs_lib.get_value(config, key)
+    return value == userprefs_const.SOLVER_UI_SOLVER_OPTIONS_DEVELOPER_VALUE
 
 
 def _populateWidgetsEnabled(widgets):
@@ -94,6 +103,10 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
         self.frameRange_widget = BasicFrameRangeWidget(self)
         self.frameRange_layout.addWidget(self.frameRange_widget)
 
+        developer_options = get_user_prefs_solver_options_as_developer()
+        scene_graph_mode_widget_visible = developer_options
+        solver_type_widget_visible = developer_options
+
         # Solver Type Combo Box.
         self.solverType_model = uimodels.StringDataListModel()
         self.solverType_model.setStringDataList(const.SOLVER_TYPE_LABEL_VALUE_LIST)
@@ -101,8 +114,8 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
         self.solverType_comboBox.currentIndexChanged.connect(
             self.solverTypeIndexChanged
         )
-        self.solverType_comboBox.setVisible(const.SOLVER_TYPE_WIDGET_VISIBLE)
-        self.solverType_label.setVisible(const.SOLVER_TYPE_WIDGET_VISIBLE)
+        self.solverType_comboBox.setVisible(solver_type_widget_visible)
+        self.solverType_label.setVisible(solver_type_widget_visible)
 
         # Scene Graph Mode Combo Box.
         self.sceneGraphMode_model = uimodels.StringDataListModel()
@@ -113,8 +126,8 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
         self.sceneGraphMode_comboBox.currentIndexChanged.connect(
             self.sceneGraphModeIndexChanged
         )
-        self.sceneGraphMode_comboBox.setVisible(const.SCENE_GRAPH_MODE_WIDGET_VISIBLE)
-        self.sceneGraphMode_label.setVisible(const.SCENE_GRAPH_MODE_WIDGET_VISIBLE)
+        self.sceneGraphMode_comboBox.setVisible(scene_graph_mode_widget_visible)
+        self.sceneGraphMode_label.setVisible(scene_graph_mode_widget_visible)
 
         self.evalComplexGraphs_checkBox.toggled.connect(
             self.evalComplexGraphsValueToggled

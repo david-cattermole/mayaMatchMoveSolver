@@ -99,9 +99,9 @@ bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
         ldfjac = numberOfParameters;
     }
 
-    double ftol = solverOptions.eps1;
-    double xtol = solverOptions.eps2;
-    double gtol = solverOptions.eps3;
+    double ftol = solverOptions.function_tolerance;
+    double xtol = solverOptions.parameter_tolerance;
+    double gtol = solverOptions.gradient_tolerance;
 
     int mode = 2;  // Off
     if (solverOptions.autoParamScale == 1) {

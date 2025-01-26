@@ -42,9 +42,18 @@ import mmSolver.tools.solver.widget.ui_solver_camera_widget as ui_solver_camera_
 import mmSolver.tools.solver.widget.framerange_widget as framerange_widget
 import mmSolver.tools.solver.widget.rootframe_widget as rootframe_widget
 import mmSolver.tools.solver.constant as const
+import mmSolver.tools.userpreferences.constant as userprefs_const
+import mmSolver.tools.userpreferences.lib as userprefs_lib
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def get_user_prefs_solver_options_as_developer():
+    config = userprefs_lib.get_config()
+    key = userprefs_const.SOLVER_UI_SOLVER_OPTIONS_KEY
+    value = userprefs_lib.get_value(config, key)
+    return value == userprefs_const.SOLVER_UI_SOLVER_OPTIONS_DEVELOPER_VALUE
 
 
 def _populateWidgetsEnabled(widgets):
@@ -147,6 +156,9 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         self.originFrame_spinBox.valueChanged.connect(self.originFrameValueChanged)
         self.sceneScale_doubleSpinBox.valueChanged.connect(self.sceneScaleValueChanged)
 
+        developer_options = get_user_prefs_solver_options_as_developer()
+        solver_type_widget_visible = developer_options
+
         # Solver Type Combo Box.
         self.solverType_model = uimodels.StringDataListModel()
         self.solverType_model.setStringDataList(const.SOLVER_TYPE_LABEL_VALUE_LIST)
@@ -154,8 +166,8 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         self.solverType_comboBox.currentIndexChanged.connect(
             self.solverTypeIndexChanged
         )
-        self.solverType_comboBox.setVisible(const.SOLVER_TYPE_WIDGET_VISIBLE)
-        self.solverType_label.setVisible(const.SOLVER_TYPE_WIDGET_VISIBLE)
+        self.solverType_comboBox.setVisible(solver_type_widget_visible)
+        self.solverType_label.setVisible(solver_type_widget_visible)
 
         self.solveFocalLength_checkBox.toggled.connect(
             self.solveFocalLengthValueToggled

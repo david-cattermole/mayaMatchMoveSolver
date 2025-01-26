@@ -399,9 +399,6 @@ SOLVER_TYPE_LABEL_VALUE_LIST = [
     (SOLVER_TYPE_CERES_LMDER_LABEL, SOLVER_TYPE_CERES_LMDER),
 ]
 
-# Hide the Solver Type mode in the UI.
-SOLVER_TYPE_WIDGET_VISIBLE = False
-
 # Solver Scene Graph (stored on Collection node)
 SOLVER_TYPE_ATTR = 'solver_type'
 SOLVER_TYPE_ATTR_TYPE = 'long'
@@ -432,10 +429,6 @@ SCENE_GRAPH_MODE_LABEL_VALUE_LIST = [
     (SCENE_GRAPH_MODE_MAYA_DAG_LABEL, SCENE_GRAPH_MODE_MAYA_DAG),
     (SCENE_GRAPH_MODE_MM_SCENE_GRAPH_LABEL, SCENE_GRAPH_MODE_MM_SCENE_GRAPH),
 ]
-
-# Hide the Scene Graph mode in the UI, the value defaults to 'auto',
-# which should do work out the fastest scene graph by default.
-SCENE_GRAPH_MODE_WIDGET_VISIBLE = False
 
 # Solver Scene Graph (stored on Collection node)
 SOLVER_SCENE_GRAPH_MODE_ATTR = 'solver_scene_graph'

@@ -59,6 +59,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         self.updateAddNewMarkersToWidget(config)
         self.updateAddNewLinesToWidget(config)
         self.updateSolverUIMinimalUIWhileSolvingWidget(config)
+        self.updateSolverUISolverOptionsWidget(config)
         self.updateLoadMarkerUIRenameMarkersDefaultWidget(config)
         self.updateLoadMarkerUIDistortionModeDefaultWidget(config)
         self.updateLoadMarkerUIUseOverscanDefaultWidget(config)
@@ -250,5 +251,22 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
     def getSolverUIMinimalUIWhileSolvingConfigValue(self):
         key = pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY
         label = self.minimalUIWhileSolvingComboBox.currentText()
+        value = userprefs_lib.get_value_from_label(key, label)
+        return value
+
+    def updateSolverUISolverOptionsWidget(self, config):
+        key = pref_const.SOLVER_UI_SOLVER_OPTIONS_KEY
+        value = userprefs_lib.get_value(config, key)
+        label = userprefs_lib.get_label_from_value(key, value)
+        assert isinstance(label, pycompat.TEXT_TYPE)
+        labels = userprefs_lib.get_labels(key)
+        self.solverOptionsComboBox.clear()
+        self.solverOptionsComboBox.addItems(labels)
+        self.solverOptionsComboBox.setCurrentText(label)
+        return
+
+    def getSolverUISolverOptionsConfigValue(self):
+        key = pref_const.SOLVER_UI_SOLVER_OPTIONS_KEY
+        label = self.solverOptionsComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value

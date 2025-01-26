@@ -65,9 +65,9 @@ public:
     MMSolverCmd()
         : m_iterations(10)
         , m_tau(0.0)
-        , m_epsilon1(0.0)
-        , m_epsilon2(0.0)
-        , m_epsilon3(0.0)
+        , m_function_tolerance(0.0)
+        , m_parameter_tolerance(0.0)
+        , m_gradient_tolerance(0.0)
         , m_delta(0.0)
         , m_autoDiffType(AUTO_DIFF_TYPE_FORWARD)
         , m_autoParamScale(0)
@@ -106,28 +106,31 @@ private:
 
     // Solver Information.
     int m_iterations;
-    double m_tau;       // Scale factor for initial transform mu
-    double m_epsilon1;  // Stopping threshold for ||J^T e||_inf  (ftol)
-    double m_epsilon2;  // Stopping threshold for ||Dp||_2       (xtol)
-    double m_epsilon3;  // Stopping threshold for ||e||_2        (gtol)
-    double m_delta;     // Step used in difference approximation to the Jacobian
+    double m_tau;                 // Scale factor for initial transform mu.
+    double m_function_tolerance;  // Stopping threshold for ||J^T e||_inf (ftol)
+    double m_parameter_tolerance;  // Stopping threshold for ||Dp||_2 (xtol)
+    double m_gradient_tolerance;   // Stopping threshold for ||e||_2 (gtol)
+    double m_delta;  // Step used in difference approximation to the Jacobian.
     int m_autoDiffType;  // Auto Differencing type to use; 0=forward, 1=central.
-    int m_autoParamScale;      // Auto Parameter Scaling; 0=OFF, 1=ON.
-    int m_robustLossType;      // Robust Loss function type; 0=trivial,
-                               //                            1=soft_l1,
-                               //                            2=cauchy.
-    double m_robustLossScale;  // Factor to scale robust loss function by.
-    int m_solverType;          // Solver type to use; 0=levmar,
-                               //                     1=cminpack_lmdif,
-                               //                     2=cmpinpack_lmder.
-    int m_timeEvalMode;        // How to evaluate values at different times?
-    SceneGraphMode m_sceneGraphMode;
-    bool m_acceptOnlyBetter;  // Do not accept solved parameter values if
-                              // the average devation is higher than at start.
-    bool m_removeUnusedMarkers;     // Remove unused Markers from solve?
+    int m_autoParamScale;        // Auto Parameter Scaling; 0=OFF, 1=ON.
+    int m_robustLossType;        // Robust Loss function type; 0=trivial,
+                                 //                            1=soft_l1,
+                                 //                            2=cauchy.
+    double m_robustLossScale;    // Factor to scale robust loss function by.
+    int m_solverType;            // Solver type to use; 0=levmar,
+                                 //                     1=cminpack_lmdif,
+                                 //                     2=cminpack_lmder,
+                                 //                     3=ceres_lmdif,
+                                 //                     4=ceres_lmder.
+    int m_timeEvalMode;          // How to evaluate values at different times?
+    bool m_acceptOnlyBetter;     // Do not accept solved parameter values
+                                 // if the average devation is higher
+                                 // than at start.
+    bool m_removeUnusedMarkers;  // Remove unused Markers from solve?
     bool m_removeUnusedAttributes;  // Remove unused Attributes from solve?
     double m_imageWidth;            // Defines pixel size in camera space.
     FrameSolveMode m_frameSolveMode;
+    SceneGraphMode m_sceneGraphMode;
 
     // What type of features does the given solver type support?
     bool m_supportAutoDiffForward;

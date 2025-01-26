@@ -85,9 +85,9 @@ bool solve_3d_levmar_bc_dif(SolverOptions &solverOptions,
     }
 
     levmar_opts[0] = solverOptions.tau;
-    levmar_opts[1] = solverOptions.eps1;
-    levmar_opts[2] = solverOptions.eps2;
-    levmar_opts[3] = solverOptions.eps3;
+    levmar_opts[1] = solverOptions.function_tolerance;
+    levmar_opts[2] = solverOptions.parameter_tolerance;
+    levmar_opts[3] = solverOptions.gradient_tolerance;
     levmar_opts[4] = delta_factor;
     userData.solverType = solverType;
 
@@ -145,9 +145,9 @@ bool solve_3d_levmar_bc_dif(SolverOptions &solverOptions,
 
         // Minimisation options (input only)
         // opts[0] = tau      (scale factor for initialTransform mu)
-        // opts[1] = epsilon1 (stopping threshold for ||J^T e||_inf)
-        // opts[2] = epsilon2 (stopping threshold for ||Dp||_2)
-        // opts[3] = epsilon3 (stopping threshold for ||e||_2)
+        // opts[1] = function_tolerance (stopping threshold for ||J^T e||_inf)
+        // opts[2] = parameter_tolerance (stopping threshold for ||Dp||_2)
+        // opts[3] = gradient_tolerance (stopping threshold for ||e||_2)
         // opts[4] = delta    (step used in difference approximation to the
         // Jacobian)
         //

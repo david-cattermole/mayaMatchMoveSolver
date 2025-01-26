@@ -51,7 +51,6 @@ def _open_help():
 
 
 class PrefWindow(BaseWindow):
-
     name = 'UserPreferencesWindow'
 
     def __init__(self, parent=None, name=None):
@@ -94,6 +93,7 @@ class PrefWindow(BaseWindow):
             pref_const.LOAD_MARKER_UI_USE_OVERSCAN_DEFAULT_KEY,
             pref_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_KEY,
             pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
+            pref_const.SOLVER_UI_SOLVER_OPTIONS_KEY,
         ]
         for key in option_keys:
             value = pref_const.DEFAULT_VALUE_MAP[key]
@@ -133,6 +133,10 @@ class PrefWindow(BaseWindow):
             (
                 pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
                 self.subForm.getSolverUIMinimalUIWhileSolvingConfigValue,
+            ),
+            (
+                pref_const.SOLVER_UI_SOLVER_OPTIONS_KEY,
+                self.subForm.getSolverUISolverOptionsConfigValue,
             ),
         ]
         for key, func in options:

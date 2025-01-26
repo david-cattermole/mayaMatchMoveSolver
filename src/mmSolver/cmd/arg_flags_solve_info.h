@@ -83,29 +83,29 @@
 #define TAU_FLAG "-t"
 #define TAU_FLAG_LONG "-tauFactor"
 
-// Acceptable Gradient Change.
+// Acceptable Error
 //
-// At the beginning of an solver iteration, if the solver has not
-// decreased the gradient by at least this value, the solver gives up
-// trying to reduce the error any more.
-#define EPSILON1_FLAG "-e1"
-#define EPSILON1_FLAG_LONG "-epsilon1"
+// At the beginning of an solver iteration, if the error level is
+// below this value, the solver considers the error to be low enough
+// for the user's needs and stops trying to reduce the error.
+#define FUNCTION_TOLERANCE_FLAG "-ftl"
+#define FUNCTION_TOLERANCE_FLAG_LONG "-functionTolerance"
 
 // Acceptable Parameter Change.
 //
 // At the beginning of an solver iteration, if the guessed parameters
 // do not change by at least this value, the solver gives up trying to
 // reduce the error any more.
-#define EPSILON2_FLAG "-e2"
-#define EPSILON2_FLAG_LONG "-epsilon2"
+#define PARAMETER_TOLERANCE_FLAG "-ptl"
+#define PARAMETER_TOLERANCE_FLAG_LONG "-parameterTolerance"
 
-// Acceptable Error
+// Acceptable Gradient Change.
 //
-// At the beginning of an solver iteration, if the error level is
-// below this value, the solver considers the error to be low enough
-// for the user's needs and stops trying to reduce the error.
-#define EPSILON3_FLAG "-e3"
-#define EPSILON3_FLAG_LONG "-epsilon3"
+// At the beginning of an solver iteration, if the solver has not
+// decreased the gradient by at least this value, the solver gives up
+// trying to reduce the error any more.
+#define GRADIENT_TOLERANCE_FLAG "-gtl"
+#define GRADIENT_TOLERANCE_FLAG_LONG "-gradientTolerance"
 
 // Change to the guessed parameters each iteration
 //
@@ -180,9 +180,10 @@ void createSolveInfoSyntax_v2(MSyntax &syntax);
 // Parse arguments into solver info.
 MStatus parseSolveInfoArguments_v1(
     const MArgDatabase &argData, int &out_iterations, double &out_tau,
-    double &out_epsilon1, double &out_epsilon2, double &out_epsilon3,
-    double &out_delta, int &out_autoDiffType, int &out_autoParamScale,
-    int &out_robustLossType, double &out_robustLossScale, int &out_solverType,
+    double &out_function_tolerance, double &out_parameter_tolerance,
+    double &out_gradient_tolerance, double &out_delta, int &out_autoDiffType,
+    int &out_autoParamScale, int &out_robustLossType,
+    double &out_robustLossScale, int &out_solverType,
     SceneGraphMode &out_sceneGraphMode, int &out_timeEvalMode,
     bool &out_acceptOnlyBetter, FrameSolveMode &out_frameSolveMode,
     bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
@@ -192,9 +193,10 @@ MStatus parseSolveInfoArguments_v1(
 
 MStatus parseSolveInfoArguments_v2(
     const MArgDatabase &argData, int &out_iterations, double &out_tau,
-    double &out_epsilon1, double &out_epsilon2, double &out_epsilon3,
-    double &out_delta, int &out_autoDiffType, int &out_autoParamScale,
-    int &out_robustLossType, double &out_robustLossScale, int &out_solverType,
+    double &out_function_tolerance, double &out_parameter_tolerance,
+    double &out_gradient_tolerance, double &out_delta, int &out_autoDiffType,
+    int &out_autoParamScale, int &out_robustLossType,
+    double &out_robustLossScale, int &out_solverType,
     SceneGraphMode &out_sceneGraphMode, int &out_timeEvalMode,
     bool &out_acceptOnlyBetter, FrameSolveMode &out_frameSolveMode,
     bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,

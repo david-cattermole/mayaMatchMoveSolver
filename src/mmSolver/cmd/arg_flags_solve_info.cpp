@@ -121,6 +121,7 @@ MStatus parseSolveInfoArguments_solverType(
     // solver.
     double tau_min_value = 0.0;
     double tau_max_value = 0.0;
+
     // Set defaults based on solver type chosen.
     if (out_solverType == SOLVER_TYPE_CMINPACK_LMDIF) {
         out_iterations = CMINPACK_LMDIF_ITERATIONS_DEFAULT_VALUE;
@@ -187,6 +188,32 @@ MStatus parseSolveInfoArguments_solverType(
 
         // http://ceres-solver.org/nnls_solving.html#_CPPv4N5ceres6Solver7Options23max_trust_region_radiusE
         tau_max_value = 1e16;
+    } else if (out_solverType == SOLVER_TYPE_CERES_LMDER) {
+        out_iterations = CERES_LMDER_ITERATIONS_DEFAULT_VALUE;
+        out_tau = CERES_LMDER_TAU_DEFAULT_VALUE;
+        out_epsilon1 = CERES_LMDER_EPSILON1_DEFAULT_VALUE;
+        out_epsilon2 = CERES_LMDER_EPSILON2_DEFAULT_VALUE;
+        out_epsilon3 = CERES_LMDER_EPSILON3_DEFAULT_VALUE;
+        out_delta = CERES_LMDER_DELTA_DEFAULT_VALUE;
+        out_autoDiffType = CERES_LMDER_AUTO_DIFF_TYPE_DEFAULT_VALUE;
+        out_autoParamScale = CERES_LMDER_AUTO_PARAM_SCALE_DEFAULT_VALUE;
+        out_robustLossType = CERES_LMDER_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
+        out_robustLossScale = CERES_LMDER_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        // TODO: Technically this is actually for
+        // finite-differentiation, not auto-differentiation
+        out_supportAutoDiffForward =
+            CERES_LMDER_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
+        out_supportAutoDiffCentral =
+            CERES_LMDER_SUPPORT_AUTO_DIFF_CENTRAL_VALUE;
+        out_supportParameterBounds = CERES_LMDER_SUPPORT_PARAMETER_BOUNDS_VALUE;
+        out_supportRobustLoss = CERES_LMDER_SUPPORT_ROBUST_LOSS_VALUE;
+
+        // http://ceres-solver.org/nnls_solving.html#_CPPv4N5ceres6Solver7Options23min_trust_region_radiusE
+        tau_min_value = 1e-32;
+
+        // http://ceres-solver.org/nnls_solving.html#_CPPv4N5ceres6Solver7Options23max_trust_region_radiusE
+        tau_max_value = 1e16;
+
     } else if (out_solverType == SOLVER_TYPE_LEVMAR) {
         out_iterations = LEVMAR_ITERATIONS_DEFAULT_VALUE;
         out_tau = LEVMAR_TAU_DEFAULT_VALUE;
@@ -212,7 +239,8 @@ MStatus parseSolveInfoArguments_solverType(
             "(0 == levmar, "
             "1 == cminpack_lmdif, "
             "2 == cminpack_lmder, "
-            "3 == ceres_lmdif); "
+            "3 == ceres_lmdif, "
+            "4 == ceres_lmder); "
             << "value=" << out_solverType);
         status = MS::kFailure;
         status.perror(
@@ -221,7 +249,8 @@ MStatus parseSolveInfoArguments_solverType(
             "(0 == levmar, "
             "1 == cminpack_lmdif, "
             "2 == cminpack_lmder, "
-            "3 == ceres_lmdif).");
+            "3 == ceres_lmdif, "
+            "4 == ceres_lmder).");
         return status;
     }
 

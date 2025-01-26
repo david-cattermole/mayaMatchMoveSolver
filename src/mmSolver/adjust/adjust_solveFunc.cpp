@@ -497,7 +497,7 @@ int solveFunc_calculateJacobianMatrix(
     SolverData *userData, SolverTimer &timer) {
     assert(
         (userData->solverOptions->solverType == SOLVER_TYPE_CMINPACK_LMDER) ||
-        (userData->solverOptions->solverType == SOLVER_TYPE_CERES_LMDIF));
+        (userData->solverOptions->solverType == SOLVER_TYPE_CERES_LMDER));
     int autoDiffType = userData->solverOptions->autoDiffType;
 
     // Get longest dimension for jacobian matrix

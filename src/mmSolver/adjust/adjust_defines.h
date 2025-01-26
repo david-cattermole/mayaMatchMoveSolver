@@ -53,8 +53,13 @@
 #define SOLVER_TYPE_CERES_LMDIF (3)
 #define SOLVER_TYPE_CERES_LMDIF_NAME "ceres_lmdif"
 
+// Dense LM solver using 'ceres', with custom jacobian, using a
+// trust-region Levenberg-Marquardt algorithm.
+#define SOLVER_TYPE_CERES_LMDER (4)
+#define SOLVER_TYPE_CERES_LMDER_NAME "ceres_lmder"
+
 // The default solver to use, if all solvers are available.
-#define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LMDER
+#define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CERES_LMDER
 
 // // Enable the Maya profiling data collection.
 // #define MAYA_PROFILE 1
@@ -146,7 +151,8 @@
 #define CMINPACK_LMDER_SUPPORT_PARAMETER_BOUNDS_VALUE true
 #define CMINPACK_LMDER_SUPPORT_ROBUST_LOSS_VALUE false
 
-// Ceres Levenberg-Marquardt Solver default flag values.
+// Ceres Levenberg-Marquardt Solver default flag values, using
+// in-built finite differencing.
 //
 #define CERES_LMDIF_ITERATIONS_DEFAULT_VALUE (100)
 #define CERES_LMDIF_TAU_DEFAULT_VALUE (1E4)
@@ -154,7 +160,7 @@
 #define CERES_LMDIF_EPSILON2_DEFAULT_VALUE (1E-10)  // parameter_tolerance
 #define CERES_LMDIF_EPSILON3_DEFAULT_VALUE (1E-8)   // gradient_tolerance
 #define CERES_LMDIF_DELTA_DEFAULT_VALUE (1E-04)
-// cminpack lmder supports both forward '0=forward' and 'central' auto-diff'ing.
+// ceres lmder supports both forward '0=forward' and 'central' auto-diff'ing.
 #define CERES_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE (AUTO_DIFF_TYPE_FORWARD)
 #define CERES_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE \
     (1)  // default is 'on=1 (mode=1)'
@@ -166,6 +172,27 @@
 #define CERES_LMDIF_SUPPORT_AUTO_DIFF_CENTRAL_VALUE false
 #define CERES_LMDIF_SUPPORT_PARAMETER_BOUNDS_VALUE false
 #define CERES_LMDIF_SUPPORT_ROBUST_LOSS_VALUE false
+
+// Ceres Levenberg-Marquardt Solver default flag values, using custom
+// finite differencing.
+//
+#define CERES_LMDER_ITERATIONS_DEFAULT_VALUE (100)
+#define CERES_LMDER_TAU_DEFAULT_VALUE (1E4)
+#define CERES_LMDER_EPSILON1_DEFAULT_VALUE (1E-6)   // function_tolerance
+#define CERES_LMDER_EPSILON2_DEFAULT_VALUE (1E-10)  // parameter_tolerance
+#define CERES_LMDER_EPSILON3_DEFAULT_VALUE (1E-8)   // gradient_tolerance
+#define CERES_LMDER_DELTA_DEFAULT_VALUE (1E-04)
+// ceres lmder supports both forward '0=forward' and 'central' auto-diff'ing.
+#define CERES_LMDER_AUTO_DIFF_TYPE_DEFAULT_VALUE (AUTO_DIFF_TYPE_FORWARD)
+#define CERES_LMDER_AUTO_PARAM_SCALE_DEFAULT_VALUE \
+    (1)  // default is 'on=1 (mode=1)'
+#define CERES_LMDER_ROBUST_LOSS_TYPE_DEFAULT_VALUE (ROBUST_LOSS_TYPE_TRIVIAL)
+#define CERES_LMDER_ROBUST_LOSS_SCALE_DEFAULT_VALUE (1.0)
+#define CERES_LMDER_SUPPORT_AUTO_DIFF_FORWARD_VALUE true
+#define CERES_LMDER_SUPPORT_AUTO_DIFF_CENTRAL_VALUE true
+#define CERES_LMDER_SUPPORT_PARAMETER_BOUNDS_VALUE false
+#define CERES_LMDER_SUPPORT_ROBUST_LOSS_VALUE false
+
 
 // Levmar Solver default flag values
 //

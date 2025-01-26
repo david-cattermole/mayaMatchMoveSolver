@@ -24,7 +24,7 @@
 
 #ifdef MMSOLVER_USE_CERES
 
-#include "adjust_ceres_lmdif.h"
+#include "adjust_ceres_lmder.h"
 
 // STL
 #include <math.h>
@@ -55,37 +55,129 @@
 
 namespace {
 
-struct ResidualFunctor {
-    ResidualFunctor(const int num_parameters, const int num_residuals,
-                    SolverData* user_data)
-        : m_numberOfParameters(num_parameters)
-        , m_numberOfResiduals(num_residuals)
-        , m_userData(user_data) {}
+// Cost function adapter for Ceres that wraps the existing solve
+// function "solveFunc".
+class ResidualAndJacobianFunction : public ::ceres::CostFunction {
+public:
+    ResidualAndJacobianFunction(const int numberOfParameters,
+                                const int numberOfResiduals,
+                                SolverData* userData)
+        : m_jacobians_temp(numberOfParameters * numberOfResiduals, 0.0)
+        , m_userData(userData) {
+        // Set the number of residuals and parameter block sizes.
+        set_num_residuals(numberOfResiduals);
+        mutable_parameter_block_sizes()->push_back(numberOfParameters);
+    }
 
-    bool operator()(double const* const* parameters, double* residuals) const {
-        // Jacobian matrices are not calculated by this functor at
-        // all.
-        double* jacobians = nullptr;  // No Jacobians
-        m_userData->isPrintCall = false;
-        m_userData->isNormalCall = true;
-        m_userData->isJacobianCall = false;
+    virtual bool Evaluate(double const* const* parameters, double* residuals,
+                          double** jacobians) const override {
+        const bool verbose = false;
+        MMSOLVER_MAYA_VRB(
+            "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate");
+
+        const int numberOfParameters = parameter_block_sizes()[0];
+        const int numberOfResiduals = num_residuals();
+        const int numberOfJacobians = numberOfParameters * numberOfResiduals;
+        MMSOLVER_MAYA_VRB(
+            "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+            "numberOfParameters: "
+            << numberOfParameters);
+        MMSOLVER_MAYA_VRB(
+            "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+            "numberOfResiduals: "
+            << numberOfResiduals);
+        MMSOLVER_MAYA_VRB(
+            "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+            "numberOfJacobians: "
+            << numberOfJacobians);
+
+        if (verbose) {
+            for (auto i = 0; i < numberOfParameters; i++) {
+                MMSOLVER_MAYA_VRB(
+                    "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+                    "parameters[0]["
+                    << i << "] = " << parameters[0][i]);
+            }
+        }
+
+        const bool do_jacobians = jacobians && jacobians[0];
+        MMSOLVER_MAYA_VRB(
+            "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+            "do_jacobians: "
+            << do_jacobians);
+        double* jacobians_block = nullptr;
+        if (do_jacobians) {
+            jacobians_block = jacobians[0];
+
+            m_userData->isPrintCall = false;
+            m_userData->isNormalCall = false;
+            m_userData->isJacobianCall = true;
+        } else {
+            m_userData->isPrintCall = false;
+            m_userData->isNormalCall = true;
+            m_userData->isJacobianCall = false;
+        }
+
         m_userData->doCalcJacobian = false;
+        int ret = solveFunc(numberOfParameters, numberOfResiduals,
+                            parameters[0], residuals, nullptr, m_userData);
 
-        const int ret =
-            solveFunc(m_numberOfParameters, m_numberOfResiduals, parameters[0],
-                      residuals, jacobians, m_userData);
+        if (do_jacobians) {
+            m_userData->doCalcJacobian = true;
+            ret =
+                solveFunc(numberOfParameters, numberOfResiduals, parameters[0],
+                          residuals, jacobians_block, m_userData);
+        }
+
+        // We need to transpose the matrix from column-major to
+        // row-major.
+        //
+        // CMinpack uses Jacobian matrices that are stored in
+        // column-major order, but Ceres uses row-major.
+        if (do_jacobians) {
+            memcpy((void*)m_jacobians_temp.data(), jacobians[0],
+                   sizeof(double) * numberOfParameters * numberOfResiduals);
+
+            for (uint32_t i = 0; i < numberOfResiduals; ++i) {
+                for (uint32_t j = 0; j < numberOfParameters; ++j) {
+                    auto row_major_index = i * numberOfParameters + j;
+                    auto column_major_index = j * numberOfResiduals + i;
+                    jacobians[0][row_major_index] =
+                        m_jacobians_temp[column_major_index];
+                }
+            }
+        }
+
+        if (verbose) {
+            for (auto i = 0; i < numberOfResiduals; i++) {
+                MMSOLVER_MAYA_VRB(
+                    "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+                    "residuals["
+                    << i << "] = " << residuals[i]);
+            }
+
+            if (do_jacobians) {
+                for (auto i = 0; i < numberOfJacobians; i++) {
+                    MMSOLVER_MAYA_VRB(
+                        "adjust_ceres_lmder "
+                        "ResidualAndJacobianFunction::Evaluate "
+                        "jacobians[0]["
+                        << i << "] = " << jacobians[0][i]);
+                }
+            }
+        }
 
         return ret == SOLVE_FUNC_SUCCESS;
     }
 
-    const int m_numberOfParameters;
-    const int m_numberOfResiduals;
+private:
     SolverData* m_userData;
+    std::vector<double> m_jacobians_temp;
 };
 
 }  // namespace
 
-bool solve_3d_ceres_lmdif(SolverOptions& solverOptions,
+bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
                           const int numberOfParameters,
                           const int numberOfErrors,
                           std::vector<double>& paramList,
@@ -100,18 +192,8 @@ bool solve_3d_ceres_lmdif(SolverOptions& solverOptions,
     // problemOptions.apply_loss_function = false;
     ::ceres::Problem problem(problemOptions);
 
-    auto cost_functor =
-        new ResidualFunctor(numberOfParameters, numberOfErrors, &userData);
-
-    ::ceres::NumericDiffOptions numericDiffOptions;
-    numericDiffOptions.relative_step_size = solverOptions.delta;
-    auto cost_function = new ::ceres::DynamicNumericDiffCostFunction<
-        ResidualFunctor, ::ceres::FORWARD>(
-        cost_functor,
-        ::ceres::DO_NOT_TAKE_OWNERSHIP,  // Don't let Ceres delete our functor
-        numericDiffOptions);
-    cost_function->AddParameterBlock(numberOfParameters);
-    cost_function->SetNumResiduals(numberOfErrors);
+    auto cost_function = new ResidualAndJacobianFunction(
+        numberOfParameters, numberOfErrors, &userData);
 
     // We only have a single parameter block.
     double* param_ptr = paramList.data();
@@ -174,6 +256,7 @@ bool solve_3d_ceres_lmdif(SolverOptions& solverOptions,
 
     if (solveResult.success) {
         // NOTE: Parameters are updated in-place.
+        // errorList = std::vector<double>(numberOfErrors);
         errorList.resize(numberOfErrors);
         cost_function->Evaluate(&param_ptr, errorList.data(), nullptr);
     }

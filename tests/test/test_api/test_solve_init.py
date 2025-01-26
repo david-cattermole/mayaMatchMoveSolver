@@ -151,6 +151,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Solver
         sol = mmapi.SolverStandard()
+        # sol.set_verbose(True)
         sol.set_use_single_frame(True)
         sol.set_single_frame(frm_list[0])
         sol.set_global_solve(False)
@@ -193,6 +194,18 @@ class TestSolve(test_api_utils.APITestCase):
         # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
         return
+
+    def test_init_solverstandard_ceres_lmder_maya_dag(self):
+        self.do_solve_init_solverstandard(
+            'ceres_lmder',
+            mmapi.SOLVER_TYPE_CERES_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
+
+    def test_init_solverstandard_ceres_lmder_mmscenegraph(self):
+        self.do_solve_init_solverstandard(
+            'ceres_lmder', mmapi.SOLVER_TYPE_CERES_LMDER, mmapi.SCENE_GRAPH_MODE_AUTO
+        )
 
     def test_init_solverstandard_ceres_lmdif_maya_dag(self):
         self.do_solve_init_solverstandard(

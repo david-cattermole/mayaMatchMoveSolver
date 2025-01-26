@@ -106,17 +106,17 @@ for all users loading this module - if the module file is located on
 the network for multiple users changes to this file will affect all
 users.
 
-| Name                       | Description                                                                                            |
-| -------------------------- | ------------------------------------------------------------------------------------------------------ |
-| MMSOLVER_LOAD_AT_STARTUP   | Automatically load mmSolver plug-in at Maya start-up (values of '0' or '1').                           |
-| MMSOLVER_CREATE_SHELF      | Automatically create a Maya shelf at start-up (values of '0' or '1').                                  |
-| MMSOLVER_CREATE_MENU       | Automatically create a Maya menu at start-up (values of '0' or '1').                                   |
-| MMSOLVER_CREATE_HOTKEY_SET | Automatically create a Maya hotkey set at start-up (values of '0' or '1').                             |
-| MMSOLVER_VIEWPORT_MESSAGES | Enable or disable warnings and errors printed to the viewport (values of '0' or '1').                  |
-| MMSOLVER_HELP_SOURCE       | Prefer 'internet' or 'local' source of help? For users with internet restrictions set this to 'local'. |
-| MMSOLVER_DEFAULT_SOLVER    | (Advanced) The default solver to use in mmSolver; 'cminpack_lmdif', 'cminpack_lmder' or 'ceres_lmdif'. |
-| MMSOLVER_DEBUG             | (Advanced) Forces mmSolver to print out debug messages. Not for users, for use by developers only.     |
-| MMSOLVER_LOCATION          | Do not change this variable!!!                                                                         |
+| Name                       | Description                                                                                                           |
+|----------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| MMSOLVER_LOAD_AT_STARTUP   | Automatically load mmSolver plug-in at Maya start-up (values of '0' or '1').                                          |
+| MMSOLVER_CREATE_SHELF      | Automatically create a Maya shelf at start-up (values of '0' or '1').                                                 |
+| MMSOLVER_CREATE_MENU       | Automatically create a Maya menu at start-up (values of '0' or '1').                                                  |
+| MMSOLVER_CREATE_HOTKEY_SET | Automatically create a Maya hotkey set at start-up (values of '0' or '1').                                            |
+| MMSOLVER_VIEWPORT_MESSAGES | Enable or disable warnings and errors printed to the viewport (values of '0' or '1').                                 |
+| MMSOLVER_HELP_SOURCE       | Prefer 'internet' or 'local' source of help? For users with internet restrictions set this to 'local'.                |
+| MMSOLVER_DEFAULT_SOLVER    | (Advanced) The default solver to use in mmSolver; 'cminpack_lmdif', 'cminpack_lmder', 'ceres_lmdif' or 'ceres_lmder'. |
+| MMSOLVER_DEBUG             | (Advanced) Forces mmSolver to print out debug messages. Not for users, for use by developers only.                    |
+| MMSOLVER_LOCATION          | Do not change this variable!!!                                                                                        |
 
 # Install 3DEqualizer Files
 

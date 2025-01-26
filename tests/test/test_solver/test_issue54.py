@@ -37,6 +37,7 @@ except RuntimeError:
 import maya.cmds
 
 import test.test_solver.solverutils as solverUtils
+import mmSolver.api as mmapi
 
 
 # @unittest.skip
@@ -234,29 +235,63 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.assertApproxEqual(rx, 360.0, eps=0.01)
         self.assertApproxEqual(ry, 360.0, eps=0.01)
 
+    def test_init_ceres_lmder(self):
+        """
+        Solve nodal camera on a single frame, using ceres.
+        """
+        self.do_solve_with_initial_value_zero(
+            'ceres_lmder', mmapi.SOLVER_TYPE_CERES_LMDER
+        )
+        self.do_solve_with_initial_value_twenty(
+            'ceres_lmder',
+            mmapi.SOLVER_TYPE_CERES_LMDER,
+        )
+        self.do_solve_with_initial_value_threeSixty(
+            'ceres_lmder',
+            mmapi.SOLVER_TYPE_CERES_LMDER,
+        )
+
     def test_init_ceres_lmdif(self):
         """
         Solve nodal camera on a single frame, using ceres.
         """
-        self.do_solve_with_initial_value_zero('ceres', 3)
-        self.do_solve_with_initial_value_twenty('ceres', 3)
-        self.do_solve_with_initial_value_threeSixty('ceres', 3)
+        self.do_solve_with_initial_value_zero(
+            'ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF
+        )
+        self.do_solve_with_initial_value_twenty(
+            'ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF
+        )
+        self.do_solve_with_initial_value_threeSixty(
+            'ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF
+        )
 
     def test_init_cminpack_lmdif(self):
         """
         Solve nodal camera on a single frame, using cminpack_lm
         """
-        self.do_solve_with_initial_value_zero('cminpack_lmdif', 1)
-        self.do_solve_with_initial_value_twenty('cminpack_lmdif', 1)
-        self.do_solve_with_initial_value_threeSixty('cminpack_lmdif', 1)
+        self.do_solve_with_initial_value_zero(
+            'cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF
+        )
+        self.do_solve_with_initial_value_twenty(
+            'cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF
+        )
+        self.do_solve_with_initial_value_threeSixty(
+            'cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF
+        )
 
     def test_init_cminpack_lmder(self):
         """
         Solve nodal camera on a single frame, using cminpack_lm
         """
-        self.do_solve_with_initial_value_zero('cminpack_lmder', 2)
-        self.do_solve_with_initial_value_twenty('cminpack_lmder', 2)
-        self.do_solve_with_initial_value_threeSixty('cminpack_lmder', 2)
+        self.do_solve_with_initial_value_zero(
+            'cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER
+        )
+        self.do_solve_with_initial_value_twenty(
+            'cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER
+        )
+        self.do_solve_with_initial_value_threeSixty(
+            'cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER
+        )
 
 
 if __name__ == '__main__':

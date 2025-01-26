@@ -121,6 +121,20 @@ class TestSolver1(solverUtils.SolverTestCase):
         self.assertApproxEqual(tx, -6.0)
         self.assertApproxEqual(ty, 3.6)
 
+    def test_init_ceres_lmder_maya_dag(self):
+        self.do_solve(
+            'ceres_lmder',
+            mmapi.SOLVER_TYPE_CERES_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
+
+    def test_init_ceres_lmder_mmscenegraph(self):
+        self.do_solve(
+            'ceres_lmder',
+            mmapi.SOLVER_TYPE_CERES_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
+
     def test_init_ceres_lmdif_maya_dag(self):
         self.do_solve(
             'ceres_lmdif',

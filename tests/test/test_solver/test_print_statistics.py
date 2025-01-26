@@ -107,7 +107,13 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
             frame=frames,
             solverType=solver_index,
             verbose=True,
-            printStatistics=('inputs', 'affects', 'usedSolveObjects', 'deviation'),
+            printStatistics=(
+                'inputs',
+                'affects',
+                'usedSolveObjects',
+                'deviation',
+                'solveFrames',
+            ),
             **kwargs
         )
         num_params = result[0]
@@ -153,6 +159,9 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
         print('attributes_unused:', attributes_unused)
         self.assertEqual(len(attributes_unused), 2)
         return
+
+    def test_init_ceres_lmder(self):
+        self.do_solve('ceres_lmder', mmapi.SOLVER_TYPE_CERES_LMDER)
 
     def test_init_ceres_lmdif(self):
         self.do_solve('ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF)

@@ -127,6 +127,10 @@ MStatus parseSolveInfoArguments_solverType(
     double tau_max_value = 0.0;
 
     // Set defaults based on solver type chosen.
+    //
+    // TODO: Can we set these default values using a struct of some
+    // sort? I think we should move these hard-coded values into
+    // solver-specific files, especially for the "support*" arguments.
     if (out_solverType == SOLVER_TYPE_CMINPACK_LMDIF) {
         out_iterations = CMINPACK_LMDIF_ITERATIONS_DEFAULT_VALUE;
         out_tau = CMINPACK_LMDIF_TAU_DEFAULT_VALUE;
@@ -141,6 +145,8 @@ MStatus parseSolveInfoArguments_solverType(
         out_autoParamScale = CMINPACK_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE;
         out_robustLossType = CMINPACK_LMDIF_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
         out_robustLossScale = CMINPACK_LMDIF_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        // TODO: Technically this is actually for
+        // finite-differentiation, not auto-differentiation
         out_supportAutoDiffForward =
             CMINPACK_LMDIF_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
         out_supportAutoDiffCentral =
@@ -165,6 +171,8 @@ MStatus parseSolveInfoArguments_solverType(
         out_autoParamScale = CMINPACK_LMDER_AUTO_PARAM_SCALE_DEFAULT_VALUE;
         out_robustLossType = CMINPACK_LMDER_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
         out_robustLossScale = CMINPACK_LMDER_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        // TODO: Technically this is actually for
+        // finite-differentiation, not auto-differentiation
         out_supportAutoDiffForward =
             CMINPACK_LMDER_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
         out_supportAutoDiffCentral =
@@ -186,6 +194,8 @@ MStatus parseSolveInfoArguments_solverType(
         out_autoParamScale = CERES_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE;
         out_robustLossType = CERES_LMDIF_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
         out_robustLossScale = CERES_LMDIF_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        // TODO: Technically this is actually for
+        // finite-differentiation, not auto-differentiation
         out_supportAutoDiffForward =
             CERES_LMDIF_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
         out_supportAutoDiffCentral =
@@ -235,6 +245,8 @@ MStatus parseSolveInfoArguments_solverType(
         out_autoParamScale = LEVMAR_AUTO_PARAM_SCALE_DEFAULT_VALUE;
         out_robustLossType = LEVMAR_ROBUST_LOSS_TYPE_DEFAULT_VALUE;
         out_robustLossScale = LEVMAR_ROBUST_LOSS_SCALE_DEFAULT_VALUE;
+        // TODO: Technically this is actually for
+        // finite-differentiation, not auto-differentiation
         out_supportAutoDiffForward = LEVMAR_SUPPORT_AUTO_DIFF_FORWARD_VALUE;
         out_supportAutoDiffCentral = LEVMAR_SUPPORT_AUTO_DIFF_CENTRAL_VALUE;
         out_supportParameterBounds = LEVMAR_SUPPORT_PARAMETER_BOUNDS_VALUE;

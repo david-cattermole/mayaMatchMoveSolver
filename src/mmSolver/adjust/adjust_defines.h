@@ -96,7 +96,6 @@
 #define PRINT_STATS_MODE_AFFECTS "affects"
 #define PRINT_STATS_MODE_USED_SOLVE_OBJECTS "usedSolveObjects"
 #define PRINT_STATS_MODE_DEVIATION "deviation"
-// #define PRINT_STATS_MODE_SOLVE_FRAMES "solveFrames"
 
 // Robust Loss Function Types.
 //

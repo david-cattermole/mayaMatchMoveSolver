@@ -39,6 +39,7 @@
 
 // Ceres
 #include <ceres/ceres.h>
+#include <ceres/dynamic_cost_function.h>
 #include <ceres/numeric_diff_cost_function.h>
 #include <ceres/problem.h>
 #include <ceres/solver.h>
@@ -57,7 +58,7 @@ namespace {
 
 // Cost function adapter for Ceres that wraps the existing solve
 // function "solveFunc".
-class ResidualAndJacobianFunction : public ::ceres::CostFunction {
+class ResidualAndJacobianFunction : public ::ceres::DynamicCostFunction {
 public:
     ResidualAndJacobianFunction(const int numberOfParameters,
                                 const int numberOfResiduals,
@@ -65,8 +66,9 @@ public:
         : m_jacobians_temp(numberOfParameters * numberOfResiduals, 0.0)
         , m_userData(userData) {
         // Set the number of residuals and parameter block sizes.
-        set_num_residuals(numberOfResiduals);
-        mutable_parameter_block_sizes()->push_back(numberOfParameters);
+        ::ceres::CostFunction::set_num_residuals(numberOfResiduals);
+        ::ceres::CostFunction::mutable_parameter_block_sizes()->push_back(
+            numberOfParameters);
     }
 
     virtual bool Evaluate(double const* const* parameters, double* residuals,
@@ -248,6 +250,7 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
     if (solveResult.success) {
         // NOTE: Parameters are updated in-place.
         errorList.resize(numberOfErrors);
+        cost_function->SetNumResiduals(errorList.size());
         cost_function->Evaluate(&param_ptr, errorList.data(), nullptr);
     }
 

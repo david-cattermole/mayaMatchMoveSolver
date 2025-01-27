@@ -72,14 +72,17 @@
 /*
  * Count up number of errors to be measured in the solve.
  */
-int countUpNumberOfErrors(
+uint32_t countUpNumberOfErrors(
     const MarkerPtrList &markerList, const StiffAttrsPtrList &stiffAttrsList,
     const SmoothAttrsPtrList &smoothAttrsList, const MTimeArray &frameList,
     MarkerPtrList &out_validMarkerList, std::vector<MPoint> &out_markerPosList,
     std::vector<double> &out_markerWeightList,
-    IndexPairList &out_errorToMarkerList, int &out_numberOfMarkerErrors,
-    int &out_numberOfAttrStiffnessErrors, int &out_numberOfAttrSmoothnessErrors,
-    MStatus &status) {
+    IndexPairList &out_errorToMarkerList, uint32_t &out_numberOfMarkerErrors,
+    uint32_t &out_numberOfAttrStiffnessErrors,
+    uint32_t &out_numberOfAttrSmoothnessErrors, MStatus &status) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("countUpNumberOfErrors");
+
     status = MStatus::kSuccess;
 
     // For each marker on each frame that it is valid, we add
@@ -102,7 +105,7 @@ int countUpNumberOfErrors(
     out_numberOfAttrStiffnessErrors = 0;
     out_numberOfAttrSmoothnessErrors = 0;
 
-    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    const auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
 
     // Get all the marker data
     int i = 0;
@@ -213,13 +216,13 @@ int countUpNumberOfErrors(
         }
     }
 
-    int numErrors = out_numberOfMarkerErrors;
-    numErrors += out_numberOfAttrStiffnessErrors;
-    numErrors += out_numberOfAttrSmoothnessErrors;
-    return numErrors;
+    const uint32_t numTotalErrors = out_numberOfMarkerErrors +
+                                    out_numberOfAttrStiffnessErrors +
+                                    out_numberOfAttrSmoothnessErrors;
+    return numTotalErrors;
 }
 
-int countUpNumberOfUnknownParameters(
+uint32_t countUpNumberOfUnknownParameters(
     const AttrPtrList &attrList, const MTimeArray &frameList,
     AttrPtrList &out_camStaticAttrList, AttrPtrList &out_camAnimAttrList,
     AttrPtrList &out_staticAttrList, AttrPtrList &out_animAttrList,
@@ -227,15 +230,18 @@ int countUpNumberOfUnknownParameters(
     std::vector<double> &out_paramUpperBoundList,
     std::vector<double> &out_paramWeightList,
     IndexPairList &out_paramToAttrList,
-    mmsolver::MatrixBool2D &out_paramFrameList, MStatus &out_status) {
+    mmsolver::MatrixBool2D &out_paramFrameMatrix, MStatus &out_status) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("countUpNumberOfUnknownParameters");
+
     out_status = MStatus::kSuccess;
 
     const auto frameCount = frameList.length();
 
     // Count up the type of attributes we have, because we need to
     // pre-allocate blocks of memory.
-    int numAttrsAnimated = 0;
-    int numAttrsStatic = 0;
+    uint32_t numAttrsAnimated = 0;
+    uint32_t numAttrsStatic = 0;
     for (AttrPtrListCIt ait = attrList.cbegin(); ait != attrList.cend();
          ++ait) {
         AttrPtr attr = *ait;
@@ -254,12 +260,12 @@ int countUpNumberOfUnknownParameters(
             return 0;
         }
     }
-    int numTotalParams = (numAttrsAnimated * frameCount) + numAttrsStatic;
+    uint32_t numTotalParams = (numAttrsAnimated * frameCount) + numAttrsStatic;
 
     // Reset data structures, because we assume we start with an empty
     // data structure.
     out_paramToAttrList.clear();
-    out_paramFrameList.reset(numTotalParams, frameCount, /*value=*/false);
+    out_paramFrameMatrix.reset(numTotalParams, frameCount, /*value=*/false);
     out_paramLowerBoundList.clear();
     out_paramUpperBoundList.clear();
     out_paramWeightList.clear();
@@ -269,7 +275,7 @@ int countUpNumberOfUnknownParameters(
     out_animAttrList.clear();
 
     // Count up number of unknown parameters
-    int numUnknowns = 0;
+    uint32_t numUnknowns = 0;
 
     int parameterIndex = 0;
     int attrIndex = 0;
@@ -305,8 +311,8 @@ int countUpNumberOfUnknownParameters(
                 out_paramToAttrList.push_back(attrPair);
 
                 // Frame to parameter index mapping.
-                out_paramFrameList.set(parameterIndex, frameIndex,
-                                       /*value=*/true);
+                out_paramFrameMatrix.set(parameterIndex, frameIndex,
+                                         /*value=*/true);
 
                 // Min / max parameter bounds.
                 const double minValue = attr->getMinimumValue();
@@ -336,10 +342,10 @@ int countUpNumberOfUnknownParameters(
             out_paramToAttrList.push_back(attrPair);
 
             // Frame to parameter index mapping.
-            for (int frameIndex = 0; frameIndex < (int)frameCount;
+            for (int frameIndex = 0; frameIndex < static_cast<int>(frameCount);
                  ++frameIndex) {
-                out_paramFrameList.set(parameterIndex, frameIndex,
-                                       /*value=*/true);
+                out_paramFrameMatrix.set(parameterIndex, frameIndex,
+                                         /*value=*/true);
             }
 
             // Min / max parameter bounds.
@@ -364,8 +370,8 @@ int countUpNumberOfUnknownParameters(
             // Attributes are invalid if this happens.
             const MString attrName = attr->getName();
             MMSOLVER_MAYA_ERR(
-                "countUpNumberOfUnknownParameters: Attribute is not animated "
-                "or free: "
+                "countUpNumberOfUnknownParameters: "
+                "Attribute is not animated or free: "
                 << attrName.asChar());
             assert(false);
             return 0;
@@ -415,6 +421,9 @@ int countUpNumberOfUnknownParameters(
 void findMarkerToAttributeRelationship(
     const MarkerPtrList &markerList, const AttrPtrList &attrList,
     mmsolver::MatrixBool2D &out_markerToAttrMatrix, MStatus &out_status) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("findMarkerToAttributeRelationship");
+
     out_status = MStatus::kSuccess;
 
     // Command execution options
@@ -450,7 +459,7 @@ void findMarkerToAttributeRelationship(
         cmd += "\"";
         cmd += bundleName;
         cmd += "\", None);";
-        // MMSOLVER_MAYA_WRN("Running: " + cmd);
+        MMSOLVER_MAYA_VRB("Running: " + cmd);
         out_status = MGlobal::executePythonCommand(cmd, bundleAffectsResult,
                                                    display, undoable);
         CHECK_MSTATUS(out_status);
@@ -466,7 +475,7 @@ void findMarkerToAttributeRelationship(
         cmd += camName;
         cmd += "\"";
         cmd += ");";
-        // MMSOLVER_MAYA_WRN("Running: " + cmd);
+        MMSOLVER_MAYA_VRB("Running: " + cmd);
         out_status = MGlobal::executePythonCommand(cmd, markerAffectsResult,
                                                    display, undoable);
         CHECK_MSTATUS(out_status);
@@ -521,6 +530,9 @@ void findMarkerToAttributeRelationship(
 void getMarkerToAttributeRelationship(
     const MarkerPtrList &markerList, const AttrPtrList &attrList,
     mmsolver::MatrixBool2D &out_markerToAttrMatrix, MStatus &out_status) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("getMarkerToAttributeRelationship");
+
     out_status = MStatus::kSuccess;
 
     // The attribute's 'affect' is assumed to be true if the plug
@@ -608,22 +620,25 @@ void getMarkerToAttributeRelationship(
  */
 void findErrorToParameterRelationship(
     const MarkerPtrList &markerList, const AttrPtrList &attrList,
-    const MTimeArray &frameList, const int numParameters,
-    const int numMarkerErrors, const IndexPairList &paramToAttrList,
+    const MTimeArray &frameList, const uint32_t numParameters,
+    const uint32_t numMarkerErrors, const IndexPairList &paramToAttrList,
     const IndexPairList &errorToMarkerList,
     const mmsolver::MatrixBool2D &markerToAttrMatrix,
-    mmsolver::MatrixBool2D &out_errorToParamList, MStatus &out_status) {
+    mmsolver::MatrixBool2D &out_errorToParamMatrix, MStatus &out_status) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("findErrorToParameterRelationship");
+
     out_status = MStatus::kSuccess;
 
-    auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    const auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
 
     // Attributes are assumed not to affect any marker, until
     // proven otherwise.
     const bool defaultValue = false;
 
-    const int numberOfMarkers = numMarkerErrors / ERRORS_PER_MARKER;
-    out_errorToParamList.reset(numberOfMarkers, numParameters,
-                               /*fill_value=*/defaultValue);
+    const uint32_t numberOfMarkers = numMarkerErrors / ERRORS_PER_MARKER;
+    out_errorToParamMatrix.reset(numberOfMarkers, numParameters,
+                                 /*fill_value=*/defaultValue);
     for (int errorIndex = 0; errorIndex < numberOfMarkers; ++errorIndex) {
         const IndexPair markerIndexPair = errorToMarkerList[errorIndex];
         const int markerIndex = markerIndexPair.first;
@@ -677,8 +692,150 @@ void findErrorToParameterRelationship(
                     paramAffectsError = true;
                 }
             }
-            out_errorToParamList.set(errorIndex, paramIndex, paramAffectsError);
+            out_errorToParamMatrix.set(errorIndex, paramIndex,
+                                       paramAffectsError);
         }
     }
+    return;
+}
+
+void calculateMarkerAndParameterCount(
+    const MarkerPtrList &markerList, const AttrPtrList &attrList,
+    const MTimeArray &frameList, const uint32_t numParameters,
+    const uint32_t numMarkerErrors, const IndexPairList &paramToAttrList,
+    const IndexPairList &errorToMarkerList,
+    const mmsolver::MatrixBool2D &markerToAttrMatrix,
+    const FrameSolveMode frameSolveMode,
+    std::unordered_set<int32_t> &out_valid_frames,
+    std::unordered_set<int32_t> &out_invalid_frames, MStatus &out_status) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("calculateMarkerAndParameterCount");
+
+    out_status = MStatus::kSuccess;
+    const auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    const auto uiUnit = MTime::uiUnit();
+
+    std::unordered_map<int32_t, uint32_t> errorCountPerFrame;
+    std::unordered_map<int32_t, uint32_t> paramCountPerFrame;
+
+    // Calculate enabled marker count per frame.
+    for (int frameIndex = 0; frameIndex < frameList.length(); ++frameIndex) {
+        const MTime frame = frameList[frameIndex];
+
+        uint32_t markerEnabledCount = 0;
+        for (const auto &mkr : markerList) {
+            bool enable = true;
+            mkr->getEnable(enable, frame, timeEvalMode);
+
+            double weight = 1.0;
+            mkr->getWeight(weight, frame, timeEvalMode);
+
+            const bool markerIsEnabled = (enable && weight > 0.0);
+            markerEnabledCount += static_cast<uint32_t>(markerIsEnabled);
+        }
+
+        const int32_t frameNumber = static_cast<int32_t>(frame.asUnits(uiUnit));
+        errorCountPerFrame[frameNumber] =
+            markerEnabledCount * ERRORS_PER_MARKER;
+    }
+
+    // Calculate parameter counts.
+    if (frameSolveMode == FrameSolveMode::kAllFrameAtOnce) {
+        // For all-frames mode, count both static and animated
+        // parameters.
+        uint32_t totalParamCount = 0;
+
+        for (int attrIndex = 0; attrIndex < attrList.size(); ++attrIndex) {
+            const AttrPtr &attr = attrList[attrIndex];
+
+            const bool attr_is_frame_to_change = attr->isFreeToChange();
+            const bool attr_is_animated = attr->isAnimated();
+            MMSOLVER_MAYA_VRB(
+                "calculateMarkerAndParameterCount:"
+                " attrIndex="
+                << attrIndex
+                << " | attr_is_free_to_change=" << attr_is_frame_to_change);
+            MMSOLVER_MAYA_VRB(
+                "calculateMarkerAndParameterCount:"
+                " attrIndex="
+                << attrIndex << " | attr_is_animated=" << attr_is_animated);
+
+            if (attr_is_frame_to_change || attr_is_animated) {
+                totalParamCount++;
+            }
+        }
+
+        // Apply same parameter count to all frames.
+        for (int frameIndex = 0; frameIndex < frameList.length();
+             ++frameIndex) {
+            const MTime frame = frameList[frameIndex];
+            const int32_t frameNumber =
+                static_cast<int32_t>(frame.asUnits(uiUnit));
+
+            paramCountPerFrame[frameNumber] = totalParamCount;
+        }
+    } else if (frameSolveMode == FrameSolveMode::kPerFrame) {
+        // For per-frame mode, only count animated parameters.
+        for (int frameIndex = 0; frameIndex < frameList.length();
+             ++frameIndex) {
+            const MTime frame = frameList[frameIndex];
+            const int32_t frameNumber =
+                static_cast<int32_t>(frame.asUnits(uiUnit));
+
+            uint32_t frameParamCount = 0;
+            for (int attrIndex = 0; attrIndex < attrList.size(); ++attrIndex) {
+                const AttrPtr &attr = attrList[attrIndex];
+
+                const bool attr_is_frame_to_change = attr->isFreeToChange();
+                const bool attr_is_animated = attr->isAnimated();
+                MMSOLVER_MAYA_VRB(
+                    "calculateMarkerAndParameterCount:"
+                    " frame="
+                    << frameNumber << " | attrIndex=" << attrIndex
+                    << " | attr_is_free_to_change=" << attr_is_frame_to_change);
+                MMSOLVER_MAYA_VRB(
+                    "calculateMarkerAndParameterCount:"
+                    " frame="
+                    << frameNumber << " | attrIndex=" << attrIndex
+                    << " | attr_is_animated=" << attr_is_animated);
+
+                if (attr_is_frame_to_change || attr_is_animated) {
+                    frameParamCount++;
+                }
+            }
+            paramCountPerFrame[frameNumber] = frameParamCount;
+        }
+    } else {
+        MMSOLVER_MAYA_ERR(
+            "calculateMarkerAndParameterCount: "
+            "Invalid 'frameSolveMode' value;"
+            << static_cast<uint32_t>(frameSolveMode));
+        assert(false && "Invalid 'frameSolveMode' value.");
+    }
+
+    // Determine valid/invalid frames.
+    for (int frameIndex = 0; frameIndex < frameList.length(); ++frameIndex) {
+        const MTime frame = frameList[frameIndex];
+        const int32_t frameNumber = static_cast<int32_t>(frame.asUnits(uiUnit));
+
+        const uint32_t errorCount = errorCountPerFrame[frameNumber];
+        const uint32_t paramCount = paramCountPerFrame[frameNumber];
+
+        MMSOLVER_MAYA_VRB(
+            "calculateMarkerAndParameterCount: "
+            "frame="
+            << frameNumber << " | errorCount=" << errorCount);
+        MMSOLVER_MAYA_VRB(
+            "calculateMarkerAndParameterCount: "
+            "frame="
+            << frameNumber << " | paramCount=" << paramCount);
+
+        if (errorCount >= paramCount) {
+            out_valid_frames.insert(frameNumber);
+        } else {
+            out_invalid_frames.insert(frameNumber);
+        }
+    }
+
     return;
 }

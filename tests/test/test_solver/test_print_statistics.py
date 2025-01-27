@@ -112,7 +112,6 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
                 'affects',
                 'usedSolveObjects',
                 'deviation',
-                'solveFrames',
             ),
             **kwargs
         )

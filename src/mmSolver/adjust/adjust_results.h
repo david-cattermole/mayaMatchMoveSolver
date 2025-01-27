@@ -725,29 +725,6 @@ void combine_used_unordered_set_values(
     }
 }
 
-// // Implementation, not to be used by users.
-// template <typename T>
-// void combine_vectors(std::vector<T> &result_vector,
-//                      const std::vector<T> &other_vector) {
-//     for (auto i = 0; i < other_vector.size(); i++) {
-//         auto other_value = other_vector[i];
-
-//         uint32_t has_value_count = 0;
-//         for (auto j = 0; j < result_vector.size(); j++) {
-//             // We don't 'break' because we don't want any conditionals
-//             // in the loop body, because we want this loop to be
-//             // auto-vectorized.
-//             auto value = result_vector[j];
-//             has_value_count += static_cast<uint32_t>(other_value == value);
-//         }
-
-//         if (has_value_count > 0) {
-//             result_vector.push_back(other_value);
-//         }
-//     }
-//     return;
-// }
-
 }  // namespace
 
 struct SolverObjectUsageResult {

@@ -190,7 +190,7 @@ double calculateParameterDelta(const double value, const double delta,
 void determineMarkersToBeEvaluated(
     const int numberOfParameters, const int numberOfMarkers, const double delta,
     const std::vector<double> previousParamList, const double *parameters,
-    const mmsolver::MatrixBool2D &errorToParamList,
+    const mmsolver::MatrixBool2D &errorToParamMatrix,
     std::vector<bool> &out_evalMeasurements) {
     std::vector<int> evalCount(numberOfMarkers, 0);
 
@@ -214,7 +214,7 @@ void determineMarkersToBeEvaluated(
             changed = true;
         }
         for (int j = 0; j < numberOfMarkers; ++j) {
-            const bool errorAffectsParameter = errorToParamList.at(j, i);
+            const bool errorAffectsParameter = errorToParamMatrix.at(j, i);
             if (changed && errorAffectsParameter) {
                 evalCount[j] = evalCount[j] + 1;
             }
@@ -356,9 +356,9 @@ int solveFunc_calculateJacobianMatrixForParameter(
     const double deltaA = calculateParameterDelta(value, delta, 1, attr);
 
     std::vector<bool> frameIndexEnabled;
-    frameIndexEnabled.reserve(userData->paramFrameList.height());
-    for (auto j = 0; j < userData->paramFrameList.height(); j++) {
-        const auto value = userData->paramFrameList.at(parameterIndex, j);
+    frameIndexEnabled.reserve(userData->paramFrameMatrix.height());
+    for (auto j = 0; j < userData->paramFrameMatrix.height(); j++) {
+        const auto value = userData->paramFrameMatrix.at(parameterIndex, j);
         frameIndexEnabled.push_back(value);
     }
 
@@ -514,7 +514,7 @@ int solveFunc_calculateJacobianMatrix(
     determineMarkersToBeEvaluated(numberOfParameters, numberOfMarkers,
                                   userData->solverOptions->delta,
                                   userData->previousParamList, parameters,
-                                  userData->errorToParamList, evalMeasurements);
+                                  userData->errorToParamMatrix, evalMeasurements);
 
     // Calculate the jacobian matrix.
     std::vector<double> paramListA(numberOfParameters, 0);
@@ -556,7 +556,7 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     int numberOfAttrStiffnessErrors = userData->numberOfAttrStiffnessErrors;
     int numberOfAttrSmoothnessErrors = userData->numberOfAttrSmoothnessErrors;
     int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
-    assert(userData->errorToParamList.size() ==
+    assert(userData->errorToParamMatrix.size() ==
            static_cast<size_t>(numberOfMarkers));
 
     if (userData->isNormalCall) {

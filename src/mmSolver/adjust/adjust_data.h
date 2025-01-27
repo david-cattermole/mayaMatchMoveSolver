@@ -216,8 +216,8 @@ struct SolverData {
     std::vector<std::pair<int, int>> errorToMarkerList;
     std::vector<MPoint> markerPosList;
     std::vector<double> markerWeightList;
-    mmsolver::MatrixBool2D paramFrameList;
-    mmsolver::MatrixBool2D errorToParamList;
+    mmsolver::MatrixBool2D paramFrameMatrix;
+    mmsolver::MatrixBool2D errorToParamMatrix;
 
     // Internal Solver Data.
     std::vector<double> paramList;

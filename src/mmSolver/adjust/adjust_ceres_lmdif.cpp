@@ -144,15 +144,6 @@ bool solve_3d_ceres_lmdif(SolverOptions& solverOptions,
         options.logging_type = ::ceres::PER_MINIMIZER_ITERATION;
     }
 
-    // // TODO: Add parameter bounds.
-    // for (int i = 0; i < numberOfParameters; i++) {
-    //     if (paramWeightList[i] < 1.0) {
-    //         // TODO: Set parameter bounds.
-    //         problem.SetParameterLowerBound(param_ptr, i, -1e8);
-    //         problem.SetParameterUpperBound(param_ptr, i, 1e8);
-    //     }
-    // }
-
     ::ceres::Solver::Summary summary;
     ::ceres::Solve(options, &problem, &summary);
 
@@ -175,6 +166,7 @@ bool solve_3d_ceres_lmdif(SolverOptions& solverOptions,
     if (solveResult.success) {
         // NOTE: Parameters are updated in-place.
         errorList.resize(numberOfErrors);
+        cost_function->SetNumResiduals(errorList.size());
         cost_function->Evaluate(&param_ptr, errorList.data(), nullptr);
     }
 

@@ -142,6 +142,9 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
         self.assertApproxEqual(mkr_middleLeft_values[1], 576.0, eps=eps)
         return
 
+    def test_init_ceres_lmder(self):
+        self.do_solve('ceres_lmder', mmapi.SOLVER_TYPE_CERES_LMDER)
+
     def test_init_ceres_lmdif(self):
         self.do_solve('ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF)
 

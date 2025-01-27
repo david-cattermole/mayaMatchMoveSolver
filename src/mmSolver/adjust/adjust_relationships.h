@@ -53,16 +53,16 @@
 typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
 
-int countUpNumberOfErrors(
+uint32_t countUpNumberOfErrors(
     const MarkerPtrList &markerList, const StiffAttrsPtrList &stiffAttrsList,
     const SmoothAttrsPtrList &smoothAttrsList, const MTimeArray &frameList,
     MarkerPtrList &out_validMarkerList, std::vector<MPoint> &out_markerPosList,
     std::vector<double> &out_markerWeightList,
-    IndexPairList &out_errorToMarkerList, int &out_numberOfMarkerErrors,
-    int &out_numberOfAttrStiffnessErrors, int &out_numberOfAttrSmoothnessErrors,
-    MStatus &status);
+    IndexPairList &out_errorToMarkerList, uint32_t &out_numberOfMarkerErrors,
+    uint32_t &out_numberOfAttrStiffnessErrors,
+    uint32_t &out_numberOfAttrSmoothnessErrors, MStatus &status);
 
-int countUpNumberOfUnknownParameters(
+uint32_t countUpNumberOfUnknownParameters(
     const AttrPtrList &attrList, const MTimeArray &frameList,
     AttrPtrList &out_camStaticAttrList, AttrPtrList &out_camAnimAttrList,
     AttrPtrList &out_staticAttrList, AttrPtrList &out_animAttrList,
@@ -70,7 +70,7 @@ int countUpNumberOfUnknownParameters(
     std::vector<double> &out_paramUpperBoundList,
     std::vector<double> &out_paramWeightList,
     IndexPairList &out_paramToAttrList,
-    mmsolver::MatrixBool2D &out_paramFrameList, MStatus &out_status);
+    mmsolver::MatrixBool2D &out_paramFrameMatrix, MStatus &out_status);
 
 void findMarkerToAttributeRelationship(
     const MarkerPtrList &markerList, const AttrPtrList &attrList,
@@ -82,10 +82,20 @@ void getMarkerToAttributeRelationship(
 
 void findErrorToParameterRelationship(
     const MarkerPtrList &markerList, const AttrPtrList &attrList,
-    const MTimeArray &frameList, const int numParameters,
-    const int numMarkerErrors, const IndexPairList &paramToAttrList,
+    const MTimeArray &frameList, const uint32_t numParameters,
+    const uint32_t numMarkerErrors, const IndexPairList &paramToAttrList,
     const IndexPairList &errorToMarkerList,
     const mmsolver::MatrixBool2D &markerToAttrMatrix,
-    mmsolver::MatrixBool2D &out_errorToParamList, MStatus &out_status);
+    mmsolver::MatrixBool2D &out_errorToParamMatrix, MStatus &out_status);
+
+void calculateMarkerAndParameterCount(
+    const MarkerPtrList &markerList, const AttrPtrList &attrList,
+    const MTimeArray &frameList, const uint32_t numParameters,
+    const uint32_t numMarkerErrors, const IndexPairList &paramToAttrList,
+    const IndexPairList &errorToMarkerList,
+    const mmsolver::MatrixBool2D &markerToAttrMatrix,
+    const FrameSolveMode frameSolveMode,
+    std::unordered_set<int32_t> &out_valid_frames,
+    std::unordered_set<int32_t> &out_invalid_frames, MStatus &out_status);
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_RELATIONSHIPS_H

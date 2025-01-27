@@ -99,8 +99,8 @@ def run_validate_action(vaction):
     frames = list(sorted(vkwargs.get('frame', [])))
     num_frames = len(frames)
     if num_frames == 0 and vfunc_is_mmsolver is True:
-        msg = 'Failed to validate number of frames: param=%r errors=%r frames=%r'
-        message = msg % (num_param, num_err, num_frames)
+        msg = 'Failed to validate frames: frames=%r'
+        message = msg % num_frames
         state = create_action_state(
             status=const.ACTION_STATUS_FAILED,
             message=message,
@@ -115,8 +115,8 @@ def run_validate_action(vaction):
     solve_data = vfunc(*vargs, **vkwargs)
 
     if vfunc_is_mmsolver is False:
-        msg = 'Validated parameters, errors and frames: param=%r errors=%r frames=%r'
-        message = msg % (num_param, num_err, num_frames)
+        msg = 'Validated frames: frames=%r'
+        message = msg % num_frames
         state = create_action_state(
             status=const.ACTION_STATUS_SUCCESS,
             message=message,
@@ -130,24 +130,28 @@ def run_validate_action(vaction):
     if vfunc_is_mmsolver_v2 is True:
         solve_data = vkwargs['resultsNode']
     if vfunc_is_camera_solve is True:
-        if const.SOLVER_VERSION_DEFAULT == const.SOLVER_VERSION_TWO:
-            # Get the collection node given to the camera solve.
-            solve_data = vargs[0]
+        # NOTE: This assumes that the camera solver is using
+        # const.SOLVER_VERSION_TWO.
+        #
+        # Get the collection node given to the camera solve.
+        solve_data = vargs[0]
 
     solres = solveresult.SolveResult(solve_data)
 
     print_stats = solres.get_print_stats()
     num_param = print_stats.get('number_of_parameters', 0)
     num_err = print_stats.get('number_of_errors', 0)
-    if num_param == 0 or num_err == 0 or num_param > num_err:
-        msg = (
-            'Invalid parameters and errors (param=%r errors=%r frames=%r), '
-            'skipping solve: %r'
-        )
-        message = msg % (num_param, num_err, num_frames, list(sorted(frames)))
+    solver_valid_frames = solres.get_solver_valid_frame_list()
+    if len(solver_valid_frames) == 0:
+        # This error should be raised if ALL the frames in the
+        # solve are invalid, and if they are invalid then the frames
+        # should just be skipped and the solve should be continued.
+        solver_invalid_frames = solres.get_solver_invalid_frame_list()
+        assert len(solver_invalid_frames) == len(frames)
+        msg = 'All frames are invalid, skipping solve: %r' % list(sorted(frames))
         state = create_action_state(
             status=const.ACTION_STATUS_FAILED,
-            message=message,
+            message=msg,
             error_number=num_err,
             parameter_number=num_param,
             frames_number=num_frames,

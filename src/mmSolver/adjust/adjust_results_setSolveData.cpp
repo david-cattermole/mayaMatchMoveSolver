@@ -511,6 +511,8 @@ MStatus setAffectsResultDataOnNode(AffectsResult &results, MObject &node,
                                    MAnimCurveChange &curveChange) {
     MStatus status = MS::kSuccess;
 
+    // TODO: Write this.
+
     return status;
 }
 
@@ -518,6 +520,8 @@ MStatus setSolverObjectUsageResultDataOnNode(SolverObjectUsageResult &results,
                                              MObject &node, MDGModifier &dgmod,
                                              MAnimCurveChange &curveChange) {
     MStatus status = MS::kSuccess;
+
+    // TODO: Write this.
 
     return status;
 }
@@ -697,6 +701,8 @@ MStatus setCommandResultDataOnNode(CommandResult &results,
     status = setSolveValuesResultDataOnNode(results.solveValuesResult, node,
                                             dgmod, curveChange);
     CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    // TODO: Add "Solver Frames" attributes.
 
     return status;
 }

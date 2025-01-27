@@ -433,8 +433,8 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
 
         // Use pre-computed marker weight
         double mkr_weight = ud->markerWeightList[i];
-        assert(mkr_weight >
-               0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
+        // 'sqrt' will be NaN if the weight is less than 0.0.
+        assert(mkr_weight > 0.0);
         mkr_weight = std::sqrt(mkr_weight);
 
         auto mkrIndex_x = ((markerIndex * num_frames * 2) + (frameIndex * 2));

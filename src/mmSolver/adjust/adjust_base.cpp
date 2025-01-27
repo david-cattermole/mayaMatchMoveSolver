@@ -272,6 +272,13 @@ bool get_initial_parameters(
     const std::vector<std::pair<int, int>> &paramToAttrList,
     const AttrPtrList &attrList, const MTimeArray &frameList,
     const bool solverSupportsParameterBounds, SolverResult &out_solverResult) {
+    const bool verbose = false;
+
+    MMSOLVER_MAYA_VRB(
+        "get_initial_parameters numberOfParameters=" << numberOfParameters);
+    MMSOLVER_MAYA_VRB("get_initial_parameters solverSupportsParameterBounds="
+                      << solverSupportsParameterBounds);
+
     MStatus status = MS::kSuccess;
 
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
@@ -496,7 +503,20 @@ MStatus logResultsObjectCounts(const int numberOfParameters,
                                const int numberOfAttrStiffnessErrors,
                                const int numberOfAttrSmoothnessErrors,
                                SolverObjectCountResult &out_result) {
+    const bool verbose = false;
     MStatus status = MStatus::kSuccess;
+
+    MMSOLVER_MAYA_VRB(
+        "logResultsObjectCounts numberOfParameters=" << numberOfParameters);
+    MMSOLVER_MAYA_VRB(
+        "logResultsObjectCounts numberOfErrors=" << numberOfErrors);
+    MMSOLVER_MAYA_VRB(
+        "logResultsObjectCounts numberOfMarkerErrors=" << numberOfMarkerErrors);
+    MMSOLVER_MAYA_VRB("logResultsObjectCounts numberOfAttrStiffnessErrors="
+                      << numberOfAttrStiffnessErrors);
+    MMSOLVER_MAYA_VRB("logResultsObjectCounts numberOfAttrSmoothnessErrors="
+                      << numberOfAttrSmoothnessErrors);
+
     out_result.fill(numberOfParameters, numberOfErrors, numberOfMarkerErrors,
                     numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors);
     return status;
@@ -512,9 +532,85 @@ MStatus logResultsMarkerAffectsAttribute(
     const MarkerPtrList &markerList, const AttrPtrList &attrList,
     const mmsolver::MatrixBool2D &markerToAttrMatrix,
     AffectsResult &out_result) {
-    MStatus status = MStatus::kSuccess;
     out_result.fill(markerList, attrList, markerToAttrMatrix);
-    return status;
+    return MStatus::kSuccess;
+}
+
+namespace {
+std::string create_string_sorted_set_numbers(
+    const std::unordered_set<int32_t> &set) {
+    std::vector<int32_t> sorted(set.begin(), set.end());
+    std::sort(sorted.begin(), sorted.end());
+
+    std::string result;
+    for (auto i = 0; i < sorted.size(); ++i) {
+        result += std::to_string(sorted[i]);
+        if (i < sorted.size() - 1) {
+            result += ", ";  // Add separator between elements
+        }
+    }
+
+    return result;
+}
+
+MTimeArray create_time_sorted_set_array(
+    const std::unordered_set<int32_t> &set) {
+    std::vector<int32_t> sorted(set.begin(), set.end());
+    std::sort(sorted.begin(), sorted.end());
+
+    const auto ui_unit = MTime::uiUnit();
+
+    MTimeArray result;
+    for (auto i = 0; i < sorted.size(); ++i) {
+        auto value = sorted[i];
+        MTime time = MTime(static_cast<double>(value), ui_unit);
+        result.append(time);
+    }
+
+    return result;
+}
+
+}  // namespace
+
+/*
+ * Print out the frame numbers that are valid or invalid in the solve.
+ */
+MStatus logResultsSolverFrames(const size_t total_frame_count,
+                               std::unordered_set<int32_t> &&valid_frames,
+                               std::unordered_set<int32_t> &&invalid_frames,
+                               SolverFramesResult &out_result) {
+    const bool verbose = false;
+
+    MMSOLVER_MAYA_VRB(
+        "logResultsSolverFrames "
+        "total_frame_count="
+        << total_frame_count);
+
+    const std::string valid_frames_str =
+        create_string_sorted_set_numbers(valid_frames);
+    MMSOLVER_MAYA_VRB(
+        "logResultsSolverFrames "
+        "valid_frames.size()="
+        << valid_frames.size());
+    MMSOLVER_MAYA_VRB(
+        "logResultsSolverFrames "
+        "valid_frames_str="
+        << valid_frames_str);
+
+    const std::string invalid_frames_str =
+        create_string_sorted_set_numbers(invalid_frames);
+    MMSOLVER_MAYA_VRB(
+        "logResultsSolverFrames "
+        "invalid_frames.size()="
+        << invalid_frames.size());
+    MMSOLVER_MAYA_VRB(
+        "logResultsSolverFrames "
+        "invalid_frames_str="
+        << invalid_frames_str);
+
+    out_result.fill(total_frame_count, std::move(valid_frames),
+                    std::move(invalid_frames));
+    return MStatus::kSuccess;
 }
 
 /*
@@ -526,7 +622,20 @@ MStatus logResultsSolveObjectUsage(MarkerPtrList &usedMarkerList,
                                    AttrPtrList &usedAttrList,
                                    AttrPtrList &unusedAttrList,
                                    SolverObjectUsageResult &out_result) {
+    const bool verbose = false;
+
     MStatus status = MStatus::kSuccess;
+
+    MMSOLVER_MAYA_VRB("logResultsSolveObjectUsage usedMarkerList.size()="
+                      << usedMarkerList.size());
+    MMSOLVER_MAYA_VRB("logResultsSolveObjectUsage unusedMarkerList.size()="
+                      << unusedMarkerList.size());
+
+    MMSOLVER_MAYA_VRB("logResultsSolveObjectUsage usedAttrList.size()="
+                      << usedAttrList.size());
+    MMSOLVER_MAYA_VRB("logResultsSolveObjectUsage unusedAttrList.size()="
+                      << unusedAttrList.size());
+
     out_result.fill(usedMarkerList, unusedMarkerList, usedAttrList,
                     unusedAttrList);
     return status;
@@ -719,17 +828,14 @@ bool addFrameListToStringStream(const MTimeArray &frameList,
     return frameCount > 0;
 }
 
-MStatus solveFrames(
+MStatus validateSolveFrames(
     CameraPtrList &cameraList, BundlePtrList &bundleList,
     const MTimeArray &frameList, MarkerPtrList &usedMarkerList,
     MarkerPtrList &unusedMarkerList, AttrPtrList &usedAttrList,
     AttrPtrList &unusedAttrList, const StiffAttrsPtrList &stiffAttrsList,
     const SmoothAttrsPtrList &smoothAttrsList,
     const mmsolver::MatrixBool2D &markerToAttrMatrix,
-    SolverOptions &solverOptions,
-    //
-    const MGlobal::MMayaState &mayaSessionState, MDGModifier &out_dgmod,
-    MAnimCurveChange &out_curveChange, MComputation &out_computation,
+    const FrameSolveMode frameSolveMode, SolverOptions &solverOptions,
     //
     std::vector<double> &out_jacobianList, IndexPairList &out_paramToAttrList,
     IndexPairList &out_errorToMarkerList,
@@ -738,11 +844,22 @@ MStatus solveFrames(
     std::vector<double> &out_errorList, std::vector<double> &out_paramList,
     std::vector<double> &out_previousParamList,
     //
-    const LogLevel &logLevel, CommandResult &out_cmdResult) {
+    uint32_t &out_numberOfParameters, uint32_t &out_numberOfErrors,
+    uint32_t &out_numberOfMarkerErrors,
+    uint32_t &out_numberOfAttrStiffnessErrors,
+    uint32_t &out_numberOfAttrSmoothnessErrors, uint32_t &out_validFrameCount,
+    uint32_t &out_invalidFrameCount,
+    //
+    MTimeArray &out_validFrameList,
+    mmsolver::MatrixBool2D &out_errorToParamMatrix,
+    mmsolver::MatrixBool2D &out_paramFrameMatrix,
+    std::vector<double> &out_paramWeightList,
+    //
+    const LogLevel &logLevel, const bool verbose, bool &out_continue_solve,
+    CommandResult &out_cmdResult) {
     MStatus status = MS::kSuccess;
+    out_continue_solve = false;
     out_cmdResult.solverResult.success = true;
-
-    const bool verbose = logLevel >= LogLevel::kDebug;
 
     out_paramToAttrList.clear();
     out_errorToMarkerList.clear();
@@ -753,21 +870,22 @@ MStatus solveFrames(
     out_previousParamList.clear();
     out_jacobianList.clear();
 
-    int numberOfMarkerErrors = 0;
-    int numberOfAttrStiffnessErrors = 0;
-    int numberOfAttrSmoothnessErrors = 0;
+    out_numberOfMarkerErrors = 0;
+    out_numberOfAttrStiffnessErrors = 0;
+    out_numberOfAttrSmoothnessErrors = 0;
     auto validMarkerList = MarkerPtrList();
-    const int numberOfErrors = countUpNumberOfErrors(
+    out_numberOfErrors = countUpNumberOfErrors(
         usedMarkerList, stiffAttrsList, smoothAttrsList, frameList,
 
         // Outputs
         validMarkerList, out_markerPosList, out_markerWeightList,
-        out_errorToMarkerList, numberOfMarkerErrors,
-        numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors, status);
+        out_errorToMarkerList, out_numberOfMarkerErrors,
+        out_numberOfAttrStiffnessErrors, out_numberOfAttrSmoothnessErrors,
+        status);
     CHECK_MSTATUS(status);
-    assert(numberOfErrors ==
-           (numberOfMarkerErrors + numberOfAttrStiffnessErrors +
-            numberOfAttrSmoothnessErrors));
+    assert(out_numberOfErrors ==
+           (out_numberOfMarkerErrors + out_numberOfAttrStiffnessErrors +
+            out_numberOfAttrSmoothnessErrors));
 
     auto camStaticAttrList = AttrPtrList();
     auto camAnimAttrList = AttrPtrList();
@@ -775,15 +893,13 @@ MStatus solveFrames(
     auto animAttrList = AttrPtrList();
     auto paramLowerBoundList = std::vector<double>();
     auto paramUpperBoundList = std::vector<double>();
-    auto paramWeightList = std::vector<double>();
-    auto paramFrameList = mmsolver::MatrixBool2D();
-    const int numberOfParameters = countUpNumberOfUnknownParameters(
+    out_numberOfParameters = countUpNumberOfUnknownParameters(
         usedAttrList, frameList,
 
         // Outputs
         camStaticAttrList, camAnimAttrList, staticAttrList, animAttrList,
-        paramLowerBoundList, paramUpperBoundList, paramWeightList,
-        out_paramToAttrList, paramFrameList, status);
+        paramLowerBoundList, paramUpperBoundList, out_paramWeightList,
+        out_paramToAttrList, out_paramFrameMatrix, status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     assert(paramLowerBoundList.size() ==
            static_cast<size_t>(numberOfParameters));
@@ -794,22 +910,22 @@ MStatus solveFrames(
 
     // Expand the 'Marker to Attribute' relationship into errors and
     // parameter relationships.
-    auto errorToParamList = mmsolver::MatrixBool2D();
-    findErrorToParameterRelationship(usedMarkerList, usedAttrList, frameList,
+    findErrorToParameterRelationship(
+        usedMarkerList, usedAttrList, frameList,
 
-                                     numberOfParameters, numberOfMarkerErrors,
-                                     out_paramToAttrList, out_errorToMarkerList,
-                                     markerToAttrMatrix,
+        out_numberOfParameters, out_numberOfMarkerErrors, out_paramToAttrList,
+        out_errorToMarkerList, markerToAttrMatrix,
 
-                                     // Outputs
-                                     errorToParamList, status);
+        // Outputs
+        out_errorToParamMatrix, status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (out_cmdResult.printStats.input) {
         assert(out_cmdResult.printStats.doNotSolve);
         status = logResultsObjectCounts(
-            numberOfParameters, numberOfErrors, numberOfMarkerErrors,
-            numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
+            out_numberOfParameters, out_numberOfErrors,
+            out_numberOfMarkerErrors, out_numberOfAttrStiffnessErrors,
+            out_numberOfAttrSmoothnessErrors,
             out_cmdResult.solverObjectCountResult);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
@@ -830,6 +946,32 @@ MStatus solveFrames(
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
+    const size_t frameCount = frameList.length();
+    std::unordered_set<int32_t> validFrames;
+    std::unordered_set<int32_t> invalidFrames;
+    // Reserve the maximum number of possible values; uses more
+    // memory, at the cost of less re-allocations.
+    validFrames.reserve(frameCount);
+    invalidFrames.reserve(frameCount);
+    calculateMarkerAndParameterCount(
+        usedMarkerList, usedAttrList, frameList, out_numberOfParameters,
+        out_numberOfMarkerErrors, out_paramToAttrList, out_errorToMarkerList,
+        markerToAttrMatrix, frameSolveMode,
+
+        // Outputs
+        validFrames, invalidFrames, status);
+
+    out_validFrameList = create_time_sorted_set_array(validFrames);
+    std::string invalidFrameStr =
+        create_string_sorted_set_numbers(invalidFrames);
+    out_validFrameCount = validFrames.size();
+    out_invalidFrameCount = invalidFrames.size();
+    assert(validFrameCount == out_validFrameList.length());
+    status = logResultsSolverFrames(frameCount, std::move(validFrames),
+                                    std::move(invalidFrames),
+                                    out_cmdResult.solverFramesResult);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
     if (logLevel >= LogLevel::kDebug) {
         MMSOLVER_MAYA_INFO("Number of Markers; used="
                            << usedMarkerList.size()
@@ -837,19 +979,41 @@ MStatus solveFrames(
         MMSOLVER_MAYA_INFO("Number of Attributes; used="
                            << usedAttrList.size()
                            << " | unused=" << unusedAttrList.size());
-        MMSOLVER_MAYA_INFO("Number of Parameters; " << numberOfParameters);
-        MMSOLVER_MAYA_INFO("Number of Frames; " << frameList.length());
-        MMSOLVER_MAYA_INFO("Number of Marker Errors; " << numberOfMarkerErrors);
+        MMSOLVER_MAYA_INFO("Number of Parameters; " << out_numberOfParameters);
+        MMSOLVER_MAYA_INFO("Number of Frames; " << frameCount);
+        MMSOLVER_MAYA_INFO("Number of Valid Frames; " << out_validFrameCount);
+        MMSOLVER_MAYA_INFO("Number of Invalid Frames; "
+                           << out_invalidFrameCount);
+        MMSOLVER_MAYA_INFO("Number of Marker Errors; "
+                           << out_numberOfMarkerErrors);
         MMSOLVER_MAYA_INFO("Number of Attribute Stiffness Errors; "
-                           << numberOfAttrStiffnessErrors);
+                           << out_numberOfAttrStiffnessErrors);
         MMSOLVER_MAYA_INFO("Number of Attribute Smoothness Errors; "
-                           << numberOfAttrSmoothnessErrors);
-        MMSOLVER_MAYA_INFO("Number of Total Errors; " << numberOfErrors);
+                           << out_numberOfAttrSmoothnessErrors);
+        MMSOLVER_MAYA_INFO("Number of Total Errors; " << out_numberOfErrors);
+    }
+
+    // Bail out of solve if we don't have enough frames to solve.
+    if (out_validFrameCount == 0) {
+        if (out_cmdResult.printStats.doNotSolve) {
+            // If the user is asking to print statistics, then we have
+            // successfully achieved that goal and we cannot continue
+            // to generate statistics, because not enough frames are valid.
+            out_cmdResult.solverResult.success = true;
+            status = MS::kSuccess;
+            return status;
+        }
+        MMSOLVER_MAYA_ERR(
+            "Solver failure; No frames are valid to solve, invalid frames: "
+            << invalidFrameStr);
+        out_cmdResult.solverResult.success = false;
+        status = MS::kFailure;
+        return status;
     }
 
     // Bail out of solve if we don't have enough used markers or
     // attributes.
-    if ((usedMarkerList.empty()) || (usedAttrList.empty())) {
+    if (usedMarkerList.empty() || usedAttrList.empty()) {
         if (out_cmdResult.printStats.doNotSolve) {
             // If the user is asking to print statistics, then we have
             // successfully achieved that goal and we cannot continue
@@ -869,7 +1033,7 @@ MStatus solveFrames(
         return status;
     }
 
-    if (numberOfParameters > numberOfErrors) {
+    if (out_numberOfParameters > out_numberOfErrors) {
         if (out_cmdResult.printStats.doNotSolve) {
             // If the user is asking to print statistics, then we have
             // successfully achieved that goal and we cannot continue
@@ -882,23 +1046,113 @@ MStatus solveFrames(
         MMSOLVER_MAYA_ERR(
             "Solver failure; cannot solve for more attributes (\"parameters\") "
             << "than number of markers (\"errors\"). "
-            << "parameters=" << numberOfParameters << " "
-            << "errors=" << numberOfErrors);
+            << "parameters=" << out_numberOfParameters << " "
+            << "errors=" << out_numberOfErrors);
         out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
-    assert(numberOfErrors > 0);
-    assert(numberOfParameters > 0);
 
-    out_paramList.resize((uint64_t)numberOfParameters, 0);
-    out_previousParamList.resize((uint64_t)numberOfParameters, 0);
-    out_errorList.resize((uint64_t)numberOfErrors, 0);
-    out_jacobianList.resize((uint64_t)numberOfParameters * numberOfErrors, 0);
+    out_continue_solve = true;
+    return status;
+}
 
-    auto errorDistanceList = std::vector<double>();
-    errorDistanceList.resize((uint64_t)numberOfMarkerErrors / ERRORS_PER_MARKER,
-                             0);
+MStatus solveFrames(
+    CameraPtrList &cameraList, BundlePtrList &bundleList,
+    const MTimeArray &frameList, MarkerPtrList &usedMarkerList,
+    MarkerPtrList &unusedMarkerList, AttrPtrList &usedAttrList,
+    AttrPtrList &unusedAttrList, const StiffAttrsPtrList &stiffAttrsList,
+    const SmoothAttrsPtrList &smoothAttrsList,
+    const mmsolver::MatrixBool2D &markerToAttrMatrix,
+    SolverOptions &solverOptions,
+    //
+    const MGlobal::MMayaState &mayaSessionState, MDGModifier &out_dgmod,
+    MAnimCurveChange &out_curveChange, MComputation &out_computation,
+    //
+    std::vector<double> &out_jacobianList, IndexPairList &out_paramToAttrList,
+    IndexPairList &out_errorToMarkerList,
+    std::vector<MPoint> &out_markerPosList,
+    std::vector<double> &out_markerWeightList,
+    std::vector<double> &out_errorList, std::vector<double> &out_paramList,
+    std::vector<double> &out_previousParamList,
+    //
+    const LogLevel &logLevel, CommandResult &out_cmdResult) {
+    const bool verbose = logLevel >= LogLevel::kDebug;
+
+    FrameSolveMode frameSolveMode = FrameSolveMode::kAllFrameAtOnce;
+
+    uint32_t numberOfParameters = 0;
+    uint32_t numberOfErrors = 0;
+    uint32_t numberOfMarkerErrors = 0;
+    uint32_t numberOfAttrStiffnessErrors = 0;
+    uint32_t numberOfAttrSmoothnessErrors = 0;
+    uint32_t validFrameCount = 0;
+    uint32_t invalidFrameCount = 0;
+
+    MTimeArray validFrameList;
+    mmsolver::MatrixBool2D errorToParamMatrix;
+    mmsolver::MatrixBool2D paramFrameMatrix;
+    std::vector<double> paramWeightList;
+
+    // Get valid frames to solve with.
+    bool continue_solve = false;
+    MStatus status = validateSolveFrames(
+        cameraList, bundleList, frameList, usedMarkerList, unusedMarkerList,
+        usedAttrList, unusedAttrList, stiffAttrsList, smoothAttrsList,
+        markerToAttrMatrix, frameSolveMode, solverOptions,
+        //
+        out_jacobianList, out_paramToAttrList, out_errorToMarkerList,
+        out_markerPosList, out_markerWeightList, out_errorList, out_paramList,
+        out_previousParamList,
+        //
+        numberOfParameters, numberOfErrors, numberOfMarkerErrors,
+        numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
+        validFrameCount, invalidFrameCount,
+        //
+        validFrameList, errorToParamMatrix, paramFrameMatrix, paramWeightList,
+        //
+        logLevel, verbose, continue_solve, out_cmdResult);
+    if (!continue_solve) {
+        return status;
+    }
+
+    // Recompute data structures with valid frames.
+    //
+    // TODO: Merge this second call of 'validateSolveFrames' with the
+    // main function. We only need to recompute a few data structures,
+    // not everything.
+    status = validateSolveFrames(
+        cameraList, bundleList, validFrameList, usedMarkerList,
+        unusedMarkerList, usedAttrList, unusedAttrList, stiffAttrsList,
+        smoothAttrsList, markerToAttrMatrix, frameSolveMode, solverOptions,
+        //
+        out_jacobianList, out_paramToAttrList, out_errorToMarkerList,
+        out_markerPosList, out_markerWeightList, out_errorList, out_paramList,
+        out_previousParamList,
+        //
+        numberOfParameters, numberOfErrors, numberOfMarkerErrors,
+        numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
+        validFrameCount, invalidFrameCount,
+        //
+        validFrameList, errorToParamMatrix, paramFrameMatrix, paramWeightList,
+        //
+        logLevel, verbose, continue_solve, out_cmdResult);
+    if (!continue_solve) {
+        return status;
+    }
+
+    assert(out_numberOfErrors > 0);
+    assert(out_numberOfParameters > 0);
+
+    // Initialize memory for solving.
+    out_paramList.resize(static_cast<uint64_t>(numberOfParameters), 0);
+    out_previousParamList.resize(static_cast<uint64_t>(numberOfParameters), 0);
+    out_errorList.resize(static_cast<uint64_t>(numberOfErrors), 0);
+    out_jacobianList.resize(
+        static_cast<uint64_t>(numberOfParameters * numberOfErrors), 0);
+
+    std::vector<double> errorDistanceList(
+        static_cast<uint64_t>(numberOfMarkerErrors / ERRORS_PER_MARKER), 0);
     assert(out_errorToMarkerList.size() == errorDistanceList.size());
 
     auto frameCount = frameList.length();
@@ -923,11 +1177,11 @@ MStatus solveFrames(
             "Time Evaluation Mode=" << solverOptions.timeEvalMode);
         MMSOLVER_MAYA_INFO("Marker count: " << usedMarkerList.size());
         MMSOLVER_MAYA_INFO("Attribute count: " << usedAttrList.size());
-        MMSOLVER_MAYA_INFO("Frame count: " << frameCount);
+        MMSOLVER_MAYA_INFO("Valid Frame count: " << validFrameCount);
 
         std::stringstream ss;
-        addFrameListToStringStream(frameList, ss);
-        MMSOLVER_MAYA_INFO("Frames:" << ss.str());
+        addFrameListToStringStream(validFrameList, ss);
+        MMSOLVER_MAYA_INFO("Valid Frames:" << ss.str());
     } else if (!out_cmdResult.printStats.doNotSolve &&
                (logLevel >= LogLevel::kVerbose)) {
         MMSOLVER_MAYA_INFO(
@@ -936,11 +1190,11 @@ MStatus solveFrames(
         MMSOLVER_MAYA_INFO("Solving...");
         MMSOLVER_MAYA_INFO("Marker count: " << usedMarkerList.size());
         MMSOLVER_MAYA_INFO("Attribute count: " << usedAttrList.size());
-        MMSOLVER_MAYA_INFO("Frame count: " << frameCount);
+        MMSOLVER_MAYA_INFO("Valid Frame count: " << validFrameCount);
 
         std::stringstream ss;
-        addFrameListToStringStream(frameList, ss);
-        MMSOLVER_MAYA_INFO("Frames:" << ss.str());
+        addFrameListToStringStream(validFrameList, ss);
+        MMSOLVER_MAYA_INFO("Valid Frames:" << ss.str());
     }
 
     // MComputation helper.
@@ -1048,8 +1302,8 @@ MStatus solveFrames(
     userData.errorToMarkerList = out_errorToMarkerList;
     userData.markerPosList = out_markerPosList;
     userData.markerWeightList = out_markerWeightList;
-    userData.paramFrameList = paramFrameList;
-    userData.errorToParamList = errorToParamList;
+    userData.paramFrameMatrix = paramFrameMatrix;
+    userData.errorToParamMatrix = errorToParamMatrix;
 
     userData.paramList = out_paramList;
     userData.previousParamList = out_previousParamList;
@@ -1176,6 +1430,8 @@ MStatus solveFrames(
         }
     }
 
+    MMSOLVER_MAYA_VRB("Solve...");
+    MMSOLVER_MAYA_VRB("Solver Type: " << solverOptions.solverType);
     if (solverOptions.solverType == SOLVER_TYPE_LEVMAR) {
         MMSOLVER_MAYA_ERR(
             "Solver Type is not supported by this compiled plug-in. "

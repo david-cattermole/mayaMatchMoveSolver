@@ -24,8 +24,9 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
-import math
 import datetime
+import math
+import pprint
 
 import maya.cmds
 
@@ -51,9 +52,9 @@ def parse_command_result(cmd_result):
     data = collections.defaultdict(list)
     for res in cmd_result:
         assert isinstance(res, pycompat.TEXT_TYPE)
-        splt = res.partition(KEY_VALUE_SEP_CHAR)
-        key = splt[0]
-        value = splt[-1]
+        split = res.partition(KEY_VALUE_SEP_CHAR)
+        key = split[0]
+        value = split[-1]
         if len(key) == 0:
             continue
         if SPLIT_SEP_CHAR in value:
@@ -140,6 +141,33 @@ def _string_get_solver_stats(input_data):
         v = _convert_to(name, key, typ, value, index)
         solver_stats[name] = v
     return solver_stats
+
+
+def _string_get_solver_frames_stats(input_data):
+    name_keys = [
+        ('number_of_valid_frames', 'number_of_valid_frames', int, None),
+        ('number_of_invalid_frames', 'number_of_invalid_frames', int, None),
+        ('valid_frames', 'valid_frames', list, int),
+        ('invalid_frames', 'invalid_frames', list, int),
+    ]
+    index = 0
+    solver_frames = {}
+    for name, key, outer_type, inner_type in name_keys:
+        value = input_data.get(key)
+        if value is None:
+            continue
+        if inner_type is None:
+            v = _convert_to(name, key, outer_type, value, index)
+            solver_frames[name] = v
+        else:
+            if len(value) == 1:
+                value = value[0]
+            values = []
+            for v in value:
+                if len(v) > 0:
+                    values.append(inner_type(v))
+            solver_frames[name] = values
+    return solver_frames
 
 
 def _string_get_error_stats(input_data):
@@ -254,6 +282,15 @@ def _get_maya_attr_anim_curve(node, attr_name, existing_attrs):
     return anim_curves[0]
 
 
+def _get_node_frame_list(node, attr_name, existing_attrs):
+    anim_curve = _get_maya_attr_anim_curve(node, attr_name, existing_attrs)
+    if anim_curve is None:
+        return {}
+
+    keyframe_times = maya.cmds.keyframe(anim_curve, query=True, timeChange=True) or []
+    return set(keyframe_times)
+
+
 def _get_node_frame_error_list(node, attr_name, existing_attrs):
     anim_curve = _get_maya_attr_anim_curve(node, attr_name, existing_attrs)
     if anim_curve is None:
@@ -343,6 +380,21 @@ def _node_get_solver_stats(node, existing_attrs):
     return data
 
 
+def _node_get_solver_frames_stats(node, existing_attrs):
+    assert maya.cmds.objExists(node) is True
+    data = {
+        'number_of_valid_frames': _get_maya_attr(
+            node, 'number_of_valid_frames', int, existing_attrs
+        ),
+        'number_of_invalid_frames': _get_maya_attr(
+            node, 'number_of_invalid_frames', int, existing_attrs
+        ),
+        'valid_frames': _get_node_frame_list(node, 'valid_frames', existing_attrs),
+        'invalid_frames': _get_node_frame_list(node, 'invalid_frames', existing_attrs),
+    }
+    return data
+
+
 def _node_get_print_stats(node, existing_attrs):
     assert maya.cmds.objExists(node) is True
     data = {
@@ -414,8 +466,8 @@ class SolveResult(object):
             self._solver_stats = _node_get_solver_stats(node, existing_attrs)
             self._error_stats = _node_get_error_stats(node, existing_attrs)
             self._timer_stats = _node_get_timer_stats(node, existing_attrs)
+            self._solver_frames_stats = _node_get_solver_frames_stats(data)
             self._print_stats = _node_get_print_stats(node, existing_attrs)
-
             self._per_frame_error = _node_get_per_frame_error(node, existing_attrs)
             self._per_marker_per_frame_error = _node_get_per_marker_per_frame_error(
                 node, existing_attrs
@@ -428,6 +480,7 @@ class SolveResult(object):
             self._solver_stats = _string_get_solver_stats(data)
             self._error_stats = _string_get_error_stats(data)
             self._timer_stats = _string_get_timer_stats(data)
+            self._solver_frames_stats = _string_get_solver_frames_stats(data)
             self._print_stats = _string_get_print_stats(data)
             self._per_marker_per_frame_error = _string_get_error_per_marker_per_frame(
                 data
@@ -509,6 +562,13 @@ class SolveResult(object):
         """
         return self._print_stats.copy()
 
+    def get_solver_frames_stats(self):
+        """
+        Details of internal statistics that can be gathered and
+        printed out.
+        """
+        return self._solver_frames_stats.copy()
+
     def get_frame_list(self):
         """
         The list of frames that this solve result contains.
@@ -539,6 +599,20 @@ class SolveResult(object):
         elif marker_node in self._per_marker_per_frame_error:
             v = self._per_marker_per_frame_error.get(marker_node)
         return v
+
+    def get_solver_valid_frame_list(self):
+        """
+        The list of valid frames that the solver can solve.
+        """
+        frame_list = self._solver_frames_stats.get('valid_frames', [])
+        return list(sorted(frame_list))
+
+    def get_solver_invalid_frame_list(self):
+        """
+        The list of invalid frames that the solver can solve.
+        """
+        frame_list = self._solver_frames_stats.get('invalid_frames', [])
+        return list(sorted(frame_list))
 
 
 def combine_timer_stats(solres_list):

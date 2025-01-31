@@ -553,7 +553,7 @@ void getMarkerToAttributeRelationship(
         MFnDependencyNode markerNodeFn(markerObject);
 
         // Determine if the marker can affect the attribute.
-        int attrIndex = 0;  // index of attribute
+        int attrIndex = 0;
         for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end();
              ++ait) {
             AttrPtr attr = *ait;
@@ -639,7 +639,7 @@ void findErrorToParameterRelationship(
     const uint32_t numberOfMarkers = numMarkerErrors / ERRORS_PER_MARKER;
     out_errorToParamMatrix.reset(numberOfMarkers, numParameters,
                                  /*fill_value=*/defaultValue);
-    for (int errorIndex = 0; errorIndex < numberOfMarkers; ++errorIndex) {
+    for (uint32_t errorIndex = 0; errorIndex < numberOfMarkers; ++errorIndex) {
         const IndexPair markerIndexPair = errorToMarkerList[errorIndex];
         const int markerIndex = markerIndexPair.first;
         const int markerFrameIndex = markerIndexPair.second;
@@ -663,7 +663,8 @@ void findErrorToParameterRelationship(
         }
 
         // Determine if the marker can affect the attribute.
-        for (int paramIndex = 0; paramIndex < numParameters; ++paramIndex) {
+        for (uint32_t paramIndex = 0; paramIndex < numParameters;
+             ++paramIndex) {
             const IndexPair attrIndexPair = paramToAttrList[paramIndex];
             const int attrIndex = attrIndexPair.first;
             const int attrFrameIndex = attrIndexPair.second;

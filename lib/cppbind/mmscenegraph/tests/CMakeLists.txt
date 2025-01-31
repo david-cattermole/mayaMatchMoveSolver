@@ -28,7 +28,8 @@ set(test_source_files
 )
 
 include(MMCommonUtils)
-mm_common_set_global_compile_options()
+option(MMSOLVER_BUILD_RELEASE_ASSERTIONS "Enable Assertions to be called in Release mode." ON)
+mm_common_set_global_compile_options(MMSOLVER_BUILD_RELEASE_ASSERTIONS)
 
 # Add test executable using the C++ bindings.
 add_executable(${target_test_exe_name} ${test_source_files})

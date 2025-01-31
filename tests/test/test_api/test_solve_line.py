@@ -117,6 +117,7 @@ class TestSolve(test_api_utils.APITestCase):
         self.checkSolveResults(results, allow_max_avg_error=4.0, allow_max_error=4.0)
         return
 
+    # TODO: Fix this test.
     def test_line_ceres_lmder_maya_dag(self):
         self.do_solve(
             'ceres_lmder',
@@ -124,11 +125,13 @@ class TestSolve(test_api_utils.APITestCase):
             mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
         )
 
+    # TODO: Fix this test.
     def test_line_ceres_lmder_mmscenegraph(self):
         self.do_solve(
             'ceres_lmder', mmapi.SOLVER_TYPE_CERES_LMDER, mmapi.SCENE_GRAPH_MODE_AUTO
         )
 
+    # TODO: Fix this test.
     def test_line_ceres_lmdif_maya_dag(self):
         self.do_solve(
             'ceres_lmdif',
@@ -136,6 +139,7 @@ class TestSolve(test_api_utils.APITestCase):
             mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
         )
 
+    # TODO: Fix this test.
     def test_line_ceres_lmdif_mmscenegraph(self):
         self.do_solve(
             'ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF, mmapi.SCENE_GRAPH_MODE_AUTO
@@ -155,6 +159,7 @@ class TestSolve(test_api_utils.APITestCase):
     #         mmapi.SCENE_GRAPH_MODE_AUTO,
     #     )
 
+    # TODO: Fix this test.
     def test_cminpack_lmder_maya_dag(self):
         self.do_solve(
             'cminpack_lmder',
@@ -162,6 +167,7 @@ class TestSolve(test_api_utils.APITestCase):
             mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
         )
 
+    # TODO: Fix this test.
     def test_cminpack_lmder_mmscenegraph(self):
         self.do_solve(
             'cminpack_lmder',

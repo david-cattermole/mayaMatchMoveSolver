@@ -103,6 +103,9 @@ inline int getStringArrayIndexOfValue(const MStringArray &array,
  */
 MString generateDirtyCommand(const int numberOfMarkerErrors,
                              SolverData *userData) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("adjust_solveFunc generateDirtyCommand");
+
     MString dgDirtyCmd = "dgdirty ";
     MStringArray dgDirtyNodeNames;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
@@ -150,6 +153,9 @@ MString generateDirtyCommand(const int numberOfMarkerErrors,
 // the parameter.
 double calculateParameterDelta(const double value, const double delta,
                                const double sign, AttrPtr &attr) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("adjust_solveFunc calculateParameterDelta");
+
     MStatus status = MS::kSuccess;
     const double xmin = attr->getMinimumValue();
     const double xmax = attr->getMaximumValue();
@@ -192,6 +198,9 @@ void determineMarkersToBeEvaluated(
     const std::vector<double> previousParamList, const double *parameters,
     const mmsolver::MatrixBool2D &errorToParamMatrix,
     std::vector<bool> &out_evalMeasurements) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("adjust_solveFunc determineMarkersToBeEvaluated");
+
     std::vector<int> evalCount(numberOfMarkers, 0);
 
     // Get all parameters that have changed.
@@ -231,6 +240,9 @@ void determineMarkersToBeEvaluated(
 
 // Add another 'normal function' evaluation to the count.
 void incrementNormalIteration(SolverData *userData) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("adjust_solveFunc incrementNormalIteration");
+
     ++userData->funcEvalNum;
     ++userData->iterNum;
     if (userData->logLevel >= LogLevel::kVerbose) {
@@ -246,6 +258,9 @@ void incrementNormalIteration(SolverData *userData) {
 
 // Add another 'jacobian function' evaluation to the count.
 void incrementJacobianIteration(SolverData *userData) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("adjust_solveFunc incrementJacobianIteration");
+
     ++userData->funcEvalNum;
     ++userData->jacIterNum;
     if (userData->logLevel >= LogLevel::kDebug) {
@@ -271,6 +286,9 @@ int solveFunc_measureErrors(
     const int numberOfErrors, const double *parameters, double *errors,
     double *jacobian, SolverData *userData, SolverTimer &timer,
     double &error_avg, double &error_max, double &error_min) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("adjust_solveFunc solveFunc_measureErrors");
+
     std::vector<bool> evalMeasurements(numberOfMarkers, true);
     std::vector<bool> frameIndexEnable(frameListLength, 1);
 
@@ -316,6 +334,10 @@ int solveFunc_calculateJacobianMatrixForParameter(
     const int numberOfParameters, const int numberOfErrors,
     const double *parameters, double *errors, double *jacobian,
     SolverData *userData, SolverTimer &timer) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB(
+        "adjust_solveFunc solveFunc_calculateJacobianMatrixForParameter");
+
     MStatus status;
 
     const double ratio = (double)parameterIndex / (double)numberOfParameters;
@@ -495,6 +517,9 @@ int solveFunc_calculateJacobianMatrix(
     const int numberOfParameters, const int numberOfErrors,
     const double *parameters, double *errors, double *jacobian,
     SolverData *userData, SolverTimer &timer) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("adjust_solveFunc solveFunc_calculateJacobianMatrix");
+
     assert(
         (userData->solverOptions->solverType == SOLVER_TYPE_CMINPACK_LMDER) ||
         (userData->solverOptions->solverType == SOLVER_TYPE_CERES_LMDER));
@@ -540,9 +565,29 @@ int solveFunc_calculateJacobianMatrix(
 int solveFunc(const int numberOfParameters, const int numberOfErrors,
               const double *parameters, double *errors, double *jacobian,
               void *rawUserData) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("adjust_solveFunc solveFunc");
+
     SolverData *userData = static_cast<SolverData *>(rawUserData);
     userData->timer.funcBenchTimer.start();
     userData->timer.funcBenchTicks.start();
+
+    MMSOLVER_MAYA_VRB(
+        "adjust_solverFunc solveFunc "
+        "isPrintCall: "
+        << userData->isPrintCall);
+    MMSOLVER_MAYA_VRB(
+        "adjust_solverFunc solveFunc "
+        "isNormalCall: "
+        << userData->isNormalCall);
+    MMSOLVER_MAYA_VRB(
+        "adjust_solverFunc solveFunc "
+        "isJacobianCall: "
+        << userData->isJacobianCall);
+    MMSOLVER_MAYA_VRB(
+        "adjust_solverFunc solveFunc "
+        "doCalcJacobian: "
+        << userData->doCalcJacobian);
 
     auto imageWidth = userData->solverOptions->imageWidth;
 
@@ -579,6 +624,15 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
         MMSOLVER_MAYA_WRN("User wants to cancel the solve!");
         userData->userInterrupted = true;
         return SOLVE_FUNC_FAILURE;
+    }
+
+    if (verbose) {
+        for (auto i = 0; i < numberOfParameters; i++) {
+            MMSOLVER_MAYA_VRB(
+                "adjust_solveFunc solveFunc "
+                "parameters["
+                << i << "] = " << parameters[i]);
+        }
     }
 
 #ifdef MAYA_PROFILE
@@ -620,6 +674,26 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     }
     userData->timer.funcBenchTimer.stop();
     userData->timer.funcBenchTicks.stop();
+
+    if (verbose) {
+        for (auto i = 0; i < numberOfErrors; i++) {
+            MMSOLVER_MAYA_VRB(
+                "adjust_solveFunc solveFunc "
+                "residuals["
+                << i << "] = " << errors[i]);
+        }
+
+        if (userData->doCalcJacobian) {
+            const int numberOfJacobians = numberOfParameters * numberOfErrors;
+            for (auto i = 0; i < numberOfJacobians; i++) {
+                MMSOLVER_MAYA_VRB(
+                    "adjust_solveFunc solveFunc "
+                    "jacobian["
+                    << i << "] = " << jacobian[i]);
+            }
+        }
+    }
+
     if (calculation_status == SOLVE_FUNC_FAILURE) {
         return calculation_status;
     }

@@ -138,20 +138,84 @@ def run_validate_action(vaction):
 
     solres = solveresult.SolveResult(solve_data)
 
-    print_stats = solres.get_print_stats()
-    num_param = print_stats.get('number_of_parameters', 0)
-    num_err = print_stats.get('number_of_errors', 0)
-    solver_valid_frames = solres.get_solver_valid_frame_list()
-    if len(solver_valid_frames) == 0:
-        # This error should be raised if ALL the frames in the
-        # solve are invalid, and if they are invalid then the frames
-        # should just be skipped and the solve should be continued.
-        solver_invalid_frames = solres.get_solver_invalid_frame_list()
-        assert len(solver_invalid_frames) == len(frames)
-        msg = 'All frames are invalid, skipping solve: %r' % list(sorted(frames))
+    use_valid_frame_check = False
+    if use_valid_frame_check is False:
+        print_stats = solres.get_print_stats()
+        num_param = print_stats.get('number_of_parameters', 0)
+        num_err = print_stats.get('number_of_errors', 0)
+        if num_param == 0 or num_err == 0 or num_param > num_err:
+            msg = (
+                'Invalid parameters and errors (param=%r errors=%r frames=%r), '
+                'skipping solve: %r'
+            )
+            message = msg % (num_param, num_err, num_frames, list(sorted(frames)))
+            state = create_action_state(
+                status=const.ACTION_STATUS_FAILED,
+                message=message,
+                error_number=num_err,
+                parameter_number=num_param,
+                frames_number=num_frames,
+                frames=frames,
+            )
+            return state
+
+        msg = 'Validated parameters, errors and frames: param=%r errors=%r frames=%r'
+        message = msg % (num_param, num_err, num_frames)
         state = create_action_state(
-            status=const.ACTION_STATUS_FAILED,
-            message=msg,
+            status=const.ACTION_STATUS_SUCCESS,
+            message=message,
+            error_number=num_err,
+            parameter_number=num_param,
+            frames_number=num_frames,
+            frames=frames,
+        )
+        return state
+    else:
+        # In the future it may make sense to check for "valid frames" that
+        # the solver can solve and report these to the user.
+
+        print_stats = solres.get_print_stats()
+        num_param = print_stats.get('number_of_parameters', 0)
+        num_err = print_stats.get('number_of_errors', 0)
+        if num_param == 0 or num_err == 0 or num_param > num_err:
+            msg = (
+                'Invalid parameters and errors (param=%r errors=%r frames=%r), '
+                'skipping solve: %r'
+            )
+            message = msg % (num_param, num_err, num_frames, list(sorted(frames)))
+            state = create_action_state(
+                status=const.ACTION_STATUS_FAILED,
+                message=message,
+                error_number=num_err,
+                parameter_number=num_param,
+                frames_number=num_frames,
+                frames=frames,
+            )
+            return state
+
+        solver_valid_frames = solres.get_solver_valid_frame_list()
+        if len(solver_valid_frames) == 0:
+            # This error should be raised if ALL the frames in the
+            # solve are invalid, and if they are invalid then the frames
+            # should just be skipped and the solve should be continued.
+            solver_invalid_frames = solres.get_solver_invalid_frame_list()
+            assert len(solver_invalid_frames) == len(frames)
+            msg = 'All frames are invalid, skipping solve: %r' % list(sorted(frames))
+            state = create_action_state(
+                status=const.ACTION_STATUS_FAILED,
+                message=msg,
+                error_number=num_err,
+                parameter_number=num_param,
+                frames_number=num_frames,
+                frames=frames,
+            )
+            return state
+
+        msg = 'Validated solver frames: %r'
+        message = msg % solver_valid_frames
+        state = create_action_state(
+            status=const.ACTION_STATUS_SUCCESS,
+            message=message,
             error_number=num_err,
             parameter_number=num_param,
             frames_number=num_frames,
@@ -159,17 +223,8 @@ def run_validate_action(vaction):
         )
         return state
 
-    msg = 'Validated parameters, errors and frames: param=%r errors=%r frames=%r'
-    message = msg % (num_param, num_err, num_frames)
-    state = create_action_state(
-        status=const.ACTION_STATUS_SUCCESS,
-        message=message,
-        error_number=num_err,
-        parameter_number=num_param,
-        frames_number=num_frames,
-        frames=frames,
-    )
-    return state
+    # Should not get here.
+    raise NotImplementedError
 
 
 def run_validate_action_list(vaction_list):

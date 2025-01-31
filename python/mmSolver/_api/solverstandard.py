@@ -690,6 +690,9 @@ class SolverStandard(solverbase.SolverBase):
             use_lens_distortion=solve_lens_distortion,
         )
 
+        # TODO: When should we solve lens distortion? Perhaps it
+        # should only be solved after all other parameters are solved?
+
         auto_scene_graph = scene_graph_mode == const.SCENE_GRAPH_MODE_AUTO
         if auto_scene_graph is True:
             # When 'auto' scene graph is used we are telling the

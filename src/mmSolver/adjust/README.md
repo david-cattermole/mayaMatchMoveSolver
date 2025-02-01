@@ -6,6 +6,8 @@ solver.
 - `adjust_solveFunc.h/cpp` controls the inner solving evaluation loop.
 - `adjust_base.h/cpp` contains the 'solve' function, and interaction
   with Maya.
+- `adjust_ceres_*.h/cpp` contains the solver loop implementation
+  when using the Ceres library.
 - `adjust_cminpack_*.h/cpp` contains the solver loop implementation
   when using the CMinpack library.
 - `adjust_levmar_*.h/cpp` contains the solver loop implementation when

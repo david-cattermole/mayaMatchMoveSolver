@@ -123,6 +123,7 @@ set(SOURCE_FILES
   mmSolver/shape/ShapeDrawUtils.cpp
   mmSolver/shape/SkyDomeDrawOverride.cpp
   mmSolver/shape/SkyDomeShapeNode.cpp
+  mmSolver/utilities/assert_utils.cpp
   mmSolver/utilities/debug_utils.cpp
   mmSolver/utilities/memory_gpu_utils.cpp
   mmSolver/utilities/memory_system_utils.cpp

@@ -22,6 +22,7 @@ set(MMSOLVERLIBS_CXXBRIDGE_EXE "/path/to/cxxbridge/executable/cxxbridge" CACHE P
   "The path to the cxxbridge executable file.")
 
 set(main_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+set(build_include_dir ${CMAKE_BINARY_DIR}/include)
 set(mmcolorio_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcolorio/include)
 set(mmcolorio_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcolorio/src)
 set(mmcore_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcore/include)
@@ -114,6 +115,7 @@ mmcolorio_target_include_packages(${cpp_lib_name})
 
 target_include_directories(${cpp_lib_name}
   PUBLIC $<BUILD_INTERFACE:${main_include_dir}>
+  PUBLIC $<BUILD_INTERFACE:${build_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmcolorio_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmcore_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmlens_include_dir}>
@@ -135,5 +137,6 @@ install(DIRECTORY
   "${mmlens_include_dir}/"
   "${mmscenegraph_include_dir}/"
   "${main_include_dir}/"
+  "${build_include_dir}/"
   DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
   FILES_MATCHING PATTERN "*.h")

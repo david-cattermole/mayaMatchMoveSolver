@@ -1,0 +1,47 @@
+/*
+ * Copyright (C) 2019, 2025 David Cattermole.
+ *
+ * This file is part of mmSolver.
+ *
+ * mmSolver is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * mmSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+ * ===================================================================
+ *
+ * This file lists fields to be filled in by CMake as it builds and
+ * configures the mmSolverLibs project.
+ *
+ */
+
+#ifndef MM_SOLVER_LIBS_BUILD_CONSTANT_H
+#define MM_SOLVER_LIBS_BUILD_CONSTANT_H
+
+#define MMSOLVER_CORE_PROJECT_NAME "@PROJECT_NAME@"
+
+#define MMSOLVER_CORE_PROJECT_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@"
+#define MMSOLVER_CORE_PROJECT_VERSION_MINOR "@PROJECT_VERSION_MINOR@"
+#define MMSOLVER_CORE_PROJECT_VERSION_PATCH "@PROJECT_VERSION_PATCH@"
+#define MMSOLVER_CORE_PROJECT_VERSION_TWEAK "@PROJECT_VERSION_TWEAK@"
+#define MMSOLVER_CORE_PROJECT_VERSION "@PROJECT_VERSION@"
+
+#define MMSOLVER_CORE_PROJECT_HOMEPAGE_URL "@PROJECT_HOMEPAGE_URL@"
+#define MMSOLVER_CORE_PROJECT_DESCRIPTION "@PROJECT_DESCRIPTION@"
+#define MMSOLVER_CORE_PROJECT_AUTHOR "@PROJECT_AUTHOR@"
+#define MMSOLVER_CORE_PROJECT_COPYRIGHT "@PROJECT_COPYRIGHT@"
+
+#define MMSOLVER_CORE_PROJECT_SOURCE_DIR "@PROJECT_SOURCE_DIR@"
+#define MMSOLVER_CORE_PROJECT_BUILD_DATE_TIME "@PROJECT_BUILD_DATE_TIME@"
+#define MMSOLVER_CORE_PROJECT_GIT_BRANCH "@PROJECT_GIT_BRANCH@"
+#define MMSOLVER_CORE_PROJECT_GIT_COMMIT_HASH_LONG "@PROJECT_GIT_COMMIT_HASH_LONG@"
+#define MMSOLVER_CORE_PROJECT_GIT_COMMIT_HASH_SHORT "@PROJECT_GIT_COMMIT_HASH_SHORT@"
+
+#endif  // MM_SOLVER_LIBS_BUILD_CONSTANT_H

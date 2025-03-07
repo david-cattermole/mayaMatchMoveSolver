@@ -128,6 +128,27 @@ IF EXIST "C:\MinGW" (
     SET IGNORE_INCLUDE_DIRECTORIES="C:\MinGW\bin;C:\MinGW\include"
 )
 
+:: Get the git branch name, commit long and short hashes.
+::
+:: NOTE: Assumes the current working directory is the project root.
+SET GIT_BRANCH=""
+SET GIT_COMMIT_HASH_LONG=""
+SET GIT_COMMIT_HASH_SHORT=""
+where /Q git
+IF %ERRORLEVEL% EQU 0 (
+    ECHO 'git' executable found, finding git info.
+    FOR /F %%I IN ('git rev-parse --abbrev-ref HEAD') DO SET "GIT_BRANCH=%%I"
+    FOR /F %%I IN ('git rev-parse --verify HEAD') DO SET "GIT_COMMIT_HASH_LONG=%%I"
+    FOR /F %%I IN ('git rev-parse --verify --short HEAD') DO SET "GIT_COMMIT_HASH_SHORT=%%I"
+)
+ECHO GIT_BRANCH: %GIT_BRANCH%
+ECHO GIT_COMMIT_HASH_LONG: %GIT_COMMIT_HASH_LONG%
+ECHO GIT_COMMIT_HASH_SHORT: %GIT_COMMIT_HASH_SHORT%
+
+:: Get Current date/time in UTC timezone using PowerShell.
+for /F "delims=" %%I in ('powershell -Command "(Get-Date).ToUniversalTime().ToString('yyyy-MM-dd HH:mm:ss')"') do set "BUILD_DATE_TIME=%%I UTC"
+ECHO BUILD_DATE_TIME: %BUILD_DATE_TIME%
+
 :: Optionally use "NMake Makefiles" as the build system generator.
 SET CMAKE_GENERATOR=Ninja
 
@@ -158,6 +179,10 @@ CHDIR "%BUILD_DIR%"
     -DCMAKE_CXX_COMPILER=%CMAKE_CXX_COMPILER% ^
     -DCMAKE_MODULE_PATH=%OPENCOLORIO_CMAKE_FIND_MODULES_DIR% ^
     -DCMAKE_VERBOSE_MAKEFILE=%MMSOLVER_BUILD_VERBOSE% ^
+    -DPROJECT_BUILD_DATE_TIME="%BUILD_DATE_TIME%" ^
+    -DPROJECT_GIT_BRANCH=%GIT_BRANCH% ^
+    -DPROJECT_GIT_COMMIT_HASH_LONG=%GIT_COMMIT_HASH_LONG% ^
+    -DPROJECT_GIT_COMMIT_HASH_SHORT=%GIT_COMMIT_HASH_SHORT% ^
     -DMMSOLVER_VFX_PLATFORM=%VFX_PLATFORM% ^
     -DMMSOLVER_DEBUG=%MMSOLVER_DEBUG% ^
     -DMMSOLVER_BUILD_PLUGIN=%MMSOLVER_BUILD_PLUGIN% ^

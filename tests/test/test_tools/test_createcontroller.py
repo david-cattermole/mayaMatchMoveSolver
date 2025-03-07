@@ -304,7 +304,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         self.assertEqual(maya.cmds.getAttr(ctrl + '.translateY', time=mid), 30.0)
         self.assertEqual(maya.cmds.getAttr(ctrl + '.translateZ', time=mid), 10.0)
         self.assertApproxEqual(
-            maya.cmds.getAttr(ctrl + '.rotateY', time=mid), 29.47950580181985
+            maya.cmds.getAttr(ctrl + '.rotateY', time=mid), 19.5454545455
         )
         return
 

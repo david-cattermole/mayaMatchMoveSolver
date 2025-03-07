@@ -23,24 +23,12 @@
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_CERES_LMDIF_H
 
 // STL
-#include <string>
 #include <vector>
-
-// Maya
-#include <maya/MAnimCurveChange.h>
-#include <maya/MComputation.h>
-#include <maya/MDGModifier.h>
-#include <maya/MPoint.h>
-#include <maya/MStringArray.h>
 
 // MM Solver
 #include "adjust_base.h"
 #include "adjust_results.h"
 #include "adjust_solveFunc.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_marker.h"
 
 bool solve_3d_ceres_lmdif(SolverOptions &solverOptions, int numberOfParameters,
                           int numberOfErrors, std::vector<double> &paramList,

@@ -44,11 +44,23 @@
 #include <ceres/solver.h>
 #include <ceres/types.h>
 
+// Maya
+#include <maya/MAnimCurveChange.h>
+#include <maya/MComputation.h>
+#include <maya/MDGModifier.h>
+#include <maya/MPoint.h>
+#include <maya/MStringArray.h>
+
 // MM Solver Libs
 #include <mmsolverlibs/debug.h>
 
 // MM Solver
+#include "adjust_ceres_base.h"
 #include "adjust_solveFunc.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
@@ -159,8 +171,11 @@ bool solve_3d_ceres_lmdif(SolverOptions& solverOptions,
         summary.num_successful_steps + summary.num_unsuccessful_steps;
     solveResult.functionEvals = summary.num_residual_evaluations;
     solveResult.jacobianEvals = summary.num_jacobian_evaluations;
-    solveResult.reason = summary.message;
-    solveResult.reason_number = static_cast<int>(summary.termination_type);
+
+    const size_t reason_number = static_cast<int>(summary.termination_type);
+    const std::string& reason = mmsolver::ceresReasons[reason_number];
+    solveResult.reason_number = reason_number;
+    solveResult.reason = reason + " (" + summary.message + ")";
     solveResult.errorFinal = summary.final_cost;
 
     if (solveResult.success) {

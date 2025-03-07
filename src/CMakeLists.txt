@@ -26,6 +26,7 @@ set(CMAKE_MACOSX_RPATH 1)
 # Source
 set(SOURCE_FILES
   mmSolver/adjust/adjust_base.cpp
+  mmSolver/adjust/adjust_ceres_base.cpp
   mmSolver/adjust/adjust_ceres_lmder.cpp
   mmSolver/adjust/adjust_ceres_lmdif.cpp
   mmSolver/adjust/adjust_cminpack_base.cpp

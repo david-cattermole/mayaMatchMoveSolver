@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, 2019, 2025 David Cattermole.
+ * Copyright (C) 2025 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -17,23 +17,11 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
+ * Common functions and data to be used by Ceres algorithms.
  */
 
-#ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_CERES_LMDER_H
-#define MM_SOLVER_CORE_BUNDLE_ADJUST_CERES_LMDER_H
+#ifdef MMSOLVER_USE_CERES
 
-// STL
-#include <vector>
+#include "adjust_ceres_base.h"
 
-// MM Solver
-#include "adjust_base.h"
-#include "adjust_results.h"
-#include "adjust_solveFunc.h"
-
-bool solve_3d_ceres_lmder(SolverOptions &solverOptions, int numberOfParameters,
-                          int numberOfErrors, std::vector<double> &paramList,
-                          std::vector<double> &errorList,
-                          std::vector<double> &paramWeightList,
-                          SolverData &userData, SolverResult &solveResult);
-
-#endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_CERES_LMDER_H
+#endif  // MMSOLVER_USE_CERES

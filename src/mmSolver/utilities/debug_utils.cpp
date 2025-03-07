@@ -21,12 +21,4 @@
 
 #include "debug_utils.h"
 
-// STL
-#include <iomanip>   // setfill, setw
-#include <iostream>  // cout, cerr, endl
-#include <string>    // string
-
-// Maya
-#include <maya/MStreamUtils.h>
-
 namespace debug {}  // namespace debug

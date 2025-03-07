@@ -33,6 +33,7 @@ import mmSolver._api.frame as frame
 import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.compile as api_compile
+import mmSolver._api.excep as excep
 
 LOG = mmSolver.logger.get_logger()
 

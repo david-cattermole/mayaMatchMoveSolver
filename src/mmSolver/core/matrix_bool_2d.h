@@ -24,10 +24,12 @@
 #define MM_SOLVER_CORE_MATRIX_BOOL_2D_H
 
 // STL
-#include <cassert>
 #include <cstddef>
 #include <iterator>
 #include <vector>
+
+// MM Solver
+#include "mmSolver/utilities/assert_utils.h"
 
 namespace mmsolver {
 
@@ -102,13 +104,15 @@ public:
 
     // Access element at (x,y).
     bool at(size_t x, size_t y) const noexcept {
-        assert(x < m_width && y < m_height && "Index out of bounds");
+        MMSOLVER_ASSERT_DEBUG(x < m_width && y < m_height,
+                              "Index out of bounds");
         return m_data[y * m_width + x];
     }
 
     // Set value at position (x,y).
     void set(size_t x, size_t y, bool value) noexcept {
-        assert(x < m_width && y < m_height && "Index out of bounds");
+        MMSOLVER_ASSERT_DEBUG(x < m_width && y < m_height,
+                              "Index out of bounds");
         m_data[y * m_width + x] = value;
     }
 

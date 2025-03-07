@@ -74,6 +74,7 @@ set(SOURCE_FILES
   mmSolver/cmd/arg_flags_solve_scene_graph.cpp
   mmSolver/cmd/arg_flags_solve_scene_graph.h
   mmSolver/core/array_mask.cpp
+  mmSolver/core/frame_list.cpp
   mmSolver/core/reprojection.cpp
   mmSolver/image/ImageCache.cpp
   mmSolver/image/ImagePixelData.cpp

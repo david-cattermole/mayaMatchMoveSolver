@@ -434,6 +434,9 @@ class SolverBasic(solverbase.SolverBase):
         scene_graph_mode = self.get_scene_graph_mode()
         precomputed_data = self.get_precomputed_data()
 
+        if use_single_frame is True:
+            frame_list = [single_frame]
+
         attr_list = solverutils.filter_attr_list(
             attr_list,
             use_camera_intrinsics=solve_focal_length,
@@ -479,7 +482,7 @@ class SolverBasic(solverbase.SolverBase):
             # Single frame solve
             sol = solverstep.SolverStep()
             sol.set_max_iterations(lineup_iter_num)
-            sol.set_frame_list([single_frame])
+            sol.set_frame_list(frame_list)
             sol.set_attributes_use_animated(True)
             sol.set_attributes_use_static(False)
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)

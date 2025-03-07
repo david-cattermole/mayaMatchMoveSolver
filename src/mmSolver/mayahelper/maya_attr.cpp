@@ -325,10 +325,14 @@ MString Attr::getAnimCurveName() {
     return result;
 }
 
+namespace {
+
 // Windows MSVC doesn't have 'trunc' function, so we create our own.
 inline double my_trunc(double d) {
     return (d > 0) ? std::floor(d) : std::ceil(d);
 }
+
+}  // namespace
 
 MStatus Attr::getValue(bool &value, const MTime &time, const int timeEvalMode) {
     MStatus status;

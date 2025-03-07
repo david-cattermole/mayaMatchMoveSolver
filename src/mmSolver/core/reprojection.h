@@ -30,7 +30,7 @@
 #include <maya/MMatrix.h>
 #include <maya/MStatus.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmlens/lens_model.h>
 
 enum class ReprojectionDistortMode : short {

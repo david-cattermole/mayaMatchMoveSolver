@@ -30,9 +30,10 @@
 // Maya
 #include <maya/MMatrix.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmlens/lens_model.h>
 
+// MM Solver
 #include "mmSolver/mayahelper/maya_camera.h"  // getProjectionMatrix, computeFrustumCoordinates
 #include "mmSolver/utilities/debug_utils.h"
 
@@ -109,6 +110,7 @@ MStatus reprojection(
 
     // Image
     const double imageWidth, const double imageHeight,
+
     // Lens Distortion
     const ReprojectionDistortMode distortMode,
     std::shared_ptr<mmlens::LensModel> lensModel,
@@ -140,7 +142,7 @@ MStatus reprojection(
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Camera World Projection Matrix
-    MMatrix camWorldProjMatrix = camMatrix.inverse() * camProjMatrix;
+    const MMatrix camWorldProjMatrix = camMatrix.inverse() * camProjMatrix;
 
     // Convert to screen-space
     MMatrix matrix = tfmMatrix * camWorldProjMatrix;
@@ -252,7 +254,7 @@ MStatus reprojection(
     }
 
     // Convert back to world space
-    MMatrix worldTfmMatrix = matrix * camWorldProjMatrix.inverse();
+    const MMatrix worldTfmMatrix = matrix * camWorldProjMatrix.inverse();
     MPoint worldPos(worldTfmMatrix[3][0], worldTfmMatrix[3][1],
                     worldTfmMatrix[3][2], 1.0);
 

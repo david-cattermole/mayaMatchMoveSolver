@@ -128,6 +128,10 @@ struct SolverResult {
         str = "reason_num=" + value;
         result.append(MString(str.c_str()));
 
+        value = Self::reason;
+        str = "reason_string=" + value;
+        result.append(MString(str.c_str()));
+
         value = mmstring::numberToString<double>(Self::errorFinal);
         str = "error_final=" + value;
         result.append(MString(str.c_str()));
@@ -580,6 +584,7 @@ struct MarkerAttrNamePair {
 };
 
 namespace std {
+
 template <>
 struct hash<MarkerAttrNamePair> {
     size_t operator()(MarkerAttrNamePair const &s) const noexcept {
@@ -591,6 +596,7 @@ struct hash<MarkerAttrNamePair> {
         return result;
     }
 };
+
 }  // namespace std
 
 struct AffectsResult {
@@ -665,6 +671,9 @@ struct AffectsResult {
             str += attr_name;
             str += CMD_RESULT_SPLIT_CHAR;
             str += mmstring::numberToString<int>(value);
+            // str += CMD_RESULT_SPLIT_CHAR;
+            // TODO: Should this also contain the frame number's that
+            // are valid?
 
             result.append(MString(str.c_str()));
         }

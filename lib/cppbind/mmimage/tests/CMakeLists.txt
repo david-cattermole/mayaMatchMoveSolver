@@ -30,8 +30,8 @@ set(test_source_files
 )
 
 include(MMCommonUtils)
-option(MMSOLVER_BUILD_RELEASE_ASSERTIONS "Enable Assertions to be called in Release mode." ON)
-mm_common_set_global_compile_options(MMSOLVER_BUILD_RELEASE_ASSERTIONS)
+option(MMSOLVER_DEBUG "Enable mmSolver debug mode; prints details and enables debug assertions." ON)
+mm_common_set_global_compile_options(MMSOLVER_DEBUG)
 
 # Add test executable using the C++ bindings.
 message(STATUS "target_test_exe_name: ${target_test_exe_name}")

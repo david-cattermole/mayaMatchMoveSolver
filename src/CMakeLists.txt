@@ -180,8 +180,8 @@ endif ()
 # plug-in. See 'MMSolverUtils' CMake module for more information.
 include(MMCommonUtils)
 mm_common_set_global_treat_warnings_as_errors()
-option(MMSOLVER_BUILD_RELEASE_ASSERTIONS "Enable Assertions to be called in Release mode." OFF)
-mm_common_set_global_compile_options(MMSOLVER_BUILD_RELEASE_ASSERTIONS)
+option(MMSOLVER_DEBUG "Enable mmSolver debug mode; prints details and enables debug assertions." OFF)
+mm_common_set_global_compile_options(MMSOLVER_DEBUG)
 
 # MM Solver standalone libraries.
 find_package(mmsolverlibs_cpp REQUIRED)

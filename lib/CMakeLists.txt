@@ -67,8 +67,8 @@ set(cpp_lib_name "mmsolverlibs_cpp")
 set(rust_lib_name "mmsolverlibs_rust")
 
 include(MMCommonUtils)
-option(MMSOLVER_BUILD_RELEASE_ASSERTIONS "Enable Assertions to be called in Release mode." OFF)
-mm_common_set_global_compile_options(MMSOLVER_BUILD_RELEASE_ASSERTIONS)
+option(MMSOLVER_DEBUG "Enable mmSolver debug mode; prints details and enables debug assertions." OFF)
+mm_common_set_global_compile_options(MMSOLVER_DEBUG)
 
 include(MMRustUtils)
 set(rust_linktime_file "NOT-FOUND")

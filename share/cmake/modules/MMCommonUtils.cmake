@@ -226,15 +226,13 @@ function(mm_common_linux_gcc_set_global_compile_options)
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=skylake")   # Use AVX2 instructions
 endfunction()
 
-function(mm_common_set_global_compile_options enable_release_mode_assertions)
+function(mm_common_set_global_compile_options mmsolver_debug)
 
-  if(CMAKE_BUILD_TYPE EQUAL "Release")
-    # If 'NDEBUG' is enabled, it will disable 'assert'ions.
-    # https://en.cppreference.com/w/cpp/error/assert
-    if(NOT enable_release_mode_assertions)
-      add_compile_definitions(NDEBUG)
-    endif ()
-  elseif (CMAKE_BUILD_TYPE EQUAL "Debug")
+  if (mmsolver_debug)
+    add_compile_definitions(MMSOLVER_DEBUG)
+  endif ()
+
+  if (CMAKE_BUILD_TYPE EQUAL "Debug")
     add_compile_definitions(_DEBUG)
   endif ()
 

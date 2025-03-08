@@ -43,7 +43,7 @@ class TestSolver(test_api_utils.APITestCase):
         self.assertEqual(x.get_name(), name)
 
         x = solver.Solver()
-        x.set_solver_type(const.SOLVER_TYPE_LEVMAR)
+        x.set_solver_type(const.SOLVER_TYPE_DEFAULT)
         x_data = x.get_data()
         y = solver.Solver(data=x_data)
         y_data = y.get_data()

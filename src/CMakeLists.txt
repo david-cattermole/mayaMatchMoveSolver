@@ -90,6 +90,7 @@ set(SOURCE_FILES
   mmSolver/mayahelper/maya_lens_model_utils.cpp
   mmSolver/mayahelper/maya_marker.cpp
   mmSolver/mayahelper/maya_marker_group.cpp
+  mmSolver/mayahelper/maya_marker_list.cpp
   mmSolver/mayahelper/maya_scene_graph.cpp
   mmSolver/mayahelper/maya_utils.cpp
   mmSolver/node/MMCameraCalibrateNode.cpp

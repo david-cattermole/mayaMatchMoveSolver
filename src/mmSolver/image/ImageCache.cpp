@@ -21,12 +21,9 @@
 
 #include "ImageCache.h"
 
-// Get M_PI constant
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 // STL
 #include <algorithm>
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <string>

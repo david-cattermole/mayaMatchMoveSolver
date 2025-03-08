@@ -21,11 +21,8 @@
 
 #include "image_convert.h"
 
-// Get M_PI constant
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 // STL
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>

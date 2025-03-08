@@ -21,12 +21,9 @@
 
 #include "ImagePlaneGeometry2Override.h"
 
-// Get M_PI constant
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 // STL
 #include <algorithm>
+#include <cmath>
 #include <cstring>
 #include <string>
 

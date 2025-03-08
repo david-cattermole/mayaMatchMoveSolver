@@ -21,11 +21,8 @@
 
 #include "ImagePixelData.h"
 
-// Get M_PI constant
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 // STL
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <string>

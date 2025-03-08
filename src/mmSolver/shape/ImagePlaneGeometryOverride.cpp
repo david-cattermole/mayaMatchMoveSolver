@@ -21,8 +21,7 @@
 
 #include "ImagePlaneGeometryOverride.h"
 
-// Get M_PI constant
-#define _USE_MATH_DEFINES
+// STL
 #include <cmath>
 
 // Maya

@@ -95,9 +95,6 @@ private:
     Attr m_weight;
 };
 
-typedef std::vector<Marker> MarkerList;
-typedef MarkerList::iterator MarkerListIt;
-
 typedef std::shared_ptr<Marker> MarkerPtr;
 typedef std::vector<std::shared_ptr<Marker> > MarkerPtrList;
 typedef MarkerPtrList::iterator MarkerPtrListIt;

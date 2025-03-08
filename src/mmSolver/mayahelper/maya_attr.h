@@ -492,9 +492,6 @@ private:
     double m_angularFactorInv;
 };
 
-typedef std::vector<Attr> AttrList;
-typedef AttrList::iterator AttrListIt;
-
 typedef std::shared_ptr<Attr> AttrPtr;
 typedef std::vector<std::shared_ptr<Attr> > AttrPtrList;
 typedef AttrPtrList::iterator AttrPtrListIt;

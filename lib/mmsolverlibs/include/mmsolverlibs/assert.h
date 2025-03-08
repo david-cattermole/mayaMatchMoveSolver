@@ -114,26 +114,52 @@ namespace assert {
 
 namespace {
 
+std::string to_canonical_path(const char* input) {
+    if (!input) {
+        // Handle null pointer.
+        return "";
+    }
+
+    std::string result(input);
+
+    // Replace all forward slashes with backslashes.
+    for (size_t i = 0; i < result.length(); ++i) {
+        if (result[i] == '\\') {
+            result[i] = '/';
+        }
+    }
+    return result;
+}
+
 // Helper function to get relative file path
-inline const char* get_relative_path(const char* file) {
+inline const char* get_relative_path(const char* file_path) {
     const char* project_root = MMASSERT_SOURCE_DIR;
     if (project_root[0] == '\0') {
-        return file;  // No project root defined, return full path
+        // No project root defined.
+        return file_path;
     }
 
-    const char* found = std::strstr(file, project_root);
-    if (found == nullptr) {
-        return file;  // Project root not found in path, return full path
+    // Convert both paths to use UNIX slashes. MSVC gives
+    // back-slashes, CMake gives forward-slashes... so lets just
+    // convert to using the same.
+    const std::string file_path_clean = to_canonical_path(file_path);
+    const std::string project_root_clean = to_canonical_path(project_root);
+
+    const size_t index = file_path_clean.find(project_root_clean);
+    const bool found = index != file_path_clean.npos;
+    if (!found && index == 0) {
+        // Project root not found in path.
+        return file_path;
     }
 
-    // Return path relative to project root
-    return found + std::strlen(project_root);
+    // NOTE: We add one to remove the leading slash.
+    return file_path + project_root_clean.size() + 1;
 }
 
 inline void ostream_add_function_line(std::ostream& ostream, const char* file,
                                       int line, const char* func) {
-    ostream << "- File: " << get_relative_path(file) << '(' << line << ")\n"
-            << "- Function: '" << func << "'\n";
+    ostream << "- Function: '" << func << "'\n"
+            << "- File: " << get_relative_path(file) << '(' << line << ")\n";
 }
 
 inline void ostream_add_build_info_end(std::ostream& ostream) {

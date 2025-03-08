@@ -83,6 +83,7 @@ set(SOURCE_FILES
   mmSolver/image/image_convert.cpp
   mmSolver/image/image_io.cpp
   mmSolver/mayahelper/maya_attr.cpp
+  mmSolver/mayahelper/maya_attr_list.cpp
   mmSolver/mayahelper/maya_bundle.cpp
   mmSolver/mayahelper/maya_camera.cpp
   mmSolver/mayahelper/maya_frame_utils.cpp

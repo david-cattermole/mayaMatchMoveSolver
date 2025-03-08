@@ -47,7 +47,8 @@ const char* const project_git_branch();
 const char* const project_git_commit_hash_long();
 const char* const project_git_commit_hash_short();
 
-// TODO: Add compiler details.
+const char* const cxx_compiler();
+const char* const cxx_linker();
 
 const char* const maya_version();
 const char* const module_os_name();

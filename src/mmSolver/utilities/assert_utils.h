@@ -38,6 +38,8 @@
 #undef MMASSERT_PROJECT_GIT_BRANCH
 #undef MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG
 #undef MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT
+#undef MMASSERT_CXX_COMPILER
+#undef MMASSERT_CXX_LINKER
 #define MMASSERT_PROJECT_NAME ::mmsolver::build_info::project_name()
 #define MMASSERT_PROJECT_VERSION ::mmsolver::build_info::project_version()
 #define MMASSERT_PROJECT_SOURCE_DIR ::mmsolver::build_info::project_source_dir()
@@ -48,6 +50,10 @@
     ::mmsolver::build_info::project_git_commit_hash_long()
 #define MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT \
     ::mmsolver::build_info::project_git_commit_hash_short()
+#define MMASSERT_CXX_COMPILER \
+    ::mmsolver::build_info::cxx_compiler()
+#define MMASSERT_CXX_LINKER \
+    ::mmsolver::build_info::cxx_linker()
 
 // MM Solver Libs
 #include <mmsolverlibs/assert.h>
@@ -84,5 +90,7 @@
 #undef MMASSERT_PROJECT_GIT_BRANCH
 #undef MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG
 #undef MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT
+#undef MMASSERT_CXX_COMPILER
+#undef MMASSERT_CXX_LINKER
 
 #endif  // MM_SOLVER_ASSERT_UTILS_H

@@ -52,5 +52,17 @@ const char* const project_git_commit_hash_short() {
     return "@PROJECT_GIT_COMMIT_HASH_SHORT@";
 };
 
+const char* const cxx_compiler() {
+    return "id=@CMAKE_CXX_COMPILER_ID@ "
+           "version=@CMAKE_CXX_COMPILER_VERSION@ "
+           "standard=@CMAKE_CXX_STANDARD@ "
+           "executable='@CMAKE_CXX_COMPILER@'";
+};
+const char* const cxx_linker() {
+    return "id=@CMAKE_CXX_COMPILER_LINKER_ID@ "
+           "version=@CMAKE_CXX_COMPILER_LINKER_VERSION@ "
+           "executable='@CMAKE_CXX_COMPILER_LINKER@'";
+};
+
 }  // namespace build_info
 }  // namespace mmsolverlibs

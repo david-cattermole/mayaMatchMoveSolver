@@ -46,7 +46,8 @@ const char* const project_git_branch();
 const char* const project_git_commit_hash_long();
 const char* const project_git_commit_hash_short();
 
-// TODO: Add compiler details.
+const char* const cxx_compiler();
+const char* const cxx_linker();
 
 }  // namespace build_info
 }  // namespace mmsolverlibs

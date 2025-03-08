@@ -82,6 +82,16 @@
     ::mmsolverlibs::build_info::project_git_commit_hash_short()
 #endif
 
+// Project's C++ compiler details string.
+#ifndef MMASSERT_CXX_COMPILER
+#define MMASSERT_CXX_COMPILER ::mmsolverlibs::build_info::cxx_compiler()
+#endif
+
+// Project's C++ compiler linker details string.
+#ifndef MMASSERT_CXX_LINKER
+#define MMASSERT_CXX_LINKER ::mmsolverlibs::build_info::cxx_linker()
+#endif
+
 namespace mmsolverlibs {
 namespace assert {
 
@@ -116,12 +126,17 @@ inline void ostream_add_build_info_end(std::ostream& ostream) {
     const auto project_git_branch = MMASSERT_PROJECT_GIT_BRANCH;
     const auto project_git_commit_hash_long =
         MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG;
+    const auto cxx_compiler = MMASSERT_CXX_COMPILER;
+    const auto cxx_linker = MMASSERT_CXX_LINKER;
 
     ostream << "- Project: " << project_name << "\n"
             << "- Project Version: " << project_version << "\n"
             << "- Build Date-Time: " << project_build_date_time << "\n"
             << "- Git Branch: " << project_git_branch << "\n"
-            << "- Git Commit: " << project_git_commit_hash_long << std::endl;
+            << "- Git Commit: " << project_git_commit_hash_long << "\n"
+            << "- C++ Compiler: " << cxx_compiler << "\n"
+            << "- C++ Linker: " << cxx_linker
+            << std::endl;
 }
 
 }  // namespace
@@ -241,5 +256,16 @@ inline void print_todo(std::ostream& ostream, const char* file, const int line,
                                            __func__, ss.str());           \
         std::abort();                                                     \
     } while (0)
+
+// Clean up the defines made in this file.
+#undef MMASSERT_PROJECT_NAME
+#undef MMASSERT_PROJECT_VERSION
+#undef MMASSERT_PROJECT_SOURCE_DIR
+#undef MMASSERT_PROJECT_BUILD_DATE_TIME
+#undef MMASSERT_PROJECT_GIT_BRANCH
+#undef MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG
+#undef MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT
+#undef MMASSERT_CXX_COMPILER
+#undef MMASSERT_CXX_LINKER
 
 #endif  // MM_SOLVER_LIBS_ASSERT_H

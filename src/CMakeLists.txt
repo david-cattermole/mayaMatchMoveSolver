@@ -85,6 +85,7 @@ set(SOURCE_FILES
   mmSolver/mayahelper/maya_attr.cpp
   mmSolver/mayahelper/maya_bundle.cpp
   mmSolver/mayahelper/maya_camera.cpp
+  mmSolver/mayahelper/maya_frame_utils.cpp
   mmSolver/mayahelper/maya_lens_model_utils.cpp
   mmSolver/mayahelper/maya_marker.cpp
   mmSolver/mayahelper/maya_marker_group.cpp

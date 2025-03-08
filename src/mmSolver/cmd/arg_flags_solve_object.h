@@ -85,13 +85,6 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
                                        StiffAttrsPtrList &out_stiffAttrsList,
                                        SmoothAttrsPtrList &out_smoothAttrsList);
 
-// Add flags for solver frames to the command syntax.
-void createSolveFramesSyntax(MSyntax &syntax);
-
-// Parse arguments into solver frames.
-MStatus parseSolveFramesArguments(const MArgDatabase &argData,
-                                  MTimeArray &out_frameList);
-
 // Add flags for solver scene graph to the command syntax.
 void createSolveSceneGraphSyntax(MSyntax &syntax);
 

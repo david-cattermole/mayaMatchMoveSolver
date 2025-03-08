@@ -43,7 +43,6 @@
 #include "MMSolverSceneGraphCmd.h"
 
 // STL
-#include <cassert>
 #include <cmath>
 #include <vector>
 

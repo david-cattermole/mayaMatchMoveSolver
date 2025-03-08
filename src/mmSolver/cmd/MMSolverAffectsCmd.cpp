@@ -35,7 +35,6 @@
 #include "MMSolverAffectsCmd.h"
 
 // STL
-#include <cassert>
 #include <cmath>
 #include <vector>
 

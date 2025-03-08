@@ -25,7 +25,6 @@
 // STL
 #include <algorithm>
 #include <array>
-#include <cassert>
 #include <chrono>
 #include <cmath>
 #include <fstream>
@@ -85,6 +84,7 @@
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/sfm/sfm_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -128,8 +128,8 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
         isPinhole(intrinsics1->getType()) && isPinhole(intrinsics2->getType());
     auto more_than_five = x1.cols() > 5;
     auto more_than_eight = x1.cols() > 8;
-    assert(x1.rows() == x2.rows());
-    assert(x1.cols() == x2.cols());
+    MMSOLVER_ASSERT(x1.rows() == x2.rows(), "Matrix sizes must match.");
+    MMSOLVER_ASSERT(x1.cols() == x2.cols(), "Matrix sizes must match.");
 
     relativePose_info.initial_residual_tolerance =
         std::numeric_limits<double>::infinity();
@@ -406,10 +406,10 @@ bool triangulate_relative_pose(
                 auto mkr_name_b = mkr_b->getNodeName();
                 auto bnd_name = bnd->getNodeName();
                 MMSOLVER_MAYA_VRB(
-                    "triangulated Marker A: " << mkr_name_a.asChar());
+                    "Triangulated Marker A: " << mkr_name_a.asChar());
                 MMSOLVER_MAYA_VRB(
-                    "triangulated Marker B: " << mkr_name_b.asChar());
-                MMSOLVER_MAYA_VRB("triangulated bundle: " << bnd_name.asChar());
+                    "Triangulated Marker B: " << mkr_name_b.asChar());
+                MMSOLVER_MAYA_VRB("Triangulated Bundle: " << bnd_name.asChar());
             }
             num++;
         }

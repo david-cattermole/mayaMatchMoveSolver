@@ -25,7 +25,6 @@
 #include <stdio.h>
 
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -79,6 +78,7 @@
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/node/MMLensData.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/string_utils.h"
@@ -556,7 +556,9 @@ MStatus getLensesFromCameraList(
         }
         out_cameraLensNodeNames.push_back(lensNodeNames);
     }
-    assert(out_cameraLensNodeNames.size() == num_cameras);
+    MMSOLVER_ASSERT(out_cameraLensNodeNames.size() == num_cameras,
+                    "The size of out_cameraLensNodeNames must be the same as "
+                    "cameraList, but in a different order.");
 
     return status;
 }

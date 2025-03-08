@@ -75,7 +75,6 @@
 
 // STL
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
@@ -94,11 +93,15 @@
 #include <maya/MArgList.h>
 #include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MGlobal.h>
+#include <maya/MIOStream.h>
 #include <maya/MItSelectionList.h>
 #include <maya/MMatrix.h>
 #include <maya/MMatrixArray.h>
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
+#include <maya/MPoint.h>
+#include <maya/MSelectionList.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MSyntax.h>

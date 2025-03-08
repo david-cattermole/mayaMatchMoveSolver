@@ -27,7 +27,6 @@
 
 // STL
 #include <algorithm>
-#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -49,6 +48,7 @@
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/shader/shader_utils.h"
 #include "mmSolver/shape/constant_texture_data.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/hash_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/path_utils.h"
@@ -64,7 +64,9 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                                   const MString &file_pattern,
                                   const MString &file_path,
                                   const bool do_texture_update) {
-    assert(texture_manager != nullptr);
+    MMSOLVER_ASSERT(
+        texture_manager != nullptr,
+        "Texture manager must be valid to read an image into texture memory.");
 
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file:"
@@ -179,8 +181,11 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                           << "Could not allocate pixel data!");
         return nullptr;
     }
-    assert(image_pixel_data.is_valid() == true);
-    assert(image_pixel_data.byte_count() == pixel_data_byte_count);
+    MMSOLVER_ASSERT(image_pixel_data.is_valid() == true,
+                    "We expect the image pixel data to be valid.");
+    MMSOLVER_ASSERT(image_pixel_data.byte_count() == pixel_data_byte_count,
+                    "The newly created texture memory must have the expected "
+                    "pixel count given.");
     std::memcpy(image_pixel_data.pixel_data(), maya_owned_pixel_data,
                 pixel_data_byte_count);
 
@@ -417,7 +422,9 @@ bool ImageCache::gpu_insert_group(const GPUCacheString &group_name,
         const auto group_map_pair =
             m_gpu_group_map.insert(std::make_pair(group_name, values_set));
         const bool group_map_ok = group_map_pair.second;
-        assert(group_map_ok == true);
+        MMSOLVER_ASSERT(
+            group_map_ok == true,
+            "After inserting, we expect the group map to have been added.");
     } else {
         GPUGroupSet &values_set = group_search->second;
         values_set.insert(file_path);
@@ -436,7 +443,9 @@ bool ImageCache::cpu_insert_group(const CPUCacheString &group_name,
         const auto group_map_pair =
             m_cpu_group_map.insert(std::make_pair(group_name, values_set));
         const bool group_map_ok = group_map_pair.second;
-        assert(group_map_ok == true);
+        MMSOLVER_ASSERT(
+            group_map_ok == true,
+            "After inserting, we expect the group map to have been added.");
     } else {
         CPUGroupSet &values_set = group_search->second;
         values_set.insert(file_path);
@@ -470,8 +479,11 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert_item(
     MHWRender::MTextureManager *texture_manager,
     const GPUCacheString &group_name, const GPUCacheString &file_path,
     const ImageCache::CPUCacheValue &image_pixel_data) {
-    assert(texture_manager != nullptr);
-    assert(image_pixel_data.is_valid());
+    MMSOLVER_ASSERT(
+        texture_manager != nullptr,
+        "Cannot insert a GPU item without a valid texture manager.");
+    MMSOLVER_ASSERT(image_pixel_data.is_valid(),
+                    "image pixel data must be valid to add to the GPU cache.");
     const bool verbose = false;
 
     const GPUGroupKey item_key = mmsolver::hash::make_hash(file_path);
@@ -514,7 +526,9 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert_item(
         }
 
         m_gpu_used_bytes += texture_data.byte_count();
-        assert(m_gpu_used_bytes <= m_gpu_capacity_bytes);
+        MMSOLVER_ASSERT(m_gpu_used_bytes <= m_gpu_capacity_bytes,
+                        "It is not possible for the used GPU Cache memory to "
+                        "exceed the GPU Cache capacity.");
 
         // Make 'item_key' the most-recently-used item key, because when we
         // insert an item into the cache, it's used most recently.
@@ -527,11 +541,13 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert_item(
 
         const auto inserted_key_iterator = item_map_pair.first;
         const bool item_ok = item_map_pair.second;
-        assert(item_ok == true);
+        MMSOLVER_ASSERT(item_ok == true,
+                        "The item must exist after we have just inserted it.");
 
         const bool group_ok =
             ImageCache::gpu_insert_group(group_name, file_path);
-        assert(group_ok == true);
+        MMSOLVER_ASSERT(group_ok == true,
+                        "The group must exist after just inserting it.");
 
     } else {
         ImageCache::GPUKeyListIt item_iterator = item_search->second.first;
@@ -580,7 +596,8 @@ bool ImageCache::cpu_insert_item(const CPUCacheString &group_name,
     }
 
     m_cpu_used_bytes += image_data_size;
-    assert(m_cpu_used_bytes <= m_cpu_capacity_bytes);
+    MMSOLVER_ASSERT(m_cpu_used_bytes <= m_cpu_capacity_bytes,
+                    "The used CPU cache memory can never exceed the capacity.");
 
     // Because we are inserting into the cache, the 'key' is the
     // most-recently-used item.
@@ -592,10 +609,13 @@ bool ImageCache::cpu_insert_item(const CPUCacheString &group_name,
 
     const auto inserted_key_iterator = item_map_pair.first;
     const bool item_map_ok = item_map_pair.second;
-    assert(item_map_ok == true);
+    MMSOLVER_ASSERT(item_map_ok == true,
+                    "The item was just added to the CPU cache, it must exist.");
 
     const bool group_ok = ImageCache::cpu_insert_group(group_name, file_path);
-    assert(group_ok == true);
+    MMSOLVER_ASSERT(
+        group_ok == true,
+        "The group was just added to the CPU cache, it must exist.");
 
     return true;
 }
@@ -668,7 +688,9 @@ CacheEvictionResult ImageCache::gpu_evict_one_item(
         "before m_gpu_used_bytes="
         << m_gpu_used_bytes);
 
-    assert(texture_manager != nullptr);
+    MMSOLVER_ASSERT(
+        texture_manager != nullptr,
+        "The Texture manager must be valid to evict an item from the cache.");
     if (m_gpu_key_list.empty() ||
         (m_gpu_item_map.size() <= m_gpu_item_count_minumum)) {
         return CacheEvictionResult::kNotNeeded;
@@ -679,7 +701,8 @@ CacheEvictionResult ImageCache::gpu_evict_one_item(
         return CacheEvictionResult::kFailed;
     }
     const GPUMapIt item_key_iterator = m_gpu_item_map.find(item_key);
-    assert(item_key_iterator != m_gpu_item_map.end());
+    MMSOLVER_ASSERT(item_key_iterator != m_gpu_item_map.end(),
+                    "There must be at least one item in the GPU cache.");
 
     GPUCacheValue texture_data = item_key_iterator->second.second;
     m_gpu_used_bytes -= texture_data.byte_count();
@@ -716,7 +739,8 @@ CacheEvictionResult ImageCache::cpu_evict_one_item() {
         return CacheEvictionResult::kFailed;
     }
     const CPUMapIt item_key_iterator = m_cpu_item_map.find(item_key);
-    assert(item_key_iterator != m_cpu_item_map.end());
+    MMSOLVER_ASSERT(item_key_iterator != m_cpu_item_map.end(),
+                    "There must be at least one item in the CPU cache.");
 
     CPUCacheValue image_pixel_data = item_key_iterator->second.second;
     m_cpu_used_bytes -= image_pixel_data.byte_count();

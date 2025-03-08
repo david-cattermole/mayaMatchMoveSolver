@@ -25,9 +25,8 @@
 #include "maya_attr.h"
 
 // STL
-#include <cassert>  // assert
-#include <cmath>    // trunc, isfinite
-#include <limits>   // numeric_limits<double>::max and min
+#include <cmath>   // trunc, isfinite
+#include <limits>  // numeric_limits<double>::max and min
 
 // Provides C++ compatibility.
 // Between Maya 2018 and 2020.

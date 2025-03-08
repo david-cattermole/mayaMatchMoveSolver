@@ -26,7 +26,6 @@
 #include <cmath>
 
 // STL
-#include <cassert>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -39,10 +38,11 @@
 // Maya Viewport 2.0
 #include <maya/MTextureManager.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/lib.h>
 #include <mmimage/lib.h>
 
+// MM Solver
 #include "PixelDataType.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/shader/shader_utils.h"

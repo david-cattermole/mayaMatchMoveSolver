@@ -22,13 +22,16 @@
 #ifndef MM_SOLVER_LENS_DISTORTION_APPLY_H
 #define MM_SOLVER_LENS_DISTORTION_APPLY_H
 
-#include <mmimage/mmimage.h>
-#include <mmlens/mmlens.h>
-#include <mmsolverlibs/assert.h>
-
+// STL
 #include <cstdint>
 #include <iostream>
 #include <limits>
+#include <sstream>  // stringstream
+
+// MM Solver Libs
+#include <mmimage/mmimage.h>
+#include <mmlens/mmlens.h>
+#include <mmsolverlibs/assert.h>
 
 #include "buffer.h"
 
@@ -115,7 +118,7 @@ void function(const InputMode input_mode, const OutputMode output_mode,
         (output_mode == OutputMode::kF32x4)) {
         const size_t out_data_stride = 4;  // RGBA.
         float* out_data_ptr = static_cast<float*>(out_buffer.data_mut());
-        MMSOLVER_ASSERT(
+        MMSOLVER_CORE_ASSERT(
             pixel_count == out_pixel_count,
             "pixel counts of output buffer must match image width/height.");
 
@@ -135,7 +138,7 @@ void function(const InputMode input_mode, const OutputMode output_mode,
                (output_mode == OutputMode::kF64x2)) {
         const size_t out_data_stride = 2;
         double* out_data_ptr = static_cast<double*>(out_buffer.data_mut());
-        MMSOLVER_ASSERT(
+        MMSOLVER_CORE_ASSERT(
             pixel_count == out_pixel_count,
             "pixel counts of output buffer must match image width/height.");
 
@@ -155,7 +158,7 @@ void function(const InputMode input_mode, const OutputMode output_mode,
                (output_mode == OutputMode::kF64x4)) {
         const size_t out_data_stride = 4;
         double* out_data_ptr = static_cast<double*>(out_buffer.data_mut());
-        MMSOLVER_ASSERT(
+        MMSOLVER_CORE_ASSERT(
             pixel_count == out_pixel_count,
             "pixel counts of output buffer must match image width/height.");
 
@@ -178,8 +181,9 @@ void function(const InputMode input_mode, const OutputMode output_mode,
         const double* in_data_ptr =
             static_cast<const double*>(in_buffer.data());
         double* out_data_ptr = static_cast<double*>(out_buffer.data_mut());
-        MMSOLVER_ASSERT(pixel_count == in_pixel_count == out_pixel_count,
-                        "pixel counts of input and output buffers must match.");
+        MMSOLVER_CORE_ASSERT(
+            pixel_count == in_pixel_count == out_pixel_count,
+            "pixel counts of input and output buffers must match.");
 
         if (num_threads == 1) {
             mmlens::apply_f64_to_f64(
@@ -266,8 +270,8 @@ void calculate_lens_layer_distortion(
             film_back_radius_cm, lens_parameters, num_threads);
 
     } else {
-        MMSOLVER_PANIC("Unsupported lens_model_type: "
-                       << static_cast<int>(lens_model_type));
+        MMSOLVER_CORE_TODO("Unsupported lens_model_type: "
+                           << static_cast<int>(lens_model_type));
     }
 }
 
@@ -466,7 +470,7 @@ void allocate_buffer_memory(
     mmimage::ImagePixelBuffer& out_buffer) {
     const bool only_single_layer = layer_count == 1;
     if (layer_count == 0) {
-        MMSOLVER_PANIC("Layer count is zero.");
+        MMSOLVER_CORE_PANIC("Layer count is zero.");
     }
 
     if (only_single_layer) {
@@ -536,7 +540,7 @@ void calculate_lens_layers_distortion(
             // as possible (f32 is not accurate enough).
             if (input_mode == InputMode::kIdentity) {
                 if (output_mode != OutputMode::kF32x4) {
-                    MMSOLVER_PANIC("Not supported yet.");
+                    MMSOLVER_CORE_TODO("Not supported yet.");
                 }
                 calculate_lens_layer_distortion(
                     InputMode::kIdentity, OutputMode::kF32x4,
@@ -544,7 +548,7 @@ void calculate_lens_layers_distortion(
                     image_width, image_height, in_buffer, out_buffer,
                     camera_parameters, film_back_radius_cm, num_threads);
             } else {
-                MMSOLVER_PANIC("Not supported yet.");
+                MMSOLVER_CORE_TODO("Not supported yet.");
             }
 
         } else if ((layer_num == 0) && !is_last_layer) {
@@ -568,10 +572,10 @@ void calculate_lens_layers_distortion(
                         image_width, image_height, in_buffer, out_buffer,
                         camera_parameters, film_back_radius_cm, num_threads);
                 } else {
-                    MMSOLVER_PANIC("Not supported yet.");
+                    MMSOLVER_CORE_TODO("Not supported yet.");
                 }
             } else {
-                MMSOLVER_PANIC("Not supported yet.");
+                MMSOLVER_CORE_TODO("Not supported yet.");
             }
 
         } else if (is_last_layer) {
@@ -591,7 +595,7 @@ void calculate_lens_layers_distortion(
             // We want to use the results from the last layer as
             // inputs in this layer.
 
-            MMSOLVER_PANIC("Not supported yet.");
+            MMSOLVER_CORE_TODO("Not supported yet.");
         }
     }
 }

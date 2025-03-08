@@ -22,7 +22,6 @@
 #include "node_line_utils.h"
 
 // STL
-#include <cassert>
 #include <cmath>
 #include <cstring>
 
@@ -32,11 +31,13 @@
 #include <maya/MDataHandle.h>
 #include <maya/MMatrix.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/mmdata.h>
 #include <mmcore/mmmath.h>
 
+// MM Solver
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -89,7 +90,8 @@ MStatus query_line_point_data(const MMatrix parentInverseMatrix,
 
     MMSOLVER_MAYA_VRB("out_point_data_x.size(): " << out_point_data_x.size());
     MMSOLVER_MAYA_VRB("out_point_data_y.size(): " << out_point_data_y.size());
-    assert((out_point_data_x.size() == out_point_data_y.size()));
+    MMSOLVER_ASSERT(out_point_data_x.size() == out_point_data_y.size(),
+                    "X and Y coordinates must be the same size.");
 
     return status;
 }

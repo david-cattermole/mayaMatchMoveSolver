@@ -19,10 +19,13 @@
  *
  */
 
+// MM Solver Libs
 #include <mmcore/mmdata.h>
 #include <mmlens/_cxxbridge.h>
 #include <mmlens/lib.h>
+#include <mmsolverlibs/assert.h>
 
+// STL
 #include <iostream>
 #include <type_traits>
 
@@ -126,10 +129,10 @@ void apply_lens_distortion_to_pixel(const IN_TYPE in_x, const IN_TYPE in_y,
         out_pixel[0] = out_x;
         out_pixel[1] = out_y;
     } else {
-        // It is a logical error if trying to calculate both
-        // undistortion and redistortion and trying to output to less
-        // than 4 values.
-        assert(OUT_DATA_STRIDE >= 4);
+        MMSOLVER_CORE_ASSERT(
+            OUT_DATA_STRIDE >= 4,
+            "It is a logical error if trying to calculate both undistortion "
+            "and redistortion and trying to output to less than 4 values.");
 
         // Calculate both directions, and pack into the output data.
         const auto out_undistort_xy =
@@ -285,7 +288,8 @@ void apply_lens_distortion_to_buffer(
     LENS_TYPE lens) {
     for (size_t i = pixel_num_start; i < pixel_num_end; i++) {
         const size_t in_index = i * IN_DATA_STRIDE;
-        assert(in_index < in_data_size);
+        MMSOLVER_CORE_ASSERT(in_index < in_data_size,
+                             "This should not be possible. Bounds check.");
         const IN_TYPE* in_pixel = in_data_ptr + in_index;
 
         // The lens distortion operation expects values 0.0 to 1.0,
@@ -300,7 +304,8 @@ void apply_lens_distortion_to_buffer(
         // different types.
         {
             const size_t out_index = i * OUT_DATA_STRIDE;
-            assert(out_index < out_data_size);
+            MMSOLVER_CORE_ASSERT(out_index < out_data_size,
+                                 "This should not be possible. Bounds check.");
             OUT_TYPE* out_pixel = out_data_ptr + out_index;
 
             apply_lens_distortion_to_pixel<DIRECTION, OUT_DATA_STRIDE, double,

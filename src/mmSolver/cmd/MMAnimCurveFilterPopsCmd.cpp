@@ -24,7 +24,6 @@
 #include "MMAnimCurveFilterPopsCmd.h"
 
 // STL
-#include <cassert>
 #include <cmath>
 #include <cstring>
 #include <vector>
@@ -39,10 +38,11 @@
 #include <maya/MStreamUtils.h>
 #include <maya/MSyntax.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/mmdata.h>
 #include <mmcore/mmmath.h>
 
+// MM Solver
 #include "mmSolver/utilities/debug_utils.h"
 
 // MM Scene Graph

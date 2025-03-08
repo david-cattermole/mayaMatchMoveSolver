@@ -37,9 +37,11 @@
 #include <maya/MVector.h>
 
 #if MAYA_API_VERSION >= 20190000
-#include <assert.h>
 #include <maya/MEvaluationNode.h>
 #endif
+
+// MM Solver
+#include "mmSolver/utilities/assert_utils.h"
 
 // MM SceneGraph
 #include <mmscenegraph/mmscenegraph.h>

@@ -26,7 +26,6 @@
 #include <cmath>
 
 // STL
-#include <cassert>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -37,11 +36,13 @@
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/lib.h>
 #include <mmimage/lib.h>
 
+// MM Solver
 #include "PixelDataType.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/shader/shader_utils.h"
 #include "mmSolver/shape/constant_texture_data.h"

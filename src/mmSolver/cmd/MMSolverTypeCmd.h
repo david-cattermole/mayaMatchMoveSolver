@@ -23,39 +23,12 @@
 #ifndef MM_SOLVER_TYPE_CMD_H
 #define MM_SOLVER_TYPE_CMD_H
 
-// STL
-#include <cmath>
-#include <vector>
-
 // Maya
-#include <maya/MAnimCurveChange.h>
-#include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
-#include <maya/MComputation.h>
-#include <maya/MDGModifier.h>
-#include <maya/MDagModifier.h>
-#include <maya/MDagPath.h>
-#include <maya/MDoubleArray.h>
-#include <maya/MFnDagNode.h>
-#include <maya/MGlobal.h>
-#include <maya/MIOStream.h>
-#include <maya/MMatrix.h>
-#include <maya/MPlug.h>
-#include <maya/MPlugArray.h>
-#include <maya/MPoint.h>
 #include <maya/MPxCommand.h>
-#include <maya/MSelectionList.h>
+#include <maya/MStatus.h>
 #include <maya/MString.h>
-#include <maya/MStringArray.h>
 #include <maya/MSyntax.h>
-#include <maya/MVector.h>
-
-// MM Solver
-#include "mmSolver/adjust/adjust_base.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_marker.h"
 
 // Command arguments and command name:
 

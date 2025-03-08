@@ -27,6 +27,7 @@
 #include <cmath>
 
 // Maya
+#include <maya/MAnimCurveChange.h>
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MGlobal.h>
@@ -35,8 +36,6 @@
 #include <maya/MPxCommand.h>
 #include <maya/MSelectionList.h>
 #include <maya/MSyntax.h>
-#include <maya/MTime.h>
-#include <maya/MTimeArray.h>
 
 // MM Solver
 #include "mmSolver/mayahelper/maya_attr.h"

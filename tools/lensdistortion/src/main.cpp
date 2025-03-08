@@ -190,8 +190,8 @@ bool run(const Arguments& args) {
 
     const uint8_t layer_count = lens_layers.layer_count();
     std::cout << "layer_count: " << static_cast<int>(layer_count) << std::endl;
-    MMSOLVER_ASSERT(layer_count == 1,
-                    "Error: Only 1 layer is supported currently.");
+    MMSOLVER_CORE_ASSERT(layer_count == 1,
+                         "Error: Only 1 layer is supported currently.");
 
     const mmlens::CameraParameters camera_parameters =
         lens_layers.camera_parameters();

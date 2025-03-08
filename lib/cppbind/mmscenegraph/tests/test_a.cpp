@@ -21,8 +21,11 @@
 
 #include "test_a.h"
 
+// MM Solver Libs
 #include <mmscenegraph/mmscenegraph.h>
+#include <mmsolverlibs/assert.h>
 
+// STL
 #include <iostream>
 
 namespace mmsg = mmscenegraph;
@@ -206,11 +209,15 @@ int test_a() {
     std::cout << "FlatScene AFTER num_markers: " << flat_scene.num_markers()
               << '\n';
     auto num_points = flat_scene.num_points();
-    assert(num_points == flat_scene.num_markers());
+    MMSOLVER_CORE_ASSERT(
+        num_points == flat_scene.num_markers(),
+        "Point count flat scene representation must be the same to "
+        "be logically consistent.");
 
     auto out_marker_list = flat_scene.markers();
     auto out_point_list = flat_scene.points();
-    assert(out_point_list.size() == out_marker_list.size());
+    MMSOLVER_CORE_ASSERT(out_point_list.size() == out_marker_list.size(),
+                         "Points and Markers need to be the same size.");
     for (uint32_t i = 0; i < num_points; ++i) {
         auto index = i * 2;
         auto point_x = out_point_list[index + 0];

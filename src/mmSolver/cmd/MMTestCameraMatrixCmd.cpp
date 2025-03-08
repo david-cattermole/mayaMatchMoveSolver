@@ -26,23 +26,42 @@
 #include "MMTestCameraMatrixCmd.h"
 
 // STL
-#include <cassert>
 #include <cmath>
+#include <vector>
 
 // Maya
+#include <maya/MAnimCurveChange.h>
+#include <maya/MArgDatabase.h>
+#include <maya/MArgList.h>
+#include <maya/MComputation.h>
+#include <maya/MDGModifier.h>
+#include <maya/MDagModifier.h>
+#include <maya/MDagPath.h>
+#include <maya/MDoubleArray.h>
 #include <maya/MFloatMatrix.h>
 #include <maya/MFnCamera.h>
+#include <maya/MFnDagNode.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MGlobal.h>
+#include <maya/MIOStream.h>
 #include <maya/MMatrix.h>
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
+#include <maya/MPoint.h>
+#include <maya/MPxCommand.h>
+#include <maya/MSelectionList.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
+#include <maya/MSyntax.h>
+#include <maya/MVector.h>
 
 // MM Solver
 #include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"

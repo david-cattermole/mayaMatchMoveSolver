@@ -35,9 +35,10 @@
 // Maya Viewport 2.0
 #include <maya/MTextureManager.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/lib.h>
 
+// MM Solver
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {

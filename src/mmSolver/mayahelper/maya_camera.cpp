@@ -22,9 +22,6 @@
 
 #include "maya_camera.h"
 
-// STL
-#include <cassert>
-
 // Maya
 #include <maya/MDataHandle.h>
 #include <maya/MEulerRotation.h>
@@ -39,6 +36,7 @@
 #include "maya_marker.h"
 #include "maya_utils.h"
 #include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
 // NOTE: Turning this on will slow down the solve a lot, since
@@ -291,7 +289,8 @@ void applyFilmFitCorrectionScale(const FilmFitCorrectionDirection direction,
                                  const double filmBackAspect,
                                  const double renderAspect, double &out_x,
                                  double &out_y) {
-    assert((filmFit >= 0) && (filmFit < 4));
+    MMSOLVER_ASSERT((filmFit >= 0) && (filmFit < 4),
+                    "Bounds checking filmFit value.");
 
     if (filmFit == 1) {
         applyFilmFitCorrectionScale_horizontal(direction, filmBackAspect,

@@ -28,7 +28,6 @@
 // STL
 #include <algorithm>
 #include <array>
-#include <cassert>
 #include <cmath>
 #include <fstream>
 #include <iostream>

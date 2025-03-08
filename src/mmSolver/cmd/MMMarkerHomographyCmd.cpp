@@ -76,7 +76,6 @@ maya.cmds.mmMarkerHomography(
 // STL
 #include <algorithm>
 #include <array>
-#include <cassert>
 #include <cmath>
 #include <fstream>
 #include <iostream>
@@ -119,6 +118,7 @@ maya.cmds.mmMarkerHomography(
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/sfm/homography.h"
 #include "mmSolver/sfm/sfm_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -357,7 +357,8 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
 
     MMSOLVER_MAYA_VRB("parse m_marker_list_a size: " << m_marker_list_a.size());
     MMSOLVER_MAYA_VRB("parse m_marker_list_b size: " << m_marker_list_b.size());
-    assert(m_marker_list_a.size() == m_marker_list_b.size());
+    MMSOLVER_ASSERT(m_marker_list_a.size() == m_marker_list_b.size(),
+                    "No change in marker size should be possible.");
 
     return status;
 }

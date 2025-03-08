@@ -21,8 +21,7 @@
 
 #include "MMMemoryGPUCmd.h"
 
-// STD
-#include <cassert>
+// STL
 #include <string>
 #include <vector>
 

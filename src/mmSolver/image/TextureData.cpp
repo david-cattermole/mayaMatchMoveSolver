@@ -26,7 +26,6 @@
 #include <cmath>
 
 // STL
-#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -38,14 +37,16 @@
 // Maya Viewport 2.0
 #include <maya/MTextureManager.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/lib.h>
 
+// MM Solver
 #include "ImagePixelData.h"
 #include "PixelDataType.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/shader/shader_utils.h"
 #include "mmSolver/shape/constant_texture_data.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/path_utils.h"
 
@@ -57,7 +58,8 @@ bool TextureData::allocate_texture(MHWRender::MTextureManager *texture_manager,
                                    const uint32_t height,
                                    const uint8_t num_channels,
                                    const PixelDataType pixel_data_type) {
-    assert(texture_manager != nullptr);
+    MMSOLVER_ASSERT(texture_manager != nullptr,
+                    "Texture manager must be valid to allocate memory.");
 
     m_width = width;
     m_height = height;
@@ -127,7 +129,8 @@ bool TextureData::allocate_texture(MHWRender::MTextureManager *texture_manager,
 
 void TextureData::deallocate_texture(
     MHWRender::MTextureManager *texture_manager) {
-    assert(texture_manager != nullptr);
+    MMSOLVER_ASSERT(texture_manager != nullptr,
+                    "Texture manager must be valid to release memory.");
     texture_manager->releaseTexture(m_texture);
 }
 

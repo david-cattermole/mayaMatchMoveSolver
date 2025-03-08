@@ -24,11 +24,12 @@
 #define MM_LENS_LENS_MODEL_H
 
 // STL
+#include <memory>
+
+// MM Solver Libs
 #include <mmcore/mmhash.h>
 #include <mmlens/_cxx.h>
 #include <mmlens/_cxxbridge.h>
-
-#include <memory>
 
 namespace mmlens {
 

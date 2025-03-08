@@ -51,6 +51,7 @@
 #include "maya_marker.h"
 #include "maya_marker_group.h"
 #include "maya_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
 namespace mmsg = mmscenegraph;
@@ -981,8 +982,10 @@ MStatus add_markers(
     MMSOLVER_MAYA_VRB("add_markers");
 
     MStatus status = MS::kSuccess;
-    assert(cameraList.size() == cameraNodes.size());
-    assert(bundleList.size() == bundleNodes.size());
+    MMSOLVER_ASSERT(cameraList.size() == cameraNodes.size(),
+                    "Camera sizes must match MM Scene Graph.");
+    MMSOLVER_ASSERT(bundleList.size() == bundleNodes.size(),
+                    "Bundle sizes must match MM Scene Graph.");
 
     // Create a single attribute that will be re-used.
     auto mayaAttr = Attr();
@@ -1118,7 +1121,8 @@ MStatus convert_attributes_to_attr_ids(
             return MS::kFailure;
         }
     }
-    assert(out_attrIdList.size() == attrList.size());
+    MMSOLVER_ASSERT(out_attrIdList.size() == attrList.size(),
+                    "Attribute sizes must match MM Scene Graph.");
     return status;
 }
 

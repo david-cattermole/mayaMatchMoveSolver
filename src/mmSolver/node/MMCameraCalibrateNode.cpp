@@ -38,21 +38,21 @@
 #include <maya/MTransformationMatrix.h>
 
 // STL
-#include <cassert>
 #include <cmath>
 #include <cstring>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/mmcamera.h>
 #include <mmcore/mmcoord.h>
 
+// MM Solver
 #include "mmSolver/calibrate/vanishing_point.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/nodeTypeIds.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
-// #define MM_DEBUG
 // #define WITH_PRINCIPAL_POINT
 
 namespace mmsolver {
@@ -309,7 +309,9 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
             filmBackWidth_mm = apertureWidth * 25.4;
             filmBackHeight_mm = apertureHeight * 25.4;
         } else {
-            assert(false);
+            MMSOLVER_PANIC(
+                "Invalid CameraApertureUnit value: cameraApertureUnit="
+                << static_cast<int32_t>(cameraApertureUnit));
         }
 
         auto sceneScaleDistance = 1.0;
@@ -317,6 +319,9 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
             sceneScaleDistance = cameraHeight;
         } else if (sceneScaleMode == calibrate::SceneScaleMode::UniformScale) {
             sceneScaleDistance = uniformScale;
+        } else {
+            MMSOLVER_PANIC("Invalid SceneScaleMode value: sceneScaleMode="
+                           << static_cast<int32_t>(sceneScaleMode));
         }
 
         auto outCameraParameters = calibrate::CameraParameters();

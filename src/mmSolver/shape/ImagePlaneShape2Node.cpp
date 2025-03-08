@@ -21,9 +21,6 @@
 
 #include "ImagePlaneShape2Node.h"
 
-// STL
-#include <assert.h>
-
 // Maya
 #include <maya/MColor.h>
 #include <maya/MDataBlock.h>
@@ -53,6 +50,7 @@
 #include "ImagePlaneUtils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/nodeTypeIds.h"
+#include "mmSolver/utilities/assert_utils.h"
 
 namespace mmsolver {
 
@@ -170,7 +168,8 @@ void ImagePlaneShape2Node::getCacheSetup(
     MObjectArray &monitoredAttributes) const {
     MPxLocatorNode::getCacheSetup(evalNode, disablingInfo, cacheSetupInfo,
                                   monitoredAttributes);
-    assert(!disablingInfo.getCacheDisabled());
+    MMSOLVER_ASSERT(!disablingInfo.getCacheDisabled(),
+                    "Setting up the cache cannot be disabled.");
     cacheSetupInfo.setPreference(MNodeCacheSetupInfo::kWantToCacheByDefault,
                                  false);
 }

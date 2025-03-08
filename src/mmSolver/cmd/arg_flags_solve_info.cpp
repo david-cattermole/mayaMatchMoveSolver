@@ -21,9 +21,6 @@
 
 #include "arg_flags_solve_info.h"
 
-// STL
-#include <cassert>
-
 // Maya
 #include <maya/MArgDatabase.h>
 #include <maya/MObject.h>
@@ -289,7 +286,8 @@ MStatus parseSolveInfoArguments_solverType(
     }
     out_tau = std::max(tau_min_value, out_tau);
     out_tau = std::min(out_tau, tau_max_value);
-    assert((out_tau >= tau_min_value) && (out_tau <= tau_max_value));
+    MMSOLVER_ASSERT((out_tau >= tau_min_value) && (out_tau <= tau_max_value),
+                    "Solver Tau value must not exceed limits.");
 
     // Get 'Function_Tolerance'
     if (argData.isFlagSet(FUNCTION_TOLERANCE_FLAG)) {

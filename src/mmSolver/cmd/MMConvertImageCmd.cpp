@@ -59,9 +59,10 @@
 #include <maya/MStringArray.h>
 #include <maya/MSyntax.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/mmmath.h>
 
+// MM Solver
 #include "mmSolver/image/image_convert.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"

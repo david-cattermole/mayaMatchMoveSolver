@@ -26,8 +26,6 @@
 
 #include "LineShapeNode.h"
 
-#include <cassert>
-
 // Maya
 #include <maya/MColor.h>
 #include <maya/MDataBlock.h>
@@ -257,7 +255,8 @@ void LineShapeNode::getCacheSetup(const MEvaluationNode &evalNode,
                                   MObjectArray &monitoredAttributes) const {
     MPxLocatorNode::getCacheSetup(evalNode, disablingInfo, cacheSetupInfo,
                                   monitoredAttributes);
-    assert(!disablingInfo.getCacheDisabled());
+    MMSOLVER_ASSERT(!disablingInfo.getCacheDisabled(),
+                    "Setting up the cache cannot be disabled.");
     cacheSetupInfo.setPreference(MNodeCacheSetupInfo::kWantToCacheByDefault,
                                  true);
 }

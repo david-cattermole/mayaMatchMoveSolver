@@ -36,14 +36,14 @@
 #include <maya/MTypeId.h>
 #include <maya/MVector.h>
 
-// MM Solver
-#include "mmSolver/nodeTypeIds.h"
-
 #if MAYA_API_VERSION >= 20190000
-#include <assert.h>
 #include <maya/MEvaluationNode.h>
 #include <maya/MViewport2Renderer.h>
 #endif
+
+// MM Solver
+#include "mmSolver/nodeTypeIds.h"
+#include "mmSolver/utilities/assert_utils.h"
 
 namespace mmsolver {
 
@@ -148,7 +148,8 @@ void SkyDomeShapeNode::getCacheSetup(const MEvaluationNode &evalNode,
                                      MObjectArray &monitoredAttributes) const {
     MPxLocatorNode::getCacheSetup(evalNode, disablingInfo, cacheSetupInfo,
                                   monitoredAttributes);
-    assert(!disablingInfo.getCacheDisabled());
+    MMSOLVER_ASSERT(!disablingInfo.getCacheDisabled(),
+                    "Setting up the cache cannot be disabled.");
     cacheSetupInfo.setPreference(MNodeCacheSetupInfo::kWantToCacheByDefault,
                                  true);
 }

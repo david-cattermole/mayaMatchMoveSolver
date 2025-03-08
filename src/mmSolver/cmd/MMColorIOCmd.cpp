@@ -53,8 +53,7 @@
 
 #include "MMColorIOCmd.h"
 
-// STD
-#include <cassert>
+// STL
 #include <cstring>
 #include <string>
 #include <vector>
@@ -74,9 +73,11 @@
 #include <maya/MStringArray.h>
 #include <maya/MSyntax.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcolorio/lib.h>
 
+// MM Solver
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/path_utils.h"
 
@@ -249,8 +250,7 @@ MStatus MMColorIOCmd::doIt(const MArgList &args) {
         } else if (m_list_color_spaces_inactive) {
             visibility = mmcolorio::ColorSpaceVisibility::kInactive;
         } else {
-            // Should not get here.
-            assert(false);
+            MMSOLVER_PANIC("Should not get here.");
         }
 
         std::vector<std::string> color_space_names =

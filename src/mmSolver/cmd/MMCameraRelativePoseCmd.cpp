@@ -82,7 +82,6 @@ maya.cmds.mmCameraRelativePose(
 // STL
 #include <algorithm>
 #include <array>
-#include <cassert>
 #include <chrono>
 #include <cmath>
 #include <fstream>
@@ -127,6 +126,7 @@ maya.cmds.mmCameraRelativePose(
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/sfm/camera_relative_pose.h"
 #include "mmSolver/sfm/sfm_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -452,8 +452,10 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     MMSOLVER_MAYA_VRB("parse m_marker_list_a size: " << m_marker_list_a.size());
     MMSOLVER_MAYA_VRB("parse m_marker_list_b size: " << m_marker_list_b.size());
     MMSOLVER_MAYA_VRB("parse m_bundle_list size: " << m_bundle_list.size());
-    assert(m_marker_list_a.size() == m_marker_list_b.size());
-    assert(m_marker_list_a.size() == m_bundle_list.size());
+    MMSOLVER_ASSERT(m_marker_list_a.size() == m_marker_list_b.size(),
+                    "Must have matching marker counts.");
+    MMSOLVER_ASSERT(m_marker_list_a.size() == m_bundle_list.size(),
+                    "Must have matching bundle counts.");
 
     return status;
 }

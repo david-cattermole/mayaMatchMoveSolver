@@ -30,14 +30,11 @@
 // Maya
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
-#include <maya/MGlobal.h>
-#include <maya/MIOStream.h>
-#include <maya/MPoint.h>
 #include <maya/MPxCommand.h>
-#include <maya/MSelectionList.h>
 #include <maya/MSyntax.h>
+#include <maya/MStatus.h>
 #include <maya/MTime.h>
-#include <maya/MTimeArray.h>
+
 
 namespace mmsolver {
 

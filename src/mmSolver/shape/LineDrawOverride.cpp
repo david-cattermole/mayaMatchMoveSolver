@@ -43,13 +43,15 @@
 #include <maya/MPxDrawOverride.h>
 #include <maya/MUserData.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/mmdata.h>
 
+// MM Solver
 #include "LineConstants.h"
 #include "ShapeConstants.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/node/node_line_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
 // MM SceneGraph

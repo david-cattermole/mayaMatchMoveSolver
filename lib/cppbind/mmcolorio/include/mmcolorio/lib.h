@@ -22,7 +22,7 @@
 #ifndef MM_COLOR_IO_LIB_H
 #define MM_COLOR_IO_LIB_H
 
-// STD
+// STL
 #include <memory>
 #include <string>
 #include <vector>

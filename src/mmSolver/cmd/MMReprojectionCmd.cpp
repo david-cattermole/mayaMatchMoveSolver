@@ -22,8 +22,6 @@
 
 #include "MMReprojectionCmd.h"
 
-// STL
-#include <cassert>
 #include <cmath>
 #include <vector>
 
@@ -49,6 +47,7 @@
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
@@ -492,7 +491,8 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     }
 
     // Do the re-projection calculations, using the gathered data.
-    assert(tfmMatrixList.length() == m_timeList.length());
+    MMSOLVER_ASSERT(tfmMatrixList.length() == m_timeList.length(),
+                    "Transform matrix and time counts must always be equal.");
     for (unsigned int i = 0; i < tfmMatrixList.length(); ++i) {
         MTime time = timeList[i];
         MMatrix camMatrix = camMatrixList[i];

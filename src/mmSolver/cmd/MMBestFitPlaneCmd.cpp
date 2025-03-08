@@ -74,7 +74,6 @@
 #include "MMBestFitPlaneCmd.h"
 
 // STL
-#include <cassert>
 #include <cstring>
 
 // Maya
@@ -86,14 +85,15 @@
 #include <maya/MSyntax.h>
 #include <maya/MVector.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/mmdata.h>
 #include <mmcore/mmmath.h>
 
-#include "mmSolver/utilities/debug_utils.h"
-
 // MM Scene Graph
 #include "mmscenegraph/mmscenegraph.h"
+
+// MM Solver
+#include "mmSolver/utilities/debug_utils.h"
 
 // Command arguments
 #define POINT_COMPONENTS_SHORT_FLAG "-pc"

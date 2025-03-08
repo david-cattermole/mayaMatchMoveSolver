@@ -20,16 +20,19 @@
  * This tool is used to generate lens distortion ST-Maps.
  */
 
+// MM Solver Libs
 #include <mmcore/mmdata.h>
 #include <mmimage/mmimage.h>
 #include <mmsolverlibs/assert.h>
 #include <mmsolverlibs/debug.h>
 
+// STL
 #include <chrono>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <sstream>  // stringstream
 
 #include "apply.h"
 #include "arguments.h"
@@ -69,8 +72,8 @@ mmimage::Box2F32 calculate_lens_distortion_bbox_region_function(
 
     const size_t in_pixel_count = in_data_size / in_data_stride;
     const size_t out_pixel_count = out_data_size / out_data_stride;
-    MMSOLVER_ASSERT(in_pixel_count == out_pixel_count,
-                    "Pixel count must match between input and output.");
+    MMSOLVER_CORE_ASSERT(in_pixel_count == out_pixel_count,
+                         "Pixel count must match between input and output.");
 
     // TODO: Use 'calculate_lens_layers_distortion' function to
     // support multiple lens layers.
@@ -110,9 +113,9 @@ mmimage::Box2F32 calculate_lens_distortion_bbox_region_function(
         MMSOLVER_CORE_ERR(
             std::cerr, "Bounding box must have a finite size, skipping frame "
                            << frame << ".");
-        MMSOLVER_PANIC("Bounding box must have a finite size, got "
-                       << "min: " << point_min.x << ", " << point_min.y
-                       << " max: " << point_max.y << ", " << point_max.y);
+        MMSOLVER_CORE_PANIC("Bounding box must have a finite size, got "
+                            << "min: " << point_min.x << ", " << point_min.y
+                            << " max: " << point_max.y << ", " << point_max.y);
         return mmimage::Box2F32{0.0, 0.0, 0.0, 0.0};
     }
 
@@ -139,7 +142,7 @@ mmimage::Box2F32 calculate_lens_distortion_bbox_region(
     if (lens_model_type == mmlens::LensModelType::k3deClassic) {
         const auto option =
             lens_layers.layer_lens_parameters_3de_classic(layer_num, frame);
-        MMSOLVER_ASSERT(
+        MMSOLVER_CORE_ASSERT(
             option.exists,
             "LensParameters are expected to exist for matching LensModelType.");
 
@@ -152,7 +155,7 @@ mmimage::Box2F32 calculate_lens_distortion_bbox_region(
         const auto option =
             lens_layers.layer_lens_parameters_3de_radial_std_deg4(layer_num,
                                                                   frame);
-        MMSOLVER_ASSERT(
+        MMSOLVER_CORE_ASSERT(
             option.exists,
             "LensParameters are expected to exist for matching LensModelType.");
 
@@ -165,7 +168,7 @@ mmimage::Box2F32 calculate_lens_distortion_bbox_region(
         const auto option =
             lens_layers.layer_lens_parameters_3de_anamorphic_std_deg4(layer_num,
                                                                       frame);
-        MMSOLVER_ASSERT(
+        MMSOLVER_CORE_ASSERT(
             option.exists,
             "LensParameters are expected to exist for matching LensModelType.");
 
@@ -178,7 +181,7 @@ mmimage::Box2F32 calculate_lens_distortion_bbox_region(
         const auto option =
             lens_layers.layer_lens_parameters_3de_anamorphic_std_deg4_rescaled(
                 layer_num, frame);
-        MMSOLVER_ASSERT(
+        MMSOLVER_CORE_ASSERT(
             option.exists,
             "LensParameters are expected to exist for matching LensModelType.");
 
@@ -192,7 +195,7 @@ mmimage::Box2F32 calculate_lens_distortion_bbox_region(
         const auto option =
             lens_layers.layer_lens_parameters_3de_anamorphic_std_deg6(layer_num,
                                                                       frame);
-        MMSOLVER_ASSERT(
+        MMSOLVER_CORE_ASSERT(
             option.exists,
             "LensParameters are expected to exist for matching LensModelType.");
 
@@ -205,7 +208,7 @@ mmimage::Box2F32 calculate_lens_distortion_bbox_region(
         const auto option =
             lens_layers.layer_lens_parameters_3de_anamorphic_std_deg6_rescaled(
                 layer_num, frame);
-        MMSOLVER_ASSERT(
+        MMSOLVER_CORE_ASSERT(
             option.exists,
             "LensParameters are expected to exist for matching LensModelType.");
 
@@ -215,10 +218,11 @@ mmimage::Box2F32 calculate_lens_distortion_bbox_region(
             bbox_duration, verbose);
 
     } else {
-        MMSOLVER_PANIC(
-            "calculate_lens_distortion_bbox_region: Unsupported "
-            "lens_model_type: "
-            << static_cast<int>(lens_model_type));
+        std::stringstream message;
+        message << "calculate_lens_distortion_bbox_region: Unsupported "
+                   "lens_model_type: "
+                << static_cast<int>(lens_model_type);
+        MMSOLVER_CORE_TODO(message.str().c_str());
     }
 
     auto bbox_end = std::chrono::high_resolution_clock::now();
@@ -334,29 +338,10 @@ void calculate_image(const mmlens::DistortionDirection distortion_direction,
                             film_back_radius_cm, lens_parameters);
                     }
                 }
-            } else if (lens_model_type ==
-                       mmlens::LensModelType::k3deRadialStdDeg4) {
-                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
-                               << static_cast<int>(lens_model_type));
-            } else if (lens_model_type ==
-                       mmlens::LensModelType::k3deAnamorphicStdDeg4) {
-                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
-                               << static_cast<int>(lens_model_type));
-            } else if (lens_model_type ==
-                       mmlens::LensModelType::k3deAnamorphicStdDeg4Rescaled) {
-                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
-                               << static_cast<int>(lens_model_type));
-            } else if (lens_model_type ==
-                       mmlens::LensModelType::k3deAnamorphicStdDeg6) {
-                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
-                               << static_cast<int>(lens_model_type));
-            } else if (lens_model_type ==
-                       mmlens::LensModelType::k3deAnamorphicStdDeg6Rescaled) {
-                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
-                               << static_cast<int>(lens_model_type));
             } else {
-                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
-                               << static_cast<int>(lens_model_type));
+                MMSOLVER_CORE_TODO(
+                    "calculate_image: Unsupported lens_model_type: "
+                    << static_cast<int>(lens_model_type));
             }
         }
 

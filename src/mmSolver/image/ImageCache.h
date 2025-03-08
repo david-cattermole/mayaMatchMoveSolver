@@ -36,10 +36,11 @@
 // Maya Viewport 2.0
 #include <maya/MTextureManager.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/lib.h>
 #include <mmimage/lib.h>
 
+// MM Solver
 #include "ImagePixelData.h"
 #include "PixelDataType.h"
 #include "TextureData.h"

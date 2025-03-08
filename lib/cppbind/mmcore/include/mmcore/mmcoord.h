@@ -23,8 +23,8 @@
 #ifndef MM_CORE_MM_COORD_H
 #define MM_CORE_MM_COORD_H
 
-// STL
-#include <cassert>
+// MM Solver Libs
+#include <mmsolverlibs/assert.h>
 
 #include "mmdata.h"
 
@@ -96,7 +96,8 @@ inline mmdata::Point2D convertPoint2D(const Point2DSpace from,
                     break;
                 }
                 default: {
-                    assert(false);
+                    MMSOLVER_CORE_PANIC(
+                        "Point2DSpace enum value combination is not valid.");
                 }
             }
         case Point2DSpace::ImageNormalized:
@@ -107,11 +108,13 @@ inline mmdata::Point2D convertPoint2D(const Point2DSpace from,
                     break;
                 }
                 default: {
-                    assert(false);
+                    MMSOLVER_CORE_PANIC(
+                        "Point2DSpace enum value combination is not valid.");
                 }
             }
         default: {
-            assert(false);
+            MMSOLVER_CORE_PANIC(
+                "Point2DSpace enum value combination is not valid.");
         }
     }
 

@@ -21,8 +21,7 @@
 
 #include "MMImageCacheCmd.h"
 
-// STD
-#include <cassert>
+// STL
 #include <string>
 #include <vector>
 

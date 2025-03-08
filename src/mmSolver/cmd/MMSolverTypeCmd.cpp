@@ -29,22 +29,40 @@
 #include "MMSolverTypeCmd.h"
 
 // STL
-#include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <vector>
 
 // Maya
+#include <maya/MAnimCurveChange.h>
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
+#include <maya/MComputation.h>
+#include <maya/MDGModifier.h>
+#include <maya/MDagModifier.h>
+#include <maya/MDagPath.h>
+#include <maya/MDoubleArray.h>
+#include <maya/MFnDagNode.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MGlobal.h>
+#include <maya/MIOStream.h>
+#include <maya/MMatrix.h>
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
+#include <maya/MPoint.h>
+#include <maya/MSelectionList.h>
 #include <maya/MStatus.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
+#include <maya/MVector.h>
 
 // MM Solver
 #include "mmSolver/adjust/adjust_base.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_string_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"

@@ -22,9 +22,6 @@
 #ifndef MM_IMAGE_PLANE_SHAPE_NODE_H
 #define MM_IMAGE_PLANE_SHAPE_NODE_H
 
-// STL
-#include <assert.h>
-
 // Maya
 #include <maya/MArrayDataBuilder.h>
 #include <maya/MColor.h>

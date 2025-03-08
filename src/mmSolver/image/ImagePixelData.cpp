@@ -26,7 +26,6 @@
 #include <cmath>
 
 // STL
-#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <string>

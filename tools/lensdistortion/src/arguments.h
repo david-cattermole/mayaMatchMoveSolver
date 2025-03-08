@@ -25,6 +25,7 @@
 #include <mmSolver/buildConstant.h>
 #include <mmimage/mmimage.h>
 #include <mmlens/mmlens.h>
+#include <mmsolverlibs/assert.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -154,7 +155,8 @@ NUM_TYPE convert_string_to_number(const std::string& text) {
 }
 
 bool parse_arguments(const int argc, const char* argv[], Arguments& args) {
-    assert(argc > 0);
+    MMSOLVER_CORE_ASSERT(
+        argc > 0, "Not enough arguments available. This should never happen.");
     if (argc == 1) {
         print_help(argv[0]);
         return false;

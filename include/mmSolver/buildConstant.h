@@ -41,11 +41,11 @@ const char* const project_description();
 const char* const project_author();
 const char* const project_copyright();
 
-const char* const project_source_dir();
-const char* const project_build_date_time();
-const char* const project_git_branch();
-const char* const project_git_commit_hash_long();
-const char* const project_git_commit_hash_short();
+const char* const source_dir();
+const char* const build_date_time();
+const char* const git_branch();
+const char* const git_commit_hash_long();
+const char* const git_commit_hash_short();
 
 const char* const cxx_compiler();
 const char* const cxx_linker();

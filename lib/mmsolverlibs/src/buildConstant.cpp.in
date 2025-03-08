@@ -40,17 +40,11 @@ const char* const project_description() { return "@PROJECT_DESCRIPTION@"; };
 const char* const project_author() { return "@PROJECT_AUTHOR@"; };
 const char* const project_copyright() { return "@PROJECT_COPYRIGHT@"; };
 
-const char* const project_source_dir() { return "@PROJECT_SOURCE_DIR@"; };
-const char* const project_build_date_time() {
-    return "@PROJECT_BUILD_DATE_TIME@";
-};
-const char* const project_git_branch() { return "@PROJECT_GIT_BRANCH@"; };
-const char* const project_git_commit_hash_long() {
-    return "@PROJECT_GIT_COMMIT_HASH_LONG@";
-};
-const char* const project_git_commit_hash_short() {
-    return "@PROJECT_GIT_COMMIT_HASH_SHORT@";
-};
+const char* const source_dir() { return "@CMAKE_SOURCE_DIR@"; };
+const char* const build_date_time() { return "@BUILD_DATE_TIME@"; };
+const char* const git_branch() { return "@GIT_BRANCH@"; };
+const char* const git_commit_hash_long() { return "@GIT_COMMIT_HASH_LONG@"; };
+const char* const git_commit_hash_short() { return "@GIT_COMMIT_HASH_SHORT@"; };
 
 const char* const cxx_compiler() {
     return "id=@CMAKE_CXX_COMPILER_ID@ "

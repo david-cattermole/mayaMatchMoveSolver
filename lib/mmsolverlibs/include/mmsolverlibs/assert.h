@@ -53,33 +53,30 @@
 #endif
 
 // Define your project root directory path
-#ifndef MMASSERT_PROJECT_SOURCE_DIR
-#define MMASSERT_PROJECT_SOURCE_DIR \
-    ::mmsolverlibs::build_info::project_source_dir()
+#ifndef MMASSERT_SOURCE_DIR
+#define MMASSERT_SOURCE_DIR ::mmsolverlibs::build_info::source_dir()
 #endif
 
 // Project's build date/time.
-#ifndef MMASSERT_PROJECT_BUILD_DATE_TIME
-#define MMASSERT_PROJECT_BUILD_DATE_TIME \
-    ::mmsolverlibs::build_info::project_build_date_time()
+#ifndef MMASSERT_BUILD_DATE_TIME
+#define MMASSERT_BUILD_DATE_TIME ::mmsolverlibs::build_info::build_date_time()
 #endif
 
 // Project's git branch name string.
-#ifndef MMASSERT_PROJECT_GIT_BRANCH
-#define MMASSERT_PROJECT_GIT_BRANCH \
-    ::mmsolverlibs::build_info::project_git_branch()
+#ifndef MMASSERT_GIT_BRANCH
+#define MMASSERT_GIT_BRANCH ::mmsolverlibs::build_info::git_branch()
 #endif
 
 // Project's git commit long hash string.
-#ifndef MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG
-#define MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG \
-    ::mmsolverlibs::build_info::project_git_commit_hash_long()
+#ifndef MMASSERT_GIT_COMMIT_HASH_LONG
+#define MMASSERT_GIT_COMMIT_HASH_LONG \
+    ::mmsolverlibs::build_info::git_commit_hash_long()
 #endif
 
 // Project's git commit short hash string.
-#ifndef MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT
-#define MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT \
-    ::mmsolverlibs::build_info::project_git_commit_hash_short()
+#ifndef MMASSERT_GIT_COMMIT_HASH_SHORT
+#define MMASSERT_GIT_COMMIT_HASH_SHORT \
+    ::mmsolverlibs::build_info::git_commit_hash_short()
 #endif
 
 // Project's C++ compiler details string.
@@ -99,7 +96,7 @@ namespace {
 
 // Helper function to get relative file path
 inline const char* get_relative_path(const char* file) {
-    const char* project_root = MMASSERT_PROJECT_SOURCE_DIR;
+    const char* project_root = MMASSERT_SOURCE_DIR;
     if (project_root[0] == '\0') {
         return file;  // No project root defined, return full path
     }
@@ -122,18 +119,17 @@ inline void ostream_add_function_line(std::ostream& ostream, const char* file,
 inline void ostream_add_build_info_end(std::ostream& ostream) {
     const auto project_name = MMASSERT_PROJECT_NAME;
     const auto project_version = MMASSERT_PROJECT_VERSION;
-    const auto project_build_date_time = MMASSERT_PROJECT_BUILD_DATE_TIME;
-    const auto project_git_branch = MMASSERT_PROJECT_GIT_BRANCH;
-    const auto project_git_commit_hash_long =
-        MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG;
+    const auto build_date_time = MMASSERT_BUILD_DATE_TIME;
+    const auto git_branch = MMASSERT_GIT_BRANCH;
+    const auto git_commit_hash_long = MMASSERT_GIT_COMMIT_HASH_LONG;
     const auto cxx_compiler = MMASSERT_CXX_COMPILER;
     const auto cxx_linker = MMASSERT_CXX_LINKER;
 
     ostream << "- Project: " << project_name << "\n"
             << "- Project Version: " << project_version << "\n"
-            << "- Build Date-Time: " << project_build_date_time << "\n"
-            << "- Git Branch: " << project_git_branch << "\n"
-            << "- Git Commit: " << project_git_commit_hash_long << "\n"
+            << "- Build Date-Time: " << build_date_time << "\n"
+            << "- Git Branch: " << git_branch << "\n"
+            << "- Git Commit: " << git_commit_hash_long << "\n"
             << "- C++ Compiler: " << cxx_compiler << "\n"
             << "- C++ Linker: " << cxx_linker << std::endl;
 }
@@ -259,11 +255,11 @@ inline void print_todo(std::ostream& ostream, const char* file, const int line,
 // Clean up the defines made in this file.
 #undef MMASSERT_PROJECT_NAME
 #undef MMASSERT_PROJECT_VERSION
-#undef MMASSERT_PROJECT_SOURCE_DIR
-#undef MMASSERT_PROJECT_BUILD_DATE_TIME
-#undef MMASSERT_PROJECT_GIT_BRANCH
-#undef MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG
-#undef MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT
+#undef MMASSERT_SOURCE_DIR
+#undef MMASSERT_BUILD_DATE_TIME
+#undef MMASSERT_GIT_BRANCH
+#undef MMASSERT_GIT_COMMIT_HASH_LONG
+#undef MMASSERT_GIT_COMMIT_HASH_SHORT
 #undef MMASSERT_CXX_COMPILER
 #undef MMASSERT_CXX_LINKER
 

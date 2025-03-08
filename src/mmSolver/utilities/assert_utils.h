@@ -50,10 +50,8 @@
     ::mmsolver::build_info::project_git_commit_hash_long()
 #define MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT \
     ::mmsolver::build_info::project_git_commit_hash_short()
-#define MMASSERT_CXX_COMPILER \
-    ::mmsolver::build_info::cxx_compiler()
-#define MMASSERT_CXX_LINKER \
-    ::mmsolver::build_info::cxx_linker()
+#define MMASSERT_CXX_COMPILER ::mmsolver::build_info::cxx_compiler()
+#define MMASSERT_CXX_LINKER ::mmsolver::build_info::cxx_linker()
 
 // MM Solver Libs
 #include <mmsolverlibs/assert.h>

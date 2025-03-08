@@ -135,8 +135,7 @@ inline void ostream_add_build_info_end(std::ostream& ostream) {
             << "- Git Branch: " << project_git_branch << "\n"
             << "- Git Commit: " << project_git_commit_hash_long << "\n"
             << "- C++ Compiler: " << cxx_compiler << "\n"
-            << "- C++ Linker: " << cxx_linker
-            << std::endl;
+            << "- C++ Linker: " << cxx_linker << std::endl;
 }
 
 }  // namespace

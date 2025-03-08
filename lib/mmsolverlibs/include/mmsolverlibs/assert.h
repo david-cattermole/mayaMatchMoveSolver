@@ -52,9 +52,19 @@
 #define MMASSERT_PROJECT_VERSION ::mmsolverlibs::build_info::project_version()
 #endif
 
+// Project's System.
+#ifndef MMASSERT_SYSTEM
+#define MMASSERT_SYSTEM ::mmsolverlibs::build_info::system()
+#endif
+
 // Define your project root directory path
 #ifndef MMASSERT_SOURCE_DIR
 #define MMASSERT_SOURCE_DIR ::mmsolverlibs::build_info::source_dir()
+#endif
+
+// Project's build type.
+#ifndef MMASSERT_BUILD_TYPE
+#define MMASSERT_BUILD_TYPE ::mmsolverlibs::build_info::build_type()
 #endif
 
 // Project's build date/time.
@@ -77,6 +87,16 @@
 #ifndef MMASSERT_GIT_COMMIT_HASH_SHORT
 #define MMASSERT_GIT_COMMIT_HASH_SHORT \
     ::mmsolverlibs::build_info::git_commit_hash_short()
+#endif
+
+// Project's CMake version.
+#ifndef MMASSERT_CMAKE_VERSION
+#define MMASSERT_CMAKE_VERSION ::mmsolverlibs::build_info::cmake_version()
+#endif
+
+// Project's CMake generator.
+#ifndef MMASSERT_CMAKE_GENERATOR
+#define MMASSERT_CMAKE_GENERATOR ::mmsolverlibs::build_info::cmake_generator()
 #endif
 
 // Project's C++ compiler details string.
@@ -119,19 +139,27 @@ inline void ostream_add_function_line(std::ostream& ostream, const char* file,
 inline void ostream_add_build_info_end(std::ostream& ostream) {
     const auto project_name = MMASSERT_PROJECT_NAME;
     const auto project_version = MMASSERT_PROJECT_VERSION;
+    const auto system = MMASSERT_SYSTEM;
+    const auto build_type = MMASSERT_BUILD_TYPE;
     const auto build_date_time = MMASSERT_BUILD_DATE_TIME;
     const auto git_branch = MMASSERT_GIT_BRANCH;
     const auto git_commit_hash_long = MMASSERT_GIT_COMMIT_HASH_LONG;
+    const auto cmake_version = MMASSERT_CMAKE_VERSION;
+    const auto cmake_generator = MMASSERT_CMAKE_GENERATOR;
     const auto cxx_compiler = MMASSERT_CXX_COMPILER;
     const auto cxx_linker = MMASSERT_CXX_LINKER;
 
     ostream << "- Project: " << project_name << "\n"
             << "- Project Version: " << project_version << "\n"
+            << "- System: " << system << "\n"
+            << "- Build Type: " << build_type << "\n"
             << "- Build Date-Time: " << build_date_time << "\n"
             << "- Git Branch: " << git_branch << "\n"
             << "- Git Commit: " << git_commit_hash_long << "\n"
+            << "- CMake Version: " << cmake_version << "\n"
+            << "- CMake Generator: " << cmake_generator << "\n"
             << "- C++ Compiler: " << cxx_compiler << "\n"
-            << "- C++ Linker: " << cxx_linker << std::endl;
+            << "- C++ Linker: " << cxx_linker << "\n";
 }
 
 }  // namespace
@@ -143,6 +171,7 @@ inline void print_assert(std::ostream& ostream, const char* file,
             << "- Condition: " << expr << "\n";
     ostream_add_function_line(ostream, file, line, func);
     ostream_add_build_info_end(ostream);
+    ostream << std::flush;
 }
 
 inline void print_check(std::ostream& ostream, const char* file, const int line,
@@ -152,6 +181,7 @@ inline void print_check(std::ostream& ostream, const char* file, const int line,
             << "- Condition: " << expr << "\n";
     ostream_add_function_line(ostream, file, line, func);
     ostream_add_build_info_end(ostream);
+    ostream << std::flush;
 }
 
 inline void print_panic(std::ostream& ostream, const char* file, const int line,
@@ -159,6 +189,7 @@ inline void print_panic(std::ostream& ostream, const char* file, const int line,
     ostream << "PANIC! '" << msg << "'\n";
     ostream_add_function_line(ostream, file, line, func);
     ostream_add_build_info_end(ostream);
+    ostream << std::flush;
 }
 
 inline void print_todo(std::ostream& ostream, const char* file, const int line,
@@ -166,6 +197,7 @@ inline void print_todo(std::ostream& ostream, const char* file, const int line,
     ostream << "TODO! '" << msg << "'\n";
     ostream_add_function_line(ostream, file, line, func);
     ostream_add_build_info_end(ostream);
+    ostream << std::flush;
 }
 
 }  // namespace assert
@@ -255,11 +287,15 @@ inline void print_todo(std::ostream& ostream, const char* file, const int line,
 // Clean up the defines made in this file.
 #undef MMASSERT_PROJECT_NAME
 #undef MMASSERT_PROJECT_VERSION
+#undef MMASSERT_SYSTEM
 #undef MMASSERT_SOURCE_DIR
+#undef MMASSERT_BUILD_TYPE
 #undef MMASSERT_BUILD_DATE_TIME
 #undef MMASSERT_GIT_BRANCH
 #undef MMASSERT_GIT_COMMIT_HASH_LONG
 #undef MMASSERT_GIT_COMMIT_HASH_SHORT
+#undef MMASSERT_CMAKE_VERSION
+#undef MMASSERT_CMAKE_GENERATOR
 #undef MMASSERT_CXX_COMPILER
 #undef MMASSERT_CXX_LINKER
 

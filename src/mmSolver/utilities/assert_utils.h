@@ -33,22 +33,30 @@
 // our needs.
 #undef MMASSERT_PROJECT_NAME
 #undef MMASSERT_PROJECT_VERSION
+#undef MMASSERT_SYSTEM
 #undef MMASSERT_SOURCE_DIR
+#undef MMASSERT_BUILD_TYPE
 #undef MMASSERT_BUILD_DATE_TIME
 #undef MMASSERT_GIT_BRANCH
 #undef MMASSERT_GIT_COMMIT_HASH_LONG
 #undef MMASSERT_GIT_COMMIT_HASH_SHORT
+#undef MMASSERT_CMAKE_VERSION
+#undef MMASSERT_CMAKE_GENERATOR
 #undef MMASSERT_CXX_COMPILER
 #undef MMASSERT_CXX_LINKER
 #define MMASSERT_PROJECT_NAME ::mmsolver::build_info::project_name()
 #define MMASSERT_PROJECT_VERSION ::mmsolver::build_info::project_version()
+#define MMASSERT_SYSTEM ::mmsolver::build_info::system()
 #define MMASSERT_SOURCE_DIR ::mmsolver::build_info::source_dir()
+#define MMASSERT_BUILD_TYPE ::mmsolver::build_info::build_type()
 #define MMASSERT_BUILD_DATE_TIME ::mmsolver::build_info::build_date_time()
 #define MMASSERT_GIT_BRANCH ::mmsolver::build_info::git_branch()
 #define MMASSERT_GIT_COMMIT_HASH_LONG \
     ::mmsolver::build_info::git_commit_hash_long()
 #define MMASSERT_GIT_COMMIT_HASH_SHORT \
     ::mmsolver::build_info::git_commit_hash_short()
+#define MMASSERT_CMAKE_VERSION ::mmsolver::build_info::cmake_version()
+#define MMASSERT_CMAKE_GENERATOR ::mmsolver::build_info::cmake_generator()
 #define MMASSERT_CXX_COMPILER ::mmsolver::build_info::cxx_compiler()
 #define MMASSERT_CXX_LINKER ::mmsolver::build_info::cxx_linker()
 
@@ -82,11 +90,15 @@
 
 #undef MMASSERT_PROJECT_NAME
 #undef MMASSERT_PROJECT_VERSION
+#undef MMASSERT_SYSTEM
 #undef MMASSERT_SOURCE_DIR
+#undef MMASSERT_BUILD_TYPE
 #undef MMASSERT_BUILD_DATE_TIME
 #undef MMASSERT_GIT_BRANCH
 #undef MMASSERT_GIT_COMMIT_HASH_LONG
 #undef MMASSERT_GIT_COMMIT_HASH_SHORT
+#undef MMASSERT_CMAKE_VERSION
+#undef MMASSERT_CMAKE_GENERATOR
 #undef MMASSERT_CXX_COMPILER
 #undef MMASSERT_CXX_LINKER
 

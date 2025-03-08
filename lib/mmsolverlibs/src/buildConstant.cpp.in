@@ -40,12 +40,24 @@ const char* const project_description() { return "@PROJECT_DESCRIPTION@"; };
 const char* const project_author() { return "@PROJECT_AUTHOR@"; };
 const char* const project_copyright() { return "@PROJECT_COPYRIGHT@"; };
 
+const char* const system() {
+    return "name='@CMAKE_SYSTEM_NAME@' "
+           "version='@CMAKE_SYSTEM_VERSION@' "
+           "processor='@CMAKE_SYSTEM_PROCESSOR@'";
+};
 const char* const source_dir() { return "@CMAKE_SOURCE_DIR@"; };
+const char* const build_type() { return "@CMAKE_BUILD_TYPE@"; };
 const char* const build_date_time() { return "@BUILD_DATE_TIME@"; };
 const char* const git_branch() { return "@GIT_BRANCH@"; };
 const char* const git_commit_hash_long() { return "@GIT_COMMIT_HASH_LONG@"; };
 const char* const git_commit_hash_short() { return "@GIT_COMMIT_HASH_SHORT@"; };
-
+const char* const cmake_version() { return "@CMAKE_VERSION@"; };
+const char* const cmake_generator() {
+    return "id=@CMAKE_GENERATOR@ "
+           "toolset='@CMAKE_GENERATOR_TOOLSET@' "
+           "platform='@CMAKE_GENERATOR_PLATFORM@' "
+           "instance='@CMAKE_GENERATOR_INSTANCE@'";
+};
 const char* const cxx_compiler() {
     return "id=@CMAKE_CXX_COMPILER_ID@ "
            "version=@CMAKE_CXX_COMPILER_VERSION@ "

@@ -21,6 +21,7 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+import pprint
 
 import mmSolver.logger
 import mmSolver._api.solveresult as solveresult
@@ -112,7 +113,17 @@ def run_validate_action(vaction):
         return state
 
     # Run validate function
+    LOG.debug(
+        'Running: vfunc=%r vargs=%s vkwargs=%s',
+        vfunc,
+        pprint.pformat(vargs),
+        pprint.pformat(vkwargs),
+    )
     solve_data = vfunc(*vargs, **vkwargs)
+    LOG.debug(
+        'Returned: solve_data=%r',
+        solve_data,
+    )
 
     if vfunc_is_mmsolver is False:
         msg = 'Validated frames: frames=%r'

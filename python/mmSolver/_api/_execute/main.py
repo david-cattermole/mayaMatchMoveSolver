@@ -453,7 +453,17 @@ def execute(
                 collectionutils.run_status_func(info_fn, msg)
 
             # Run Solver Maya plug-in command
+            LOG.debug(
+                'Running: func=%r args=%s kwargs=%s',
+                func,
+                pprint.pformat(args),
+                pprint.pformat(kwargs),
+            )
             solve_data = func(*args, **kwargs)
+            LOG.debug(
+                'Returned: solve_data=%r',
+                solve_data,
+            )
 
             # Revert special HACK for single frame solves
             if func_is_mmsolver is True:

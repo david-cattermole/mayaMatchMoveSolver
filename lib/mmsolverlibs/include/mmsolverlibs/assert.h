@@ -29,6 +29,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <ostream>
 #include <sstream>
 #include <string>
 
@@ -42,47 +43,53 @@
 #endif
 
 // Project's name string.
-#ifndef PROJECT_NAME
-#define PROJECT_NAME MMSOLVER_CORE_PROJECT_NAME
+#ifndef MMASSERT_PROJECT_NAME
+#define MMASSERT_PROJECT_NAME ::mmsolverlibs::build_info::project_name()
 #endif
 
 // Project's version string.
-#ifndef PROJECT_VERSION
-#define PROJECT_VERSION MMSOLVER_CORE_PROJECT_VERSION
+#ifndef MMASSERT_PROJECT_VERSION
+#define MMASSERT_PROJECT_VERSION ::mmsolverlibs::build_info::project_version()
 #endif
 
 // Define your project root directory path
-#ifndef PROJECT_SOURCE_DIR
-#define PROJECT_SOURCE_DIR MMSOLVER_CORE_PROJECT_SOURCE_DIR
+#ifndef MMASSERT_PROJECT_SOURCE_DIR
+#define MMASSERT_PROJECT_SOURCE_DIR \
+    ::mmsolverlibs::build_info::project_source_dir()
 #endif
 
 // Project's build date/time.
-#ifndef PROJECT_BUILD_DATE_TIME
-#define PROJECT_BUILD_DATE_TIME MMSOLVER_CORE_PROJECT_BUILD_DATE_TIME
+#ifndef MMASSERT_PROJECT_BUILD_DATE_TIME
+#define MMASSERT_PROJECT_BUILD_DATE_TIME \
+    ::mmsolverlibs::build_info::project_build_date_time()
 #endif
 
 // Project's git branch name string.
-#ifndef PROJECT_GIT_BRANCH
-#define PROJECT_GIT_BRANCH MMSOLVER_CORE_PROJECT_GIT_BRANCH
+#ifndef MMASSERT_PROJECT_GIT_BRANCH
+#define MMASSERT_PROJECT_GIT_BRANCH \
+    ::mmsolverlibs::build_info::project_git_branch()
 #endif
 
 // Project's git commit long hash string.
-#ifndef PROJECT_GIT_COMMIT_HASH_LONG
-#define PROJECT_GIT_COMMIT_HASH_LONG MMSOLVER_CORE_PROJECT_GIT_COMMIT_HASH_LONG
+#ifndef MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG
+#define MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG \
+    ::mmsolverlibs::build_info::project_git_commit_hash_long()
 #endif
 
 // Project's git commit short hash string.
-#ifndef PROJECT_GIT_COMMIT_HASH_SHORT
-#define PROJECT_GIT_COMMIT_HASH_SHORT \
-    MMSOLVER_CORE_PROJECT_GIT_COMMIT_HASH_SHORT
+#ifndef MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT
+#define MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT \
+    ::mmsolverlibs::build_info::project_git_commit_hash_short()
 #endif
 
 namespace mmsolverlibs {
 namespace assert {
 
+namespace {
+
 // Helper function to get relative file path
 inline const char* get_relative_path(const char* file) {
-    const char* project_root = PROJECT_SOURCE_DIR;
+    const char* project_root = MMASSERT_PROJECT_SOURCE_DIR;
     if (project_root[0] == '\0') {
         return file;  // No project root defined, return full path
     }
@@ -96,111 +103,117 @@ inline const char* get_relative_path(const char* file) {
     return found + std::strlen(project_root);
 }
 
-// TODO: Do not hard-code 'std::cerr', and instead this should be similar to 'debug.h'
-//  and allow a stream object to be passed in. This would allow Maya to print asserts
-//  and checks to the Output Window on Windows.
-inline void print_assert(const char* file, int line, const char* func,
-                         const char* expr, const std::string& msg) {
-    std::cerr << "ASSERT FAILED! '" << msg << "'\n"
-              << "- Condition: " << expr << "\n"
-              << "- File: " << get_relative_path(file) << '(' << line << ")\n"
-              << "- Function: '" << func << "'\n"
-              << "- Project: " << PROJECT_NAME << "\n"
-              << "- Project Version: " << PROJECT_VERSION << "\n"
-              << "- Build Date-Time: " << PROJECT_BUILD_DATE_TIME << "\n"
-              << "- Git Branch: " << PROJECT_GIT_BRANCH << "\n"
-              << "- Git Commit: " << PROJECT_GIT_COMMIT_HASH_LONG << std::endl;
+inline void ostream_add_function_line(std::ostream& ostream, const char* file,
+                                      int line, const char* func) {
+    ostream << "- File: " << get_relative_path(file) << '(' << line << ")\n"
+            << "- Function: '" << func << "'\n";
 }
 
-inline void print_check(const char* file, int line, const char* func,
-                        const char* expr, const std::string& msg) {
-    std::cerr << "CHECK FAILED! '" << msg << "'\n"
-              << "- Condition: " << expr << "\n"
-              << "- File: " << get_relative_path(file) << '(' << line << ")\n"
-              << "- Function: '" << func << "'\n"
-              << "- Project: " << PROJECT_NAME << "\n"
-              << "- Project Version: " << PROJECT_VERSION << "\n"
-              << "- Build Date-Time: " << PROJECT_BUILD_DATE_TIME << "\n"
-              << "- Git Branch: " << PROJECT_GIT_BRANCH << "\n"
-              << "- Git Commit: " << PROJECT_GIT_COMMIT_HASH_LONG << std::endl;
+inline void ostream_add_build_info_end(std::ostream& ostream) {
+    const auto project_name = MMASSERT_PROJECT_NAME;
+    const auto project_version = MMASSERT_PROJECT_VERSION;
+    const auto project_build_date_time = MMASSERT_PROJECT_BUILD_DATE_TIME;
+    const auto project_git_branch = MMASSERT_PROJECT_GIT_BRANCH;
+    const auto project_git_commit_hash_long =
+        MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG;
+
+    ostream << "- Project: " << project_name << "\n"
+            << "- Project Version: " << project_version << "\n"
+            << "- Build Date-Time: " << project_build_date_time << "\n"
+            << "- Git Branch: " << project_git_branch << "\n"
+            << "- Git Commit: " << project_git_commit_hash_long << std::endl;
 }
 
-inline void print_panic(const char* file, int line, const char* func,
+}  // namespace
+
+inline void print_assert(std::ostream& ostream, const char* file,
+                         const int line, const char* func, const char* expr,
+                         const std::string& msg) {
+    ostream << "ASSERT FAILED! '" << msg << "'\n"
+            << "- Condition: " << expr << "\n";
+    ostream_add_function_line(ostream, file, line, func);
+    ostream_add_build_info_end(ostream);
+}
+
+inline void print_check(std::ostream& ostream, const char* file, const int line,
+                        const char* func, const char* expr,
                         const std::string& msg) {
-    std::cerr << "PANIC! '" << msg << "'\n"
-              << "- File: " << get_relative_path(file) << '(' << line << ")\n"
-              << "- Function: '" << func << "'\n"
-              << "- Project: " << PROJECT_NAME << "\n"
-              << "- Project Version: " << PROJECT_VERSION << "\n"
-              << "- Build Date-Time: " << PROJECT_BUILD_DATE_TIME << "\n"
-              << "- Git Branch: " << PROJECT_GIT_BRANCH << "\n"
-              << "- Git Commit: " << PROJECT_GIT_COMMIT_HASH_LONG << std::endl;
+    ostream << "CHECK FAILED! '" << msg << "'\n"
+            << "- Condition: " << expr << "\n";
+    ostream_add_function_line(ostream, file, line, func);
+    ostream_add_build_info_end(ostream);
 }
 
-inline void print_todo(const char* file, int line, const char* func,
-                       const std::string& msg) {
-    std::cerr << "TODO! '" << msg << "'\n"
-              << "- File: " << get_relative_path(file) << '(' << line << ")\n"
-              << "- Function: '" << func << "'\n"
-              << "- Project: " << PROJECT_NAME << "\n"
-              << "- Project Version: " << PROJECT_VERSION << "\n"
-              << "- Build Date-Time: " << PROJECT_BUILD_DATE_TIME << "\n"
-              << "- Git Branch: " << PROJECT_GIT_BRANCH << "\n"
-              << "- Git Commit: " << PROJECT_GIT_COMMIT_HASH_LONG << std::endl;
+inline void print_panic(std::ostream& ostream, const char* file, const int line,
+                        const char* func, const std::string& msg) {
+    ostream << "PANIC! '" << msg << "'\n";
+    ostream_add_function_line(ostream, file, line, func);
+    ostream_add_build_info_end(ostream);
+}
+
+inline void print_todo(std::ostream& ostream, const char* file, const int line,
+                       const char* func, const std::string& msg) {
+    ostream << "TODO! '" << msg << "'\n";
+    ostream_add_function_line(ostream, file, line, func);
+    ostream_add_build_info_end(ostream);
 }
 
 }  // namespace assert
 }  // namespace mmsolverlibs
 
 // Always enabled assert that will abort.
-#define MMSOLVER_CORE_ASSERT(condition, ...)                                   \
-    do {                                                                       \
-        if (!(condition)) {                                                    \
-            std::stringstream ss;                                              \
-            ss << __VA_ARGS__;                                                 \
-            ::mmsolverlibs::assert::print_assert(__FILE__, __LINE__, __func__, \
-                                                 #condition, ss.str());        \
-            std::abort();                                                      \
-        }                                                                      \
+#define MMSOLVER_CORE_ASSERT(condition, ...)                            \
+    do {                                                                \
+        if (!(condition)) {                                             \
+            std::stringstream ss;                                       \
+            ss << __VA_ARGS__;                                          \
+            ::mmsolverlibs::assert::print_assert(std::cerr, __FILE__,   \
+                                                 __LINE__, __func__,    \
+                                                 #condition, ss.str()); \
+            std::abort();                                               \
+        }                                                               \
     } while (0)
 
 // Debug-only assert that will abort.
 #if MMSOLVER_CORE_DEBUG
-#define MMSOLVER_CORE_ASSERT_DEBUG(condition, ...)                             \
-    do {                                                                       \
-        if (!(condition)) {                                                    \
-            std::stringstream ss;                                              \
-            ss << __VA_ARGS__;                                                 \
-            ::mmsolverlibs::assert::print_assert(__FILE__, __LINE__, __func__, \
-                                                 #condition, ss.str());        \
-            std::abort();                                                      \
-        }                                                                      \
+#define MMSOLVER_CORE_ASSERT_DEBUG(condition, ...)                      \
+    do {                                                                \
+        if (!(condition)) {                                             \
+            std::stringstream ss;                                       \
+            ss << __VA_ARGS__;                                          \
+            ::mmsolverlibs::assert::print_assert(std::cerr, __FILE__,   \
+                                                 __LINE__, __func__,    \
+                                                 #condition, ss.str()); \
+            std::abort();                                               \
+        }                                                               \
     } while (0)
 #else
 #define MMSOLVER_CORE_ASSERT_DEBUG(condition, ...) ((void)0)
 #endif
 
 // Always enabled check that will continue.
-#define MMSOLVER_CORE_CHECK(condition, ...)                                   \
-    do {                                                                      \
-        if (!(condition)) {                                                   \
-            std::stringstream ss;                                             \
-            ss << __VA_ARGS__;                                                \
-            ::mmsolverlibs::assert::print_check(__FILE__, __LINE__, __func__, \
-                                                #condition, ss.str());        \
-        }                                                                     \
+#define MMSOLVER_CORE_CHECK(condition, ...)                                    \
+    do {                                                                       \
+        if (!(condition)) {                                                    \
+            std::stringstream ss;                                              \
+            ss << __VA_ARGS__;                                                 \
+            ::mmsolverlibs::assert::print_check(std::cerr, __FILE__, __LINE__, \
+                                                __func__, #condition,          \
+                                                ss.str());                     \
+        }                                                                      \
     } while (0)
 
 // Debug-only check that will continue.
 #if MMSOLVER_CORE_DEBUG
-#define MMSOLVER_CORE_CHECK_DEBUG(condition, ...)                             \
-    do {                                                                      \
-        if (!(condition)) {                                                   \
-            std::stringstream ss;                                             \
-            ss << __VA_ARGS__;                                                \
-            ::mmsolverlibs::assert::print_check(__FILE__, __LINE__, __func__, \
-                                                #condition, ss.str());        \
-        }                                                                     \
+#define MMSOLVER_CORE_CHECK_DEBUG(condition, ...)                              \
+    do {                                                                       \
+        if (!(condition)) {                                                    \
+            std::stringstream ss;                                              \
+            ss << __VA_ARGS__;                                                 \
+            ::mmsolverlibs::assert::print_check(std::cerr, __FILE__, __LINE__, \
+                                                __func__, #condition,          \
+                                                ss.str());                     \
+        }                                                                      \
     } while (0)
 #else
 #define MMSOLVER_CORE_CHECK_DEBUG(condition, ...) ((void)0)
@@ -210,23 +223,23 @@ inline void print_todo(const char* file, int line, const char* func,
 // happened.
 //
 // Similar to the "panic!()" macro in Rust.
-#define MMSOLVER_CORE_PANIC(...)                                          \
-    do {                                                                  \
-        std::stringstream ss;                                             \
-        ss << __VA_ARGS__;                                                \
-        ::mmsolverlibs::assert::print_panic(__FILE__, __LINE__, __func__, \
-                                            ss.str());                    \
-        std::abort();                                                     \
+#define MMSOLVER_CORE_PANIC(...)                                           \
+    do {                                                                   \
+        std::stringstream ss;                                              \
+        ss << __VA_ARGS__;                                                 \
+        ::mmsolverlibs::assert::print_panic(std::cerr, __FILE__, __LINE__, \
+                                            __func__, ss.str());           \
+        std::abort();                                                      \
     } while (0)
 
 // Quit the program, showing a message why and where the failure happened.
-#define MMSOLVER_CORE_TODO(...)                                          \
-    do {                                                                 \
-        std::stringstream ss;                                            \
-        ss << __VA_ARGS__;                                               \
-        ::mmsolverlibs::assert::print_todo(__FILE__, __LINE__, __func__, \
-                                           ss.str());                    \
-        std::abort();                                                    \
+#define MMSOLVER_CORE_TODO(...)                                           \
+    do {                                                                  \
+        std::stringstream ss;                                             \
+        ss << __VA_ARGS__;                                                \
+        ::mmsolverlibs::assert::print_todo(std::cerr, __FILE__, __LINE__, \
+                                           __func__, ss.str());           \
+        std::abort();                                                     \
     } while (0)
 
 #endif  // MM_SOLVER_LIBS_ASSERT_H

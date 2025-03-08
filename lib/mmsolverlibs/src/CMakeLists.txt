@@ -22,7 +22,6 @@ set(MMSOLVERLIBS_CXXBRIDGE_EXE "/path/to/cxxbridge/executable/cxxbridge" CACHE P
   "The path to the cxxbridge executable file.")
 
 set(main_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../include)
-set(build_include_dir ${CMAKE_BINARY_DIR}/include)
 set(mmcolorio_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcolorio/include)
 set(mmcolorio_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcolorio/src)
 set(mmcore_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcore/include)
@@ -34,8 +33,18 @@ set(mmlens_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmlens/src)
 set(mmscenegraph_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmscenegraph/include)
 set(mmscenegraph_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmscenegraph/src)
 
+# Create C++ Source file with some build info baked in.
+set(main_build_constant_input_file ${CMAKE_CURRENT_SOURCE_DIR}/buildConstant.cpp.in)
+set(main_build_constant_output_file ${CMAKE_CURRENT_BINARY_DIR}/buildConstant.cpp)
+configure_file(
+  ${main_build_constant_input_file}
+  ${main_build_constant_output_file}
+  @ONLY)
+
 # C++ Source Code
 set(lib_source_files
+  ${main_build_constant_output_file}
+
   ${mmcolorio_source_dir}/lib.cpp
 
   ${mmcore_source_dir}/_cxxbridge.cpp
@@ -115,7 +124,6 @@ mmcolorio_target_include_packages(${cpp_lib_name})
 
 target_include_directories(${cpp_lib_name}
   PUBLIC $<BUILD_INTERFACE:${main_include_dir}>
-  PUBLIC $<BUILD_INTERFACE:${build_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmcolorio_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmcore_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmlens_include_dir}>
@@ -137,6 +145,5 @@ install(DIRECTORY
   "${mmlens_include_dir}/"
   "${mmscenegraph_include_dir}/"
   "${main_include_dir}/"
-  "${build_include_dir}/"
   DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
   FILES_MATCHING PATTERN "*.h")

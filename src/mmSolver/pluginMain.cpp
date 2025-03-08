@@ -203,8 +203,8 @@
     }
 
 #undef PLUGIN_COMPANY  // Maya API defines this, we override it.
-#define PLUGIN_COMPANY PROJECT_NAME
-#define PLUGIN_VERSION PROJECT_VERSION
+#define PLUGIN_COMPANY ::mmsolver::build_info::project_name()
+#define PLUGIN_VERSION ::mmsolver::build_info::project_version()
 
 // Register with Maya
 MStatus initializePlugin(MObject obj) {
@@ -212,7 +212,7 @@ MStatus initializePlugin(MObject obj) {
     MFnPlugin plugin(obj, PLUGIN_COMPANY, PLUGIN_VERSION, "Any");
     bool verbose = false;
 
-    MMSOLVER_MAYA_VRB("Loading " << MODULE_FULL_NAME);
+    MMSOLVER_MAYA_VRB("Loading " << ::mmsolver::build_info::module_full_name());
 
     // Register data types first, so the nodes and commands below can
     // reference them.
@@ -613,7 +613,7 @@ MStatus initializePlugin(MObject obj) {
     status = MGlobal::executeCommand(startup_cmd, displayEnabled, undoEnabled);
     CHECK_MSTATUS(status);
 
-    MMSOLVER_MAYA_INFO("Loaded " << MODULE_FULL_NAME);
+    MMSOLVER_MAYA_INFO("Loaded " << ::mmsolver::build_info::module_full_name());
 
     return status;
 }
@@ -624,7 +624,8 @@ MStatus uninitializePlugin(MObject obj) {
     MFnPlugin plugin(obj);
     bool verbose = false;
 
-    MMSOLVER_MAYA_VRB("Uninitializing " << MODULE_FULL_NAME);
+    MMSOLVER_MAYA_VRB("Uninitializing "
+                      << ::mmsolver::build_info::module_full_name());
 
 #if MMSOLVER_BUILD_RENDERER == 1
     MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
@@ -763,7 +764,8 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_DATA(plugin, mmsolver::MMLensData::typeName(),
                     mmsolver::MMLensData::m_id, status);
 
-    MMSOLVER_MAYA_INFO(MODULE_FULL_NAME << " Unloaded");
+    MMSOLVER_MAYA_INFO(::mmsolver::build_info::module_full_name()
+                       << " Unloaded");
 
     return status;
 }

@@ -22,10 +22,10 @@
 #ifndef MM_SOLVER_LENS_DISTORTION_ARGUMENTS_H
 #define MM_SOLVER_LENS_DISTORTION_ARGUMENTS_H
 
-#include <mmSolver/buildConstant.h>
 #include <mmimage/mmimage.h>
 #include <mmlens/mmlens.h>
 #include <mmsolverlibs/assert.h>
+#include <mmsolverlibs/buildConstant.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -76,8 +76,9 @@ mmlens::DistortionDirection convert_distortion_direction(Direction value) {
 }
 
 std::string query_software_name() {
+    const auto project_version = ::mmsolverlibs::build_info::project_version();
     std::stringstream software_name_join;
-    software_name_join << EXR_METADATA_SOFTWARE_NAME << " v" << PROJECT_VERSION;
+    software_name_join << EXR_METADATA_SOFTWARE_NAME << " v" << project_version;
     return software_name_join.str();
 }
 
@@ -94,16 +95,22 @@ struct Arguments {
 };
 
 void print_version() {
-    std::cout << TOOL_EXECUTABLE_NAME << " v" << PROJECT_VERSION << std::endl;
+    const auto project_version = ::mmsolverlibs::build_info::project_version();
+    std::cout << TOOL_EXECUTABLE_NAME << " v" << project_version << std::endl;
 }
 
 void print_description(const char* this_executable_file) {
+    const auto project_name = ::mmsolverlibs::build_info::project_name();
+    const auto project_copyright =
+        ::mmsolverlibs::build_info::project_copyright();
+    const auto project_homepage_url =
+        ::mmsolverlibs::build_info::project_homepage_url();
     std::cout << this_executable_file << '\n'
               << TOOL_DESCRIPTION << '\n'
               << '\n'
-              << "This tool is part of " << PROJECT_NAME << ".\n"
-              << PROJECT_NAME << " is copyright " << PROJECT_COPYRIGHT << '\n'
-              << PROJECT_HOMEPAGE_URL << '\n'
+              << "This tool is part of " << project_name << ".\n"
+              << project_name << " is copyright " << project_copyright << '\n'
+              << project_homepage_url << '\n'
               << std::endl;
 }
 

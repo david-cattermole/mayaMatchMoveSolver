@@ -86,7 +86,6 @@ message(STATUS "Rust Depend On Libraries: ${rust_depend_on_libraries}")
 option(MMSOLVER_DOWNLOAD_DEPENDENCIES "Automatically download and build missing dependencies?" ON)
 include(FindAndBuildLdpkPackages)
 
-add_subdirectory(mmsolverlibs/include)
 add_subdirectory(mmsolverlibs/src)
 
 option(MMSOLVERLIBS_BUILD_TESTS "Do you want to build the test files for mmsolverlibs?" OFF)

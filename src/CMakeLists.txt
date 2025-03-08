@@ -23,8 +23,17 @@
 # find binaries releative to the current binary.
 set(CMAKE_MACOSX_RPATH 1)
 
+# Create C++ Source file with some build info baked in.
+set(main_build_constant_input_file ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/buildConstant.cpp.in)
+set(main_build_constant_output_file ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/buildConstant.cpp)
+configure_file(
+  ${main_build_constant_input_file}
+  ${main_build_constant_output_file}
+  @ONLY)
+
 # Source
 set(SOURCE_FILES
+  ${main_build_constant_output_file}
   mmSolver/adjust/adjust_base.cpp
   mmSolver/adjust/adjust_ceres_base.cpp
   mmSolver/adjust/adjust_ceres_lmder.cpp
@@ -172,9 +181,6 @@ target_include_directories(mmSolver
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../external/openMVG/src/
-
-  # For generated 'buildConstant.h' file.
-  PRIVATE ${CMAKE_BINARY_DIR}/include
 )
 
 # On Linux the 'm' library is required.

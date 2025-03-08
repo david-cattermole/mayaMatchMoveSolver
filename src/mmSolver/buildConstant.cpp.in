@@ -1,0 +1,61 @@
+/*
+ * Copyright (C) 2019, 2025 David Cattermole.
+ *
+ * This file is part of mmSolver.
+ *
+ * mmSolver is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * mmSolver is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+ * ====================================================================
+ *
+ * This file lists fields to be filled in by CMake as it builds and
+ * configures the mmSolver project.
+ *
+ */
+
+#include <mmSolver/buildConstant.h>
+
+namespace mmsolver {
+namespace build_info {
+
+const char* const project_name() { return "@PROJECT_NAME@"; };
+
+const char* const project_version_major() { return "@PROJECT_VERSION_MAJOR@"; };
+const char* const project_version_minor() { return "@PROJECT_VERSION_MINOR@"; };
+const char* const project_version_patch() { return "@PROJECT_VERSION_PATCH@"; };
+const char* const project_version_tweak() { return "@PROJECT_VERSION_TWEAK@"; };
+const char* const project_version() { return "@PROJECT_VERSION@"; };
+
+const char* const project_homepage_url() { return "@PROJECT_HOMEPAGE_URL@"; };
+const char* const project_description() { return "@PROJECT_DESCRIPTION@"; };
+const char* const project_author() { return "@PROJECT_AUTHOR@"; };
+const char* const project_copyright() { return "@PROJECT_COPYRIGHT@"; };
+
+const char* const project_source_dir() { return "@PROJECT_SOURCE_DIR@"; };
+const char* const project_build_date_time() {
+    return "@PROJECT_BUILD_DATE_TIME@";
+};
+const char* const project_git_branch() { return "@PROJECT_GIT_BRANCH@"; };
+const char* const project_git_commit_hash_long() {
+    return "@PROJECT_GIT_COMMIT_HASH_LONG@";
+};
+const char* const project_git_commit_hash_short() {
+    return "@PROJECT_GIT_COMMIT_HASH_SHORT@";
+};
+
+const char* const maya_version() { return "@MAYA_VERSION@"; };
+const char* const module_os_name() { return "@MODULE_OS_NAME@"; };
+const char* const module_full_name() { return "@MODULE_FULL_NAME@"; };
+const char* const default_solver() { return "@DEFAULT_SOLVER@"; };
+
+}  // namespace build_info
+}  // namespace mmsolver

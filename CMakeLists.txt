@@ -116,11 +116,6 @@ include(MMSolverUtils)
 # Build features
 add_subdirectory(share)
 
-# C++ include files
-if (MMSOLVER_BUILD_PLUGIN OR MMSOLVER_BUILD_TOOLS)
-  add_subdirectory(include)
-endif ()
-
 if (MMSOLVER_BUILD_PLUGIN)
   # Finds and builds external (third-party) dependencies.
   include(FindAndBuildExternalPackages)

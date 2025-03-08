@@ -48,9 +48,6 @@ mmcolorio_target_link_packages(${lensdistortion_exe_name})
 
 target_include_directories(${lensdistortion_exe_name}
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
-
-  # For generated 'buildConstant.h' file.
-  PRIVATE ${CMAKE_BINARY_DIR}/include
 )
 
 install_target_executable_to_module(${lensdistortion_exe_name} "${MODULE_FULL_NAME}")

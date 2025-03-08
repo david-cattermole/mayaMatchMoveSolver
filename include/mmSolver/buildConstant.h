@@ -25,28 +25,36 @@
 #ifndef MM_SOLVER_BUILD_CONSTANT_H
 #define MM_SOLVER_BUILD_CONSTANT_H
 
-#define PROJECT_NAME "@PROJECT_NAME@"
+namespace mmsolver {
+namespace build_info {
 
-#define PROJECT_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@"
-#define PROJECT_VERSION_MINOR "@PROJECT_VERSION_MINOR@"
-#define PROJECT_VERSION_PATCH "@PROJECT_VERSION_PATCH@"
-#define PROJECT_VERSION_TWEAK "@PROJECT_VERSION_TWEAK@"
-#define PROJECT_VERSION "@PROJECT_VERSION@"
+const char* const project_name();
 
-#define PROJECT_HOMEPAGE_URL "@PROJECT_HOMEPAGE_URL@"
-#define PROJECT_DESCRIPTION "@PROJECT_DESCRIPTION@"
-#define PROJECT_AUTHOR "@PROJECT_AUTHOR@"
-#define PROJECT_COPYRIGHT "@PROJECT_COPYRIGHT@"
+const char* const project_version_major();
+const char* const project_version_minor();
+const char* const project_version_patch();
+const char* const project_version_tweak();
+const char* const project_version();
 
-#define PROJECT_SOURCE_DIR "@PROJECT_SOURCE_DIR@"
-#define PROJECT_BUILD_DATE_TIME "@PROJECT_BUILD_DATE_TIME@"
-#define PROJECT_GIT_BRANCH "@PROJECT_GIT_BRANCH@"
-#define PROJECT_GIT_COMMIT_HASH_LONG "@PROJECT_GIT_COMMIT_HASH_LONG@"
-#define PROJECT_GIT_COMMIT_HASH_SHORT "@PROJECT_GIT_COMMIT_HASH_SHORT@"
+const char* const project_homepage_url();
+const char* const project_description();
+const char* const project_author();
+const char* const project_copyright();
 
-#define MAYA_VERSION "@MAYA_VERSION@"
-#define MODULE_OS_NAME "@MODULE_OS_NAME@"
-#define MODULE_FULL_NAME "@MODULE_FULL_NAME@"
-#define DEFAULT_SOLVER "@DEFAULT_SOLVER@"
+const char* const project_source_dir();
+const char* const project_build_date_time();
+const char* const project_git_branch();
+const char* const project_git_commit_hash_long();
+const char* const project_git_commit_hash_short();
+
+// TODO: Add compiler details.
+
+const char* const maya_version();
+const char* const module_os_name();
+const char* const module_full_name();
+const char* const default_solver();
+
+}  // namespace build_info
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_BUILD_CONSTANT_H

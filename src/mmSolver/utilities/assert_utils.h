@@ -27,6 +27,28 @@
 // here override the 'mmsolverlibs' default values.
 #include <mmSolver/buildConstant.h>
 
+// These defines are used in 'mmsolverlibs/assert.h' (and therefore
+// must be defined before including 'mmsolverlibs/assert.h'), so
+// defining these allows us to override so we configure the asserts to
+// our needs.
+#undef MMASSERT_PROJECT_NAME
+#undef MMASSERT_PROJECT_VERSION
+#undef MMASSERT_PROJECT_SOURCE_DIR
+#undef MMASSERT_PROJECT_BUILD_DATE_TIME
+#undef MMASSERT_PROJECT_GIT_BRANCH
+#undef MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG
+#undef MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT
+#define MMASSERT_PROJECT_NAME ::mmsolver::build_info::project_name()
+#define MMASSERT_PROJECT_VERSION ::mmsolver::build_info::project_version()
+#define MMASSERT_PROJECT_SOURCE_DIR ::mmsolver::build_info::project_source_dir()
+#define MMASSERT_PROJECT_BUILD_DATE_TIME \
+    ::mmsolver::build_info::project_build_date_time()
+#define MMASSERT_PROJECT_GIT_BRANCH ::mmsolver::build_info::project_git_branch()
+#define MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG \
+    ::mmsolver::build_info::project_git_commit_hash_long()
+#define MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT \
+    ::mmsolver::build_info::project_git_commit_hash_short()
+
 // MM Solver Libs
 #include <mmsolverlibs/assert.h>
 
@@ -54,5 +76,13 @@
 
 // Quit the program, showing a message why and where the failure happened.
 #define MMSOLVER_TODO(...) MMSOLVER_CORE_TODO(##__VA_ARGS__)
+
+#undef MMASSERT_PROJECT_NAME
+#undef MMASSERT_PROJECT_VERSION
+#undef MMASSERT_PROJECT_SOURCE_DIR
+#undef MMASSERT_PROJECT_BUILD_DATE_TIME
+#undef MMASSERT_PROJECT_GIT_BRANCH
+#undef MMASSERT_PROJECT_GIT_COMMIT_HASH_LONG
+#undef MMASSERT_PROJECT_GIT_COMMIT_HASH_SHORT
 
 #endif  // MM_SOLVER_ASSERT_UTILS_H

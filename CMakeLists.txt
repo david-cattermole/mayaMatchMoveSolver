@@ -1,4 +1,4 @@
-# Copyright (C) 2019, 2020 David Cattermole.
+# Copyright (C) 2019, 2020, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -109,6 +109,17 @@ set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH "Maya libra
 # "cminpack_lmder" is the best performing (for now). "ceres" is
 # planned for a future release.
 set(DEFAULT_SOLVER "cminpack_lmder")
+
+
+# Ensure compile_commands.json is generated as part of the build, for
+# clang-tidy to use.
+#
+# We must have CMAKE_EXPORT_COMPILE_COMMANDS set to ON for this to
+# work.
+include(MMCommonUtils)
+mm_common_setup_clang_tidy_compile_commands(
+  ${CMAKE_BINARY_DIR}
+  ${CMAKE_CURRENT_LIST_DIR})
 
 
 include(MMSolverUtils)

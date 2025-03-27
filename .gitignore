@@ -14,6 +14,7 @@ cmake-build-*
 *python_venv_*/*
 python/mmSolver/constant.py
 docs/source/conf.py
+compile_commands.json
 
 test*.pstat
 test*.txt

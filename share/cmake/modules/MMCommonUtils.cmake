@@ -1,4 +1,4 @@
-# Copyright (C) 2020, 2021, 2023, 2024 David Cattermole.
+# Copyright (C) 2020, 2021, 2023, 2024, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -337,4 +337,25 @@ function(mm_common_add_install_target target_name cmake_config_template_file)
   export(EXPORT ${target_name}Targets
     FILE "${CMAKE_INSTALL_LIBDIR}/${target_name}Targets.cmake"
   )
+endfunction()
+
+
+# Copy the compile_commands.json file to the root of the project, for
+# use with clang-tidy.
+#
+# clang-tidy will look for a 'compile_commands.json' in the parent
+# directory recursively from the source file it is parsing. This
+# allows clang-tidy to find the exact flags used to compile the source
+# file.
+#
+# https://stackoverflow.com/questions/57464766/copy-compile-commands-json-to-project-root-folder
+function(mm_common_setup_clang_tidy_compile_commands binary_dir source_dir)
+  if (CMAKE_EXPORT_COMPILE_COMMANDS)
+    add_custom_target(
+      copy-compile-commands ALL
+      ${CMAKE_COMMAND} -E copy_if_different
+      ${binary_dir}/compile_commands.json
+      ${source_dir}
+    )
+  endif()
 endfunction()

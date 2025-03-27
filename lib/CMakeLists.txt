@@ -1,4 +1,4 @@
-# Copyright (C) 2023, 2024 David Cattermole.
+# Copyright (C) 2023, 2024, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -69,6 +69,16 @@ set(rust_lib_name "mmsolverlibs_rust")
 include(MMCommonUtils)
 option(MMSOLVER_DEBUG "Enable mmSolver debug mode; prints details and enables debug assertions." OFF)
 mm_common_set_global_compile_options(MMSOLVER_DEBUG)
+
+# Ensure compile_commands.json is generated as part of the build, for
+# clang-tidy to use.
+#
+# We must have CMAKE_EXPORT_COMPILE_COMMANDS set to ON for this to
+# work.
+include(MMCommonUtils)
+mm_common_setup_clang_tidy_compile_commands(
+  ${CMAKE_BINARY_DIR}
+  ${CMAKE_CURRENT_LIST_DIR})
 
 include(MMRustUtils)
 set(rust_linktime_file "NOT-FOUND")

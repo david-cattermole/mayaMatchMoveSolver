@@ -151,7 +151,7 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Solver
         sol = mmapi.SolverStandard()
-        # sol.set_verbose(True)
+        sol.set_verbose(True)
         sol.set_use_single_frame(True)
         sol.set_single_frame(frm_list[0])
         sol.set_global_solve(False)

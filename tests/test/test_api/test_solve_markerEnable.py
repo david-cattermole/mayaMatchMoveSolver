@@ -196,7 +196,6 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
         # Solver
         sol = mmapi.Solver()
         sol.set_max_iterations(1000)
-        sol.set_solver_type(mmapi.SOLVER_TYPE_DEFAULT)
         sol.set_verbose(True)
         sol.set_frame_list(frm_list)
         sol.set_solver_type(solver_type_index)

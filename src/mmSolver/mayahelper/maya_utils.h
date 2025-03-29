@@ -97,6 +97,21 @@ ObjectType computeObjectType(
     MDagPath &nodeDagPath);
 ObjectType computeObjectType(const MObject &node_obj);
 
+// The Maya 'affects' attribute is expected to be an integer,
+// however only -1, 0 and 1 values are currently used.
+// In the future we may use values other than -1, 0
+// and 1.
+//
+// 1 == 'used'
+// -1 == 'not used'
+// 0 == 'unknown'
+enum class MarkerAttrAffectsState {
+    kUnknown = 0,
+    kUsed = 1,
+    kNotUsed = -1,
+    kNumMarkerAttrAffectsState,
+};
+
 // Generate attribute name used to set and look up 'attribute affects'
 // on nodes.
 MStatus constructAttrAffectsName(const MString &attrName,

@@ -605,10 +605,12 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
         userData->computation->setProgress(userData->iterNum);
     }
 
-    int numberOfMarkerErrors = userData->numberOfMarkerErrors;
-    int numberOfAttrStiffnessErrors = userData->numberOfAttrStiffnessErrors;
-    int numberOfAttrSmoothnessErrors = userData->numberOfAttrSmoothnessErrors;
-    int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
+    const int numberOfMarkerErrors = userData->numberOfMarkerErrors;
+    const int numberOfAttrStiffnessErrors =
+        userData->numberOfAttrStiffnessErrors;
+    const int numberOfAttrSmoothnessErrors =
+        userData->numberOfAttrSmoothnessErrors;
+    const int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
     MMSOLVER_ASSERT(
         userData->errorToParamMatrix.width() ==
             static_cast<size_t>(numberOfMarkers),

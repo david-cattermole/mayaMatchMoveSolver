@@ -25,9 +25,6 @@
 
 #include "MMSolver2Cmd.h"
 
-// STL
-#include <cassert>
-
 // Maya
 #include <maya/MStreamUtils.h>
 #include <maya/MString.h>
@@ -37,6 +34,7 @@
 #include "mmSolver/adjust/adjust_results_setMarkerData.h"
 #include "mmSolver/adjust/adjust_results_setSolveData.h"
 #include "mmSolver/cmd/common_arg_flags.h"
+#include "mmSolver/utilities/assert_utils.h"
 
 namespace mmsolver {
 
@@ -129,7 +127,9 @@ MStatus MMSolver2Cmd::doIt(const MArgList &args) {
     // Read all the flag arguments.
     MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-    assert(m_frameList.length() > 0);
+    MMSOLVER_ASSERT(
+        !m_frameList.is_empty(),
+        "We must solve at least one frame, otherwise there's no point.");
 
     // Don't store each individual edits, just store the combination
     // of edits.

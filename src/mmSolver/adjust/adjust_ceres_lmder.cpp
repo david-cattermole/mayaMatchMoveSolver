@@ -29,7 +29,6 @@
 // STL
 #include <math.h>
 
-#include <cassert>
 #include <cmath>
 #include <ctime>
 #include <iostream>

@@ -126,7 +126,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     MMSOLVER_ASSERT(
-        m_frameList.length() != 0,
+        !m_frameList.is_empty(),
         "We must solve at least one frame, otherwise there's no point.");
 
     // Don't store each individual edits, just store the combination

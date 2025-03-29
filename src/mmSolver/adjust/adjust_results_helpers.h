@@ -24,7 +24,6 @@
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_RESULTS_HELPERS_H
 
 // STL
-#include <cassert>
 #include <unordered_map>
 
 // Maya

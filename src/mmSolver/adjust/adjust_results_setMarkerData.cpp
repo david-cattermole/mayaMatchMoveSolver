@@ -22,9 +22,6 @@
 
 #include "adjust_results_setMarkerData.h"
 
-// STL
-#include <cassert>
-
 // Maya
 #include <maya/MAnimCurveChange.h>
 #include <maya/MDGModifier.h>

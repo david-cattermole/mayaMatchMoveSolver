@@ -25,7 +25,6 @@
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_RELATIONSHIPS_H
 
 // STL
-#include <cassert>
 #include <cmath>
 #include <string>
 #include <unordered_set>

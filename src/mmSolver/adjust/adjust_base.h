@@ -26,7 +26,6 @@
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H
 
 // STL
-#include <cassert>
 #include <cmath>
 #include <string>
 #include <utility>

@@ -26,7 +26,6 @@
 #include <stdio.h>
 
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -222,8 +221,8 @@ void measureErrors_mayaDag(const int numberOfErrors,
                                             renderAspect, mkr_x, mkr_y);
 
         double mkr_weight = ud->markerWeightList[i];
-        assert(mkr_weight >
-               0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
+        MMSOLVER_ASSERT(mkr_weight > 0.0,
+                        "'sqrt' will be NaN if the weight is less than 0.0.");
         mkr_weight = std::sqrt(mkr_weight);
 
         // Re-project Bundle into screen-space.
@@ -375,8 +374,6 @@ void measureErrors_mayaDag(const int numberOfErrors,
         ud->errorList[indexIntoErrorArray] = error * smoothWeight;
         errors[indexIntoErrorArray] = error * smoothWeight;
     }
-
-    return;
 }
 
 void measureErrors_mmSceneGraph(const int numberOfErrors,
@@ -403,11 +400,16 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
     auto num_marker_lens_models = ud->lensModelList.size();
     MMSOLVER_CORE_UNUSED(num_points);
     MMSOLVER_CORE_UNUSED(num_markers);
-    assert(num_points == num_markers);
+    MMSOLVER_ASSERT(num_points == num_markers,
+                    "MM Scene Graph points counts and markers must match to be "
+                    "consistent.");
 
     auto out_point_list = ud->mmsgFlatScene.points();
     auto out_marker_list = ud->mmsgFlatScene.markers();
-    assert(out_marker_list.size() == out_point_list.size());
+    MMSOLVER_ASSERT(
+        out_marker_list.size() == out_point_list.size(),
+        "MM Scene Graph Flat Scene points counts and markers must match to be "
+        "consistent.");
 
     // Count Marker Errors
     int numberOfErrorsMeasured = 0;
@@ -433,8 +435,8 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
 
         // Use pre-computed marker weight
         double mkr_weight = ud->markerWeightList[i];
-        // 'sqrt' will be NaN if the weight is less than 0.0.
-        assert(mkr_weight > 0.0);
+        MMSOLVER_ASSERT(mkr_weight > 0.0,
+                        "'sqrt' will be NaN if the weight is less than 0.0.");
         mkr_weight = std::sqrt(mkr_weight);
 
         auto mkrIndex_x = ((markerIndex * num_frames * 2) + (frameIndex * 2));
@@ -500,8 +502,6 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
     }
 
     // TODO: Support stiffness and smoothness.
-
-    return;
 }
 
 void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
@@ -516,8 +516,9 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
     error_max = -0.0;
     error_min = std::numeric_limits<double>::max();
 
-    assert(ud->errorToMarkerList.size() > 0);
     assert(ud->frameList.length() > 0);
+    MMSOLVER_ASSERT(ud->errorToMarkerList.size() > 0,
+                    "Must have markers to measure.");
 
     const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;
     if (sceneGraphMode == SceneGraphMode::kMayaDag) {
@@ -540,9 +541,10 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
                                   ud->solverOptions->robustLossType,
                                   ud->solverOptions->robustLossScale);
     }
-    assert(error_max >= error_min);
-    assert(error_min <= error_max);
-    return;
+    MMSOLVER_ASSERT(error_max >= error_min,
+                    "Maximum and minimum values must be consistent.");
+    MMSOLVER_ASSERT(error_min <= error_max,
+                    "Maximum and minimum values must be consistent.");
 }
 
 // Clean up #define

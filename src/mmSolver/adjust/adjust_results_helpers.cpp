@@ -202,11 +202,14 @@ MStatus create_deviation_attrs_on_node(
         deviation_has_anim_curve = true;
     }
 
-    assert(deviation_has_anim_curve);
-    assert(deviation_exists);
-    assert(deviation_avg_exists);
-    assert(deviation_max_exists);
-    assert(deviation_max_frame_exists);
+    MMSOLVER_ASSERT(deviation_has_anim_curve,
+                    "Deviation attribute is expected to have an animCurve.");
+    MMSOLVER_ASSERT(deviation_exists, "Deviation attribute exists.");
+    MMSOLVER_ASSERT(deviation_avg_exists,
+                    "Average deviation attribute exists.");
+    MMSOLVER_ASSERT(deviation_max_exists, "Max deviation attribute exists.");
+    MMSOLVER_ASSERT(deviation_max_frame_exists,
+                    "Max frame deviation attribute exists.");
 
     int value_count = 0;
     double value_avg = 0.0;

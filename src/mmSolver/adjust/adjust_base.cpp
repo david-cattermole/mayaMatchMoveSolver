@@ -388,7 +388,9 @@ bool compute_error_stats(const int numberOfMarkerErrors,
             out_errorMax = err;
         }
     }
-    assert(numberOfMarkerErrors > 0);
+    MMSOLVER_ASSERT(numberOfMarkerErrors > 0,
+                    "If we have zero, something bad has happened somewhere. We "
+                    "cannot divide by zero.");
     out_errorAvg /= marker_error_count;
     return true;
 }
@@ -479,7 +481,7 @@ void printSolveDetails(const SolverResult &solverResult, SolverData &userData,
 
     if (logLevel >= LogLevel::kDebug) {
         unsigned int total_num = userData.iterNum + userData.jacIterNum;
-        assert(total_num > 0);
+        MMSOLVER_ASSERT(total_num > 0, "There must have been some iterations.");
         static std::ostream &stream = MStreamUtils::stdErrorStream();
         timer.solveBenchTimer.print(stream, "Solve Time", 1);
         timer.funcBenchTimer.print(stream, "Func Time", 1);
@@ -921,7 +923,9 @@ MStatus validateSolveFrames(
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (out_cmdResult.printStats.input) {
-        assert(out_cmdResult.printStats.doNotSolve);
+        MMSOLVER_ASSERT(
+            out_cmdResult.printStats.doNotSolve,
+            "We are not expected to solve when only printing stats.");
         status = logResultsObjectCounts(
             out_numberOfParameters, out_numberOfErrors,
             out_numberOfMarkerErrors, out_numberOfAttrStiffnessErrors,
@@ -931,7 +935,9 @@ MStatus validateSolveFrames(
     }
 
     if (out_cmdResult.printStats.usedSolveObjects) {
-        assert(out_cmdResult.printStats.doNotSolve);
+        MMSOLVER_ASSERT(
+            out_cmdResult.printStats.doNotSolve,
+            "We are not expected to solve when only printing stats.");
         status = logResultsSolveObjectUsage(
             usedMarkerList, unusedMarkerList, usedAttrList, unusedAttrList,
             out_cmdResult.solverObjectUsageResult);

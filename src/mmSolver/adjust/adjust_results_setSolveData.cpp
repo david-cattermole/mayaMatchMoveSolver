@@ -22,9 +22,6 @@
 
 #include "adjust_results_setSolveData.h"
 
-// STL
-#include <cassert>
-
 // Maya
 #include <maya/MAnimCurveChange.h>
 #include <maya/MDGModifier.h>
@@ -392,17 +389,24 @@ MStatus setSolverResultDataOnNode(SolverResult &results, MObject &node,
         }
     }
 
-    assert(success_exists);
-    assert(reason_num_exists);
-    assert(reason_string_exists);
-    assert(error_final_exists);
-    assert(error_final_avg_exists);
-    assert(error_final_max_exists);
-    assert(error_final_min_exists);
-    assert(iteration_num_exists);
-    assert(iteration_function_num_exists);
-    assert(iteration_jacobian_num_exists);
-    assert(user_interrupted_exists);
+    MMSOLVER_ASSERT(success_exists, "Success flag must be given.");
+    MMSOLVER_ASSERT(reason_num_exists, "Reason number flag must be given.");
+    MMSOLVER_ASSERT(reason_string_exists, "Reason string flag must be given.");
+    MMSOLVER_ASSERT(error_final_exists, "Error final flag must be given.");
+    MMSOLVER_ASSERT(error_final_avg_exists,
+                    "Error average flag must be given.");
+    MMSOLVER_ASSERT(error_final_max_exists,
+                    "Error maximum flag must be given.");
+    MMSOLVER_ASSERT(error_final_min_exists,
+                    "Error minimum flag must be given.");
+    MMSOLVER_ASSERT(iteration_num_exists,
+                    "Iteration count flag must be given.");
+    MMSOLVER_ASSERT(iteration_function_num_exists,
+                    "Iteration function count flag must be given.");
+    MMSOLVER_ASSERT(iteration_jacobian_num_exists,
+                    "Iteration jacobian count flag must be given.");
+    MMSOLVER_ASSERT(user_interrupted_exists,
+                    "User interrupted flag must be given.");
 
     dgmod.newPlugValueBool(success_plug, results.success);
     dgmod.newPlugValueInt(reason_num_plug, results.reason_number);
@@ -644,11 +648,15 @@ MStatus setSolverObjectCountResultDataOnNode(SolverObjectCountResult &results,
         }
     }
 
-    assert(parameters_num_exists);
-    assert(errors_num_exists);
-    assert(marker_errors_num_exists);
-    assert(stiff_errors_num_exists);
-    assert(smooth_errors_num_exists);
+    MMSOLVER_ASSERT(parameters_num_exists,
+                    "parameter count attribute must exist.");
+    MMSOLVER_ASSERT(errors_num_exists, "errors count attribute must exist.");
+    MMSOLVER_ASSERT(marker_errors_num_exists,
+                    "marker errors count attribute must exist.");
+    MMSOLVER_ASSERT(stiff_errors_num_exists,
+                    "stiff errors count attribute must exist.");
+    MMSOLVER_ASSERT(smooth_errors_num_exists,
+                    "smooth errors count attribute must exist.");
 
     dgmod.newPlugValueInt(parameters_num_plug, results.parameter_count);
     dgmod.newPlugValueInt(errors_num_plug, results.error_count);

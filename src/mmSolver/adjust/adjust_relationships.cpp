@@ -59,10 +59,6 @@
 
 // MM Solver
 #include "adjust_base.h"
-#include "adjust_cminpack_base.h"
-#include "adjust_cminpack_lmder.h"
-#include "adjust_cminpack_lmdif.h"
-#include "adjust_levmar_bc_dif.h"
 #include "adjust_solveFunc.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"

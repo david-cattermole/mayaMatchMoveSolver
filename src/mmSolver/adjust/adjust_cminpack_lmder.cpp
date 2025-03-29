@@ -29,7 +29,6 @@
 // STL
 #include <math.h>
 
-#include <cassert>
 #include <cmath>
 #include <ctime>
 #include <iostream>
@@ -227,7 +226,8 @@ bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
 int solveFunc_cminpack_lmder(void *data, int m, int n, const double *x,
                              double *fvec, double *fjac, int ldfjac,
                              int iflag) {
-    assert(ldfjac == n ? m <= n : m);
+    MMSOLVER_ASSERT(ldfjac == n ? m <= n : m,
+                    "'ldfjac' is the highest dimension of the array.");
     MMSOLVER_CORE_UNUSED(ldfjac);
 
     SolverData *ud = static_cast<SolverData *>(data);

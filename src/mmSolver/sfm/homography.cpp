@@ -161,7 +161,7 @@ bool compute_homography(
         static_cast<size_t>(image_width_b),
         static_cast<size_t>(image_height_b));
 
-    auto num_max_iter = 4096;
+    const auto num_max_iter = 4096;
     bool robust_pose_ok = robust_homography(
         marker_coords_matrix_a, marker_coords_matrix_b, homography_matrix,
         image_size_a, image_size_b, num_max_iter);

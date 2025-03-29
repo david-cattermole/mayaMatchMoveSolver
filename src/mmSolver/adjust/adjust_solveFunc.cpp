@@ -28,7 +28,6 @@
 #include <stdio.h>
 
 #include <algorithm>
-#include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -74,6 +73,7 @@
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/string_utils.h"
@@ -360,7 +360,8 @@ int solveFunc_calculateJacobianMatrixForParameter(
 
     // Calculate the relative delta for each parameter.
     const double delta = userData->solverOptions->delta;
-    assert(delta > 0.0);
+    MMSOLVER_ASSERT(delta > 0.0,
+                    "Differentiation delta values must be greater than zero.");
 
     // 'analytically' calculate the deviation of markers as
     //  will be affected by the new calculated delta value.
@@ -422,7 +423,8 @@ int solveFunc_calculateJacobianMatrixForParameter(
     }
 
     if (autoDiffType == AUTO_DIFF_TYPE_FORWARD) {
-        assert(userData->solverOptions->solverSupportsAutoDiffForward);
+        MMSOLVER_ASSERT(userData->solverOptions->solverSupportsAutoDiffForward,
+                        "The solver must support forward differentiation.");
         // Set the Jacobian matrix using the previously
         // calculated errors (original and A).
         const double inv_delta = 1.0 / deltaA;
@@ -434,7 +436,8 @@ int solveFunc_calculateJacobianMatrixForParameter(
         }
 
     } else if (autoDiffType == AUTO_DIFF_TYPE_CENTRAL) {
-        assert(userData->solverOptions->solverSupportsAutoDiffCentral);
+        MMSOLVER_ASSERT(userData->solverOptions->solverSupportsAutoDiffCentral,
+                        "The solver must support central differentiation.");
         // Create another copy of parameters and errors.
         std::vector<double> paramListB(numberOfParameters, 0);
         for (int j = 0; j < numberOfParameters; ++j) {
@@ -495,7 +498,8 @@ int solveFunc_calculateJacobianMatrixForParameter(
 
             // Set the Jacobian matrix using the previously
             // calculated errors (A and B).
-            assert(errorListA.size() == errorListB.size());
+            MMSOLVER_ASSERT(errorListA.size() == errorListB.size(),
+                            "errors A and B must be the same size.");
             double inv_delta = 0.5 / (std::fabs(deltaA) + std::fabs(deltaB));
             for (size_t j = 0; j < errorListA.size(); ++j) {
                 size_t num = (parameterIndex * ldfjac) + j;
@@ -520,9 +524,11 @@ int solveFunc_calculateJacobianMatrix(
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("adjust_solveFunc solveFunc_calculateJacobianMatrix");
 
-    assert(
+    MMSOLVER_ASSERT(
         (userData->solverOptions->solverType == SOLVER_TYPE_CMINPACK_LMDER) ||
-        (userData->solverOptions->solverType == SOLVER_TYPE_CERES_LMDER));
+            (userData->solverOptions->solverType == SOLVER_TYPE_CERES_LMDER),
+        "Only CMinpack LMDER and Ceres LMDER can calculate a jacobian matrix "
+        "manually.");
     int autoDiffType = userData->solverOptions->autoDiffType;
 
     // Get longest dimension for jacobian matrix
@@ -601,8 +607,10 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     int numberOfAttrStiffnessErrors = userData->numberOfAttrStiffnessErrors;
     int numberOfAttrSmoothnessErrors = userData->numberOfAttrSmoothnessErrors;
     int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
-    assert(userData->errorToParamMatrix.size() ==
-           static_cast<size_t>(numberOfMarkers));
+    MMSOLVER_ASSERT(
+        userData->errorToParamMatrix.width() ==
+            static_cast<size_t>(numberOfMarkers),
+        "Marker count and width of 'errorToParamMatrix' must match.");
 
     if (userData->isNormalCall) {
         incrementNormalIteration(userData);

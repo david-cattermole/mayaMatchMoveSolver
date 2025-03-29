@@ -35,6 +35,7 @@
 // Maya
 #include <maya/MAnimCurveChange.h>
 #include <maya/MComputation.h>
+#include <maya/MDGModifier.h>
 #include <maya/MFnAnimCurve.h>
 #include <maya/MMatrix.h>
 #include <maya/MObject.h>
@@ -49,6 +50,10 @@
 // MM Solver
 #include "adjust_levmar_bc_dif.h"
 #include "adjust_solveFunc.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"

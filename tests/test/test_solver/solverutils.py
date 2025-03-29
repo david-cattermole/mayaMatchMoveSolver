@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import time
+import pprint
 
 try:
     import maya.standalone
@@ -65,9 +66,13 @@ class SolverTestCase(baseUtils.TestBase):
     @staticmethod
     def runSolverAffects(affects_mode, **kwargs):
         assert 'mmSolverAffects' in dir(maya.cmds)
+        assert 'camera' in kwargs
+        assert 'marker' in kwargs
+        assert 'attr' in kwargs
         s = time.time()
         result = maya.cmds.mmSolverAffects(mode=affects_mode, **kwargs)
         e = time.time()
+        print('mmSolverAffects result:', pprint.pformat(result))
         print('mmSolverAffects time:', e - s)
         return result
 

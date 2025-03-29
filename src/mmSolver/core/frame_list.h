@@ -72,7 +72,7 @@ public:
 
     // Update the FrameList by pushing back all the elements the other
     // FrameList.
-    void push_back_frame_list(const FrameList &other);
+    void push_back_frame_list(const FrameList& other);
 
     // Add frame to the list of frames.
     void push_back(const FrameNumber frame, const bool enabled);

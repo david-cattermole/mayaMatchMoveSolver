@@ -51,34 +51,6 @@
 
 #endif  // MMSOLVER_USE_OPENMVG
 
-// Maya
-#include <maya/MArgDatabase.h>
-#include <maya/MArgList.h>
-#include <maya/MDagPath.h>
-#include <maya/MEulerRotation.h>
-#include <maya/MFnDagNode.h>
-#include <maya/MFnDependencyNode.h>
-#include <maya/MItSelectionList.h>
-#include <maya/MMatrix.h>
-#include <maya/MMatrixArray.h>
-#include <maya/MObject.h>
-#include <maya/MPlug.h>
-#include <maya/MPlugArray.h>
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
-#include <maya/MSyntax.h>
-#include <maya/MTime.h>
-#include <maya/MTimeArray.h>
-#include <maya/MTransformationMatrix.h>
-#include <maya/MTypes.h>
-
-// MM Solver
-#include "mmSolver/adjust/adjust_defines.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/sfm/sfm_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
@@ -176,7 +148,6 @@ bool compute_homography(
     const int32_t image_height_a, const int32_t image_height_b,
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
-    const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
     openMVG::Mat3 &homography_matrix) {
     openMVG::Mat marker_coords_matrix_a =
         convert_marker_coords_to_matrix(marker_coords_a);

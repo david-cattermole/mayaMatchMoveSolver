@@ -194,8 +194,6 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Reset saved data structures.
-    m_marker_list_a.clear();
-    m_marker_list_b.clear();
     m_marker_coords_a.clear();
     m_marker_coords_b.clear();
     m_image_width_a = 1;
@@ -349,16 +347,14 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
             m_time_a, m_time_b, m_image_width_a, m_image_width_b,
             m_image_height_a, m_image_height_b, lensModel_a, lensModel_b,
             marker_a, marker_b, m_marker_coords_a, m_marker_coords_b);
-        if (success) {
-            m_marker_list_a.push_back(marker_a);
-            m_marker_list_b.push_back(marker_b);
-        }
     }
 
-    MMSOLVER_MAYA_VRB("parse m_marker_list_a size: " << m_marker_list_a.size());
-    MMSOLVER_MAYA_VRB("parse m_marker_list_b size: " << m_marker_list_b.size());
-    MMSOLVER_ASSERT(m_marker_list_a.size() == m_marker_list_b.size(),
-                    "No change in marker size should be possible.");
+    MMSOLVER_MAYA_VRB(
+        "parse m_marker_coords_a size: " << m_marker_coords_a.size());
+    MMSOLVER_MAYA_VRB(
+        "parse m_marker_coords_b size: " << m_marker_coords_b.size());
+    MMSOLVER_ASSERT(m_marker_coords_a.size() == m_marker_coords_b.size(),
+                    "No change in marker count should be possible.");
 
     return status;
 }
@@ -382,8 +378,7 @@ MStatus MMMarkerHomographyCmd::doIt(const MArgList &args) {
     openMVG::Mat3 homography_matrix;
     auto relative_pose_ok = ::mmsolver::sfm::compute_homography(
         m_image_width_a, m_image_width_b, m_image_height_a, m_image_height_b,
-        m_marker_coords_a, m_marker_coords_b, m_marker_list_a, m_marker_list_b,
-        homography_matrix);
+        m_marker_coords_a, m_marker_coords_b, homography_matrix);
     if (!relative_pose_ok) {
         MMSOLVER_MAYA_ERR("Compute Relative pose failed.");
         MMMarkerHomographyCmd::setResult(emptyResult);

@@ -38,26 +38,6 @@
 
 #endif  // MMSOLVER_USE_OPENMVG
 
-// Maya
-#include <maya/MAnimCurveChange.h>
-#include <maya/MArgDatabase.h>
-#include <maya/MArgList.h>
-#include <maya/MDGModifier.h>
-#include <maya/MGlobal.h>
-#include <maya/MIOStream.h>
-#include <maya/MPxCommand.h>
-#include <maya/MSelectionList.h>
-#include <maya/MSyntax.h>
-#include <maya/MTime.h>
-#include <maya/MTimeArray.h>
-
-// Maya helpers
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_utils.h"
-
 namespace mmsolver {
 namespace sfm {
 
@@ -72,7 +52,6 @@ bool compute_homography(
     const int32_t image_height_a, const int32_t image_height_b,
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
-    const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
     openMVG::Mat3 &homography_matrix);
 
 }  // namespace sfm

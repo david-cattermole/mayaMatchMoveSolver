@@ -43,7 +43,6 @@
 // Maya helpers
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
@@ -104,9 +103,6 @@ private:
     Attr m_camera_rx_attr_b;
     Attr m_camera_ry_attr_b;
     Attr m_camera_rz_attr_b;
-
-    MarkerPtrList m_marker_list_a;
-    MarkerPtrList m_marker_list_b;
 
     // Frames A and B
     uint32_t m_frame_a;

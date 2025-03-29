@@ -25,6 +25,7 @@
 // STL
 #include <string>
 
+namespace mmsolver {
 
 // CMinpack 'lmdif' Termination Reasons:
 //
@@ -65,5 +66,7 @@ const std::string cminpackReasons[9] = {
     "\'gtol\' is too small. fvec is orthogonal to the columns of the Jacobian "
     "to machine precision.",
 };
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_BASE_H

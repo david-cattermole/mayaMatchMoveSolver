@@ -25,6 +25,8 @@
 
 #include "adjust_data.h"
 
+namespace mmsolver {
+
 void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
                    const int numberOfAttrStiffnessErrors,
                    const int numberOfAttrSmoothnessErrors,
@@ -33,5 +35,7 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
                    const double imageWidth, double *errors, SolverData *ud,
                    double &error_avg, double &error_max, double &error_min,
                    MStatus &status);
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_MEASURE_ERRORS_H

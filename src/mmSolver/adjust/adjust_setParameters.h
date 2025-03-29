@@ -26,7 +26,11 @@
 
 #include "adjust_data.h"
 
+namespace mmsolver {
+
 MStatus setParameters(const int numberOfParameters, const double *parameters,
                       SolverData *ud);
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_SET_PARAMETERS_H

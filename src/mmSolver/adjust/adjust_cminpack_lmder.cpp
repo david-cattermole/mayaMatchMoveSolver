@@ -60,6 +60,8 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
+namespace mmsolver {
+
 // Forward declare.
 int solveFunc_cminpack_lmder(void *data, int m, int n, const double *x,
                              double *fvec, double *fjac, int ldfjac, int iflag);
@@ -187,7 +189,7 @@ bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
     error_norm_value = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
     ret = userData.iterNum;
 
-    int reason_number = info;
+    const int reason_number = info;
     const std::string &reason = cminpackReasons[reason_number];
     solveResult.success = ret > 0;
     solveResult.reason_number = reason_number;
@@ -246,5 +248,7 @@ int solveFunc_cminpack_lmder(void *data, int m, int n, const double *x,
     }
     return info;
 }
+
+}  // namespace mmsolver
 
 #endif  // MMSOLVER_USE_CMINPACK

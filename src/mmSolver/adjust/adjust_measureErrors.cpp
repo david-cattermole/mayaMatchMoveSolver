@@ -81,6 +81,8 @@
 
 namespace mmsg = mmscenegraph;
 
+namespace mmsolver {
+
 // NOTE: There is a very strange bug in Maya. After setting a number
 // of plug values using a DG Context, when quering plug values at the
 // same times, the values do not evaluate correctly. To 'trick' Maya
@@ -516,9 +518,10 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
     error_max = -0.0;
     error_min = std::numeric_limits<double>::max();
 
-    assert(ud->frameList.length() > 0);
     MMSOLVER_ASSERT(ud->errorToMarkerList.size() > 0,
                     "Must have markers to measure.");
+    MMSOLVER_ASSERT(ud->frameList.length() > 0,
+                    "Must have frames to measure markers on.");
 
     const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;
     if (sceneGraphMode == SceneGraphMode::kMayaDag) {
@@ -549,3 +552,5 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
 
 // Clean up #define
 #undef FORCE_TRIGGER_EVAL
+
+}  // namespace mmsolver

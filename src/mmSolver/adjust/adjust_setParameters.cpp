@@ -78,6 +78,8 @@
 
 namespace mmsg = mmscenegraph;
 
+namespace mmsolver {
+
 // Set Parameter values
 MStatus setParameters_mayaDag(const int numberOfParameters,
                               const double *parameters, SolverData *ud) {
@@ -281,3 +283,5 @@ MStatus setParameters(const int numberOfParameters, const double *parameters,
 
     return status;
 }
+
+}  // namespace mmsolver

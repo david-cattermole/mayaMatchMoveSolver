@@ -64,6 +64,8 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
+namespace mmsolver {
+
 namespace {
 
 struct ResidualFunctor {
@@ -186,5 +188,7 @@ bool solve_3d_ceres_lmdif(SolverOptions& solverOptions,
 
     return true;
 }
+
+}  // namespace mmsolver
 
 #endif  // MMSOLVER_USE_CERES

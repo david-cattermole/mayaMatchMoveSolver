@@ -56,6 +56,8 @@
 
 namespace mmsg = mmscenegraph;
 
+namespace mmsolver {
+
 using StringToAttrIdMap = std::unordered_map<std::string, mmsg::AttrId>;
 using StringToNodeIdMap = std::unordered_map<std::string, mmsg::NodeId>;
 
@@ -1213,3 +1215,5 @@ MStatus construct_scene_graph(
 
     return status;
 }
+
+}  // namespace mmsolver

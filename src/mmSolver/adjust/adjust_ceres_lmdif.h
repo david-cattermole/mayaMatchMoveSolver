@@ -30,10 +30,14 @@
 #include "adjust_results.h"
 #include "adjust_solveFunc.h"
 
+namespace mmsolver {
+
 bool solve_3d_ceres_lmdif(SolverOptions &solverOptions, int numberOfParameters,
                           int numberOfErrors, std::vector<double> &paramList,
                           std::vector<double> &errorList,
                           std::vector<double> &paramWeightList,
                           SolverData &userData, SolverResult &solveResult);
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_CERES_LMDIF_H

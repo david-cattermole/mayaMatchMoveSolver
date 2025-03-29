@@ -50,6 +50,8 @@
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/utilities/debug_utils.h"
 
+namespace mmsolver {
+
 typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
 typedef std::pair<int, std::string> SolverTypePair;
@@ -123,5 +125,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
               MDGModifier &dgmod, MAnimCurveChange &curveChange,
               MComputation &computation, const MStringArray &printStatsList,
               const LogLevel logLevel, CommandResult &out_cmdResult);
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H

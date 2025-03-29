@@ -48,6 +48,8 @@
 #define LEVMAR_AUTO_DIFF_TYPE_FORWARD (0)
 #define LEVMAR_AUTO_DIFF_TYPE_CENTRAL (1)
 
+namespace mmsolver {
+
 // Sparse LM or Lev-Mar Termination Reasons:
 const std::string levmarReasons[8] = {
     // reason 0
@@ -87,5 +89,7 @@ bool solve_3d_levmar_bc_dif(SolverOptions &solverOptions,
                             std::vector<double> &paramWeightList,
                             SolverData &userData, SolverResult &solveResult,
                             MStringArray &outResult);
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_LEVMAR_BC_DIF_H

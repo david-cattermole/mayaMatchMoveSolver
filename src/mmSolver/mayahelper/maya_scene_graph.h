@@ -47,6 +47,8 @@
 #include "maya_marker.h"
 #include "maya_utils.h"
 
+namespace mmsolver {
+
 MStatus construct_scene_graph(
     const CameraPtrList &cameraList, const MarkerPtrList &markerList,
     const BundlePtrList &bundleList, const AttrPtrList &attrList,
@@ -59,5 +61,7 @@ MStatus construct_scene_graph(
     std::vector<mmscenegraph::BundleNode> &out_bundleNodes,
     std::vector<mmscenegraph::MarkerNode> &out_markerNodes,
     std::vector<mmscenegraph::AttrId> &out_attrIdList);
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_MAYA_SCENE_GRAPH_H

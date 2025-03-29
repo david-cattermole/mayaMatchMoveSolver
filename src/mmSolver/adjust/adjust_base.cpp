@@ -75,6 +75,7 @@
 
 namespace mmsg = mmscenegraph;
 
+namespace mmsolver {
 // Get a list of all available solver types (index and name).
 //
 // This list may change in different plug-ins, as the compiled
@@ -1972,3 +1973,5 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
 
     return out_cmdResult.solverResult.success;
 }
+
+}  // namespace mmsolver

@@ -42,11 +42,15 @@
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 
+namespace mmsolver {
+
 bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
                              int numberOfParameters, int numberOfErrors,
                              std::vector<double> &paramList,
                              std::vector<double> &errorList,
                              std::vector<double> &paramWeightList,
                              SolverData &userData, SolverResult &solveResult);
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDER_H

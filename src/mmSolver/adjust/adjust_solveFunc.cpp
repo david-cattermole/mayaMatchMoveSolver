@@ -78,6 +78,8 @@
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
+namespace mmsolver {
+
 // Per-attribute type delta values
 #define PER_ATTR_TYPE_DELTA_VALUE 0
 
@@ -723,3 +725,5 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
 
     return SOLVE_FUNC_SUCCESS;
 }
+
+}  // namespace mmsolver

@@ -53,6 +53,8 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
+namespace mmsolver {
+
 // Forward declare.
 void solveFunc_levmar_bc_dif(double *p, double *x, int m, int n, void *data);
 
@@ -247,5 +249,7 @@ void solveFunc_levmar_bc_dif(double *p, double *x, int m, int n, void *data) {
     }
     return;
 }
+
+}  // namespace mmsolver
 
 #endif  // MMSOLVER_USE_LEVMAR

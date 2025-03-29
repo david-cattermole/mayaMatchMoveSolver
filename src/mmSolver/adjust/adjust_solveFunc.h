@@ -29,8 +29,12 @@
 #define SOLVE_FUNC_SUCCESS (0)
 #define SOLVE_FUNC_FAILURE (-1)
 
+namespace mmsolver {
+
 int solveFunc(const int numberOfParameters, const int numberOfErrors,
               const double *parameters, double *errors, double *jacobian,
               void *userData);
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H

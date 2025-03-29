@@ -57,6 +57,8 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
+namespace mmsolver {
+
 // Forward declare.
 int solveFunc_cminpack_lmdif(void *data, int m, int n, const double *x,
                              double *fvec, int iflag);
@@ -242,5 +244,7 @@ int solveFunc_cminpack_lmdif(void *data, int m, int n, const double *x,
     }
     return info;
 }
+
+}  // namespace mmsolver
 
 #endif  // MMSOLVER_USE_CMINPACK

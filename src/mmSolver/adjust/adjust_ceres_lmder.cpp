@@ -65,6 +65,8 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
+namespace mmsolver {
+
 namespace {
 
 // Cost function adapter for Ceres that wraps the existing solve
@@ -276,5 +278,7 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
 
     return true;
 }
+
+}  // namespace mmsolver
 
 #endif  // MMSOLVER_USE_CERES

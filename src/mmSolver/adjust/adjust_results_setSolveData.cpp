@@ -39,6 +39,8 @@
 #include "adjust_results_helpers.h"
 #include "mmSolver/utilities/debug_utils.h"
 
+namespace mmsolver {
+
 MStatus createResultAttr_boolean(const char *attr_name, MObject &node,
                                  MDGModifier &dgmod) {
     MFnNumericAttribute numeric_attr;
@@ -714,3 +716,5 @@ MStatus setCommandResultDataOnNode(CommandResult &results,
 
     return status;
 }
+
+}  // namespace mmsolver

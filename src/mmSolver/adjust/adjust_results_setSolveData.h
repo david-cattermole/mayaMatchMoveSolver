@@ -32,9 +32,13 @@
 #include "adjust_data.h"
 #include "adjust_results.h"
 
+namespace mmsolver {
+
 MStatus setCommandResultDataOnNode(CommandResult &results,
                                    const PrintStatOptions &printStats,
                                    MObject &node, MDGModifier &dgmod,
                                    MAnimCurveChange &curveChange);
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_RESULTS_SET_SOLVE_DATA_H

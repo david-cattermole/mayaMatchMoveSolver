@@ -55,6 +55,8 @@
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/utilities/debug_utils.h"
 
+namespace mmsolver {
+
 // Group all the benchmark timers together.
 struct SolverTimer {
     mmsolver::debug::Timestamp startTimestamp;
@@ -278,5 +280,7 @@ struct SolverData {
         , userInterrupted(false)
         , logLevel(LogLevel::kInfo){};
 };
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H

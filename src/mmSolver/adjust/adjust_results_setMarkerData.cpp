@@ -34,6 +34,8 @@
 #include "adjust_results_helpers.h"
 #include "mmSolver/utilities/debug_utils.h"
 
+namespace mmsolver {
+
 MStatus setErrorMetricsResultDataOnMarkers(ErrorMetricsResult &results,
                                            MarkerPtrList &markerList,
                                            MDGModifier &dgmod,
@@ -66,3 +68,5 @@ MStatus setErrorMetricsResultDataOnMarkers(ErrorMetricsResult &results,
 
     return status;
 }
+
+}  // namespace mmsolver

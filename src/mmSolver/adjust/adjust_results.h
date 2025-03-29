@@ -54,6 +54,8 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
+namespace mmsolver {
+
 using Ticks = mmsolver::debug::Ticks;
 
 struct SolverResult {
@@ -582,21 +584,25 @@ struct MarkerAttrNamePair {
     }
 };
 
+}  // namespace mmsolver
+
 namespace std {
 
 template <>
-struct hash<MarkerAttrNamePair> {
-    size_t operator()(MarkerAttrNamePair const &s) const noexcept {
+struct hash<mmsolver::MarkerAttrNamePair> {
+    size_t operator()(mmsolver::MarkerAttrNamePair const &s) const noexcept {
         size_t result = 0;
         size_t h1 = hash<string>{}(s.marker_name);
         size_t h2 = hash<string>{}(s.attr_name);
-        hash_combine(result, h1);
-        hash_combine(result, h2);
+        mmsolver::hash_combine(result, h1);
+        mmsolver::hash_combine(result, h2);
         return result;
     }
 };
 
 }  // namespace std
+
+namespace mmsolver {
 
 struct AffectsResult {
     typedef AffectsResult Self;
@@ -1010,5 +1016,7 @@ struct CommandResult {
         Self::solverFramesResult.appendToMStringArray(result);
     }
 };
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_RESULTS_H

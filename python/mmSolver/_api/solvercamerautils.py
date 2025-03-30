@@ -244,7 +244,7 @@ def _sub_bundle_adjustment(
     solver_type=None,
     verbose=None,
 ):
-    # LOG.debug('_sub_bundle_adjustment')
+    LOG.debug('_sub_bundle_adjustment')
     assert isinstance(adjust_camera_translate, bool)
     assert isinstance(adjust_camera_rotate, bool)
     assert isinstance(adjust_bundle_positions, bool)
@@ -967,7 +967,7 @@ def _cache_connected_frame_statistics(
 
 
 def _precompute_values(mkr_list, root_frames, start_frame, end_frame):
-    # LOG.debug('_precompute_values.')
+    LOG.debug('_precompute_values.')
     # LOG.debug('mkr_list: %s', mkr_list)
 
     enabled_marker_nodes = _cache_enabled_marker_nodes(mkr_list, root_frames)

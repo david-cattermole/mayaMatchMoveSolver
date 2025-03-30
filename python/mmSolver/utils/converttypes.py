@@ -111,8 +111,7 @@ def intListToString(value):
     if isinstance(value, list) is False:
         msg = 'Given argument is not a list: type=%r value=%r'
         raise TypeError(msg, type(value), value)
-    int_list = list(set(value))
-    int_list = list(sorted(int_list))
+    int_list = list(sorted(set(value)))
     grps = []
     start = -1
     end = -1

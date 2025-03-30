@@ -95,6 +95,27 @@ class SolverStandard(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_verbose(self):
+        """
+        Should we print lots of information to the terminal?
+
+        :rtype: bool or None
+        """
+        return self._data.get('verbose')
+
+    def set_verbose(self, value):
+        """
+        Set verbosity option, yes or no.
+
+        :param value: Turn on verbose mode? Yes or no.
+        :type value: bool
+        """
+        if isinstance(value, bool) is False:
+            raise TypeError('Expected bool value type.')
+        self._data['verbose'] = value
+
+    ############################################################################
+
     def get_use_single_frame(self):
         """
         Get Use Single Frame value.
@@ -681,7 +702,9 @@ class SolverStandard(solverbase.SolverBase):
 
         use_euler_filter = True
         withtest = True
-        verbose = True
+        verbose = self.get_verbose()
+        if verbose is None:
+            verbose = False
         precomputed_data = self.get_precomputed_data()
 
         attr_list = solverutils.filter_attr_list(

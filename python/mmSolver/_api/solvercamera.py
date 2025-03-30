@@ -175,6 +175,7 @@ def _compile_camera_solve(
         adjust_every_n_poses,
         solver_version,
         solver_type,
+        verbose
     ]
     kwargs = {}
     action = api_action.Action(func=func, args=args, kwargs=kwargs)
@@ -260,6 +261,27 @@ class SolverCamera(solverbase.SolverBase):
         """
         assert isinstance(value, int)
         self._data['solver_type'] = value
+
+    ############################################################################
+
+    def get_verbose(self):
+        """
+        Should we print lots of information to the terminal?
+
+        :rtype: bool or None
+        """
+        return self._data.get('verbose')
+
+    def set_verbose(self, value):
+        """
+        Set verbosity option, yes or no.
+
+        :param value: Turn on verbose mode? Yes or no.
+        :type value: bool
+        """
+        if isinstance(value, bool) is False:
+            raise TypeError('Expected bool value type.')
+        self._data['verbose'] = value
 
     ############################################################################
 
@@ -638,7 +660,9 @@ class SolverCamera(solverbase.SolverBase):
         end_frame = max(frames)
 
         withtest = True
-        verbose = True
+        verbose = self.get_verbose()
+        if verbose is None:
+            verbose = False
         precomputed_data = self.get_precomputed_data()
 
         generator = _compile_camera_solve(

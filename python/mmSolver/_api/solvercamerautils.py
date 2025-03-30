@@ -242,6 +242,7 @@ def _sub_bundle_adjustment(
     per_frame_solve=None,
     solver_version=None,
     solver_type=None,
+    verbose=None,
 ):
     # LOG.debug('_sub_bundle_adjustment')
     assert isinstance(adjust_camera_translate, bool)
@@ -258,6 +259,10 @@ def _sub_bundle_adjustment(
     assert isinstance(solver_type, int)
     assert solver_version in const.SOLVER_VERSION_LIST
     assert solver_type in const.SOLVER_TYPE_LIST
+
+    if verbose is None:
+        verbose = False
+    assert isinstance(verbose, bool)
 
     frame_solve_mode = const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
     if per_frame_solve is True:
@@ -368,10 +373,15 @@ def _sub_bundle_adjustment(
             sceneGraphMode=scene_graph_mode,
             iterations=iteration_num,
             frameSolveMode=frame_solve_mode,
+            verbose=verbose,
             **kwargs
         )
         assert result[0] == 'success=1'
     elif solver_version == const.SOLVER_VERSION_TWO:
+        log_level = const.LOG_LEVEL_INFO_VALUE
+        if verbose is True:
+            log_level = const.LOG_LEVEL_DEBUG_VALUE
+
         result = maya.cmds.mmSolver_v2(
             frame=frames,
             solverType=solver_type,
@@ -379,6 +389,7 @@ def _sub_bundle_adjustment(
             iterations=iteration_num,
             frameSolveMode=frame_solve_mode,
             resultsNode=col_node,
+            logLevel=log_level,
             **kwargs
         )
         assert result is True
@@ -404,6 +415,7 @@ def _bundle_adjust(
     per_frame_solve=None,
     solver_version=None,
     solver_type=None,
+    verbose=None,
 ):
     LOG.debug('_bundle_adjust')
     LOG.debug('col_node: %r', col_node)
@@ -432,6 +444,8 @@ def _bundle_adjust(
         solver_version = const.SOLVER_VERSION_DEFAULT
     if solver_type is None:
         solver_type = const.SOLVER_TYPE_CMINPACK_LMDER
+    if verbose is None:
+        verbose = False
     assert isinstance(adjust_camera_translate, bool)
     assert isinstance(adjust_camera_rotate, bool)
     assert isinstance(adjust_bundle_positions, bool)
@@ -439,6 +453,7 @@ def _bundle_adjust(
     assert isinstance(adjust_lens_distortion, bool)
     assert isinstance(solver_version, int)
     assert isinstance(solver_type, int)
+    assert isinstance(verbose, bool)
     assert len(mkr_nodes) > 0
     assert solver_version in const.SOLVER_VERSION_LIST
     assert solver_type in const.SOLVER_TYPE_LIST
@@ -462,6 +477,7 @@ def _bundle_adjust(
             per_frame_solve=per_frame_solve,
             solver_version=solver_version,
             solver_type=solver_type,
+            verbose=verbose,
         )
 
     else:
@@ -609,10 +625,12 @@ def _solve_relative_poses(
     accumulated_bnd_nodes,
     enabled_marker_nodes,
     adjust_every_n_poses,
+    verbose
 ):
     assert isinstance(solved_frames, set)
     assert isinstance(accumulated_mkr_nodes, set)
     assert isinstance(accumulated_bnd_nodes, set)
+    assert isinstance(verbose, bool)
     failed_frames = set()
 
     tmp_possible_frames = list(possible_frames)
@@ -700,6 +718,7 @@ def _solve_relative_poses(
                 adjust_camera_intrinsics=True,
                 adjust_lens_distortion=False,
                 iteration_num=25,
+                verbose=verbose,
             )
             accumulated_mkr_nodes, accumulated_bnd_nodes = _filter_badly_solved_markers(
                 accumulated_mkr_nodes, BUNDLE_VALUE_MIN, BUNDLE_VALUE_MAX
@@ -997,6 +1016,7 @@ def camera_solve(
     adjust_every_n_poses,
     solver_version,
     solver_type,
+    verbose,
 ):
     assert isinstance(col_node, pycompat.TEXT_TYPE)
     assert isinstance(cam_tfm, pycompat.TEXT_TYPE)
@@ -1013,6 +1033,7 @@ def camera_solve(
     assert isinstance(lens_node_attrs, list)
     assert isinstance(solver_version, int)
     assert isinstance(solver_type, int)
+    assert isinstance(verbose, bool)
     assert len(mkr_nodes) > 0
     assert solver_version in const.SOLVER_VERSION_LIST
     assert solver_type in const.SOLVER_TYPE_LIST
@@ -1041,6 +1062,7 @@ def camera_solve(
     LOG.debug('anim_iter_num: %s', anim_iter_num)
     LOG.debug('solver_version: %s', solver_version)
     LOG.debug('solver_type: %s', solver_type)
+    LOG.debug('verbose: %s', verbose)
 
     (
         enabled_marker_nodes,
@@ -1110,6 +1132,7 @@ def camera_solve(
             accumulated_bnd_nodes,
             enabled_marker_nodes,
             adjust_every_n_poses,
+            verbose,
         )
 
         for frame in solved_frames:

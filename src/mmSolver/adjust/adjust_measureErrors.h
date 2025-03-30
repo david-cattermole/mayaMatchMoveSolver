@@ -23,6 +23,13 @@
 #ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_MEASURE_ERRORS_H
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_MEASURE_ERRORS_H
 
+// STL
+#include <vector>
+
+// Maya
+#include <maya/MStatus.h>
+
+// MM Solver
 #include "adjust_data.h"
 
 namespace mmsolver {

@@ -84,6 +84,12 @@ void ArrayMask::set(const size_t index, const bool value) {
     m_mask[index] = value;
 }
 
+void ArrayMask::set_all(const bool value) {
+    for (auto i = 0; i < ArrayMask::size(); ++i) {
+        m_mask[i] = value;
+    }
+}
+
 bool ArrayMask::operator[](const size_t index) const {
     MMSOLVER_ASSERT(
         ArrayMask::in_bounds(index),

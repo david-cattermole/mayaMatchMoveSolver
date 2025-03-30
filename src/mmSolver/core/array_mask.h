@@ -59,6 +59,7 @@ public:
     bool in_bounds(const size_t index) const;
     bool get(const size_t index) const;
     void set(const size_t index, const bool value);
+    void set_all(const bool value);
     bool operator[](const size_t index) const;
 
     // Get raw access to internal data (for slice creation).

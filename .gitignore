@@ -18,6 +18,8 @@ compile_commands.json
 
 test*.pstat
 test*.txt
+test*.folded
+test*.svg
 *_after*.ma
 *_before*.ma
 *.log

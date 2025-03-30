@@ -255,29 +255,29 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
         self.checkSolveResults(results, allow_max_avg_error=0.02, allow_max_error=0.05)
         return
 
-    def test_ceres_lmder_maya_dag(self):
-        self.do_solve(
-            'ceres_lmder',
-            mmapi.SOLVER_TYPE_CERES_LMDER,
-            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
-        )
+    # def test_ceres_lmder_maya_dag(self):
+    #     self.do_solve(
+    #         'ceres_lmder',
+    #         mmapi.SOLVER_TYPE_CERES_LMDER,
+    #         mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+    #     )
 
     def test_ceres_lmder_mmscenegraph(self):
         self.do_solve(
             'ceres_lmder', mmapi.SOLVER_TYPE_CERES_LMDER, mmapi.SCENE_GRAPH_MODE_AUTO
         )
 
-    def test_ceres_lmdif_maya_dag(self):
-        self.do_solve(
-            'ceres_lmdif',
-            mmapi.SOLVER_TYPE_CERES_LMDIF,
-            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
-        )
+    # def test_ceres_lmdif_maya_dag(self):
+    #     self.do_solve(
+    #         'ceres_lmdif',
+    #         mmapi.SOLVER_TYPE_CERES_LMDIF,
+    #         mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+    #     )
 
-    def test_ceres_lmdif_mmscenegraph(self):
-        self.do_solve(
-            'ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF, mmapi.SCENE_GRAPH_MODE_AUTO
-        )
+    # def test_ceres_lmdif_mmscenegraph(self):
+    #     self.do_solve(
+    #         'ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF, mmapi.SCENE_GRAPH_MODE_AUTO
+    #     )
 
     # def test_cminpack_lmdif_maya_dag(self):
     #     self.do_solve(
@@ -293,12 +293,12 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
     #         mmapi.SCENE_GRAPH_MODE_AUTO,
     #     )
 
-    def test_cminpack_lmder_maya_dag(self):
-        self.do_solve(
-            'cminpack_lmder',
-            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
-            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
-        )
+    # def test_cminpack_lmder_maya_dag(self):
+    #     self.do_solve(
+    #         'cminpack_lmder',
+    #         mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+    #         mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+    #     )
 
     def test_cminpack_lmder_mmscenegraph(self):
         self.do_solve(

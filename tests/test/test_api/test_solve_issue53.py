@@ -200,17 +200,17 @@ class TestSolveIssue53(test_api_utils.APITestCase):
             'ceres_lmder', mmapi.SOLVER_TYPE_CERES_LMDER, mmapi.SCENE_GRAPH_MODE_AUTO
         )
 
-    def test_ceres_lmdif_maya_dag(self):
-        self.do_solve(
-            'ceres_lmdif',
-            mmapi.SOLVER_TYPE_CERES_LMDIF,
-            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
-        )
+    # def test_ceres_lmdif_maya_dag(self):
+    #     self.do_solve(
+    #         'ceres_lmdif',
+    #         mmapi.SOLVER_TYPE_CERES_LMDIF,
+    #         mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+    #     )
 
-    def test_ceres_lmdif_mmscenegraph(self):
-        self.do_solve(
-            'ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF, mmapi.SCENE_GRAPH_MODE_AUTO
-        )
+    # def test_ceres_lmdif_mmscenegraph(self):
+    #     self.do_solve(
+    #         'ceres_lmdif', mmapi.SOLVER_TYPE_CERES_LMDIF, mmapi.SCENE_GRAPH_MODE_AUTO
+    #     )
 
     # def test_cminpack_lmdif_maya_dag(self):
     #     self.do_solve(

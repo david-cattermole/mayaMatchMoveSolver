@@ -7,6 +7,7 @@
 *.bak
 *.orig
 *.pyc
+*.idx
 *cppcheck-build-*
 cmake-build-*
 *build/*

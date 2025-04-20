@@ -49,6 +49,8 @@
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/utilities/debug_utils.h"
 
+namespace mmsolver {
+
 typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
 
@@ -96,5 +98,7 @@ void calculateMarkerAndParameterCount(
     const FrameSolveMode frameSolveMode,
     std::unordered_set<int32_t> &out_valid_frames,
     std::unordered_set<int32_t> &out_invalid_frames, MStatus &out_status);
+
+}  // namespace mmsolver
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_RELATIONSHIPS_H

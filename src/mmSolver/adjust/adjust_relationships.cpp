@@ -65,6 +65,8 @@
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
+namespace mmsolver {
+
 /*
  * Count up number of errors to be measured in the solve.
  */
@@ -226,7 +228,7 @@ uint32_t countUpNumberOfUnknownParameters(
     std::vector<double> &out_paramUpperBoundList,
     std::vector<double> &out_paramWeightList,
     IndexPairList &out_paramToAttrList,
-    mmsolver::MatrixBool2D &out_paramFrameMatrix, MStatus &out_status) {
+    MatrixBool2D &out_paramFrameMatrix, MStatus &out_status) {
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("countUpNumberOfUnknownParameters");
 
@@ -416,7 +418,7 @@ uint32_t countUpNumberOfUnknownParameters(
  */
 void findMarkerToAttributeRelationship(
     const MarkerPtrList &markerList, const AttrPtrList &attrList,
-    mmsolver::MatrixBool2D &out_markerToAttrMatrix, MStatus &out_status) {
+    MatrixBool2D &out_markerToAttrMatrix, MStatus &out_status) {
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("findMarkerToAttributeRelationship");
 
@@ -525,7 +527,7 @@ void findMarkerToAttributeRelationship(
  */
 void getMarkerToAttributeRelationship(
     const MarkerPtrList &markerList, const AttrPtrList &attrList,
-    mmsolver::MatrixBool2D &out_markerToAttrMatrix, MStatus &out_status) {
+    MatrixBool2D &out_markerToAttrMatrix, MStatus &out_status) {
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("getMarkerToAttributeRelationship");
 
@@ -619,8 +621,8 @@ void findErrorToParameterRelationship(
     const MTimeArray &frameList, const uint32_t numParameters,
     const uint32_t numMarkerErrors, const IndexPairList &paramToAttrList,
     const IndexPairList &errorToMarkerList,
-    const mmsolver::MatrixBool2D &markerToAttrMatrix,
-    mmsolver::MatrixBool2D &out_errorToParamMatrix, MStatus &out_status) {
+    const MatrixBool2D &markerToAttrMatrix,
+    MatrixBool2D &out_errorToParamMatrix, MStatus &out_status) {
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("findErrorToParameterRelationship");
 
@@ -701,7 +703,7 @@ void calculateMarkerAndParameterCount(
     const MTimeArray &frameList, const uint32_t numParameters,
     const uint32_t numMarkerErrors, const IndexPairList &paramToAttrList,
     const IndexPairList &errorToMarkerList,
-    const mmsolver::MatrixBool2D &markerToAttrMatrix,
+    const MatrixBool2D &markerToAttrMatrix,
     const FrameSolveMode frameSolveMode,
     std::unordered_set<int32_t> &out_valid_frames,
     std::unordered_set<int32_t> &out_invalid_frames, MStatus &out_status) {
@@ -836,3 +838,5 @@ void calculateMarkerAndParameterCount(
 
     return;
 }
+
+}  // namespace mmsolver

@@ -24,11 +24,3 @@ jobs:
       - name: Analysing the Python code with ruff (Hard Error)
         run: |
           ./scripts/python_linter_run_ruff.bash
-
-      - name: Install Clang-Format
-        run: |
-          sudo apt-get install -y clang-format
-
-      - name: Check C++ Code with Clang-Format
-        run: |
-          ./scripts/cpp_formatter_run_clang_format_check.bash

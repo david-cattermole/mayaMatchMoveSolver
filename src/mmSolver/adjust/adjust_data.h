@@ -102,6 +102,47 @@ enum class LogLevel {
     kNumLogLevels,
 };
 
+// The LogLevel that will print "normal" iterations to the terminal/Maya
+// Output Window.
+const LogLevel LOG_LEVEL_PRINT_NORMAL_ITERATIONS = LogLevel::kVerbose;
+
+// The LogLevel that will print "jacobian" iterations to the terminal/Maya
+// Output Window.
+const LogLevel LOG_LEVEL_PRINT_JACOBIAN_ITERATIONS = LogLevel::kDebug;
+
+// The LogLevel that will enable print verbose information ("verbose =
+// true") to terminal/Maya Output Window.
+const LogLevel LOG_LEVEL_PRINT_VERBOSE = LogLevel::kDebug;
+
+// The LogLevel that will print detailed solver timing information to
+// terminal/Maya Output Window.
+const LogLevel LOG_LEVEL_PRINT_SOLVER_TIMING = LogLevel::kDebug;
+
+// The LogLevel that will print solver object count information to
+// terminal/Maya Output Window.
+const LogLevel LOG_LEVEL_PRINT_SOLVER_OBJECT_COUNTS = LogLevel::kDebug;
+
+// The LogLevel that will print basic solver information to the
+// terminal/Maya Output Window.
+const LogLevel LOG_LEVEL_PRINT_SOLVER_HEADER_BASIC = LogLevel::kInfo;
+
+// The LogLevel that will print extended solver information to the
+// terminal/Maya Output Window.
+const LogLevel LOG_LEVEL_PRINT_SOLVER_HEADER_EXTENDED = LogLevel::kDebug;
+
+// The LogLevel that will print the solver's list of initial and
+// solved parameter values to the terminal/Maya Output Window.
+const LogLevel LOG_LEVEL_PRINT_SOLVER_PARAMETERS_INITIAL = LogLevel::kDebug;
+const LogLevel LOG_LEVEL_PRINT_SOLVER_PARAMETERS_SOLVED = LogLevel::kDebug;
+
+// The LogLevel that will print extended solver information to the
+// terminal/Maya Output Window.
+const LogLevel LOG_LEVEL_SOLVER_PROGRESS_BAR = LogLevel::kInfo;
+
+// Solver Per-frame LogLevel - all per-frame solves will use at least
+// this LogLevel.
+const LogLevel LOG_LEVEL_SOLVER_PER_FRAME = LogLevel::kWarning;
+
 struct PrintStatOptions {
     // Do not actually solve anything, just stop after preparing to
     // solve, because we have already calculated all the data needed

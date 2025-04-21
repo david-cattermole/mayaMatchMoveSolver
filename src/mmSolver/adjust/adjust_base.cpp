@@ -1190,7 +1190,7 @@ MStatus solveFrames(
         addFrameListToStringStream(validFrameList, ss);
         MMSOLVER_MAYA_INFO("Valid Frames:" << ss.str());
     } else if (!out_cmdResult.printStats.doNotSolve &&
-               (logLevel >= LogLevel::kVerbose)) {
+               (logLevel >= printNormalIterationsLogLevel)) {
         MMSOLVER_MAYA_INFO(
             "------------------------------------------------------------------"
             "-------------");

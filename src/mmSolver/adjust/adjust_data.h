@@ -102,6 +102,14 @@ enum class LogLevel {
     kNumLogLevels,
 };
 
+// The LogLevel that will print "normal" iterations to the terminal/Maya
+// Output Window.
+const LogLevel printNormalIterationsLogLevel = LogLevel::kVerbose;
+
+// The LogLevel that will print "jacobian" iterations to the terminal/Maya
+// Output Window.
+const LogLevel printJacobianIterationsLogLevel = LogLevel::kDebug;
+
 struct PrintStatOptions {
     // Do not actually solve anything, just stop after preparing to
     // solve, because we have already calculated all the data needed

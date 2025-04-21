@@ -51,7 +51,6 @@
 #include <maya/MPoint.h>
 #include <maya/MProfiler.h>
 #include <maya/MSelectionList.h>
-#include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MVector.h>
@@ -66,6 +65,7 @@
 
 #include "adjust_base.h"
 #include "adjust_data.h"
+#include "adjust_logging.h"
 #include "adjust_measureErrors.h"
 #include "adjust_setParameters.h"
 #include "mmSolver/core/matrix_bool_2d.h"
@@ -247,14 +247,6 @@ void incrementNormalIteration(SolverData *userData) {
 
     ++userData->funcEvalNum;
     ++userData->iterNum;
-    if (userData->logLevel >= LOG_LEVEL_PRINT_NORMAL_ITERATIONS) {
-        MStreamUtils::stdErrorStream() << "Iteration ";
-        MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
-                                       << std::setw(4) << userData->iterNum;
-        MStreamUtils::stdErrorStream() << " | Eval ";
-        MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
-                                       << std::setw(4) << userData->funcEvalNum;
-    }
     return;
 }
 
@@ -265,17 +257,6 @@ void incrementJacobianIteration(SolverData *userData) {
 
     ++userData->funcEvalNum;
     ++userData->jacIterNum;
-    if (userData->logLevel >= LOG_LEVEL_PRINT_JACOBIAN_ITERATIONS) {
-        MStreamUtils::stdErrorStream() << "Jacobian  ";
-        MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
-                                       << std::setw(4) << userData->jacIterNum;
-        MStreamUtils::stdErrorStream() << " | Eval ";
-        MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
-                                       << std::setw(4) << userData->funcEvalNum;
-        if (userData->doCalcJacobian) {
-            MStreamUtils::stdErrorStream() << "\n";
-        }
-    }
     return;
 }
 
@@ -621,6 +602,10 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     } else if (userData->isJacobianCall && !userData->doCalcJacobian) {
         incrementJacobianIteration(userData);
     }
+    mmsolver::log_solver_iteration_pre_solve(
+        userData->logLevel, userData->isNormalCall, userData->isJacobianCall,
+        userData->doCalcJacobian, userData->iterNum, userData->funcEvalNum,
+        userData->jacIterNum);
 
     if (userData->isPrintCall) {
         // insert print statements here when nprint is positive.
@@ -710,20 +695,9 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
         return calculation_status;
     }
 
-    if (userData->isNormalCall) {
-        if (userData->logLevel >= LOG_LEVEL_PRINT_NORMAL_ITERATIONS) {
-            char formatBuffer[128];
-            sprintf(formatBuffer, " | error avg %8.4f   min %8.4f   max %8.4f",
-                    error_avg, error_min, error_max);
-            MStreamUtils::stdErrorStream() << std::string(formatBuffer) << "\n";
-        }
-    } else {
-        if (userData->logLevel >= LOG_LEVEL_PRINT_JACOBIAN_ITERATIONS) {
-            if (!userData->doCalcJacobian) {
-                std::cerr << "\n";
-            }
-        }
-    }
+    mmsolver::log_solver_iteration_post_solve(
+        userData->logLevel, userData->isNormalCall, userData->isJacobianCall,
+        userData->doCalcJacobian, error_avg, error_min, error_max);
 
     return SOLVE_FUNC_SUCCESS;
 }

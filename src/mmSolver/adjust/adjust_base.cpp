@@ -44,7 +44,6 @@
 #include <maya/MItDependencyGraph.h>
 #include <maya/MObject.h>
 #include <maya/MPoint.h>
-#include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 
@@ -63,6 +62,7 @@
 #include "adjust_measureErrors.h"
 #include "adjust_relationships.h"
 #include "adjust_results.h"
+#include "adjust_logging.h"
 #include "adjust_solveFunc.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -450,53 +450,13 @@ void printSolveDetails(const SolverResult &solverResult, SolverData &userData,
     MMSOLVER_MAYA_VRB("Jacobian Evaluations: " << solverResult.jacobianEvals);
 
     if (logLevel >= LogLevel::kInfo) {
-        if (solverResult.success) {
-            MStreamUtils::stdErrorStream() << "Solver returned SUCCESS    | ";
-        } else {
-            MStreamUtils::stdErrorStream() << "Solver returned FAILURE    | ";
-        }
-
-        double seconds = mmsolver::debug::timestamp_as_seconds(
-            mmsolver::debug::get_timestamp() - timer.startTimestamp);
-        seconds = std::max(1e-9, seconds);
-        auto evals_per_sec = static_cast<size_t>(
-            static_cast<double>(solverResult.functionEvals) / seconds);
-        std::string evals_per_sec_string =
-            mmstring::numberToStringWithCommas(evals_per_sec);
-
-        const auto solverResult_iterations =
-            static_cast<uint32_t>(solverResult.iterations);
-
-        const size_t buffer_size = 128;
-        char formatBuffer[buffer_size];
-        std::snprintf(formatBuffer, buffer_size,
-                      "error avg %8.4f   min %8.4f   max %8.4f  "
-                      "iterations %03u  (%s evals/sec)",
-                      solverResult.errorAvg, solverResult.errorMin,
-                      solverResult.errorMax, solverResult_iterations,
-                      &evals_per_sec_string[0]);
-        // Note: We use std::endl to flush the stream, and ensure an
-        //  update for the user.
-        MMSOLVER_MAYA_INFO(std::string(formatBuffer));
+        log_solver_results(solverResult, timer);
     }
 
     if (logLevel >= LOG_LEVEL_PRINT_SOLVER_TIMING) {
-        unsigned int total_num = userData.iterNum + userData.jacIterNum;
+        uint32_t total_num = userData.iterNum + userData.jacIterNum;
         MMSOLVER_ASSERT(total_num > 0, "There must have been some iterations.");
-        static std::ostream &stream = MStreamUtils::stdErrorStream();
-        timer.solveBenchTimer.print(stream, "Solve Time", 1);
-        timer.funcBenchTimer.print(stream, "Func Time", 1);
-        timer.jacBenchTimer.print(stream, "Jacobian Time", 1);
-        timer.paramBenchTimer.print(stream, "Param Time", total_num);
-        timer.errorBenchTimer.print(stream, "Error Time", total_num);
-        timer.funcBenchTimer.print(stream, "Func Time", total_num);
-
-        timer.solveBenchTicks.print(stream, "Solve Ticks", 1);
-        timer.funcBenchTicks.print(stream, "Func Ticks", 1);
-        timer.jacBenchTicks.print(stream, "Jacobian Ticks", 1);
-        timer.paramBenchTicks.print(stream, "Param Ticks", total_num);
-        timer.errorBenchTicks.print(stream, "Error Ticks", total_num);
-        timer.funcBenchTicks.print(stream, "Func Ticks", total_num);
+        log_solver_timer(timer, total_num);
     }
 }
 

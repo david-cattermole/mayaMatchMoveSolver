@@ -426,7 +426,7 @@ void printSolveDetails(const SolverResult &solverResult, SolverData &userData,
                        const int numberOfAttrSmoothnessErrors,
                        const LogLevel &logLevel,
                        const std::vector<double> &paramList) {
-    const bool verbose = logLevel >= LogLevel::kDebug;
+    const bool verbose = logLevel >= LOG_LEVEL_PRINT_VERBOSE;
 
     MMSOLVER_MAYA_VRB("Results:");
     if (solverResult.success) {
@@ -480,7 +480,7 @@ void printSolveDetails(const SolverResult &solverResult, SolverData &userData,
         MMSOLVER_MAYA_INFO(std::string(formatBuffer));
     }
 
-    if (logLevel >= LogLevel::kDebug) {
+    if (logLevel >= LOG_LEVEL_PRINT_SOLVER_TIMING) {
         unsigned int total_num = userData.iterNum + userData.jacIterNum;
         MMSOLVER_ASSERT(total_num > 0, "There must have been some iterations.");
         static std::ostream &stream = MStreamUtils::stdErrorStream();
@@ -979,7 +979,7 @@ MStatus validateSolveFrames(
                                     out_cmdResult.solverFramesResult);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    if (logLevel >= LogLevel::kDebug) {
+    if (logLevel >= LOG_LEVEL_PRINT_SOLVER_OBJECT_COUNTS) {
         MMSOLVER_MAYA_INFO("Number of Markers; used="
                            << usedMarkerList.size()
                            << " | unused=" << unusedMarkerList.size());
@@ -1084,7 +1084,7 @@ MStatus solveFrames(
     std::vector<double> &out_previousParamList,
     //
     const LogLevel &logLevel, CommandResult &out_cmdResult) {
-    const bool verbose = logLevel >= LogLevel::kDebug;
+    const bool verbose = logLevel >= LOG_LEVEL_PRINT_VERBOSE;
 
     FrameSolveMode frameSolveMode = FrameSolveMode::kAllFrameAtOnce;
 
@@ -1163,7 +1163,7 @@ MStatus solveFrames(
     assert(out_errorToMarkerList.size() == errorDistanceList.size());
 
     auto frameCount = frameList.length();
-    if (logLevel >= LogLevel::kDebug) {
+    if (logLevel >= LOG_LEVEL_PRINT_SOLVER_HEADER_EXTENDED) {
         MMSOLVER_MAYA_INFO(
             "------------------------------------------------------------------"
             "-------------");
@@ -1190,7 +1190,7 @@ MStatus solveFrames(
         addFrameListToStringStream(validFrameList, ss);
         MMSOLVER_MAYA_INFO("Valid Frames:" << ss.str());
     } else if (!out_cmdResult.printStats.doNotSolve &&
-               (logLevel >= printNormalIterationsLogLevel)) {
+               (logLevel >= LOG_LEVEL_PRINT_SOLVER_HEADER_BASIC)) {
         MMSOLVER_MAYA_INFO(
             "------------------------------------------------------------------"
             "-------------");
@@ -1205,8 +1205,8 @@ MStatus solveFrames(
     }
 
     // MComputation helper.
-    if (!out_cmdResult.printStats.doNotSolve && (logLevel >= LogLevel::kInfo) &&
-        (frameCount > 1)) {
+    if (!out_cmdResult.printStats.doNotSolve &&
+        (logLevel >= LOG_LEVEL_SOLVER_PROGRESS_BAR) && (frameCount > 1)) {
         const bool showProgressBar = true;
         const bool isInterruptable = true;
         const bool useWaitCursor = true;
@@ -1424,7 +1424,7 @@ MStatus solveFrames(
         // Copy parameter values into the 'previous' parameter list.
         out_previousParamList[i] = out_paramList[i];
     }
-    if (logLevel >= LogLevel::kDebug) {
+    if (logLevel >= LOG_LEVEL_PRINT_SOLVER_PARAMETERS_INITIAL) {
         for (int i = 0; i < numberOfParameters; ++i) {
             IndexPair attrPair = out_paramToAttrList[i];
             AttrPtr attr = usedAttrList[attrPair.first];
@@ -1476,8 +1476,8 @@ MStatus solveFrames(
         timer.solveBenchTicks.stop();
         timer.solveBenchTimer.stop();
     }
-    if (!out_cmdResult.printStats.doNotSolve && (logLevel >= LogLevel::kInfo) &&
-        (frameCount > 1)) {
+    if (!out_cmdResult.printStats.doNotSolve &&
+        (logLevel >= LOG_LEVEL_SOLVER_PROGRESS_BAR) && (frameCount > 1)) {
         out_computation.endComputation();
     }
 
@@ -1532,7 +1532,7 @@ MStatus solveFrames(
         return status;
     }
 
-    if (logLevel >= LogLevel::kDebug) {
+    if (logLevel >= LOG_LEVEL_PRINT_SOLVER_PARAMETERS_SOLVED) {
         MMSOLVER_MAYA_VRB("Solved Parameters:");
         for (int i = 0; i < numberOfParameters; ++i) {
             IndexPair attrPair = out_paramToAttrList[i];
@@ -1589,7 +1589,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
 
     CommandResult cmdResult;
 
-    bool verbose = logLevel >= LogLevel::kDebug;
+    bool verbose = logLevel >= LOG_LEVEL_PRINT_VERBOSE;
     cmdResult.printStats = constructPrintStats(printStatsList);
     if (cmdResult.printStats.doNotSolve) {
         // When printing statistics, turn off verbosity.
@@ -1729,8 +1729,8 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
         // otherwise the solve will slow down due to so much text
         // being printed out.
         auto perFrameLogLevel = logLevel;
-        if (logLevel == LogLevel::kVerbose) {
-            perFrameLogLevel = LogLevel::kInfo;
+        if (logLevel > LOG_LEVEL_SOLVER_PER_FRAME) {
+            perFrameLogLevel = LOG_LEVEL_SOLVER_PER_FRAME;
         }
 
         for (auto i = 0; i < frameCount; ++i) {
@@ -1793,7 +1793,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
               const LogLevel logLevel, CommandResult &out_cmdResult) {
     MStatus status = MS::kSuccess;
 
-    bool verbose = logLevel >= LogLevel::kDebug;
+    bool verbose = logLevel >= LOG_LEVEL_PRINT_VERBOSE;
     out_cmdResult.printStats = constructPrintStats(printStatsList);
     if (out_cmdResult.printStats.doNotSolve) {
         // When printing statistics, turn off verbosity.
@@ -1932,8 +1932,8 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
         // otherwise the solve will slow down due to so much text
         // being printed out.
         auto perFrameLogLevel = logLevel;
-        if (logLevel == LogLevel::kVerbose) {
-            perFrameLogLevel = LogLevel::kInfo;
+        if (logLevel > LOG_LEVEL_SOLVER_PER_FRAME) {
+            perFrameLogLevel = LOG_LEVEL_SOLVER_PER_FRAME;
         }
 
         for (auto i = 0; i < frameCount; ++i) {

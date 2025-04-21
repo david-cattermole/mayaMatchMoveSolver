@@ -247,7 +247,7 @@ void incrementNormalIteration(SolverData *userData) {
 
     ++userData->funcEvalNum;
     ++userData->iterNum;
-    if (userData->logLevel >= printNormalIterationsLogLevel) {
+    if (userData->logLevel >= LOG_LEVEL_PRINT_NORMAL_ITERATIONS) {
         MStreamUtils::stdErrorStream() << "Iteration ";
         MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
                                        << std::setw(4) << userData->iterNum;
@@ -265,7 +265,7 @@ void incrementJacobianIteration(SolverData *userData) {
 
     ++userData->funcEvalNum;
     ++userData->jacIterNum;
-    if (userData->logLevel >= printJacobianIterationsLogLevel) {
+    if (userData->logLevel >= LOG_LEVEL_PRINT_JACOBIAN_ITERATIONS) {
         MStreamUtils::stdErrorStream() << "Jacobian  ";
         MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
                                        << std::setw(4) << userData->jacIterNum;
@@ -711,14 +711,14 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     }
 
     if (userData->isNormalCall) {
-        if (userData->logLevel >= printNormalIterationsLogLevel) {
+        if (userData->logLevel >= LOG_LEVEL_PRINT_NORMAL_ITERATIONS) {
             char formatBuffer[128];
             sprintf(formatBuffer, " | error avg %8.4f   min %8.4f   max %8.4f",
                     error_avg, error_min, error_max);
             MStreamUtils::stdErrorStream() << std::string(formatBuffer) << "\n";
         }
     } else {
-        if (userData->logLevel >= printJacobianIterationsLogLevel) {
+        if (userData->logLevel >= LOG_LEVEL_PRINT_JACOBIAN_ITERATIONS) {
             if (!userData->doCalcJacobian) {
                 std::cerr << "\n";
             }

@@ -61,12 +61,12 @@ class TestSolver13(solverUtils.SolverTestCase):
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
 
         bundle1_tfm, bundle1_shp = self.create_bundle('bundle1')
-        maya.cmds.setAttr(bundle1_tfm + '.tx', 5.5)
+        maya.cmds.setAttr(bundle1_tfm + '.tx', -5.5)
         maya.cmds.setAttr(bundle1_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle1_tfm + '.tz', -25.0)
 
         bundle2_tfm, bundle2_shp = self.create_bundle('bundle2')
-        maya.cmds.setAttr(bundle2_tfm + '.tx', -5.5)
+        maya.cmds.setAttr(bundle2_tfm + '.tx', 5.5)
         maya.cmds.setAttr(bundle2_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle2_tfm + '.tz', -25.0)
 
@@ -139,11 +139,13 @@ class TestSolver13(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         rx = maya.cmds.getAttr(cam_tfm + '.rx')
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
+        rz = maya.cmds.getAttr(cam_tfm + '.rz')
         print('rx =', rx)
         print('ry =', ry)
-
-        self.assertApproxEqual(rx, 8.02, eps=0.02)
-        self.assertApproxEqual(ry, -2.5, eps=0.02)
+        print('rz =', rz)
+        self.assertApproxEqual(rx, 7.72, eps=0.01)
+        self.assertApproxEqual(ry, -2.377, eps=0.01)
+        self.assertApproxEqual(rz, -0.636, eps=0.001)
 
     def test_init_ceres_lmder_maya_dag(self):
         self.do_solve(

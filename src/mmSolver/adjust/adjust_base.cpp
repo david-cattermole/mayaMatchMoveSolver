@@ -59,10 +59,10 @@
 #include "adjust_ceres_lmdif.h"
 #include "adjust_cminpack_lmder.h"
 #include "adjust_cminpack_lmdif.h"
+#include "adjust_consoleLogging.h"
 #include "adjust_measureErrors.h"
 #include "adjust_relationships.h"
 #include "adjust_results.h"
-#include "adjust_logging.h"
 #include "adjust_solveFunc.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -450,13 +450,13 @@ void printSolveDetails(const SolverResult &solverResult, SolverData &userData,
     MMSOLVER_MAYA_VRB("Jacobian Evaluations: " << solverResult.jacobianEvals);
 
     if (logLevel >= LogLevel::kInfo) {
-        log_solver_results(solverResult, timer);
+        console_log_solver_results(solverResult, timer);
     }
 
     if (logLevel >= LOG_LEVEL_PRINT_SOLVER_TIMING) {
         uint32_t total_num = userData.iterNum + userData.jacIterNum;
         MMSOLVER_ASSERT(total_num > 0, "There must have been some iterations.");
-        log_solver_timer(timer, total_num);
+        console_log_solver_timer(timer, total_num);
     }
 }
 

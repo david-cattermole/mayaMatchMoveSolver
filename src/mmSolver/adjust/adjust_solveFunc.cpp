@@ -64,8 +64,8 @@
 #include <mmcore/mmmath.h>
 
 #include "adjust_base.h"
+#include "adjust_consoleLogging.h"
 #include "adjust_data.h"
-#include "adjust_logging.h"
 #include "adjust_measureErrors.h"
 #include "adjust_setParameters.h"
 #include "mmSolver/core/matrix_bool_2d.h"
@@ -602,7 +602,7 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     } else if (userData->isJacobianCall && !userData->doCalcJacobian) {
         incrementJacobianIteration(userData);
     }
-    mmsolver::log_solver_iteration_pre_solve(
+    mmsolver::console_log_solver_iteration_pre_solve(
         userData->logLevel, userData->isNormalCall, userData->isJacobianCall,
         userData->doCalcJacobian, userData->iterNum, userData->funcEvalNum,
         userData->jacIterNum);
@@ -695,7 +695,7 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
         return calculation_status;
     }
 
-    mmsolver::log_solver_iteration_post_solve(
+    mmsolver::console_log_solver_iteration_post_solve(
         userData->logLevel, userData->isNormalCall, userData->isJacobianCall,
         userData->doCalcJacobian, error_avg, error_min, error_max);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, 2019 David Cattermole.
+ * Copyright (C) 2018, 2019, 2025 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -36,22 +36,25 @@
 
 namespace mmsolver {
 
-const char *const LOG_SOLVER_RETURN_SUCCESS = "Solver returned SUCCESS    | ";
-const char *const LOG_SOLVER_RETURN_FAILURE = "Solver returned FAILURE    | ";
-const char *const LOG_SOLVER_ITERATION_RESIDUAL_ERROR_FORMAT =
+const char *const CONSOLE_LOG_SOLVER_RETURN_SUCCESS =
+    "Solver returned SUCCESS    | ";
+const char *const CONSOLE_LOG_SOLVER_RETURN_FAILURE =
+    "Solver returned FAILURE    | ";
+const char *const CONSOLE_LOG_SOLVER_ITERATION_RESIDUAL_ERROR_FORMAT =
     " | error avg %8.4f   min %8.4f   max %8.4f";
-const char *const LOG_SOLVER_END_RESIDUAL_ERROR_FORMAT =
+const char *const CONSOLE_LOG_SOLVER_END_RESIDUAL_ERROR_FORMAT =
     "error avg %8.4f   min %8.4f   max %8.4f  iterations %03u  (%s evals/sec)";
 
-void log_solver_iteration_pre_solve(const LogLevel log_level,
-                                    const bool is_normal_call,
-                                    const bool is_jacobian_call,
-                                    const bool do_calc_jacobian,
-                                    const int32_t iter_num,
-                                    const int32_t func_eval_num,
-                                    const int32_t jac_iter_num) {
+void console_log_solver_iteration_pre_solve(const LogLevel log_level,
+                                            const bool is_normal_call,
+                                            const bool is_jacobian_call,
+                                            const bool do_calc_jacobian,
+                                            const int32_t iter_num,
+                                            const int32_t func_eval_num,
+                                            const int32_t jac_iter_num) {
     const bool verbose = false;
-    MMSOLVER_MAYA_VRB("adjust_logging log_solver_iteration_pre_solve");
+    MMSOLVER_MAYA_VRB(
+        "adjust_consoleLogging console_log_solver_iteration_pre_solve");
 
     if (is_normal_call) {
         if (log_level >= LOG_LEVEL_PRINT_NORMAL_ITERATIONS) {
@@ -77,17 +80,19 @@ void log_solver_iteration_pre_solve(const LogLevel log_level,
     }
 }
 
-void log_solver_iteration_post_solve(
+void console_log_solver_iteration_post_solve(
     const LogLevel log_level, const bool is_normal_call,
     const bool is_jacobian_call, const bool do_calc_jacobian,
     const double error_avg, const double error_min, const double error_max) {
     const bool verbose = false;
-    MMSOLVER_MAYA_VRB("adjust_logging log_solver_iteration_post_solve");
+    MMSOLVER_MAYA_VRB(
+        "adjust_consoleLogging console_log_solver_iteration_post_solve");
 
     if (is_normal_call) {
         if (log_level >= LOG_LEVEL_PRINT_NORMAL_ITERATIONS) {
             char formatBuffer[128];
-            sprintf(formatBuffer, LOG_SOLVER_ITERATION_RESIDUAL_ERROR_FORMAT,
+            sprintf(formatBuffer,
+                    CONSOLE_LOG_SOLVER_ITERATION_RESIDUAL_ERROR_FORMAT,
                     error_avg, error_min, error_max);
             MStreamUtils::stdErrorStream() << std::string(formatBuffer) << "\n";
         }
@@ -100,12 +105,12 @@ void log_solver_iteration_post_solve(
     }
 }
 
-void log_solver_results(const SolverResult &solverResult,
-                        const SolverTimer &timer) {
+void console_log_solver_results(const SolverResult &solverResult,
+                                const SolverTimer &timer) {
     if (solverResult.success) {
-        MStreamUtils::stdErrorStream() << LOG_SOLVER_RETURN_SUCCESS;
+        MStreamUtils::stdErrorStream() << CONSOLE_LOG_SOLVER_RETURN_SUCCESS;
     } else {
-        MStreamUtils::stdErrorStream() << LOG_SOLVER_RETURN_FAILURE;
+        MStreamUtils::stdErrorStream() << CONSOLE_LOG_SOLVER_RETURN_FAILURE;
     }
 
     double seconds = mmsolver::debug::timestamp_as_seconds(
@@ -121,17 +126,17 @@ void log_solver_results(const SolverResult &solverResult,
 
     const size_t buffer_size = 128;
     char formatBuffer[buffer_size];
-    std::snprintf(formatBuffer, buffer_size,
-                  LOG_SOLVER_END_RESIDUAL_ERROR_FORMAT, solverResult.errorAvg,
-                  solverResult.errorMin, solverResult.errorMax,
-                  solverResult_iterations, &evals_per_sec_string[0]);
+    std::snprintf(
+        formatBuffer, buffer_size, CONSOLE_LOG_SOLVER_END_RESIDUAL_ERROR_FORMAT,
+        solverResult.errorAvg, solverResult.errorMin, solverResult.errorMax,
+        solverResult_iterations, &evals_per_sec_string[0]);
     // Note: We use std::endl to flush the stream, and ensure an
     //  update for the user.
     MStreamUtils::stdErrorStream() << formatBuffer << std::endl;
 }
 
-void log_solver_timer(const SolverTimer &timer,
-                      const uint32_t total_iteration_count) {
+void console_log_solver_timer(const SolverTimer &timer,
+                              const uint32_t total_iteration_count) {
     static std::ostream &stream = MStreamUtils::stdErrorStream();
     timer.solveBenchTimer.print(stream, "Solve Time", 1);
     timer.funcBenchTimer.print(stream, "Func Time", 1);

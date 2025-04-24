@@ -41,7 +41,7 @@ set(SOURCE_FILES
   mmSolver/adjust/adjust_cminpack_base.cpp
   mmSolver/adjust/adjust_cminpack_lmder.cpp
   mmSolver/adjust/adjust_cminpack_lmdif.cpp
-  mmSolver/adjust/adjust_logging.cpp
+  mmSolver/adjust/adjust_consoleLogging.cpp
   mmSolver/adjust/adjust_measureErrors.cpp
   mmSolver/adjust/adjust_relationships.cpp
   mmSolver/adjust/adjust_results_helpers.cpp

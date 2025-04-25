@@ -449,7 +449,7 @@ void printSolveDetails(const SolverResult &solverResult, SolverData &userData,
     MMSOLVER_MAYA_VRB("Function Evaluations: " << solverResult.functionEvals);
     MMSOLVER_MAYA_VRB("Jacobian Evaluations: " << solverResult.jacobianEvals);
 
-    if (logLevel >= LogLevel::kInfo) {
+    if (logLevel >= LOG_LEVEL_PRINT_SOLVER_RESULTS) {
         console_log_solver_results(solverResult, timer);
     }
 

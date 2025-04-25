@@ -118,6 +118,10 @@ const LogLevel LOG_LEVEL_PRINT_VERBOSE = LogLevel::kDebug;
 // terminal/Maya Output Window.
 const LogLevel LOG_LEVEL_PRINT_SOLVER_TIMING = LogLevel::kDebug;
 
+// The LogLevel that will print solver results information to
+// terminal/Maya Output Window.
+const LogLevel LOG_LEVEL_PRINT_SOLVER_RESULTS = LogLevel::kInfo;
+
 // The LogLevel that will print solver object count information to
 // terminal/Maya Output Window.
 const LogLevel LOG_LEVEL_PRINT_SOLVER_OBJECT_COUNTS = LogLevel::kDebug;

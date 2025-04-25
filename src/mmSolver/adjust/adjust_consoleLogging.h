@@ -28,6 +28,8 @@
 
 namespace mmsolver {
 
+void console_log_separator_line();
+
 void console_log_solver_iteration_pre_solve(const LogLevel log_level,
                                             const bool is_normal_call,
                                             const bool is_jacobian_call,

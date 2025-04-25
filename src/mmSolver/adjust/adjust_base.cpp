@@ -1124,9 +1124,7 @@ MStatus solveFrames(
 
     auto frameCount = frameList.length();
     if (logLevel >= LOG_LEVEL_PRINT_SOLVER_HEADER_EXTENDED) {
-        MMSOLVER_MAYA_INFO(
-            "------------------------------------------------------------------"
-            "-------------");
+        console_log_separator_line();
         MMSOLVER_MAYA_INFO("Solving...");
         MMSOLVER_MAYA_INFO("Solver Type=" << solverOptions.solverType);
         MMSOLVER_MAYA_INFO("Maximum Iterations=" << solverOptions.iterMax);
@@ -1151,9 +1149,7 @@ MStatus solveFrames(
         MMSOLVER_MAYA_INFO("Valid Frames:" << ss.str());
     } else if (!out_cmdResult.printStats.doNotSolve &&
                (logLevel >= LOG_LEVEL_PRINT_SOLVER_HEADER_BASIC)) {
-        MMSOLVER_MAYA_INFO(
-            "------------------------------------------------------------------"
-            "-------------");
+        console_log_separator_line();
         MMSOLVER_MAYA_INFO("Solving...");
         MMSOLVER_MAYA_INFO("Marker count: " << usedMarkerList.size());
         MMSOLVER_MAYA_INFO("Attribute count: " << usedAttrList.size());

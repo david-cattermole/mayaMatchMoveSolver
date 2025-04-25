@@ -44,6 +44,13 @@ const char *const CONSOLE_LOG_SOLVER_ITERATION_RESIDUAL_ERROR_FORMAT =
     " | error avg %8.4f   min %8.4f   max %8.4f";
 const char *const CONSOLE_LOG_SOLVER_END_RESIDUAL_ERROR_FORMAT =
     "error avg %8.4f   min %8.4f   max %8.4f  iterations %03u  (%s evals/sec)";
+const char *const CONSOLE_LOG_SEPARATOR_LINE =
+    "--------------------------------------------------------------------------"
+    "-----";
+
+void console_log_separator_line() {
+    MStreamUtils::stdErrorStream() << CONSOLE_LOG_SEPARATOR_LINE << '\n';
+}
 
 void console_log_solver_iteration_pre_solve(const LogLevel log_level,
                                             const bool is_normal_call,

@@ -43,11 +43,14 @@
 #include "adjust_defines.h"
 #include "adjust_results.h"
 #include "adjust_solveFunc.h"
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/core/matrix_bool_2d.h"
+#include "mmSolver/core/matrix_bool_3d.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
@@ -90,29 +93,28 @@ void applyLossFunctionToErrors(const int numberOfErrors, double *f,
 bool get_initial_parameters(const int numberOfParameters,
                             std::vector<double> &paramList,
                             std::vector<std::pair<int, int> > &paramToAttrList,
-                            const AttrPtrList &attrList, MTimeArray &frameList,
+                            const AttrList &attrList, FrameList &frameList,
                             const bool solverSupportsParameterBounds,
                             SolverResult &out_solverResult);
 
 bool set_maya_attribute_values(
     const int numberOfParameters,
     std::vector<std::pair<int, int> > &paramToAttrList,
-    const AttrPtrList &attrList, std::vector<double> &paramList,
-    MTimeArray &frameList, MDGModifier &dgmod, MAnimCurveChange &curveChange);
+    const AttrList &attrList, std::vector<double> &paramList,
+    FrameList &frameList, MDGModifier &dgmod, MAnimCurveChange &curveChange);
 
 bool compute_error_stats(const int numberOfMarkerErrors,
                          const std::vector<double> &errorDistanceList,
                          double &out_errorAvg, double &out_errorMin,
                          double &out_errorMax);
 
-MStatus logResultsMarkerAffectsAttribute(
-    const MarkerPtrList &markerList, const AttrPtrList &attrList,
-    const mmsolver::MatrixBool2D &markerToAttrMatrix,
-    AffectsResult &out_result);
+MStatus logResultsMarkerAffectsAttribute(const MarkerList &markerList,
+                                         const AttrList &attrList,
+                                         AffectsResult &out_result);
 
 bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
-              MarkerPtrList &markerList, BundlePtrList &bundleList,
-              AttrPtrList &attrList, const MTimeArray &frameList,
+              MarkerList &markerList, BundlePtrList &bundleList,
+              AttrList &attrList, const FrameList &frameList,
               StiffAttrsPtrList &stiffAttrsList,
               SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
               MAnimCurveChange &curveChange, MComputation &computation,
@@ -120,8 +122,8 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
               MStringArray &outResult);
 
 bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
-              MarkerPtrList &markerList, BundlePtrList &bundleList,
-              AttrPtrList &attrList, const MTimeArray &frameList,
+              MarkerList &markerList, BundlePtrList &bundleList,
+              AttrList &attrList, const FrameList &frameList,
               MDGModifier &dgmod, MAnimCurveChange &curveChange,
               MComputation &computation, const MStringArray &printStatsList,
               const LogLevel logLevel, CommandResult &out_cmdResult);

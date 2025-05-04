@@ -63,7 +63,7 @@ def _runAndSetUsedSolveObjects(col_name, *args, **kwargs):
     solver_args = args
     solver_kwargs = kwargs.copy()
     del solver_kwargs['mode']
-    solver_kwargs['frame'] = [1]  # 'mmSolver' must have a frame value
+    del solver_kwargs['graphMode']
     solver_kwargs['printStatistics'] = ['usedSolveObjects']
     data = maya.cmds.mmSolver(*solver_args, **solver_kwargs)
 
@@ -130,13 +130,104 @@ class SolverAffects(solverbase.SolverBase):
         super(SolverAffects, self).__init__(*args, **kwargs)
         return
 
-    # Method exists to be compatible with
-    # 'mmSolver._api.compile.compile_solver_with_cache'.
-    #
-    # SolverAffects does not need any frame numbers as input, but a
-    # value is needed by SolverBase class.
+    ############################################################################
+
+    def get_graph_mode(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get('graph_mode', const.AFFECTS_GRAPH_MODE_DEFAULT)
+
+    def set_graph_mode(self, value):
+        """
+        :type value: bool or int
+        """
+        assert isinstance(value, str)
+        value in const.AFFECTS_GRAPH_MODE_LIST
+        self._data['graph_mode'] = value
+
+    ############################################################################
+
     def get_frame_list(self):
-        return [frame.Frame(1)]
+        """
+        Get frame objects attached to the solver.
+
+        :return: frame objects.
+        :rtype: list of frame.Frame
+        """
+        frame_list_data = self._data.get('frame_list')
+        if frame_list_data is None:
+            return []
+        frm_list = []
+        for f in frame_list_data:
+            frm = frame.Frame(0)
+            frm.set_data(f)  # Override the frame number
+            frm_list.append(frm)
+        return frm_list
+
+    def get_frame_list_length(self):
+        return len(self.get_frame_list())
+
+    def add_frame(self, frm):
+        assert isinstance(frm, frame.Frame)
+        key = 'frame_list'
+        frm_list_data = self._data.get(key)
+        if frm_list_data is None:
+            frm_list_data = []
+
+        # check we won't get a double up.
+        add_frm_data = frm.get_data()
+        for frm_data in frm_list_data:
+            if frm_data.get('number') == add_frm_data.get('number'):
+                msg = 'Frame already added to SolverStep, cannot add again: {0}'
+                msg = msg.format(add_frm_data)
+                raise excep.NotValid(msg)
+
+        frm_list_data.append(add_frm_data)
+        self._data[key] = frm_list_data
+        return
+
+    def add_frame_list(self, frm_list):
+        assert isinstance(frm_list, list)
+        for frm in frm_list:
+            self.add_frame(frm)
+        return
+
+    def remove_frame(self, frm):
+        assert isinstance(frm, frame.Frame)
+        key = 'frame_list'
+        frm_list_data = self._data.get(key)
+        if frm_list_data is None:
+            # Nothing to remove, initialise the data structure.
+            self._data[key] = []
+            return
+        found_index = -1
+        rm_frm_data = frm.get_data()
+        for i, frm_data in enumerate(frm_list_data):
+            if frm_data.get('number') == rm_frm_data.get('number'):
+                found_index = i
+                break
+        if found_index != -1:
+            del frm_list_data[found_index]
+        self._data[key] = frm_list_data
+        return
+
+    def remove_frame_list(self, frm_list):
+        assert isinstance(frm_list, list)
+        for frm in frm_list:
+            self.remove_frame(frm)
+        return
+
+    def set_frame_list(self, frm_list):
+        assert isinstance(frm_list, list)
+        self.clear_frame_list()
+        self.add_frame_list(frm_list)
+        return
+
+    def clear_frame_list(self):
+        key = 'frame_list'
+        self._data[key] = []
+        return
 
     ##########################################
 
@@ -166,18 +257,31 @@ class SolverAffects(solverbase.SolverBase):
         assert isinstance(mkr_list, list)
         assert isinstance(attr_list, list)
 
+        graph_mode = self.get_graph_mode()
+        assert graph_mode in const.AFFECTS_GRAPH_MODE_LIST
+
         func = 'maya.cmds.mmSolverAffects'
         args = []
         kwargs = dict()
+        kwargs['frame'] = []
         kwargs['camera'] = []
         kwargs['marker'] = []
         kwargs['attr'] = []
         kwargs['mode'] = 'addAttrsToMarkers'
+        kwargs['graphMode'] = graph_mode
 
         # Get precomputed data to reduce re-querying Maya for data.
         precomputed_data = self.get_precomputed_data()
         mkr_state_values = precomputed_data.get(solverbase.MARKER_STATIC_VALUES_KEY)
         attr_state_values = precomputed_data.get(solverbase.ATTR_STATIC_VALUES_KEY)
+
+        # Get frames.
+        frame_use_tags = ['primary', 'secondary', 'normal']
+        frm_list = self.get_frame_list()
+        frames = api_compile.frames_compile_flags(frm_list, frame_use_tags)
+        if len(frames) == 0:
+            LOG.warning('No Frames found!')
+            return
 
         # Get Markers and Cameras
         markers, cameras = api_compile.markersAndCameras_compile_flags(
@@ -212,6 +316,7 @@ class SolverAffects(solverbase.SolverBase):
             LOG.warning('No Attributes found!')
             return
 
+        kwargs['frame'] = frames
         kwargs['marker'] = markers
         kwargs['camera'] = cameras
         kwargs['attr'] = attrs

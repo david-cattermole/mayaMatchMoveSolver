@@ -47,6 +47,7 @@
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
@@ -82,7 +83,7 @@ private:
     Attr m_camera_rz_attr;
     MEulerRotation::RotationOrder m_camera_rotate_order;
 
-    MarkerPtrList m_marker_list;
+    MarkerList m_marker_list;
 
     // Frames
     std::vector<uint32_t> m_frames;

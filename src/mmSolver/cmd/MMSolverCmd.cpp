@@ -95,7 +95,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_sceneGraphMode, m_timeEvalMode, m_acceptOnlyBetter, m_frameSolveMode,
         m_supportAutoDiffForward, m_supportAutoDiffCentral,
         m_supportParameterBounds, m_supportRobustLoss, m_removeUnusedMarkers,
-        m_removeUnusedAttributes, m_imageWidth);
+        m_removeUnusedAttributes, m_removeUnusedFrames, m_imageWidth);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveLogArguments_v1(argData, m_printStatsList, m_logLevel);
@@ -126,7 +126,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     MMSOLVER_ASSERT(
-        m_frameList.length() > 0,
+        !m_frameList.is_empty(),
         "We must solve at least one frame, otherwise there's no point.");
 
     // Don't store each individual edits, just store the combination
@@ -156,6 +156,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     solverOptions.solverSupportsRobustLoss = m_supportRobustLoss;
     solverOptions.removeUnusedMarkers = m_removeUnusedMarkers;
     solverOptions.removeUnusedAttributes = m_removeUnusedAttributes;
+    solverOptions.removeUnusedFrames = m_removeUnusedFrames;
 
     MStringArray outResult;
     const bool ret = solve_v1(

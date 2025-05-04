@@ -1441,6 +1441,7 @@ class Marker(object):
             the current used state hint.
         :rtype: int
         """
+        # TODO: Does this need to be updated to work with frame numbers?
         node = self.get_node()
         if node is None:
             LOG.warn('Could not get Marker node. self=%r', self)
@@ -1460,6 +1461,7 @@ class Marker(object):
         :param value: The value to set, a value in MARKER_USED_HINT_LIST.
         :type value: int
         """
+        # TODO: Does this need to be updated to work with frame numbers?
         assert isinstance(value, pycompat.INT_TYPES)
         assert value in const.MARKER_USED_HINT_LIST
         node = self.get_node()

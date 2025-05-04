@@ -34,6 +34,7 @@
 // Internal Objects
 #include "mmSolver/adjust/adjust_data.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
@@ -56,7 +57,7 @@ void createAttributeDetailsSyntax(MSyntax &syntax);
 
 // Parse arguments into attribute details.
 MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
-                                       const AttrPtrList &attrList,
+                                       const AttrList &attrList,
                                        StiffAttrsPtrList &out_stiffAttrsList,
                                        SmoothAttrsPtrList &out_smoothAttrsList);
 

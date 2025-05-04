@@ -469,7 +469,7 @@ class SolverBasic(solverbase.SolverBase):
 
         # Pre-calculate the 'affects' relationship.
         generator = solverutils.compile_solver_affects(
-            col, mkr_list, attr_list, precomputed_data, withtest
+            col, mkr_list, attr_list, frame_list, precomputed_data, withtest
         )
         for action, vaction in generator:
             yield action, vaction
@@ -495,6 +495,7 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
+            sol.set_remove_unused_frames(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
 
             cache = api_compile.create_compile_solver_cache()
@@ -526,6 +527,7 @@ class SolverBasic(solverbase.SolverBase):
                     sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
                     sol.set_remove_unused_markers(remove_unused_objects)
                     sol.set_remove_unused_attributes(remove_unused_objects)
+                    sol.set_remove_unused_frames(remove_unused_objects)
                     sol.set_precomputed_data(precomputed_data)
 
                     generator = solverutils.compile_solver_step_blocks_with_cache(
@@ -554,6 +556,7 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_PER_FRAME)
                 sol.set_remove_unused_markers(remove_unused_objects)
                 sol.set_remove_unused_attributes(remove_unused_objects)
+                sol.set_remove_unused_frames(remove_unused_objects)
                 sol.set_precomputed_data(precomputed_data)
 
                 cache = api_compile.create_compile_solver_cache()

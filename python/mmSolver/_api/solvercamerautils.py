@@ -25,6 +25,7 @@ from __future__ import print_function
 
 import math
 import collections
+import pprint
 
 import maya.cmds
 import maya.api.OpenMaya as OpenMaya2
@@ -40,6 +41,7 @@ import mmSolver._api.marker as marker
 import mmSolver._api.bundle as bundle
 import mmSolver._api.camera as camera
 import mmSolver._api.triangulatebundle as triangulatebundle
+import mmSolver._api.solveraffects as solveraffects
 
 
 LOG = mmSolver.logger.get_logger()
@@ -252,9 +254,9 @@ def _sub_bundle_adjustment(
     assert isinstance(adjust_lens_distortion, bool)
 
     if solver_version is None:
-        solver_version = const.SOLVER_VERSION_DEFAULT
+        solver_version = const.SOLVER_CAM_SOLVER_VERSION_DEFAULT_VALUE
     if solver_type is None:
-        solver_type = const.SOLVER_TYPE_DEFAULT
+        solver_type = const.SOLVER_CAM_SOLVER_TYPE_DEFAULT_VALUE
     assert isinstance(solver_version, int)
     assert isinstance(solver_type, int)
     assert solver_version in const.SOLVER_VERSION_LIST
@@ -359,6 +361,7 @@ def _sub_bundle_adjustment(
         'camera': cameras,
         'marker': markers,
         'attr': node_attrs,
+        'frame': frames,
     }
     # LOG.debug('mmSolver kwargs: %s', pprint.pformat(kwargs))
 
@@ -368,7 +371,6 @@ def _sub_bundle_adjustment(
     result = None
     if solver_version == const.SOLVER_VERSION_ONE:
         result = maya.cmds.mmSolver(
-            frame=frames,
             solverType=solver_type,
             sceneGraphMode=scene_graph_mode,
             iterations=iteration_num,
@@ -383,7 +385,6 @@ def _sub_bundle_adjustment(
             log_level = const.LOG_LEVEL_DEBUG_VALUE
 
         result = maya.cmds.mmSolver_v2(
-            frame=frames,
             solverType=solver_type,
             sceneGraphMode=scene_graph_mode,
             iterations=iteration_num,
@@ -441,9 +442,9 @@ def _bundle_adjust(
     if per_frame_solve is None:
         per_frame_solve = False
     if solver_version is None:
-        solver_version = const.SOLVER_VERSION_DEFAULT
+        solver_version = const.SOLVER_CAM_SOLVER_VERSION_DEFAULT_VALUE
     if solver_type is None:
-        solver_type = const.SOLVER_TYPE_CMINPACK_LMDER
+        solver_type = const.SOLVER_CAM_SOLVER_TYPE_DEFAULT_VALUE
     if verbose is None:
         verbose = False
     assert isinstance(adjust_camera_translate, bool)
@@ -481,12 +482,33 @@ def _bundle_adjust(
         )
 
     else:
-        iteration_num_a = max(MIN_NUM_ITERATIONS, iteration_num * 0.1)
-        iteration_num_b = max(MIN_NUM_ITERATIONS, iteration_num * 0.1)
-        iteration_num_c = max(MIN_NUM_ITERATIONS, iteration_num * 0.1)
-        iteration_num_d = max(MIN_NUM_ITERATIONS, iteration_num * 0.1)
-        iteration_num_e = max(MIN_NUM_ITERATIONS, iteration_num * 0.1)
-        iteration_num_f = max(MIN_NUM_ITERATIONS, iteration_num * 0.4)
+        iteration_num_a = max(MIN_NUM_ITERATIONS, iteration_num * 0.2)
+        iteration_num_b = max(MIN_NUM_ITERATIONS, iteration_num * 0.8)
+        iteration_num_c = max(MIN_NUM_ITERATIONS, iteration_num * 0.0)
+        if adjust_camera_intrinsics or adjust_lens_distortion:
+            iteration_num_a = max(MIN_NUM_ITERATIONS, iteration_num * 0.1)
+            iteration_num_b = max(MIN_NUM_ITERATIONS, iteration_num * 0.4)
+            iteration_num_c = max(MIN_NUM_ITERATIONS, iteration_num * 0.5)
+
+        # Solve camera transform and bundle positions
+        _sub_bundle_adjustment(
+            col_node,
+            cam_tfm,
+            cam_shp,
+            mkr_nodes,
+            cam_shp_node_attrs,
+            lens_node_attrs,
+            frames,
+            adjust_camera_translate=False,
+            adjust_camera_rotate=False,
+            adjust_bundle_positions=adjust_bundle_positions,
+            adjust_camera_intrinsics=False,
+            adjust_lens_distortion=False,
+            iteration_num=iteration_num_a,
+            per_frame_solve=per_frame_solve,
+            solver_version=solver_version,
+            solver_type=solver_type,
+        )
 
         # Solve camera transform and bundle positions
         _sub_bundle_adjustment(
@@ -502,111 +524,32 @@ def _bundle_adjust(
             adjust_bundle_positions=adjust_bundle_positions,
             adjust_camera_intrinsics=False,
             adjust_lens_distortion=False,
-            iteration_num=iteration_num_a,
-            per_frame_solve=per_frame_solve,
-            solver_version=solver_version,
-            solver_type=solver_type,
-        )
-
-        # Solve camera focal length
-        _sub_bundle_adjustment(
-            col_node,
-            cam_tfm,
-            cam_shp,
-            mkr_nodes,
-            cam_shp_node_attrs,
-            lens_node_attrs,
-            frames,
-            adjust_camera_translate=adjust_camera_translate,
-            adjust_camera_rotate=adjust_camera_rotate,
-            adjust_bundle_positions=False,
-            adjust_camera_intrinsics=adjust_camera_intrinsics,
-            adjust_lens_distortion=False,
             iteration_num=iteration_num_b,
             per_frame_solve=per_frame_solve,
             solver_version=solver_version,
             solver_type=solver_type,
         )
 
-        # Solve lens distortion
-        _sub_bundle_adjustment(
-            col_node,
-            cam_tfm,
-            cam_shp,
-            mkr_nodes,
-            cam_shp_node_attrs,
-            lens_node_attrs,
-            frames,
-            adjust_camera_translate=False,
-            adjust_camera_rotate=adjust_camera_rotate,
-            adjust_bundle_positions=False,
-            adjust_camera_intrinsics=False,
-            adjust_lens_distortion=adjust_lens_distortion,
-            iteration_num=iteration_num_c,
-            per_frame_solve=per_frame_solve,
-            solver_version=solver_version,
-            solver_type=solver_type,
-        )
-
-        # Solve camera focal length
-        _sub_bundle_adjustment(
-            col_node,
-            cam_tfm,
-            cam_shp,
-            mkr_nodes,
-            cam_shp_node_attrs,
-            lens_node_attrs,
-            frames,
-            adjust_camera_translate=adjust_camera_translate,
-            adjust_camera_rotate=adjust_camera_rotate,
-            adjust_bundle_positions=False,
-            adjust_camera_intrinsics=adjust_camera_intrinsics,
-            adjust_lens_distortion=False,
-            iteration_num=iteration_num_d,
-            per_frame_solve=per_frame_solve,
-            solver_version=solver_version,
-            solver_type=solver_type,
-        )
-
-        # Solve lens distortion
-        _sub_bundle_adjustment(
-            col_node,
-            cam_tfm,
-            cam_shp,
-            mkr_nodes,
-            cam_shp_node_attrs,
-            lens_node_attrs,
-            frames,
-            adjust_camera_translate=False,
-            adjust_camera_rotate=adjust_camera_rotate,
-            adjust_bundle_positions=False,
-            adjust_camera_intrinsics=False,
-            adjust_lens_distortion=adjust_lens_distortion,
-            iteration_num=iteration_num_e,
-            per_frame_solve=per_frame_solve,
-            solver_version=solver_version,
-            solver_type=solver_type,
-        )
-
-        # Solve everything
-        result = _sub_bundle_adjustment(
-            col_node,
-            cam_tfm,
-            cam_shp,
-            mkr_nodes,
-            cam_shp_node_attrs,
-            lens_node_attrs,
-            frames,
-            adjust_camera_translate=adjust_camera_translate,
-            adjust_camera_rotate=adjust_camera_rotate,
-            adjust_bundle_positions=adjust_bundle_positions,
-            adjust_camera_intrinsics=adjust_camera_intrinsics,
-            adjust_lens_distortion=adjust_lens_distortion,
-            iteration_num=iteration_num_f,
-            per_frame_solve=per_frame_solve,
-            solver_version=solver_version,
-            solver_type=solver_type,
-        )
+        # Solve everything, including camera focal length and lens distortion.
+        if adjust_camera_intrinsics or adjust_lens_distortion:
+            _sub_bundle_adjustment(
+                col_node,
+                cam_tfm,
+                cam_shp,
+                mkr_nodes,
+                cam_shp_node_attrs,
+                lens_node_attrs,
+                frames,
+                adjust_camera_translate=adjust_camera_translate,
+                adjust_camera_rotate=adjust_camera_rotate,
+                adjust_bundle_positions=adjust_bundle_positions,
+                adjust_camera_intrinsics=adjust_camera_intrinsics,
+                adjust_lens_distortion=adjust_lens_distortion,
+                iteration_num=iteration_num_c,
+                per_frame_solve=per_frame_solve,
+                solver_version=solver_version,
+                solver_type=solver_type,
+            )
 
     return result
 
@@ -682,7 +625,7 @@ def _solve_relative_poses(
         # LOG.debug('mmCameraRelativePose kwargs: %s', pprint.pformat(kwargs))
         result = maya.cmds.mmCameraRelativePose(**kwargs)
         if result is None:
-            LOG.warn('Failed Camera Pose: %s to %s', root_frame_a, possible_frame)
+            LOG.debug('Failed Camera Pose: %s to %s', root_frame_a, possible_frame)
             failed_frames.add(possible_frame)
             continue
 
@@ -996,6 +939,102 @@ def _precompute_values(mkr_list, root_frames, start_frame, end_frame):
     )
 
 
+def _runSolverAffects(
+    col_node,
+    cam_tfm,
+    cam_shp,
+    mkr_list,
+    cam_shp_node_attrs,
+    lens_node_attrs,
+    start_frame,
+    end_frame,
+):
+    all_frames = list(range(start_frame, end_frame + 1))
+    cameras = ((cam_tfm, cam_shp),)
+
+    node_attrs = []
+    node_attrs.append((cam_tfm + '.tx', 'None', 'None', 'None', 'None'))
+    node_attrs.append((cam_tfm + '.ty', 'None', 'None', 'None', 'None'))
+    node_attrs.append((cam_tfm + '.tz', 'None', 'None', 'None', 'None'))
+    node_attrs.append((cam_tfm + '.rx', 'None', 'None', 'None', 'None'))
+    node_attrs.append((cam_tfm + '.ry', 'None', 'None', 'None', 'None'))
+    node_attrs.append((cam_tfm + '.rz', 'None', 'None', 'None', 'None'))
+
+    for node_attr in cam_shp_node_attrs:
+        min_value = 2.5
+        max_value = 1000.0
+        offset_value = None
+        scale_value = None
+        value = (
+            node_attr,
+            str(min_value),
+            str(max_value),
+            str(offset_value),
+            str(scale_value),
+        )
+        node_attrs.append(value)
+
+    for node_attr in lens_node_attrs:
+        min_value = -1.0
+        max_value = 1.0
+        offset_value = None
+        scale_value = None
+        value = (
+            node_attr,
+            str(min_value),
+            str(max_value),
+            str(offset_value),
+            str(scale_value),
+        )
+        node_attrs.append(value)
+
+    markers = []
+    mkr_nodes = []
+    for mkr in mkr_list:
+        bnd = mkr.get_bundle()
+        assert bnd is not None
+        mkr_node = mkr.get_node()
+        bnd_node = bnd.get_node()
+        mkr_bnd = (mkr_node, cam_shp, bnd_node)
+        markers.append(mkr_bnd)
+        mkr_nodes.append(mkr_node)
+
+        for attr in TRANSLATE_ATTRS:
+            min_value = None
+            max_value = None
+            offset_value = None
+            scale_value = None
+            solve_node_attr = (
+                '{}.{}'.format(bnd_node, attr),
+                str(min_value),
+                str(max_value),
+                str(offset_value),
+                str(scale_value),
+            )
+            node_attrs.append(solve_node_attr)
+
+    node_attr_plugs = [x[0] for x in node_attrs]
+    solveraffects.reset_marker_used_hints(mkr_nodes)
+    solveraffects.reset_attr_used_hints(col_node, node_attr_plugs)
+
+    LOG.debug('maya.cmds.mmSolverAffects camera: %s', pprint.pformat(cameras))
+    LOG.debug('maya.cmds.mmSolverAffects marker: %s', pprint.pformat(markers))
+    LOG.debug('maya.cmds.mmSolverAffects attr: %s', pprint.pformat(node_attrs))
+    LOG.debug('maya.cmds.mmSolverAffects frame: %s', pprint.pformat(all_frames))
+
+    affects_mode = 'addAttrsToMarkers'
+    graph_mode = 'simple'
+    result = maya.cmds.mmSolverAffects(
+        mode=affects_mode,
+        graphMode=graph_mode,
+        camera=cameras,
+        marker=markers,
+        attr=node_attrs,
+        frame=all_frames,
+    )
+    return result
+
+
 # TODO: Make arguments keywords arguments. This will make things
 # easier to understand for calling code.
 def camera_solve(
@@ -1072,6 +1111,20 @@ def camera_solve(
         frame_scores_stats_map,
         frame_best_frame_map,
     ) = _precompute_values(mkr_list, root_frames, start_frame, end_frame)
+
+    mkr_list = [marker.Marker(node=n) for n in mkr_nodes]
+
+    affectsResult = _runSolverAffects(
+        col_node,
+        cam_tfm,
+        cam_shp,
+        mkr_list,
+        cam_shp_node_attrs,
+        lens_node_attrs,
+        start_frame,
+        end_frame,
+    )
+    LOG.debug('affectsResult: %s', pprint.pformat(affectsResult))
 
     # Find the frame with the best connectivity to all other root
     # frames. This is not the frame that gives the most solved frames,
@@ -1163,6 +1216,7 @@ def camera_solve(
         # enough data to solve the bundle adjustment.
 
         # Refine the solve.
+        LOG.debug("Refine the solve; solved_frames=%r", solved_frames)
         frames = list(sorted(solved_frames))
         for mkr_node in accumulated_mkr_nodes:
             enabled_frames = marker_nodes_enabled[mkr_node]
@@ -1172,6 +1226,7 @@ def camera_solve(
                 continue
             overlapping_frames = list(sorted(overlapping_frames))
 
+            LOG.debug("Refine the solve; mkr_node=%r", mkr_node)
             _bundle_adjust(
                 col_node,
                 cam_tfm,
@@ -1186,6 +1241,7 @@ def camera_solve(
                 adjust_camera_intrinsics=False,
                 adjust_lens_distortion=False,
                 iteration_num=5,
+                per_frame_solve=False,
                 solver_version=solver_version,
                 solver_type=solver_type,
             )
@@ -1199,6 +1255,7 @@ def camera_solve(
                 adjust_mkr_nodes.add(mkr_node)
         adjust_mkr_nodes = list(sorted(adjust_mkr_nodes))
 
+        LOG.debug("Refine the solve; adjust_mkr_nodes=%r", adjust_mkr_nodes)
         _bundle_adjust(
             col_node,
             cam_tfm,
@@ -1213,12 +1270,14 @@ def camera_solve(
             adjust_camera_intrinsics=True,
             adjust_lens_distortion=True,
             iteration_num=100,
+            per_frame_solve=False,
             solver_version=solver_version,
             solver_type=solver_type,
         )
 
     # Triangulate Bundles that were not solved with camera relative
     # poses.
+    LOG.debug("Triangulate Bundles; accumulated_mkr_nodes=%r", accumulated_mkr_nodes)
     (
         triangulated_count,
         accumulated_mkr_nodes,
@@ -1236,6 +1295,7 @@ def camera_solve(
         # enough data to solve the bundle adjustment.
 
         # Refine the solve.
+        LOG.debug("Refine the solve; solved_frames=%r", solved_frames)
         frames = list(sorted(solved_frames))
         for mkr_node in accumulated_mkr_nodes:
             mkr = marker.Marker(node=mkr_node)
@@ -1249,6 +1309,7 @@ def camera_solve(
                 continue
             overlapping_frames = list(sorted(overlapping_frames))
 
+            LOG.debug("Refine the solve; mkr_node=%r", mkr_node)
             _bundle_adjust(
                 col_node,
                 cam_tfm,
@@ -1262,6 +1323,7 @@ def camera_solve(
                 adjust_bundle_positions=True,
                 adjust_camera_intrinsics=False,
                 adjust_lens_distortion=False,
+                per_frame_solve=False,
                 iteration_num=5,
                 solver_version=solver_version,
                 solver_type=solver_type,
@@ -1276,6 +1338,7 @@ def camera_solve(
                 adjust_mkr_nodes.add(mkr_node)
         adjust_mkr_nodes = list(sorted(adjust_mkr_nodes))
 
+        LOG.debug("Refine the solve; adjust_mkr_nodes=%r", adjust_mkr_nodes)
         _bundle_adjust(
             col_node,
             cam_tfm,
@@ -1290,6 +1353,7 @@ def camera_solve(
             adjust_camera_intrinsics=True,
             adjust_lens_distortion=True,
             iteration_num=100,
+            per_frame_solve=False,
             solver_version=solver_version,
             solver_type=solver_type,
         )
@@ -1323,6 +1387,7 @@ def camera_solve(
 
         # Solve per-frame. Only animated attributes are solved - bundles
         # and (static) focal lengths are ignored.
+        LOG.debug("Solve per-frame; all_frames=%r", all_frames)
         result = _bundle_adjust(
             col_node,
             cam_tfm,
@@ -1337,7 +1402,7 @@ def camera_solve(
             adjust_camera_intrinsics=True,
             adjust_lens_distortion=True,
             iteration_num=10,
-            per_frame_solve=True,
+            per_frame_solve=False,
             solver_version=solver_version,
             solver_type=solver_type,
         )

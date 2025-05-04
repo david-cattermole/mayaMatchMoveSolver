@@ -90,6 +90,7 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
+            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -97,7 +98,7 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
+        result = maya.cmds.mmSolver(verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 
@@ -174,7 +175,11 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
             marker_02_tfm, attribute='translateY', time=end, value=0.189583713
         )
         maya.cmds.setKeyframe(marker_02_tfm, attribute='enable', time=start, value=1)
+        maya.cmds.setKeyframe(
+            marker_02_tfm, attribute='enable', time=start + 1, value=0
+        )
         maya.cmds.setKeyframe(marker_02_tfm, attribute='enable', time=mid, value=0)
+        maya.cmds.setKeyframe(marker_02_tfm, attribute='enable', time=end - 1, value=0)
         maya.cmds.setKeyframe(marker_02_tfm, attribute='enable', time=end, value=1)
 
         maya.cmds.keyTangent(
@@ -195,11 +200,16 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
             (grp + '.ty', 'None', 'None', 'None', 'None'),
         ]
 
+        all_frames = list(range(start, end + 1))
+
         kwargs = {
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
         }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, frame=all_frames, **kwargs)
 
         # Run solver, over each frame!
         #
@@ -208,7 +218,7 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         # the test set up.
         results = []
         s = time.time()
-        for f in range(start, end + 1):
+        for f in all_frames:
             frames = [f]
             result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
             results.append(result)

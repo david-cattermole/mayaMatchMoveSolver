@@ -32,12 +32,13 @@
 #include "adjust_data.h"
 #include "adjust_results.h"
 #include "adjust_results_helpers.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 
 MStatus setErrorMetricsResultDataOnMarkers(ErrorMetricsResult &results,
-                                           MarkerPtrList &markerList,
+                                           MarkerList &markerList,
                                            MDGModifier &dgmod,
                                            MAnimCurveChange &curveChange) {
     MStatus status = MS::kSuccess;
@@ -47,7 +48,9 @@ MStatus setErrorMetricsResultDataOnMarkers(ErrorMetricsResult &results,
     const char *deviation_max_attr_name = "maximumDeviation";
     const char *deviation_max_frame_attr_name = "maximumDeviationFrame";
 
-    for (auto &marker : markerList) {
+    for (MarkerIndex markerIndex = 0; markerIndex < markerList.size();
+         ++markerIndex) {
+        MarkerPtr marker = markerList.get_marker(markerIndex);
         MObject marker_obj = marker->getObject();
 
         const MString marker_node_name = marker->getNodeName();

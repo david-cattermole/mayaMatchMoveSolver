@@ -69,6 +69,7 @@ class SolverTestCase(baseUtils.TestBase):
         assert 'camera' in kwargs
         assert 'marker' in kwargs
         assert 'attr' in kwargs
+        assert 'frame' in kwargs
         s = time.time()
         result = maya.cmds.mmSolverAffects(mode=affects_mode, **kwargs)
         e = time.time()

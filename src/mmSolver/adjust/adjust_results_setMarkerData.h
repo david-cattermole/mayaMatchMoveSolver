@@ -32,12 +32,12 @@
 #include "adjust_data.h"
 #include "adjust_defines.h"
 #include "adjust_results.h"
-#include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 
 namespace mmsolver {
 
 MStatus setErrorMetricsResultDataOnMarkers(ErrorMetricsResult &results,
-                                           MarkerPtrList &markerList,
+                                           MarkerList &markerList,
                                            MDGModifier &dgmod,
                                            MAnimCurveChange &curveChange);
 

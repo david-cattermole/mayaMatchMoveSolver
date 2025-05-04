@@ -134,6 +134,11 @@ def _compile_multi_root_frames(
         Number of iterations to use, when solving root frames.
     :type root_iter_num: int
 
+    :param use_attr_blocks:
+        When True, split attributes into blocks that should be
+        solved together.
+    :type use_attr_blocks: bool
+
     :param remove_unused_objects:
         Should objects that are detected as 'unused' be removed from
         the solver?
@@ -208,6 +213,8 @@ def _compile_multi_root_frames(
         sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
         sol.set_remove_unused_markers(remove_unused_objects)
         sol.set_remove_unused_attributes(remove_unused_objects)
+        sol.set_remove_unused_frames(remove_unused_objects)
+        sol.set_use_affects(False)
         sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
@@ -380,6 +387,8 @@ def _compile_multi_inbetween_frames(
         sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
         sol.set_remove_unused_markers(remove_unused_objects)
         sol.set_remove_unused_attributes(remove_unused_objects)
+        sol.set_remove_unused_frames(remove_unused_objects)
+        sol.set_use_affects(False)
         sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
@@ -413,7 +422,9 @@ def _compile_multi_inbetween_frames(
                 sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
                 sol.set_remove_unused_markers(remove_unused_objects)
                 sol.set_remove_unused_attributes(remove_unused_objects)
+                sol.set_remove_unused_frames(remove_unused_objects)
                 sol.set_time_eval_mode(time_eval_mode)
+                sol.set_use_affects(False)
                 sol.set_precomputed_data(precomputed_data)
 
                 generator = solverutils.compile_solver_step_blocks_with_cache(
@@ -441,6 +452,8 @@ def _compile_multi_inbetween_frames(
             sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_PER_FRAME)
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
+            sol.set_remove_unused_frames(remove_unused_objects)
+            sol.set_use_affects(False)
             sol.set_precomputed_data(precomputed_data)
 
             cache = api_compile.create_compile_solver_cache()
@@ -627,11 +640,6 @@ def compile_multi_frame(
         mkr_list, root_frame_list
     )
     if len(root_mkr_list) == 0:
-        # TODO: Test we have enough markers to solve with, if not warn
-        #  the user.
-        # action = api_action.Action(func='pass', args=[], kwargs={})
-        # vaction = api_action.Action(func='', args=[], kwargs={})
-        # yield action, vaction
         LOG.warn("Not enough Markers given for root frames.")
         return
 
@@ -672,6 +680,8 @@ def compile_multi_frame(
         sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
         sol.set_remove_unused_markers(remove_unused_objects)
         sol.set_remove_unused_attributes(remove_unused_objects)
+        sol.set_remove_unused_frames(remove_unused_objects)
+        sol.set_use_affects(False)
         sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
@@ -872,6 +882,8 @@ def compile_single_frame(
     sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
     sol.set_remove_unused_markers(remove_unused_objects)
     sol.set_remove_unused_attributes(remove_unused_objects)
+    sol.set_remove_unused_frames(remove_unused_objects)
+    sol.set_use_affects(False)
     sol.set_precomputed_data(precomputed_data)
 
     cache = api_compile.create_compile_solver_cache()

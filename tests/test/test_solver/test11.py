@@ -113,7 +113,12 @@ class TestSolver11(solverUtils.SolverTestCase):
         # frames = list(range(1, 95 + 1))
         frames = list(range(1, 1 + 1))
 
-        kwargs = {'camera': [(camTfm, camShape)], 'marker': markers, 'attr': node_attrs}
+        kwargs = {
+            'camera': [(camTfm, camShape)],
+            'marker': markers,
+            'attr': node_attrs,
+            'frame': frames,
+        }
 
         # save the output
         file_name = 'solver_test11_{}_{}_before.ma'.format(
@@ -129,7 +134,6 @@ class TestSolver11(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            frame=frames,
             iterations=1000,
             solverType=solver_index,
             sceneGraphMode=scene_graph_mode,

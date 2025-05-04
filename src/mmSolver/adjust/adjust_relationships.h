@@ -42,62 +42,103 @@
 #include "adjust_data.h"
 #include "adjust_defines.h"
 #include "adjust_solveFunc.h"
+#include "mmSolver/core/frame.h"
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/core/matrix_bool_2d.h"
+#include "mmSolver/core/matrix_bool_3d.h"
+#include "mmSolver/core/types.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 
-typedef std::pair<int, int> IndexPair;
-typedef std::vector<std::pair<int, int> > IndexPairList;
+typedef std::pair<Index32, Index32> IndexPair;
+typedef std::vector<IndexPair> IndexPairList;
 
-uint32_t countUpNumberOfErrors(
-    const MarkerPtrList &markerList, const StiffAttrsPtrList &stiffAttrsList,
-    const SmoothAttrsPtrList &smoothAttrsList, const MTimeArray &frameList,
-    MarkerPtrList &out_validMarkerList, std::vector<MPoint> &out_markerPosList,
+Count32 countUpNumberOfErrors(
+    const MarkerList &markerList, const StiffAttrsPtrList &stiffAttrsList,
+    const SmoothAttrsPtrList &smoothAttrsList, const FrameList &frameList,
+    // Outputs
+    std::vector<MPoint> &out_markerPosList,
     std::vector<double> &out_markerWeightList,
-    IndexPairList &out_errorToMarkerList, uint32_t &out_numberOfMarkerErrors,
-    uint32_t &out_numberOfAttrStiffnessErrors,
-    uint32_t &out_numberOfAttrSmoothnessErrors, MStatus &status);
+    IndexPairList &out_errorToMarkerList, Count32 &out_numberOfMarkerErrors,
+    Count32 &out_numberOfAttrStiffnessErrors,
+    Count32 &out_numberOfAttrSmoothnessErrors, MStatus &status);
 
-uint32_t countUpNumberOfUnknownParameters(
-    const AttrPtrList &attrList, const MTimeArray &frameList,
-    AttrPtrList &out_camStaticAttrList, AttrPtrList &out_camAnimAttrList,
-    AttrPtrList &out_staticAttrList, AttrPtrList &out_animAttrList,
+Count32 countUpNumberOfUnknownParameters(
+    const AttrList &attrList, const FrameList &frameList,
+    // Outputs
+    AttrList &out_camStaticAttrList, AttrList &out_camAnimAttrList,
+    AttrList &out_staticAttrList, AttrList &out_animAttrList,
     std::vector<double> &out_paramLowerBoundList,
     std::vector<double> &out_paramUpperBoundList,
     std::vector<double> &out_paramWeightList,
     IndexPairList &out_paramToAttrList,
-    mmsolver::MatrixBool2D &out_paramFrameMatrix, MStatus &out_status);
+    mmsolver::MatrixBool2D &out_paramToFrameMatrix, MStatus &out_status);
 
-void findMarkerToAttributeRelationship(
-    const MarkerPtrList &markerList, const AttrPtrList &attrList,
-    mmsolver::MatrixBool2D &out_markerToAttrMatrix, MStatus &out_status);
+Count32 countEnabledMarkersForMarkerToAttrToFrameRelationship(
+    const AttrIndex attrIndex, const FrameIndex frameIndex,
+    const mmsolver::MatrixBool3D &markerToAttrToFrameMatrix);
 
-void getMarkerToAttributeRelationship(
-    const MarkerPtrList &markerList, const AttrPtrList &attrList,
-    mmsolver::MatrixBool2D &out_markerToAttrMatrix, MStatus &out_status);
+Count32 countEnabledAttrsForMarkerToAttrToFrameRelationship(
+    const MarkerIndex markerIndex, const FrameIndex frameIndex,
+    const mmsolver::MatrixBool3D &markerToAttrToFrameMatrix);
 
-void findErrorToParameterRelationship(
-    const MarkerPtrList &markerList, const AttrPtrList &attrList,
-    const MTimeArray &frameList, const uint32_t numParameters,
-    const uint32_t numMarkerErrors, const IndexPairList &paramToAttrList,
+Count32 countEnabledFramesForMarkerToAttrToFrameRelationship(
+    const MarkerIndex markerIndex, const AttrIndex attrIndex,
+    const mmsolver::MatrixBool3D &markerToAttrToFrameMatrix);
+
+void analyseDependencyGraphRelationships(
+    const MarkerList &markerList, const AttrList &attrList,
+    const FrameList &frameList,
+    // Outputs
+    mmsolver::MatrixBool3D &out_markerToAttrToFrameMatrix, MStatus &out_status);
+
+void analyseObjectRelationships(
+    const MarkerList &markerList, const AttrList &attrList,
+    const FrameList &frameList,
+    // Outputs
+    mmsolver::MatrixBool3D &out_markerToAttrToFrameMatrix, MStatus &out_status);
+
+void readStoredRelationships(
+    const MarkerList &markerList, const AttrList &attrList,
+    const FrameList &frameList,
+    // Outputs
+    Count32 &out_relationshipAttrsExistCount,
+    mmsolver::MatrixBool3D &out_markerToAttrToFrameMatrix, MStatus &out_status);
+
+void mapErrorsToParameters(
+    const MarkerList &markerList, const AttrList &attrList,
+    const FrameList &frameList, const Count32 numParameters,
+    const Count32 numMarkerErrors, const IndexPairList &paramToAttrList,
     const IndexPairList &errorToMarkerList,
-    const mmsolver::MatrixBool2D &markerToAttrMatrix,
+    const mmsolver::MatrixBool3D &markerToAttrToFrameMatrix,
+    // Outputs
     mmsolver::MatrixBool2D &out_errorToParamMatrix, MStatus &out_status);
 
 void calculateMarkerAndParameterCount(
-    const MarkerPtrList &markerList, const AttrPtrList &attrList,
-    const MTimeArray &frameList, const uint32_t numParameters,
-    const uint32_t numMarkerErrors, const IndexPairList &paramToAttrList,
+    const MarkerList &markerList, const AttrList &attrList,
+    const FrameList &frameList, const Count32 numParameters,
+    const Count32 numMarkerErrors, const IndexPairList &paramToAttrList,
     const IndexPairList &errorToMarkerList,
-    const mmsolver::MatrixBool2D &markerToAttrMatrix,
+    const mmsolver::MatrixBool3D &markerToAttrToFrameMatrix,
     const FrameSolveMode frameSolveMode,
-    std::unordered_set<int32_t> &out_valid_frames,
-    std::unordered_set<int32_t> &out_invalid_frames, MStatus &out_status);
+    // Outputs
+    FrameList &out_validFrameList, MStatus &out_status);
+
+void generateValidMarkerAttrFrameLists(
+    const MarkerList &markerList, const AttrList &attrList,
+    const FrameList &frameList,
+    const mmsolver::MatrixBool3D &markerToAttrToFrameMatrix,
+
+    // Outputs
+    MarkerList &out_validMarkerList, AttrList &out_validAttrList,
+    FrameList &out_validFrameList, MStatus &out_status);
 
 }  // namespace mmsolver
 

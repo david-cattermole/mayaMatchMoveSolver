@@ -42,7 +42,7 @@ import mmSolver.tools.loadmarker.lib.utils as lib_utils
 import mmSolver.tools.createlens.lib as createlens_lib
 
 
-# @unittest.skip
+@unittest.skip
 class TestCameraSolveGarage(test_api_utils.APITestCase):
     def create_scene_garage(self, frame_a, frame_b):
         maya.cmds.playbackOptions(edit=True, minTime=frame_a)

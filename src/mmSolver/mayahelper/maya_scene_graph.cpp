@@ -46,11 +46,16 @@
 
 // MM Solver
 #include "maya_attr.h"
+#include "maya_attr_list.h"
 #include "maya_bundle.h"
 #include "maya_camera.h"
+#include "maya_frame_utils.h"
 #include "maya_marker.h"
 #include "maya_marker_group.h"
+#include "maya_marker_list.h"
 #include "maya_utils.h"
+#include "mmSolver/core/frame_list.h"
+#include "mmSolver/core/types.h"
 #include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -173,7 +178,7 @@ bool attribute_has_complex_connection(MFnDependencyNode &depend_node,
 }
 
 MStatus add_attribute(Attr &mayaAttr, const MString &attr_name,
-                      const MTimeArray &frameList,
+                      const MTimeArray &timeArray,
                       const mmsg::FrameValue start_frame,
                       const mmsg::FrameValue end_frame, const int timeEvalMode,
                       const double scaleFactor,
@@ -183,7 +188,6 @@ MStatus add_attribute(Attr &mayaAttr, const MString &attr_name,
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("add_attribute");
 
-    MMSOLVER_CORE_UNUSED(frameList);
     mayaAttr.setAttrName(attr_name);
 
     // TODO: If the attribute is keyed, but there's only one frame in
@@ -194,7 +198,9 @@ MStatus add_attribute(Attr &mayaAttr, const MString &attr_name,
     // auto locked = !mayaAttr.isFreeToChange();
     auto connected = mayaAttr.isConnected();
 
-    assert(frameList.length() > 0);
+    MMSOLVER_ASSERT(
+        timeArray.length() > 0,
+        "It only makes sense to have an attribute evaluated at some frames.");
 
     MStatus status = MS::kSuccess;
     double value = 0.0;
@@ -242,7 +248,7 @@ MStatus add_attribute(Attr &mayaAttr, const MString &attr_name,
                 mayaAttrSource.setNodeName(source_node_name);
                 mayaAttrSource.setAttrName(source_attr_name);
                 status = add_attribute(
-                    mayaAttrSource, source_attr_name, frameList, start_frame,
+                    mayaAttrSource, source_attr_name, timeArray, start_frame,
                     end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                     out_attrId, out_attrNameToAttrIdMap);
                 CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -260,7 +266,7 @@ MStatus add_attribute(Attr &mayaAttr, const MString &attr_name,
     return status;
 }
 
-MStatus get_translate_attrs(Attr &mayaAttr, const MTimeArray &frameList,
+MStatus get_translate_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
                             const mmsg::FrameValue start_frame,
                             const mmsg::FrameValue end_frame,
                             const int timeEvalMode,
@@ -270,19 +276,19 @@ MStatus get_translate_attrs(Attr &mayaAttr, const MTimeArray &frameList,
     double scaleFactor = 1.0;  // No conversion.
 
     MStatus status =
-        add_attribute(mayaAttr, MString("translateX"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("translateX"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.tx, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
-        add_attribute(mayaAttr, MString("translateY"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("translateY"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.ty, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
-        add_attribute(mayaAttr, MString("translateZ"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("translateZ"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.tz, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -290,7 +296,7 @@ MStatus get_translate_attrs(Attr &mayaAttr, const MTimeArray &frameList,
     return status;
 }
 
-MStatus get_rotate_attrs(Attr &mayaAttr, const MTimeArray &frameList,
+MStatus get_rotate_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
                          const mmsg::FrameValue start_frame,
                          const mmsg::FrameValue end_frame,
                          const int timeEvalMode,
@@ -300,19 +306,19 @@ MStatus get_rotate_attrs(Attr &mayaAttr, const MTimeArray &frameList,
     double scaleFactor = 1.0;  // No conversion.
 
     MStatus status =
-        add_attribute(mayaAttr, MString("rotateX"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("rotateX"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.rx, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
-        add_attribute(mayaAttr, MString("rotateY"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("rotateY"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.ry, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
-        add_attribute(mayaAttr, MString("rotateZ"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("rotateZ"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.rz, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -320,7 +326,7 @@ MStatus get_rotate_attrs(Attr &mayaAttr, const MTimeArray &frameList,
     return status;
 }
 
-MStatus get_scale_attrs(Attr &mayaAttr, const MTimeArray &frameList,
+MStatus get_scale_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
                         const mmsg::FrameValue start_frame,
                         const mmsg::FrameValue end_frame,
                         const int timeEvalMode,
@@ -330,19 +336,19 @@ MStatus get_scale_attrs(Attr &mayaAttr, const MTimeArray &frameList,
     double scaleFactor = 1.0;  // No conversion.
 
     MStatus status =
-        add_attribute(mayaAttr, MString("scaleX"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("scaleX"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.sx, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
-        add_attribute(mayaAttr, MString("scaleY"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("scaleY"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.sy, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
-        add_attribute(mayaAttr, MString("scaleZ"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("scaleZ"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.sz, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -351,7 +357,7 @@ MStatus get_scale_attrs(Attr &mayaAttr, const MTimeArray &frameList,
 }
 
 MStatus get_camera_attrs(
-    Attr &mayaAttr, CameraPtr &camera, const MTimeArray &frameList,
+    Attr &mayaAttr, CameraPtr &camera, const MTimeArray &timeArray,
     const mmsg::FrameValue start_frame, const mmsg::FrameValue end_frame,
     const int timeEvalMode, mmsg::AttrDataBlock &out_attrDataBlock,
     mmsg::CameraAttrIds &out_attrIds, mmsg::FilmFit &out_film_fit,
@@ -368,49 +374,49 @@ MStatus get_camera_attrs(
     out_render_image_height = camera->getRenderHeightValue();
 
     MStatus status = add_attribute(
-        mayaAttr, MString("horizontalFilmAperture"), frameList, start_frame,
+        mayaAttr, MString("horizontalFilmAperture"), timeArray, start_frame,
         end_frame, timeEvalMode, inch_to_mm, out_attrDataBlock,
         out_attrIds.sensor_width, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = add_attribute(mayaAttr, MString("verticalFilmAperture"), frameList,
+    status = add_attribute(mayaAttr, MString("verticalFilmAperture"), timeArray,
                            start_frame, end_frame, timeEvalMode, inch_to_mm,
                            out_attrDataBlock, out_attrIds.sensor_height,
                            out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
-        add_attribute(mayaAttr, MString("focalLength"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("focalLength"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.focal_length, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = add_attribute(mayaAttr, MString("horizontalFilmOffset"), frameList,
+    status = add_attribute(mayaAttr, MString("horizontalFilmOffset"), timeArray,
                            start_frame, end_frame, timeEvalMode, inch_to_mm,
                            out_attrDataBlock, out_attrIds.lens_offset_x,
                            out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = add_attribute(mayaAttr, MString("verticalFilmOffset"), frameList,
+    status = add_attribute(mayaAttr, MString("verticalFilmOffset"), timeArray,
                            start_frame, end_frame, timeEvalMode, inch_to_mm,
                            out_attrDataBlock, out_attrIds.lens_offset_y,
                            out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = add_attribute(mayaAttr, MString("nearClipPlane"), frameList,
+    status = add_attribute(mayaAttr, MString("nearClipPlane"), timeArray,
                            start_frame, end_frame, timeEvalMode, scaleFactor,
                            out_attrDataBlock, out_attrIds.near_clip_plane,
                            out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
-        add_attribute(mayaAttr, MString("farClipPlane"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("farClipPlane"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.far_clip_plane, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
-        add_attribute(mayaAttr, MString("cameraScale"), frameList, start_frame,
+        add_attribute(mayaAttr, MString("cameraScale"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.camera_scale, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -451,7 +457,7 @@ MStatus get_rotate_order_attr(Attr &mayaAttr, const int timeEvalMode,
     return status;
 }
 
-MStatus get_transform_attrs(Attr &mayaAttr, const MTimeArray &frameList,
+MStatus get_transform_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
                             const mmsg::FrameValue start_frame,
                             const mmsg::FrameValue end_frame,
                             const int timeEvalMode,
@@ -462,16 +468,16 @@ MStatus get_transform_attrs(Attr &mayaAttr, const MTimeArray &frameList,
                             mmsg::RotateOrder &out_rotateOrder,
                             StringToAttrIdMap &out_attrNameToAttrIdMap) {
     MStatus status = get_translate_attrs(
-        mayaAttr, frameList, start_frame, end_frame, timeEvalMode,
+        mayaAttr, timeArray, start_frame, end_frame, timeEvalMode,
         out_attrDataBlock, out_translateAttrIds, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = get_rotate_attrs(mayaAttr, frameList, start_frame, end_frame,
+    status = get_rotate_attrs(mayaAttr, timeArray, start_frame, end_frame,
                               timeEvalMode, out_attrDataBlock,
                               out_rotateAttrIds, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = get_scale_attrs(mayaAttr, frameList, start_frame, end_frame,
+    status = get_scale_attrs(mayaAttr, timeArray, start_frame, end_frame,
                              timeEvalMode, out_attrDataBlock, out_scaleAttrIds,
                              out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -509,7 +515,7 @@ MStatus get_film_fit_attr(Attr &mayaAttr, const int timeEvalMode,
     return status;
 }
 
-MStatus get_marker_attrs(Attr &mayaAttr, const MTimeArray &frameList,
+MStatus get_marker_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
                          const mmsg::FrameValue start_frame,
                          const mmsg::FrameValue end_frame,
                          const int timeEvalMode, const double overscan_x,
@@ -528,12 +534,12 @@ MStatus get_marker_attrs(Attr &mayaAttr, const MTimeArray &frameList,
     double scaleFactor_x = 1.0 / overscan_x;
     double scaleFactor_y = 1.0 / overscan_y;
 
-    add_attribute(mayaAttr, MString("translateX"), frameList, start_frame,
+    add_attribute(mayaAttr, MString("translateX"), timeArray, start_frame,
                   end_frame, timeEvalMode, scaleFactor_x, out_attrDataBlock,
                   out_attrIds.tx, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(mayaAttr, MString("translateY"), frameList, start_frame,
+    add_attribute(mayaAttr, MString("translateY"), timeArray, start_frame,
                   end_frame, timeEvalMode, scaleFactor_y, out_attrDataBlock,
                   out_attrIds.ty, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -543,7 +549,7 @@ MStatus get_marker_attrs(Attr &mayaAttr, const MTimeArray &frameList,
     //
     // TODO: Do we actually need the weight? It's not used inside
     // mmscenegraph currently.
-    add_attribute(mayaAttr, MString("weight"), frameList, start_frame,
+    add_attribute(mayaAttr, MString("weight"), timeArray, start_frame,
                   end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                   out_attrIds.weight, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -756,7 +762,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
 }
 
 MStatus add_transforms(const mmsg::NodeId parent_node_id, MDagPath &dag_path,
-                       const MTimeArray &frameList,
+                       const MTimeArray &timeArray,
                        const mmsg::FrameValue start_frame,
                        const mmsg::FrameValue end_frame, const int timeEvalMode,
                        mmsg::SceneGraph &out_sceneGraph,
@@ -799,7 +805,7 @@ MStatus add_transforms(const mmsg::NodeId parent_node_id, MDagPath &dag_path,
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             get_transform_attrs(
-                mayaAttr, frameList, start_frame, end_frame, timeEvalMode,
+                mayaAttr, timeArray, start_frame, end_frame, timeEvalMode,
                 out_attrDataBlock, translate_attr_ids, rotate_attr_ids,
                 scale_attr_ids, rotate_order, out_attrNameToAttrIdMap);
 
@@ -823,7 +829,7 @@ MStatus add_transforms(const mmsg::NodeId parent_node_id, MDagPath &dag_path,
 }
 
 MStatus add_cameras(const CameraPtrList &cameraList,
-                    const MTimeArray &frameList,
+                    const MTimeArray &timeArray,
                     const mmsg::FrameValue start_frame,
                     const mmsg::FrameValue end_frame, const int timeEvalMode,
                     std::vector<mmsg::CameraNode> &out_cameraNodes,
@@ -864,7 +870,7 @@ MStatus add_cameras(const CameraPtrList &cameraList,
         status = mayaAttr.setNodeName(transform_name);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        get_transform_attrs(mayaAttr, frameList, start_frame, end_frame,
+        get_transform_attrs(mayaAttr, timeArray, start_frame, end_frame,
                             timeEvalMode, out_attrDataBlock, translate_attr_ids,
                             rotate_attr_ids, scale_attr_ids, rotate_order,
                             out_attrNameToAttrIdMap);
@@ -879,7 +885,7 @@ MStatus add_cameras(const CameraPtrList &cameraList,
         auto film_fit = mmsg::FilmFit::kUnknown;
         auto render_image_width = 0;
         auto render_image_height = 0;
-        get_camera_attrs(mayaAttr, cam_ptr, frameList, start_frame, end_frame,
+        get_camera_attrs(mayaAttr, cam_ptr, timeArray, start_frame, end_frame,
                          timeEvalMode, out_attrDataBlock, camera_attr_ids,
                          film_fit, render_image_width, render_image_height,
                          out_attrNameToAttrIdMap);
@@ -898,7 +904,7 @@ MStatus add_cameras(const CameraPtrList &cameraList,
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         status = add_transforms(
-            cam_node.id, tfm_dag_path, frameList, start_frame, end_frame,
+            cam_node.id, tfm_dag_path, timeArray, start_frame, end_frame,
             timeEvalMode, out_sceneGraph, out_attrDataBlock,
             out_nodeNameToNodeIdMap, out_attrNameToAttrIdMap);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -907,7 +913,7 @@ MStatus add_cameras(const CameraPtrList &cameraList,
 }
 
 MStatus add_bundles(const BundlePtrList &bundleList,
-                    const MTimeArray &frameList,
+                    const MTimeArray &timeArray,
                     const mmsg::FrameValue start_frame,
                     const mmsg::FrameValue end_frame, const int timeEvalMode,
                     std::vector<mmsg::BundleNode> &out_bundleNodes,
@@ -945,7 +951,7 @@ MStatus add_bundles(const BundlePtrList &bundleList,
         status = mayaAttr.setNodeName(transform_name);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        get_transform_attrs(mayaAttr, frameList, start_frame, end_frame,
+        get_transform_attrs(mayaAttr, timeArray, start_frame, end_frame,
                             timeEvalMode, out_attrDataBlock, translate_attr_ids,
                             rotate_attr_ids, scale_attr_ids, rotate_order,
                             out_attrNameToAttrIdMap);
@@ -961,7 +967,7 @@ MStatus add_bundles(const BundlePtrList &bundleList,
         status = dag_path.pop();
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        status = add_transforms(bnd_node.id, dag_path, frameList, start_frame,
+        status = add_transforms(bnd_node.id, dag_path, timeArray, start_frame,
                                 end_frame, timeEvalMode, out_sceneGraph,
                                 out_attrDataBlock, out_nodeNameToNodeIdMap,
                                 out_attrNameToAttrIdMap);
@@ -971,8 +977,8 @@ MStatus add_bundles(const BundlePtrList &bundleList,
 }
 
 MStatus add_markers(
-    const MarkerPtrList &markerList, const CameraPtrList &cameraList,
-    const BundlePtrList &bundleList, const MTimeArray &frameList,
+    const MarkerList &markerList, const CameraPtrList &cameraList,
+    const BundlePtrList &bundleList, const MTimeArray &timeArray,
     const mmsg::FrameValue start_frame, const mmsg::FrameValue end_frame,
     const int timeEvalMode, const std::vector<mmsg::CameraNode> &cameraNodes,
     const std::vector<mmsg::BundleNode> &bundleNodes,
@@ -998,7 +1004,7 @@ MStatus add_markers(
     out_markerNodes.reserve(markerList.size());
 
     for (uint32_t i = 0; i < markerList.size(); ++i) {
-        auto mkr_ptr = markerList[i];
+        auto mkr_ptr = markerList.get_marker(i);
         auto mkr_tfm_name = mkr_ptr->getNodeName();
         auto mkr_tfm_obj = mkr_ptr->getObject();
 
@@ -1042,13 +1048,13 @@ MStatus add_markers(
         if (mkr_grp_ptr) {
             // Overscan is assumed to be static, animated overscan is
             // not current supported.
-            auto first_frame = frameList[0];
+            auto first_time = timeArray[0];
             status = mkr_grp_ptr->getOverscanXY(overscan_x, overscan_y,
-                                                first_frame, timeEvalMode);
+                                                first_time, timeEvalMode);
             CHECK_MSTATUS_AND_RETURN_IT(status);
         }
 
-        status = get_marker_attrs(mayaAttr, frameList, start_frame, end_frame,
+        status = get_marker_attrs(mayaAttr, timeArray, start_frame, end_frame,
                                   timeEvalMode, overscan_x, overscan_y,
                                   out_attrDataBlock, mkr_attr_ids,
                                   out_attrNameToAttrIdMap);
@@ -1083,7 +1089,7 @@ MStatus add_markers(
 }
 
 MStatus convert_attributes_to_attr_ids(
-    const AttrPtrList &attrList, const StringToAttrIdMap &attrNameToAttrIdMap,
+    const AttrList &attrList, const StringToAttrIdMap &attrNameToAttrIdMap,
     std::vector<mmsg::AttrId> &out_attrIdList) {
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("convert_attributes_to_attr_ids");
@@ -1093,9 +1099,8 @@ MStatus convert_attributes_to_attr_ids(
     out_attrIdList.clear();
     out_attrIdList.reserve(attrList.size());
 
-    for (AttrPtrListCIt ait = attrList.cbegin(); ait != attrList.cend();
-         ++ait) {
-        AttrPtr attr = *ait;
+    for (AttrIndex attrIndex = 0; attrIndex < attrList.size(); ++attrIndex) {
+        AttrPtr attr = attrList.get_attr(attrIndex);
 
         ObjectType object_type = attr->getObjectType();
         if (object_type == ObjectType::kLens) {
@@ -1129,9 +1134,9 @@ MStatus convert_attributes_to_attr_ids(
 }
 
 MStatus construct_scene_graph(
-    const CameraPtrList &cameraList, const MarkerPtrList &markerList,
-    const BundlePtrList &bundleList, const AttrPtrList &attrList,
-    const MTimeArray &frameList, const int timeEvalMode,
+    const CameraPtrList &cameraList, const MarkerList &markerList,
+    const BundlePtrList &bundleList, const AttrList &attrList,
+    const FrameList &frameList, const int timeEvalMode,
     mmsg::SceneGraph &out_sceneGraph, mmsg::AttrDataBlock &out_attrDataBlock,
     mmsg::FlatScene &out_flatScene,
     std::vector<mmsg::FrameValue> &out_frameList,
@@ -1147,18 +1152,28 @@ MStatus construct_scene_graph(
     auto attrNameToAttrIdMap = StringToAttrIdMap();
     auto nodeNameToNodeIdMap = StringToNodeIdMap();
 
+    // Check Frames
+    const uint32_t frameListEnabledCount = frameList.count_enabled();
+    MMSOLVER_MAYA_VRB("FrameList length: " << frameList.size());
+    MMSOLVER_MAYA_VRB("FrameList enabled count: " << frameListEnabledCount);
+    MMSOLVER_ASSERT(!frameList.is_empty(),
+                    "MM Scene Graph must be evaluated on some frames.");
+    MMSOLVER_ASSERT(frameListEnabledCount > 0,
+                    "MM Scene Graph must be evaluated on some valid frames.");
+
     // Frames
-    MMSOLVER_MAYA_VRB("FrameList length: " << frameList.length());
-    assert(frameList.length() > 0);
-    auto uiUnit = MTime::uiUnit();
-    auto start_frame = std::numeric_limits<mmsg::FrameValue>::max();
-    auto end_frame = std::numeric_limits<mmsg::FrameValue>::min();
-    for (uint32_t i = 0; i < frameList.length(); ++i) {
-        MTime frame = frameList[i];
-        auto frame_num = static_cast<mmsg::FrameValue>(frame.as(uiUnit));
+    mmsg::FrameValue start_frame = std::numeric_limits<mmsg::FrameValue>::max();
+    mmsg::FrameValue end_frame = std::numeric_limits<mmsg::FrameValue>::min();
+    for (auto i = 0; i < frameList.size(); ++i) {
+        const bool frame_enabled = frameList.get_enabled(i);
+        if (!frame_enabled) {
+            continue;
+        }
+
+        const FrameNumber frame_num = frameList.get_frame(i);
         MMSOLVER_MAYA_VRB("frameList i=" << i << " frame_num=" << frame_num);
-        start_frame = std::min(start_frame, frame_num);
-        end_frame = std::max(end_frame, frame_num);
+        start_frame = std::min<mmsg::FrameValue>(start_frame, frame_num);
+        end_frame = std::max<mmsg::FrameValue>(end_frame, frame_num);
         out_frameList.push_back(frame_num);
     }
     auto total_frame_count = (end_frame - start_frame) + 1;
@@ -1167,22 +1182,27 @@ MStatus construct_scene_graph(
     MMSOLVER_MAYA_VRB("Frames end_frame: " << end_frame);
     MMSOLVER_MAYA_VRB("Frames frame_count: " << total_frame_count);
     MMSOLVER_MAYA_VRB("Frames count: " << out_frameList.size());
-    assert(out_frameList.size() == frameList.length());
+    MMSOLVER_ASSERT(out_frameList.size() == frameList.count_enabled(),
+                    "Frame count must match MM Scene Graph.");
 
-    MStatus status = add_cameras(cameraList, frameList, start_frame, end_frame,
+    const MTimeArray timeArray = mmsolver::create_time_array_enabled(frameList);
+    MMSOLVER_ASSERT(timeArray.length() == frameList.count_enabled(),
+                    "Frame count must match MM Scene Graph.");
+
+    MStatus status = add_cameras(cameraList, timeArray, start_frame, end_frame,
                                  timeEvalMode, out_cameraNodes, evalObjects,
                                  out_sceneGraph, out_attrDataBlock,
                                  nodeNameToNodeIdMap, attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = add_bundles(bundleList, frameList, start_frame, end_frame,
+    status = add_bundles(bundleList, timeArray, start_frame, end_frame,
                          timeEvalMode, out_bundleNodes, evalObjects,
                          out_sceneGraph, out_attrDataBlock, nodeNameToNodeIdMap,
                          attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = add_markers(
-        markerList, cameraList, bundleList, frameList, start_frame, end_frame,
+        markerList, cameraList, bundleList, timeArray, start_frame, end_frame,
         timeEvalMode, out_cameraNodes, out_bundleNodes, out_markerNodes,
         evalObjects, out_sceneGraph, out_attrDataBlock, attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);

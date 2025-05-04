@@ -33,6 +33,7 @@
 
 // Internal Objects
 #include "mmSolver/adjust/adjust_data.h"
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 // Command arguments
@@ -46,7 +47,7 @@ void createSolveFramesSyntax(MSyntax &syntax);
 
 // Parse arguments into solver frames.
 MStatus parseSolveFramesArguments(const MArgDatabase &argData,
-                                  MTimeArray &out_frameList);
+                                  FrameList &out_frameList);
 
 }  // namespace mmsolver
 

@@ -42,17 +42,20 @@
 
 // MM Solver
 #include "maya_attr.h"
+#include "maya_attr_list.h"
 #include "maya_bundle.h"
 #include "maya_camera.h"
 #include "maya_marker.h"
+#include "maya_marker_list.h"
 #include "maya_utils.h"
+#include "mmSolver/core/frame_list.h"
 
 namespace mmsolver {
 
 MStatus construct_scene_graph(
-    const CameraPtrList &cameraList, const MarkerPtrList &markerList,
-    const BundlePtrList &bundleList, const AttrPtrList &attrList,
-    const MTimeArray &frameList, const int timeEvalMode,
+    const CameraPtrList &cameraList, const MarkerList &markerList,
+    const BundlePtrList &bundleList, const AttrList &attrList,
+    const FrameList &frameList, const int timeEvalMode,
     mmscenegraph::SceneGraph &out_sceneGraph,
     mmscenegraph::AttrDataBlock &out_attrDataBlock,
     mmscenegraph::FlatScene &out_flatScene,

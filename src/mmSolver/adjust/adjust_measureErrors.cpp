@@ -71,8 +71,10 @@
 // MM Solver
 #include "adjust_base.h"
 #include "adjust_data.h"
+#include "adjust_relationships.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_frame_utils.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -143,21 +145,22 @@ void measureErrors_mayaDag(const int numberOfErrors,
     }
 #endif
 
-    auto num_frames = ud->frameList.length();
+    auto num_frames = ud->frameList.size();
     auto num_marker_lens_models = ud->lensModelList.size();
 
     // Compute Marker Errors
+    const auto ui_unit = MTime::uiUnit();
     MMatrix cameraWorldProjectionMatrix;
     MPoint mkr_mpos;
     MPoint bnd_mpos;
     int numberOfErrorsMeasured = 0;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
-        int markerIndex = markerPair.first;
-        int frameIndex = markerPair.second;
+        const MarkerIndex markerIndex = markerPair.first;
+        const FrameIndex frameIndex = markerPair.second;
 
-        bool skipFrame = frameIndexEnable[frameIndex] == false;
-        bool skipMarker = errorMeasurements[i] == false;
+        const bool skipFrame = frameIndexEnable[frameIndex] == false;
+        const bool skipMarker = errorMeasurements[i] == false;
         if (skipFrame) {
             // Skip evaluation of this marker error. The 'errors' data
             // is expected to be unchanged from the last evaluation.
@@ -171,8 +174,18 @@ void measureErrors_mayaDag(const int numberOfErrors,
             continue;
         }
 
-        MarkerPtr marker = ud->markerList[markerIndex];
-        MTime frame = ud->frameList[frameIndex];
+        if (frameIndex != -1) {
+            const Count32 enabledAttrs =
+                countEnabledAttrsForMarkerToAttrToFrameRelationship(
+                    markerIndex, frameIndex, ud->markerToAttrToFrameMatrix);
+            if (enabledAttrs == 0) {
+                continue;
+            }
+        }
+
+        MarkerPtr marker = ud->markerList.get_marker(markerIndex);
+        const FrameNumber frameNumber = ud->frameList.get_frame(frameIndex);
+        const MTime frame = convert_to_time(frameNumber, ui_unit);
 
         CameraPtr camera = marker->getCamera();
         status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame,
@@ -313,7 +326,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         AttrPtr stiffWeightAttr = stiffAttrs->weightAttr;
         AttrPtr stiffVarianceAttr = stiffAttrs->varianceAttr;
         AttrPtr stiffValueAttr = stiffAttrs->valueAttr;
-        AttrPtr attr = ud->attrList[attrIndex];
+        AttrPtr attr = ud->attrList.get_attr(attrIndex);
 
         // Query the current value of the value, and calculate
         //  the difference between the stiffness value.
@@ -352,7 +365,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         AttrPtr smoothWeightAttr = smoothAttrs->weightAttr;
         AttrPtr smoothVarianceAttr = smoothAttrs->varianceAttr;
         AttrPtr smoothValueAttr = smoothAttrs->valueAttr;
-        AttrPtr attr = ud->attrList[attrIndex];
+        AttrPtr attr = ud->attrList.get_attr(attrIndex);
 
         // Query the current value of the value, and calculate
         //  the difference between the smoothness value.
@@ -433,6 +446,15 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
             // to be pre-computed and 'know' something this function does
             // not about the greater structure of the solving problem.
             continue;
+        }
+
+        if (frameIndex != -1) {
+            const Count32 enabledAttrs =
+                countEnabledAttrsForMarkerToAttrToFrameRelationship(
+                    markerIndex, frameIndex, ud->markerToAttrToFrameMatrix);
+            if (enabledAttrs == 0) {
+                continue;
+            }
         }
 
         // Use pre-computed marker weight
@@ -520,7 +542,7 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
 
     MMSOLVER_ASSERT(ud->errorToMarkerList.size() > 0,
                     "Must have markers to measure.");
-    MMSOLVER_ASSERT(ud->frameList.length() > 0,
+    MMSOLVER_ASSERT(ud->frameList.size() > 0,
                     "Must have frames to measure markers on.");
 
     const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;

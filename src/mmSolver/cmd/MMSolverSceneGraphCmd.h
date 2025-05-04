@@ -40,10 +40,13 @@
 
 // MM Solver
 #include "mmSolver/adjust/adjust_data.h"
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 
 // Command arguments:
 
@@ -87,14 +90,14 @@ private:
 
     // Objects
     CameraPtrList m_cameraList;
-    MarkerPtrList m_markerList;
+    MarkerList m_markerList;
     BundlePtrList m_bundleList;
-    AttrPtrList m_attrList;
+    AttrList m_attrList;
     StiffAttrsPtrList m_stiffAttrsList;
     SmoothAttrsPtrList m_smoothAttrsList;
 
     // Frames
-    MTimeArray m_frameList;
+    FrameList m_frameList;
 
     // Whhat Scene Graph to construct.
     SceneGraphMode m_sceneGraphMode;

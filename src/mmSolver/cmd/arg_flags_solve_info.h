@@ -162,6 +162,11 @@
 #define REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG "-removeUnusedAttributes"
 #define REMOVE_UNUSED_ATTRIBUTES_DEFAULT_VALUE true
 
+// If unused Frames are detected, should they automatically be removed?
+#define REMOVE_UNUSED_FRAMES_FLAG "-ruf"
+#define REMOVE_UNUSED_FRAMES_FLAG_LONG "-removeUnusedFrames"
+#define REMOVE_UNUSED_FRAMES_DEFAULT_VALUE true
+
 // What is the width of the image we are matchmoving? This value is
 // used to while calculating per-pixel deviation/error levels.
 //
@@ -189,7 +194,7 @@ MStatus parseSolveInfoArguments_v1(
     bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
     bool &out_supportParameterBounds, bool &out_supportRobustLoss,
     bool &out_removeUnusedMarkers, bool &out_removeUnusedAttributes,
-    double &out_imageWidth);
+    bool &out_removeUnusedFrames, double &out_imageWidth);
 
 MStatus parseSolveInfoArguments_v2(
     const MArgDatabase &argData, int &out_iterations, double &out_tau,

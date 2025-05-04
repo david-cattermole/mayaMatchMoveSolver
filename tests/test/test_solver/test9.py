@@ -108,10 +108,13 @@ class TestSolver9(solverUtils.SolverTestCase):
                 (bundle_tfm + '.ty', 'None', 'None', 'None', 'None'),
             ]
 
+            frames = list(range(start, end + 1))
+
             kwargs = {
                 'camera': cameras,
                 'marker': markers,
                 'attr': node_attrs,
+                'frame': frames,
             }
 
             affects_mode = 'addAttrsToMarkers'
@@ -120,12 +123,10 @@ class TestSolver9(solverUtils.SolverTestCase):
             # Run solver!
             s = time.time()
             frames = []
-            for f in range(start, end + 1):
-                frames = [f]
-
+            for f in frames:
                 # Default values for the solver should get us a good solve.
                 result = maya.cmds.mmSolver(
-                    frame=frames, solverType=solver_index, verbose=True, **kwargs
+                    frame=[f], solverType=solver_index, verbose=True, **kwargs
                 )
                 # Ensure the values are correct
                 self.assertEqual(result[0], 'success=1')

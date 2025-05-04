@@ -82,6 +82,7 @@
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/sfm/sfm_utils.h"
 #include "mmSolver/utilities/assert_utils.h"
@@ -223,7 +224,7 @@ bool compute_relative_pose(
     const double ppy_pix_b,
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
-    const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
+    const MarkerList &marker_list_a, const MarkerList &marker_list_b,
     openMVG::sfm::RelativePose_Info &pose_info) {
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
@@ -277,8 +278,8 @@ bool compute_relative_pose(
     auto i = 0;
     for (auto inlier : pose_info.vec_inliers) {
         if (inlier < marker_list_a.size()) {
-            auto mkr_a = marker_list_a[inlier];
-            auto mkr_b = marker_list_b[inlier];
+            auto mkr_a = marker_list_a.get_marker(inlier);
+            auto mkr_b = marker_list_b.get_marker(inlier);
             auto mkr_name_a = mkr_a->getNodeName();
             auto mkr_name_b = mkr_b->getNodeName();
             MMSOLVER_MAYA_VRB("  - #inlier A: " << i << " = " << inlier
@@ -353,9 +354,9 @@ bool construct_two_camera_sfm_data_scene(
 bool triangulate_relative_pose(
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
-    const std::vector<uint32_t> &vec_inliers,
-    const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
-    BundlePtrList &bundle_list, openMVG::sfm::SfM_Data &scene) {
+    const std::vector<uint32_t> &vec_inliers, const MarkerList &marker_list_a,
+    const MarkerList &marker_list_b, BundlePtrList &bundle_list,
+    openMVG::sfm::SfM_Data &scene) {
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
@@ -399,8 +400,8 @@ bool triangulate_relative_pose(
             landmark.X = bundle_pos;
             landmarks.insert({inlier_idx, landmark});
             if (verbose) {
-                auto mkr_a = marker_list_a[inlier_idx];
-                auto mkr_b = marker_list_b[inlier_idx];
+                auto mkr_a = marker_list_a.get_marker(inlier_idx);
+                auto mkr_b = marker_list_b.get_marker(inlier_idx);
                 auto bnd = bundle_list[inlier_idx];
                 auto mkr_name_a = mkr_a->getNodeName();
                 auto mkr_name_b = mkr_b->getNodeName();

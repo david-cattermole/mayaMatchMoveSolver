@@ -951,6 +951,7 @@ class Collection(object):
         return plug_name
 
     def get_attribute_used_hint(self, attr):
+        # TODO: Does this need to be updated to work with frame numbers?
         key = 'used_hint'
         # By default, we assume the attribute is unused.
         default_value = const.ATTRIBUTE_USED_HINT_DEFAULT_VALUE
@@ -959,6 +960,7 @@ class Collection(object):
         return value
 
     def set_attribute_used_hint(self, attr, value):
+        # TODO: Does this need to be updated to work with frame numbers?
         assert isinstance(value, pycompat.INT_TYPES)
         assert value in const.ATTRIBUTE_USED_HINT_LIST
         key = 'used_hint'

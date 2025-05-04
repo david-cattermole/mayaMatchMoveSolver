@@ -31,10 +31,13 @@
 
 // Internal Objects
 #include "mmSolver/adjust/adjust_data.h"
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 // Command arguments
@@ -72,16 +75,16 @@ void createSolveObjectSyntax(MSyntax &syntax);
 // Parse arguments into solver objects.
 MStatus parseSolveObjectArguments(const MArgDatabase &argData,
                                   CameraPtrList &out_cameraList,
-                                  MarkerPtrList &out_markerList,
+                                  MarkerList &out_markerList,
                                   BundlePtrList &out_bundleList,
-                                  AttrPtrList &out_attrList);
+                                  AttrList &out_attrList);
 
 // Add flags for attribute details to the command syntax.
 void createAttributeDetailsSyntax(MSyntax &syntax);
 
 // Parse arguments into attribute details.
 MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
-                                       const AttrPtrList &attrList,
+                                       const AttrList &attrList,
                                        StiffAttrsPtrList &out_stiffAttrsList,
                                        SmoothAttrsPtrList &out_smoothAttrsList);
 

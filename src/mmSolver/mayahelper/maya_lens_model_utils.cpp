@@ -74,8 +74,13 @@
 
 #include "mmSolver/adjust/adjust_base.h"
 #include "mmSolver/adjust/adjust_data.h"
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_frame_utils.h"
+#include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/node/MMLensData.h"
 #include "mmSolver/utilities/assert_utils.h"
@@ -754,7 +759,7 @@ MStatus getAttrsFromLensNode(const MObject &node, const MString &nodeName,
 // change for all connected cameras.
 MStatus constructLenses(
     const std::vector<MString> &lensNodeNames, const CameraPtrList &cameraList,
-    const MTimeArray &frameList,
+    const MTimeArray &timeArray,
     const std::vector<std::vector<MString>> &cameraLensNodeNames,
     const std::unordered_map<std::string, std::shared_ptr<mmlens::LensModel>>
         &lensNodeNameToLensModel,
@@ -763,7 +768,7 @@ MStatus constructLenses(
     MStatus status = MS::kSuccess;
 
     auto num_cameras = cameraList.size();
-    auto num_frames = frameList.length();
+    auto num_frames = timeArray.length();
     out_lensModelList.clear();
 
     // Loop over all Lenses (including the "input" Lenses) and query
@@ -819,7 +824,7 @@ MStatus constructLenses(
                 continue;
             }
 
-            const MTime frame = frameList[j];
+            const MTime frame = timeArray[j];
             for (uint32_t k = 0; k < num_lens_attrs; k++) {
                 // Query values from attrs
                 double value = 0.0;
@@ -841,14 +846,14 @@ MStatus constructLenses(
 
 // Connect up the lenses, in reverse connection order (last to first).
 MStatus connectLensModels(
-    const std::vector<MString> &lensNodeNames, const MTimeArray &frameList,
+    const std::vector<MString> &lensNodeNames, const MTimeArray &timeArray,
     const std::vector<std::vector<MString>> &cameraLensNodeNames,
     const std::unordered_map<std::string, uint32_t>
         &lensNodeNameToLensModelIndex,
     std::vector<std::shared_ptr<mmlens::LensModel>> &inout_lensModelList) {
     MStatus status = MS::kSuccess;
 
-    auto num_frames = frameList.length();
+    auto num_frames = timeArray.length();
 
     for (uint32_t i = 0; i < cameraLensNodeNames.size(); ++i) {
         std::vector<std::shared_ptr<mmlens::LensModel>> previousLensModels;
@@ -883,7 +888,7 @@ MStatus connectLensModels(
 
 // Marker to LensModel data structure.
 MStatus constructMarkerToLensModelMap(
-    const MarkerPtrList &markerList, const MTimeArray &frameList,
+    const MarkerList &markerList, const MTimeArray &timeArray,
     const std::unordered_map<std::string, int32_t> &cameraNodeNameToCameraIndex,
     const std::vector<std::vector<MString>> &cameraLensNodeNames,
     const std::unordered_map<std::string, uint32_t>
@@ -894,12 +899,12 @@ MStatus constructMarkerToLensModelMap(
     MStatus status = MS::kSuccess;
 
     auto num_markers = markerList.size();
-    auto num_frames = frameList.length();
+    auto num_frames = timeArray.length();
     out_markerFrameToLensModelList.clear();
     out_markerFrameToLensModelList.resize(num_markers * num_frames);
 
     for (uint32_t i = 0; i < num_markers; ++i) {
-        MarkerPtr marker = markerList[i];
+        MarkerPtr marker = markerList.get_marker(i);
         CameraPtr camera = marker->getCamera();
 
         MString cameraShapeName = camera->getShapeNodeName();
@@ -951,7 +956,7 @@ MStatus constructMarkerToLensModelMap(
 // Create a mapping data structure between Attribute (index) and the
 // corresponding Lens (index).
 MStatus constructAttributeToLensModelMap(
-    const AttrPtrList &attrList, const MTimeArray &frameList,
+    const AttrList &attrList, const MTimeArray &timeArray,
     const std::unordered_map<std::string, uint32_t>
         &lensNodeNameToLensModelIndex,
     const std::vector<std::shared_ptr<mmlens::LensModel>> &lensModelList,
@@ -960,12 +965,12 @@ MStatus constructAttributeToLensModelMap(
     MStatus status = MS::kSuccess;
 
     auto num_attrs = attrList.size();
-    auto num_frames = frameList.length();
+    auto num_frames = timeArray.length();
     out_attrFrameToLensModelList.clear();
     out_attrFrameToLensModelList.resize(num_attrs * num_frames);
 
     for (uint32_t i = 0; i < num_attrs; ++i) {
-        AttrPtr attr = attrList[i];
+        AttrPtr attr = attrList.get_attr(i);
 
         const auto object_type = attr->getObjectType();
         if (object_type != ObjectType::kLens) {
@@ -1000,8 +1005,8 @@ MStatus constructAttributeToLensModelMap(
 // Construct the data structures that will be re-used in the
 // 'measureErrors*' and 'setParameters*' functions.
 MStatus constructLensModelList(
-    const CameraPtrList &cameraList, const MarkerPtrList &markerList,
-    const AttrPtrList &attrList, const MTimeArray &frameList,
+    const CameraPtrList &cameraList, const MarkerList &markerList,
+    const AttrList &attrList, const FrameList &frameList,
     // TODO: Can we reduce the indirection by one level and store the direct
     // pointer?
     //  If so, we must ensure out_lensList is not destroyed until we are
@@ -1011,6 +1016,8 @@ MStatus constructLensModelList(
     std::vector<std::shared_ptr<mmlens::LensModel>>
         &out_attrFrameToLensModelList,
     std::vector<std::shared_ptr<mmlens::LensModel>> &out_lensModelList) {
+    const MTimeArray timeArray = create_time_array_enabled(frameList);
+
     std::unordered_map<std::string, int32_t> cameraNodeNameToCameraIndex;
     std::vector<std::vector<MString>> cameraLensNodeNames;
     std::vector<MString> lensNodeNamesVec;
@@ -1022,23 +1029,23 @@ MStatus constructLensModelList(
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     std::unordered_map<std::string, uint32_t> lensNodeNameToLensModelIndex;
-    status = constructLenses(lensNodeNamesVec, cameraList, frameList,
+    status = constructLenses(lensNodeNamesVec, cameraList, timeArray,
                              cameraLensNodeNames, lensNodeNameToLensModel,
                              lensNodeNameToLensModelIndex, out_lensModelList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = connectLensModels(lensNodeNamesVec, frameList, cameraLensNodeNames,
+    status = connectLensModels(lensNodeNamesVec, timeArray, cameraLensNodeNames,
                                lensNodeNameToLensModelIndex, out_lensModelList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = constructMarkerToLensModelMap(
-        markerList, frameList, cameraNodeNameToCameraIndex, cameraLensNodeNames,
+        markerList, timeArray, cameraNodeNameToCameraIndex, cameraLensNodeNames,
         lensNodeNameToLensModelIndex, out_lensModelList,
         out_markerFrameToLensModelList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = constructAttributeToLensModelMap(
-        attrList, frameList, lensNodeNameToLensModelIndex, out_lensModelList,
+        attrList, timeArray, lensNodeNameToLensModelIndex, out_lensModelList,
         out_attrFrameToLensModelList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 

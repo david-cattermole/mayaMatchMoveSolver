@@ -34,6 +34,7 @@
 #include "mmSolver/adjust/adjust_results_setMarkerData.h"
 #include "mmSolver/adjust/adjust_results_setSolveData.h"
 #include "mmSolver/cmd/common_arg_flags.h"
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/utilities/assert_utils.h"
 
 namespace mmsolver {
@@ -128,7 +129,7 @@ MStatus MMSolver2Cmd::doIt(const MArgList &args) {
     MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     MMSOLVER_ASSERT(
-        m_frameList.length() > 0,
+        !m_frameList.is_empty(),
         "We must solve at least one frame, otherwise there's no point.");
 
     // Don't store each individual edits, just store the combination

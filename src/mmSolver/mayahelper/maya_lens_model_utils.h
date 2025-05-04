@@ -33,9 +33,12 @@
 // MM Solver
 #include <mmlens/lens_model.h>
 
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 
 namespace mmsolver {
 
@@ -47,8 +50,8 @@ MStatus setLensModelAttributeValue(
     const AttrSolverType attrType, const double value);
 
 MStatus constructLensModelList(
-    const CameraPtrList &cameraList, const MarkerPtrList &markerList,
-    const AttrPtrList &attrList, const MTimeArray &frameList,
+    const CameraPtrList &cameraList, const MarkerList &markerList,
+    const AttrList &attrList, const FrameList &frameList,
     std::vector<std::shared_ptr<mmlens::LensModel>>
         &out_markerFrameToLensModelList,
     std::vector<std::shared_ptr<mmlens::LensModel>>

@@ -186,11 +186,11 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
 
         # Frames
         frm_list = [
-            mmapi.Frame(1, primary=True),
-            mmapi.Frame(2, primary=True),
-            mmapi.Frame(3, primary=True),
-            mmapi.Frame(4, primary=True),
-            mmapi.Frame(5, primary=True),
+            mmapi.Frame(1),
+            mmapi.Frame(2),
+            mmapi.Frame(3),
+            mmapi.Frame(4),
+            mmapi.Frame(5),
         ]
 
         # Solver
@@ -219,24 +219,20 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
 
         # Run solver!
         results = mmapi.execute(col)
+        assert len(results) == 1
+        result = results[0]
 
-        # Ensure the values are correct
-        for res in results:
-            success = res.get_success()
-            res.get_final_error()
-            print('error stats: ' + pprint.pformat(res.get_error_stats()))
-            print('timer stats: ' + pprint.pformat(res.get_timer_stats()))
-            print('solver stats: ' + pprint.pformat(res.get_solver_stats()))
-            print(
-                'frame error list: ' + pprint.pformat(dict(res.get_frame_error_list()))
-            )
-            print(
-                'marker error list: '
-                + pprint.pformat(dict(res.get_marker_error_list()))
-            )
+        # Ensure the values are correct.
+        success = result.get_success()
+        print('error stats:', pprint.pformat(result.get_error_stats()))
+        print('timer stats:', pprint.pformat(result.get_timer_stats()))
+        print('solver stats:', pprint.pformat(result.get_solver_stats()))
+        print('frame error list:', pprint.pformat(dict(result.get_frame_error_list())))
+        print(
+            'marker error list:', pprint.pformat(dict(result.get_marker_error_list()))
+        )
 
-            self.assertTrue(success)
-            # self.assertGreater(0.001, err)
+        self.assertTrue(success)
         # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
 

@@ -99,8 +99,16 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
             (mkr_topLeft, cam_shp, bnd_topLeft),
             (mkr_middleTop, cam_shp, bnd_middleTop),
         )
-        # Note: For this test, we do not need any attributes to be solved.
-        node_attrs = []
+        node_attrs = [
+            (bnd_topRight + '.tx', 'None', 'None', 'None', 'None'),
+            (bnd_topRight + '.ty', 'None', 'None', 'None', 'None'),
+            (bnd_middleLeft + '.tx', 'None', 'None', 'None', 'None'),
+            (bnd_middleLeft + '.ty', 'None', 'None', 'None', 'None'),
+            (bnd_middleTop + '.tx', 'None', 'None', 'None', 'None'),
+            (bnd_middleTop + '.ty', 'None', 'None', 'None', 'None'),
+            (bnd_topLeft + '.tx', 'None', 'None', 'None', 'None'),
+            (bnd_topLeft + '.ty', 'None', 'None', 'None', 'None'),
+        ]
         frames = [
             1,
         ]
@@ -109,6 +117,7 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
+            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -116,7 +125,6 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
 
         # Print Statistics
         result = maya.cmds.mmSolver(
-            frame=frames,
             solverType=solver_index,
             printStatistics=('deviation', 'inputs'),
             removeUnusedMarkers=False,
@@ -125,7 +133,7 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
         num_params = result[0]
         num_errors = result[1]
         print('result:', result)
-        self.assertEqual(num_params, 'numberOfParameters=0')
+        self.assertEqual(num_params, 'numberOfParameters=8')
         self.assertEqual(num_errors, 'numberOfErrors=8')
         print('mkr_topRight_values:', mkr_topRight_values)
         print('mkr_topLeft_values:', mkr_topLeft_values)

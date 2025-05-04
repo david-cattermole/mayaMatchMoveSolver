@@ -59,17 +59,20 @@
 #include <maya/MDGContextGuard.h>
 #endif
 
+// MM Solver Libs
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
+
 // MM Scene Graph
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
-#include <mmcore/mmdata.h>
-#include <mmcore/mmmath.h>
-
 #include "adjust_base.h"
 #include "adjust_data.h"
+#include "adjust_relationships.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_frame_utils.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -90,10 +93,19 @@ MStatus setParameters_mayaDag(const int numberOfParameters,
     MTime currentFrame = MAnimControl::currentTime();
     for (int i = 0; i < numberOfParameters; ++i) {
         const IndexPair attrPair = ud->paramToAttrList[i];
-        auto attrIndex = attrPair.first;
-        auto frameIndex = attrPair.second;
+        AttrIndex attrIndex = attrPair.first;
+        FrameIndex frameIndex = attrPair.second;
 
-        AttrPtr attr = ud->attrList[attrPair.first];
+        if (frameIndex != -1) {
+            const Count32 enabledMarkers =
+                countEnabledMarkersForMarkerToAttrToFrameRelationship(
+                    attrIndex, frameIndex, ud->markerToAttrToFrameMatrix);
+            if (enabledMarkers == 0) {
+                continue;
+            }
+        }
+
+        AttrPtr attr = ud->attrList.get_attr(attrIndex);
 
         const double offset = attr->getOffsetValue();
         const double scale = attr->getScaleValue();
@@ -110,7 +122,7 @@ MStatus setParameters_mayaDag(const int numberOfParameters,
 #if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MAYA_DAG == 1
         const auto object_type = attr->getObjectType();
         if (object_type == ObjectType::kLens) {
-            auto num_frames = ud->frameList.length();
+            auto num_frames = ud->frameList.size();
             auto solverAttrType = attr->getSolverAttrType();
             if (frameIndex != -1) {
                 // Animated attribute.
@@ -136,8 +148,11 @@ MStatus setParameters_mayaDag(const int numberOfParameters,
 
         // Get frame time
         MTime frame = currentFrame;
+        FrameNumber frameNumber = convert_to_frame_number(currentFrame);
         if (attrPair.second != -1) {
-            frame = ud->frameList[attrPair.second];
+            const FrameNumber frameNumber =
+                ud->frameList.get_frame(attrPair.second);
+            frame = convert_to_time(frameNumber);
         }
 
         mayaAttrsSet += 1;
@@ -149,7 +164,7 @@ MStatus setParameters_mayaDag(const int numberOfParameters,
 
             MMSOLVER_MAYA_ERR(
                 "setParameters (Maya DAG) was given an invalid value to set:"
-                << " frame=" << frame << " attr name=" << attr_name_char
+                << " frame=" << frameNumber << " attr name=" << attr_name_char
                 << " solver value=" << solver_value
                 << " bound value=" << real_value << " offset=" << offset
                 << " scale=" << scale << " min=" << xmin << " max=" << xmax);
@@ -184,10 +199,19 @@ MStatus setParameters_mmSceneGraph(const int numberOfParameters,
     auto num_frames = ud->mmsgFrameList.size();
     for (int i = 0; i < numberOfParameters; ++i) {
         const IndexPair attrPair = ud->paramToAttrList[i];
-        auto attrIndex = attrPair.first;
-        auto frameIndex = attrPair.second;
+        AttrIndex attrIndex = attrPair.first;
+        FrameIndex frameIndex = attrPair.second;
 
-        AttrPtr attr = ud->attrList[attrIndex];
+        if (frameIndex != -1) {
+            const Count32 enabledMarkers =
+                countEnabledMarkersForMarkerToAttrToFrameRelationship(
+                    attrIndex, frameIndex, ud->markerToAttrToFrameMatrix);
+            if (enabledMarkers == 0) {
+                continue;
+            }
+        }
+
+        AttrPtr attr = ud->attrList.get_attr(attrIndex);
 
         const double offset = attr->getOffsetValue();
         const double scale = attr->getScaleValue();
@@ -260,14 +284,17 @@ MStatus setParameters_mmSceneGraph(const int numberOfParameters,
 
 // Set Parameter values
 MStatus setParameters(const int numberOfParameters, const double *parameters,
-                      SolverData *ud) {
+                      SolverData *userData) {
     MStatus status = MS::kSuccess;
 
-    const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;
+    const SceneGraphMode sceneGraphMode =
+        userData->solverOptions->sceneGraphMode;
     if (sceneGraphMode == SceneGraphMode::kMayaDag) {
-        status = setParameters_mayaDag(numberOfParameters, parameters, ud);
+        status =
+            setParameters_mayaDag(numberOfParameters, parameters, userData);
     } else if (sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
-        status = setParameters_mmSceneGraph(numberOfParameters, parameters, ud);
+        status = setParameters_mmSceneGraph(numberOfParameters, parameters,
+                                            userData);
     } else {
         MMSOLVER_MAYA_ERR("setParameters failed, invalid SceneGraphMode: "
                           << static_cast<int>(sceneGraphMode));
@@ -278,7 +305,7 @@ MStatus setParameters(const int numberOfParameters, const double *parameters,
     // the difference between the previous and next parameters to be
     // set inside Maya.
     for (int j = 0; j < numberOfParameters; ++j) {
-        ud->previousParamList[j] = parameters[j];
+        userData->previousParamList[j] = parameters[j];
     }
 
     return status;

@@ -75,6 +75,8 @@ void createSolveInfoSyntax_removeUnused(MSyntax &syntax) {
                    MSyntax::kBoolean);
     syntax.addFlag(REMOVE_UNUSED_ATTRIBUTES_FLAG,
                    REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(REMOVE_UNUSED_FRAMES_FLAG, REMOVE_UNUSED_FRAMES_FLAG_LONG,
+                   MSyntax::kBoolean);
 }
 
 void createSolveInfoSyntax_v1(MSyntax &syntax) {
@@ -349,7 +351,8 @@ MStatus parseSolveInfoArguments_solverType(
 
 MStatus parseSolveInfoArguments_removeUnused(const MArgDatabase &argData,
                                              bool &out_removeUnusedMarkers,
-                                             bool &out_removeUnusedAttributes) {
+                                             bool &out_removeUnusedAttributes,
+                                             bool &out_removeUnusedFrames) {
     MStatus status = MStatus::kSuccess;
 
     // Get 'Remove Unused Markers'
@@ -365,6 +368,14 @@ MStatus parseSolveInfoArguments_removeUnused(const MArgDatabase &argData,
     if (argData.isFlagSet(REMOVE_UNUSED_ATTRIBUTES_FLAG)) {
         status = argData.getFlagArgument(REMOVE_UNUSED_ATTRIBUTES_FLAG, 0,
                                          out_removeUnusedAttributes);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Remove Unused Frames'
+    out_removeUnusedFrames = REMOVE_UNUSED_FRAMES_DEFAULT_VALUE;
+    if (argData.isFlagSet(REMOVE_UNUSED_FRAMES_FLAG)) {
+        status = argData.getFlagArgument(REMOVE_UNUSED_FRAMES_FLAG, 0,
+                                         out_removeUnusedFrames);
         CHECK_MSTATUS(status);
     }
 
@@ -427,7 +438,7 @@ MStatus parseSolveInfoArguments_v1(
     bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
     bool &out_supportParameterBounds, bool &out_supportRobustLoss,
     bool &out_removeUnusedMarkers, bool &out_removeUnusedAttributes,
-    double &out_imageWidth) {
+    bool &out_removeUnusedFrames, double &out_imageWidth) {
     MStatus status = parseSolveInfoArguments_solverType(
         argData, out_iterations, out_tau, out_function_tolerance,
         out_parameter_tolerance, out_gradient_tolerance, out_delta,
@@ -443,7 +454,8 @@ MStatus parseSolveInfoArguments_v1(
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveInfoArguments_removeUnused(
-        argData, out_removeUnusedMarkers, out_removeUnusedAttributes);
+        argData, out_removeUnusedMarkers, out_removeUnusedAttributes,
+        out_removeUnusedFrames);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }

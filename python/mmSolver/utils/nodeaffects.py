@@ -215,6 +215,11 @@ def _convert_node_to_plugs(
     :returns: Set of plugs that the input node will affect.
     :rtype: {str, ..}
     """
+    # The 'attr' attribute may never be a compound attribute, such as
+    # 'renderLayerInfo.renderLayerRenderable', because if so
+    # 'maya.cmds.attributeQuery' will not work.
+    assert '.' not in attr
+
     plugs = set()
     node_type_plug = '{0}.{1}'.format(node_type, attr)
 
@@ -227,7 +232,7 @@ def _convert_node_to_plugs(
         if attr not in LENS_ATTRS:
             return plugs
     else:
-        # All other nodes, skip if world space is not affected
+        # All other nodes, skip if world space is not affected.
         ws = __get_and_fill_cache_value(
             worldspace_cache,
             node_type_plug,
@@ -246,7 +251,7 @@ def _convert_node_to_plugs(
             plugs.add(node_attr)
         return plugs
 
-    # Get plugs connected to this attribute, recursively
+    # Get plugs connected to this attribute, recursively.
     conn_attrs = (
         maya.cmds.listConnections(node_attr, source=True, destination=False, plugs=True)
         or []
@@ -300,37 +305,183 @@ def _convert_node_to_plugs(
     return plugs
 
 
-def _get_attribute_plugs(nodes):
-    node_type_attrs_cache = dict()
+def _check_node_is_enabled_on_frames(node, attrs, frames):
+    assert len(node) > 0
+    assert isinstance(frames, (set, list))
+    assert len(frames) > 0
+    assert isinstance(attrs, (set, list))
+    assert len(attrs) > 0
+
+    node_attr_enable = None
+    node_attr_weight = None
+    if 'enable' in attrs:
+        node_attr_enable = node + '.enable'
+    if 'weight' in attrs:
+        node_attr_weight = node + '.weight'
+
+    if node_attr_enable is None and node_attr_weight is None:
+        # If the attributes do not exist, we assume the node is
+        # enabled on all frames.
+        return set(frames)
+
+    enabled_frames = set()
+    for frame in sorted(frames):
+        enable = True
+        weight = 1.0
+        if node_attr_enable:
+            # TODO: We may be able to use a cache here, to avoid
+            # calling Maya multiple times for the same value.
+            enable = maya.cmds.getAttr(node_attr_enable, time=frame)
+
+        if node_attr_weight:
+            # TODO: We may be able to use a cache here, to avoid
+            # calling Maya multiple times for the same value.
+            weight = maya.cmds.getAttr(node_attr_weight, time=frame)
+
+        enabled = enable * weight
+        if enabled > 0.00001:
+            enabled_frames.add(frame)
+
+    return enabled_frames
+
+
+def _get_attribute_plugs_dict(nodes, frames):
+    assert frames is None or len(frames) > 0
+
+    node_plugs_dict = dict()
     worldspace_cache = dict()
     type_cache = dict()
-    plugs = set()
     for node in nodes:
         node_type = maya.cmds.nodeType(node)
-        attrs = __get_and_fill_cache_value(
-            node_type_attrs_cache,
-            node_type,
-            lambda: maya.cmds.listAttr(node, leaf=True, userDefined=False) or [],
-        )
+
+        attrs = maya.cmds.listAttr(node, leaf=True) or []
         attrs = set(attrs)
+
+        enabled_frames = set()
+        if frames is not None:
+            enabled_frames = _check_node_is_enabled_on_frames(node, attrs, frames)
+            if len(enabled_frames) == 0:
+                # This node is not valid on any frames given, skip it.
+                continue
+
+        node_plugs = set()
         for attr in attrs:
-            plugs |= _convert_node_to_plugs(
+            node_plugs |= _convert_node_to_plugs(
                 node,
                 attr,
                 node_type,
                 worldspace_cache=worldspace_cache,
                 type_cache=type_cache,
             )
-        user_attrs = maya.cmds.listAttr(node, leaf=True, userDefined=True) or []
-        user_attrs = set(user_attrs).difference(set(attrs))
-        for attr in user_attrs:
-            plugs |= _convert_node_to_plugs(node, attr, node_type)
-    return plugs
+
+        if frames is None:
+            for node_plug in node_plugs:
+                node_plugs_dict[node_plug] = None
+        else:
+            for node_plug in node_plugs:
+                if node_plug not in node_plugs_dict:
+                    node_plugs_dict[node_plug] = set(enabled_frames)
+                    assert len(node_plugs_dict[node_plug]) <= len(frames)
+                else:
+                    node_plugs_dict[node_plug] |= enabled_frames
+                    assert len(node_plugs_dict[node_plug]) <= len(frames)
+
+    return node_plugs_dict
 
 
-def find_plugs_affecting_transform(tfm_node, cam_tfm):
+def find_plugs_affecting_bundle(bnd_tfm, mkr_tfm, cam_tfms, frames=None):
     """
-    Find plugs that affect the world-matrix transform of the node.
+    Find plugs that affect the world-matrix transform of the
+    bundle transform node for the given frames.
+
+    The 'cam_tfms' argument is for bundles that may be impacted by the
+    screen-space matrix that views the 'bnd_tfm'.
+
+    :param bnd_tfm: The input bundle (transform) node to query.
+    :type bnd_tfm: str
+
+    :param mkr_tfm: The connected marker node to this bundle.
+    :type mkr_tfm: str
+
+    :param cam_tfms: Not yet supported. The cameras that should be
+        considered.
+    :type cam_tfms: None
+
+    :param frames: Sequence of frame numbers (optional).
+    :type frames: [int, ..] or None
+
+    :returns:
+        An unordered list of Maya attributes in 'node.attr' string
+        format.
+    :rtype: [str, ..]
+    """
+    # TODO: Support multiple camera transforms passed to this
+    # function.
+    assert cam_tfms is None
+    assert frames is None or len(frames) > 0
+
+    mkr_enabled_frames = frames
+    if frames is None:
+        mkr_enabled_frames = []
+
+    if frames is not None and mkr_tfm is not None:
+        mkr_tfm = maya.cmds.ls(mkr_tfm, long=True)[0]
+        attrs = maya.cmds.listAttr(mkr_tfm, leaf=True) or []
+        mkr_enabled_frames = _check_node_is_enabled_on_frames(
+            mkr_tfm, set(attrs), frames
+        )
+    if len(mkr_enabled_frames) == 0:
+        return []
+
+    bnd_tfm = maya.cmds.ls(bnd_tfm, long=True)[0]
+    return find_plugs_affecting_transform(bnd_tfm, cam_tfms, frames=mkr_enabled_frames)
+
+
+def find_plugs_affected_by_marker(mkr_tfm, cam_tfm, frames=None):
+    """
+    Find plugs that are affected by the given marker transform
+    node for the given frames.
+
+    The 'cam_tfm' argument is the camera transform node owns the
+    ('mkr_tfm') marker transform.
+
+    :param mkr_tfm: The input marker (transform) node to query.
+    :type mkr_tfm: str
+
+    :param cam_tfm: The camera that should be considered (optional).
+    :type cam_tfm: str or None
+
+    :param frames: Sequence of frame numbers (optional).
+    :type frames: [int, ..] or None
+
+    :returns:
+        An unordered list of Maya attributes in 'node.attr' string
+        format.
+    :rtype: [str, ..]
+    """
+    assert frames is None or len(frames) > 0
+
+    mkr_enabled_frames = frames
+    if frames is None:
+        mkr_enabled_frames = []
+
+    mkr_tfm = maya.cmds.ls(mkr_tfm, long=True)[0]
+    if frames is not None:
+        attrs = maya.cmds.listAttr(mkr_tfm, leaf=True) or []
+        mkr_enabled_frames = _check_node_is_enabled_on_frames(
+            mkr_tfm, set(attrs), frames
+        )
+    if len(mkr_enabled_frames) == 0:
+        return []
+
+    cam_tfm = maya.cmds.ls(cam_tfm, long=True)[0]
+    return find_plugs_affecting_transform(mkr_tfm, cam_tfm, frames=mkr_enabled_frames)
+
+
+def find_plugs_affecting_transform(tfm_node, cam_tfm, frames=None):
+    """
+    Find plugs that affect the world-matrix transform of the node
+    for the given frames.
 
     The 'cam_tfm' argument is for nodes that may be impacted by the
     screen-space matrix that views the 'tfm_node'.
@@ -341,23 +492,29 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
     :param cam_tfm: The camera that should be considered (optional).
     :type cam_tfm: str or None
 
+    :param frames: Sequence of frame numbers (optional).
+    :type frames: [int, ..] or None
+
     :returns:
         An unordered list of Maya attributes in 'node.attr' string
         format.
     :rtype: [str, ..]
     """
     tfm_node = maya.cmds.ls(tfm_node, long=True)[0]
+    assert frames is None or len(frames) > 0
 
     # Get camera related to the given transform.
-    camera_nodes = []
+    #
+    # TODO: Can we get a list of camera transform nodes as input?
+    camera_nodes = set()
     if cam_tfm is not None:
         assert maya.cmds.objExists(cam_tfm) is True
         cam_tfm_node = maya.cmds.ls(cam_tfm, long=True)[0]
         cam_shp_node = maya.cmds.listRelatives(cam_tfm, shapes=True, fullPath=True)[0]
         if cam_tfm_node not in camera_nodes:
-            camera_nodes.append(cam_tfm_node)
+            camera_nodes.add(cam_tfm_node)
         if cam_shp_node not in camera_nodes:
-            camera_nodes.append(cam_shp_node)
+            camera_nodes.add(cam_shp_node)
 
         # Find all lens nodes.
         if node_utils.attribute_exists('inLens', cam_shp_node):
@@ -376,27 +533,38 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
                         for x in tmp_nodes
                         if maya.cmds.nodeType(x).startswith('mmLensModel')
                     ]
-                camera_nodes.append(lens_node)
-        camera_nodes = list(sorted(set(camera_nodes)))
+                camera_nodes.add(lens_node)
 
     # Get all the parents above the nodes.
     parent_nodes = []
-    get_parent_nodes = camera_nodes + [tfm_node]
+    get_parent_nodes = list(sorted(camera_nodes)) + [tfm_node]
     for node in get_parent_nodes:
         parents = maya.cmds.listRelatives(node, parent=True, fullPath=True) or []
         parent_nodes += parents
         while len(parents) > 0:
             parents = maya.cmds.listRelatives(parents, parent=True, fullPath=True) or []
             parent_nodes += parents
-    nodes = [tfm_node] + camera_nodes + parent_nodes
+    nodes = [tfm_node] + list(sorted(camera_nodes)) + parent_nodes
 
     conn_nodes = set()
     for node in list(nodes):
         conn_nodes |= set(_get_connected_nodes(node))
-    nodes = nodes + list(conn_nodes)
+    nodes = nodes + list(sorted(conn_nodes))
 
-    plugs = _get_attribute_plugs(nodes)
-    plugs = list(set(plugs))  # Only unique plugs.
+    plugs_dict = _get_attribute_plugs_dict(nodes, frames)
+    if frames is None:
+        plugs = list(sorted(plugs_dict.keys()))  # Only unique plugs.
+    else:
+        plugs = []
+        for plug_name in plugs_dict.keys():
+            valid_frames = plugs_dict[plug_name]
+            assert len(valid_frames) > 0
+            valid_frames = [str(x) for x in valid_frames]
+            valid_frames_str = ','.join(valid_frames)
+            assert len(valid_frames_str) > 0
+            plug = '{}#{}'.format(plug_name, valid_frames_str)
+            plugs.append(plug)
+
     return plugs
 
 

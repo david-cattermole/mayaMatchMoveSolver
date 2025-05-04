@@ -112,6 +112,7 @@ maya.cmds.mmMarkerHomography(
 // MM Solver
 #include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_marker.h"
@@ -313,19 +314,20 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         std::shared_ptr<mmlens::LensModel> lensModel_a;
         std::shared_ptr<mmlens::LensModel> lensModel_b;
         {
-            MarkerPtrList markerList;
-            markerList.push_back(marker_a);
-            markerList.push_back(marker_b);
+            MarkerList markerList;
+            markerList.push_back(marker_a, /*enabled=*/true);
+            markerList.push_back(marker_b, /*enabled=*/true);
 
             CameraPtrList cameraList;
             cameraList.push_back(m_camera_a);
             cameraList.push_back(m_camera_b);
 
-            AttrPtrList attrList;
+            AttrList attrList;
 
-            MTimeArray frameList;
-            frameList.append(m_time_a);
-            frameList.append(m_time_b);
+            FrameList frameList;
+            frameList.reserve(2);
+            frameList.push_back(m_frame_a, true);
+            frameList.push_back(m_frame_b, true);
 
             std::vector<std::shared_ptr<mmlens::LensModel>>
                 markerFrameToLensModelList;

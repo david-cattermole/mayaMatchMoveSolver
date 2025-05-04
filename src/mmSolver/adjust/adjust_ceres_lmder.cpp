@@ -201,13 +201,17 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
                           SolverData& userData, SolverResult& solveResult) {
     const bool verbose = false;
 
+    const bool is_large_solve = false;
+    // const bool is_large_solve = (numberOfParameters > 8) ||
+    //                             ((numberOfParameters * numberOfErrors) > 64);
+
     ::ceres::Problem::Options problemOptions;
     problemOptions.enable_fast_removal = true;
     // // For debug turn this to 'false'.
     // problemOptions.apply_loss_function = false;
     ::ceres::Problem problem(problemOptions);
 
-    auto cost_function = new ResidualAndJacobianFunction(
+    auto* cost_function = new ResidualAndJacobianFunction(
         numberOfParameters, numberOfErrors, &userData);
 
     // We only have a single parameter block.
@@ -215,12 +219,25 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
     problem.AddResidualBlock(cost_function, nullptr, param_ptr);
 
     ::ceres::Solver::Options options;
-    options.minimizer_type = ::ceres::TRUST_REGION;
-    options.trust_region_strategy_type = ::ceres::LEVENBERG_MARQUARDT;
+    if (!is_large_solve) {
+        options.minimizer_type = ::ceres::TRUST_REGION;
+        options.trust_region_strategy_type = ::ceres::LEVENBERG_MARQUARDT;
 
-    // See "How do I choose the right linear solver?";
-    // http://ceres-solver.org/solving_faqs.html#solving
-    options.linear_solver_type = ::ceres::DENSE_QR;
+        // See "How do I choose the right linear solver?";
+        // http://ceres-solver.org/solving_faqs.html#solving
+        options.linear_solver_type = ::ceres::DENSE_QR;
+
+    } else {
+        options.minimizer_type = ::ceres::LINE_SEARCH;
+        options.line_search_direction_type =
+            ::ceres::LineSearchDirectionType::LBFGS;
+        options.line_search_type = ::ceres::WOLFE;
+        options.line_search_interpolation_type = ::ceres::CUBIC;
+
+        // See "How do I choose the right linear solver?";
+        // http://ceres-solver.org/solving_faqs.html#solving
+        options.linear_solver_type = ::ceres::SPARSE_NORMAL_CHOLESKY;
+    }
 
     // Allow solve to get worse before it gets better. The parameters
     // with the lowest error is always picked at the end of the solve.
@@ -235,9 +252,10 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
     options.jacobi_scaling = true;
     options.num_threads = 1;
 
-    options.minimizer_progress_to_stdout = verbose;
+    options.minimizer_progress_to_stdout = false;
     options.logging_type = ::ceres::SILENT;
     if (verbose) {
+        options.minimizer_progress_to_stdout = true;
         options.logging_type = ::ceres::PER_MINIMIZER_ITERATION;
     }
 
@@ -245,8 +263,7 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
     ::ceres::Solve(options, &problem, &summary);
 
     if (verbose) {
-        MMSOLVER_MAYA_VRB(
-            "Ceres Solver Success: " << summary.IsSolutionUsable());
+        MMSOLVER_MAYA_VRB("Ceres Solver Success: " << summary.IsSolutionUsable());
         MMSOLVER_MAYA_VRB(summary.BriefReport());
         MMSOLVER_MAYA_VRB(summary.FullReport());
     }

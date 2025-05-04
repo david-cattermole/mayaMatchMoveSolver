@@ -50,7 +50,13 @@
 #include "adjust_data.h"
 #include "adjust_defines.h"
 #include "adjust_relationships.h"
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/core/matrix_bool_2d.h"
+#include "mmSolver/core/matrix_bool_3d.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
+#include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
@@ -393,8 +399,8 @@ struct ErrorMetricsResult {
 
     ErrorMetricsResult() = default;
 
-    void fill(const int numberOfMarkerErrors, const MarkerPtrList &markerList,
-              const MTimeArray &frameList,
+    void fill(const int numberOfMarkerErrors, const MarkerList &markerList,
+              const mmsolver::FrameList &frameList,
               const std::vector<IndexPair> &errorToMarkerList,
               const std::vector<double> &errorDistanceList) {
         typedef std::pair<int, double> ErrorPair;
@@ -407,12 +413,14 @@ struct ErrorMetricsResult {
         TimeErrorMapping frame_error_mapping;
         for (auto i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
             const IndexPair marker_pair = errorToMarkerList[i];
-            MarkerPtr marker = markerList[marker_pair.first];
-            const MTime frame = frameList[marker_pair.second];
+            const MarkerIndex markerIndex = marker_pair.first;
+            MarkerPtr marker = markerList.get_marker(markerIndex);
+            const FrameIndex frameIndex = marker_pair.second;
+            const FrameNumber frameNumber = frameList.get_frame(frameIndex);
+            const double frame_value = static_cast<double>(frameNumber);
             const MString marker_node_name = marker->getNodeName();
             const char *marker_name = marker_node_name.asChar();
             const double deviation = errorDistanceList[i];
-            const double frame_value = frame.asUnits(ui_unit);
 
             TimeErrorMappingIt ait =
                 frame_error_mapping.find(marker_pair.second);
@@ -446,8 +454,10 @@ struct ErrorMetricsResult {
 
         for (TimeErrorMappingIt mit = frame_error_mapping.begin();
              mit != frame_error_mapping.end(); ++mit) {
-            int frameIndex = mit->first;
-            MTime frame = frameList[frameIndex];
+            const FrameIndex frameIndex = mit->first;
+            const FrameNumber frameNumber = frameList.get_frame(frameIndex);
+            const double frame_value = static_cast<double>(frameNumber);
+
             TimeErrorMappingIt ait = frame_error_mapping.find(frameIndex);
 
             double num = 0;
@@ -460,7 +470,6 @@ struct ErrorMetricsResult {
                 continue;
             }
 
-            auto frame_value = frame.asUnits(ui_unit);
             auto pair = DoublePair(frame_value, deviation / num);
             Self::error_per_frame.insert(pair);
         }
@@ -611,18 +620,21 @@ struct AffectsResult {
 
     AffectsResult() = default;
 
-    void fill(const MarkerPtrList &markerList, const AttrPtrList &attrList,
-              const mmsolver::MatrixBool2D &markerToAttrMatrix) {
-        for (uint32_t markerIndex = 0; markerIndex < markerToAttrMatrix.width();
+    void fill(const MarkerList &markerList, const AttrList &attrList) {
+        const Count32 markerCount = markerList.size();
+        const Count32 attrCount = attrList.size();
+        for (MarkerIndex markerIndex = 0; markerIndex < markerCount;
              ++markerIndex) {
-            for (uint32_t attrIndex = 0;
-                 attrIndex < markerToAttrMatrix.height(); ++attrIndex) {
-                MarkerPtr marker = markerList[markerIndex];
-                AttrPtr attr = attrList[attrIndex];
+            const bool markerEnabled = markerList.get_enabled(markerIndex);
+            MarkerPtr marker = markerList.get_marker(markerIndex);
 
-                // Get node names.
-                const MString markerNodeName = marker->getNodeName();
-                const char *markerName = markerNodeName.asChar();
+            // Get node names.
+            const MString markerNodeName = marker->getNodeName();
+            const char *markerName = markerNodeName.asChar();
+
+            for (AttrIndex attrIndex = 0; attrIndex < attrCount; ++attrIndex) {
+                const bool attrEnabled = attrList.get_enabled(attrIndex);
+                AttrPtr attr = attrList.get_attr(attrIndex);
 
                 // Get attribute full path.
                 MPlug plug = attr->getPlug();
@@ -645,8 +657,7 @@ struct AffectsResult {
                 const char *attrName = attrNameString.asChar();
 
                 auto key = MarkerAttrNamePair(markerName, attrName);
-                const bool value =
-                    markerToAttrMatrix.at(markerIndex, attrIndex);
+                const bool value = markerEnabled && attrEnabled;
                 Self::marker_affects_attribute.insert({key, value});
             }
         }
@@ -687,16 +698,25 @@ struct AffectsResult {
 
 namespace {
 
+using mmsolver::AttrIndex;
+using mmsolver::MarkerIndex;
+
 void add_marker_names_to_unordered_set(
-    MarkerPtrList &markerList,
+    const MarkerList &markerList, const bool only_state_value,
     std::unordered_set<std::string> &out_marker_names) {
     // Reserve memory up-front.
     auto new_count = markerList.size();
     auto old_count = out_marker_names.size();
     out_marker_names.reserve(old_count + new_count);
 
-    for (auto mit = markerList.cbegin(); mit != markerList.cend(); ++mit) {
-        MarkerPtr marker = *mit;
+    for (MarkerIndex markerIndex = 0; markerIndex < markerList.size();
+         ++markerIndex) {
+        const bool markerEnabled = markerList.get_enabled(markerIndex);
+        if (markerEnabled != only_state_value) {
+            continue;
+        }
+
+        MarkerPtr marker = markerList.get_marker(markerIndex);
         MString marker_name = marker->getLongNodeName();
         auto marker_name_char = marker_name.asChar();
         out_marker_names.insert(std::string(marker_name_char));
@@ -704,14 +724,20 @@ void add_marker_names_to_unordered_set(
 }
 
 void add_attribute_names_to_unordered_set(
-    AttrPtrList &attrList, std::unordered_set<std::string> &out_attr_names) {
+    const AttrList &attrList, const bool only_state_value,
+    std::unordered_set<std::string> &out_attr_names) {
     // Reserve memory up-front.
     auto new_count = attrList.size();
     auto old_count = out_attr_names.size();
     out_attr_names.reserve(old_count + new_count);
 
-    for (auto mit = attrList.cbegin(); mit != attrList.cend(); ++mit) {
-        AttrPtr attr = *mit;
+    for (AttrIndex attrIndex = 0; attrIndex < attrList.size(); ++attrIndex) {
+        const bool attrEnabled = attrList.get_enabled(attrIndex);
+        if (attrEnabled != only_state_value) {
+            continue;
+        }
+
+        AttrPtr attr = attrList.get_attr(attrIndex);
         MString attr_name = attr->getLongName();
         auto attr_name_char = attr_name.asChar();
         out_attr_names.insert(std::string(attr_name_char));
@@ -751,15 +777,17 @@ struct SolverObjectUsageResult {
 
     SolverObjectUsageResult() = default;
 
-    void fill(MarkerPtrList &usedMarkerList, MarkerPtrList &unusedMarkerList,
-              AttrPtrList &usedAttrList, AttrPtrList &unusedAttrList) {
-        add_marker_names_to_unordered_set(usedMarkerList, Self::markers_used);
-        add_marker_names_to_unordered_set(unusedMarkerList,
-                                          Self::markers_unused);
+    void fill(const MarkerList &validMarkerList,
+              const AttrList &validAttrList) {
+        add_marker_names_to_unordered_set(
+            validMarkerList, /*only_state_value=*/true, Self::markers_used);
+        add_marker_names_to_unordered_set(
+            validMarkerList, /*only_state_value=*/false, Self::markers_unused);
 
-        add_attribute_names_to_unordered_set(usedAttrList,
-                                             Self::attributes_used);
-        add_attribute_names_to_unordered_set(unusedAttrList,
+        add_attribute_names_to_unordered_set(
+            validAttrList, /*only_state_value=*/true, Self::attributes_used);
+        add_attribute_names_to_unordered_set(validAttrList,
+                                             /*only_state_value=*/false,
                                              Self::attributes_unused);
     }
 

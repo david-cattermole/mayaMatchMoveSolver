@@ -171,7 +171,7 @@ def filter_attr_list(attr_list, use_camera_intrinsics=None, use_lens_distortion=
     return attr_list
 
 
-def compile_solver_affects(col, mkr_list, attr_list, precomputed_data, withtest):
+def compile_solver_affects(col, mkr_list, attr_list, frame_list, precomputed_data, withtest):
     # Reset the used hints to 'unknown' before setting 'used' or
     # 'unused' flags.
     generator = compile_reset_used_hints(col, mkr_list, attr_list)
@@ -179,6 +179,7 @@ def compile_solver_affects(col, mkr_list, attr_list, precomputed_data, withtest)
         yield action, vaction
 
     sol = solveraffects.SolverAffects()
+    sol.set_frame_list(frame_list)
     sol.set_precomputed_data(precomputed_data)
 
     cache = api_compile.create_compile_solver_cache()

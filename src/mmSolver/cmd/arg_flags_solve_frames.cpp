@@ -44,14 +44,14 @@ void createSolveFramesSyntax(MSyntax &syntax) {
 }
 
 MStatus parseSolveFramesArguments(const MArgDatabase &argData,
-                                  MTimeArray &out_frameList) {
+                                  FrameList &out_frameList) {
     MStatus status = MStatus::kSuccess;
 
     // Get 'Frames'
+    FrameCount framesCount = argData.numberOfFlagUses(FRAME_FLAG);
     out_frameList.clear();
-    MTime::Unit unit = MTime::uiUnit();
-    unsigned int framesNum = argData.numberOfFlagUses(FRAME_FLAG);
-    for (unsigned int i = 0; i < framesNum; ++i) {
+    out_frameList.reserve(framesCount);
+    for (unsigned int i = 0; i < framesCount; ++i) {
         MArgList frameArgs;
         status = argData.getFlagArgumentList(FRAME_FLAG, i, frameArgs);
         if (status == MStatus::kSuccess) {
@@ -60,16 +60,15 @@ MStatus parseSolveFramesArguments(const MArgDatabase &argData,
                     "Attribute argument list must have 1 argument; \"frame\".");
                 continue;
             }
-            int value = frameArgs.asInt(0, &status);
+            const FrameNumber value = frameArgs.asInt(0, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            MTime frame = MTime((double)value, unit);
-            out_frameList.append(frame);
+            out_frameList.push_back(value, /*enabled=*/true);
         }
     }
 
     // Make sure we have a frame list.
-    if (out_frameList.length() == 0) {
+    if (out_frameList.is_empty()) {
         status = MS::kFailure;
         status.perror("Frame List length is 0, must have a frame to solve.");
     }

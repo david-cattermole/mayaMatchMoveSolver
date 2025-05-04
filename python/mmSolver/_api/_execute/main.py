@@ -20,6 +20,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import datetime
 import time
 import pprint
 
@@ -66,7 +67,7 @@ def validate(col, as_state=None):
         for more details.
     :rtype: (bool, [str, ..], [(int, int, int), ..]) or [ActionState, ..]
     """
-    # TODO Remove the 'as_state' keyword in v0.5.0 release and
+    # TODO: Remove the 'as_state' keyword in v0.5.0 release and
     #  always return the ActionState.
     if as_state is None:
         as_state = False
@@ -395,6 +396,7 @@ def execute(
             func_is_mmsolver_v1 = api_action.action_func_is_mmSolver_v1(action)
             func_is_mmsolver_v2 = api_action.action_func_is_mmSolver_v2(action)
             func_is_mmsolver = any((func_is_mmsolver_v2, func_is_mmsolver_v1))
+            # func_is_mmsolveraffects = api_action.action_func_is_mmSolverAffects(action)
             func_is_scene_graph = api_action.action_func_is_mmSolverSceneGraph(action)
             func_is_camera_solve = api_action.action_func_is_camera_solve(action)
 
@@ -452,18 +454,26 @@ def execute(
                 )
                 collectionutils.run_status_func(info_fn, msg)
 
-            # Run Solver Maya plug-in command
-            LOG.debug(
-                'Running: func=%r args=%s kwargs=%s',
-                func,
-                pprint.pformat(args),
-                pprint.pformat(kwargs),
-            )
+            debug_func_inputs_outputs = False
+            if debug_func_inputs_outputs:
+                current_datetime = datetime.datetime.now()
+                LOG.debug(
+                    'Running: %s func=%r args=%s kwargs=%s',
+                    current_datetime,
+                    func,
+                    pprint.pformat(args),
+                    pprint.pformat(kwargs),
+                )
+
+            # Run Solver Maya plug-in command.
             solve_data = func(*args, **kwargs)
-            LOG.debug(
-                'Returned: solve_data=%r',
-                solve_data,
-            )
+
+            if debug_func_inputs_outputs:
+                LOG.debug(
+                    'Returned: %s func solve_data=%s',
+                    current_datetime,
+                    pprint.pformat(solve_data),
+                )
 
             # Revert special HACK for single frame solves
             if func_is_mmsolver is True:

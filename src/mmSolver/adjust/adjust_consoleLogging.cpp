@@ -23,12 +23,16 @@
 
 #include "adjust_solveFunc.h"
 
+// STL
+#include <sstream>
+
 // Maya
 #include <maya/MStreamUtils.h>
 
 // MM Solver
 #include "adjust_data.h"
 #include "adjust_results.h"
+#include "mmSolver/mayahelper/maya_frame_utils.h"
 #include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
@@ -50,6 +54,137 @@ const char *const CONSOLE_LOG_SEPARATOR_LINE =
 
 void console_log_separator_line() {
     MStreamUtils::stdErrorStream() << CONSOLE_LOG_SEPARATOR_LINE << '\n';
+}
+
+void console_log_warn_no_valid_markers(const MarkerList &markerList) {
+    MMSOLVER_MAYA_WRN("mmSolver: No valid markers to solve.");
+    for (MarkerIndex markerIndex = 0; markerIndex < markerList.size();
+         ++markerIndex) {
+        MarkerPtr marker = markerList.get_marker(markerIndex);
+        MString markerNodeName = marker->getLongNodeName();
+        const char *markerName = markerNodeName.asChar();
+        MMSOLVER_MAYA_WRN("-> " << markerName);
+    }
+}
+
+void console_log_warn_no_valid_attrs(const AttrList &attrList) {
+    MMSOLVER_MAYA_WRN("mmSolver: No valid attributes to solve.");
+    for (AttrIndex attrIndex = 0; attrIndex < attrList.size(); ++attrIndex) {
+        AttrPtr attr = attrList.get_attr(attrIndex);
+        MString attrLongName = attr->getLongName();
+        const char *attrName = attrLongName.asChar();
+        MMSOLVER_MAYA_WRN("-> " << attrName);
+    }
+}
+
+void console_log_warn_no_valid_frames(const FrameList &frameList) {
+    std::stringstream ss;
+    addFrameListToStringStream(frameList, ss);
+    MMSOLVER_MAYA_WRN("mmSolver: No valid frames to solve:" << ss.str());
+}
+
+void console_log_warn_unused_markers(const MarkerList &markerList) {
+    MMSOLVER_MAYA_WRN("mmSolver: Unused Markers detected and ignored:");
+    for (MarkerIndex markerIndex = 0; markerIndex < markerList.size();
+         ++markerIndex) {
+        const bool markerEnabled = markerList.get_enabled(markerIndex);
+        if (markerEnabled) {
+            continue;
+        }
+
+        MarkerPtr marker = markerList.get_marker(markerIndex);
+        MString markerNodeName = marker->getLongNodeName();
+        const char *markerName = markerNodeName.asChar();
+        MMSOLVER_MAYA_WRN("-> " << markerName);
+    }
+}
+
+void console_log_warn_unused_attributes(const AttrList &attrList) {
+    MMSOLVER_MAYA_WRN("mmSolver: Unused Attributes detected and ignored:");
+    for (AttrIndex attrIndex = 0; attrIndex < attrList.size(); ++attrIndex) {
+        const bool attrEnabled = attrList.get_enabled(attrIndex);
+        if (attrEnabled) {
+            continue;
+        }
+
+        AttrPtr attr = attrList.get_attr(attrIndex);
+        MString attrLongName = attr->getLongName();
+        const char *attrName = attrLongName.asChar();
+        MMSOLVER_MAYA_WRN("-> " << attrName);
+    }
+}
+
+namespace {
+
+void print_list_valid_count(const char *text, const Count32 validCount,
+                            const Count32 totalCount) {
+    if (totalCount == validCount) {
+        MMSOLVER_MAYA_INFO(text << totalCount);
+    } else {
+        MMSOLVER_MAYA_INFO(text << validCount << " of " << totalCount);
+    }
+}
+
+}  // namespace
+
+void console_log_solver_header_simple(const MarkerList &markerList,
+                                      const AttrList &attrList,
+                                      const FrameList &frameList) {
+    console_log_separator_line();
+    MMSOLVER_MAYA_INFO("Solving...");
+
+    const auto markerValidCount = markerList.count_enabled();
+    const auto markerTotalCount = markerList.size();
+    const auto attrValidCount = attrList.count_enabled();
+    const auto attrTotalCount = attrList.size();
+    const auto frameValidCount = frameList.count_enabled();
+    const auto frameTotalCount = frameList.size();
+    print_list_valid_count("- Marker count: ", markerValidCount,
+                           markerTotalCount);
+    print_list_valid_count("- Attribute count: ", attrValidCount,
+                           attrTotalCount);
+    print_list_valid_count("- Frame count: ", frameValidCount, frameTotalCount);
+
+    std::stringstream ss;
+    addFrameListToStringStream(frameList, ss);
+    MMSOLVER_MAYA_INFO("- Frames:" << ss.str());
+}
+
+void console_log_solver_header_extended(const MarkerList &markerList,
+                                        const AttrList &attrList,
+                                        const FrameList &frameList,
+                                        const SolverOptions &solverOptions) {
+    console_log_separator_line();
+    MMSOLVER_MAYA_INFO("Solving...");
+    MMSOLVER_MAYA_INFO("- Solver Type=" << solverOptions.solverType);
+    MMSOLVER_MAYA_INFO("- Maximum Iterations=" << solverOptions.iterMax);
+    MMSOLVER_MAYA_INFO("- Tau=" << solverOptions.tau);
+    MMSOLVER_MAYA_INFO(
+        "- Function Tolerance=" << solverOptions.function_tolerance);
+    MMSOLVER_MAYA_INFO(
+        "- Parameter Tolerance=" << solverOptions.parameter_tolerance);
+    MMSOLVER_MAYA_INFO(
+        "- Gradient Tolerance=" << solverOptions.gradient_tolerance);
+    MMSOLVER_MAYA_INFO("- Delta=" << fabs(solverOptions.delta));
+    MMSOLVER_MAYA_INFO(
+        "- Auto Differencing Type=" << solverOptions.autoDiffType);
+    MMSOLVER_MAYA_INFO("- Time Evaluation Mode=" << solverOptions.timeEvalMode);
+
+    const auto markerValidCount = markerList.count_enabled();
+    const auto markerTotalCount = markerList.size();
+    const auto attrValidCount = attrList.count_enabled();
+    const auto attrTotalCount = attrList.size();
+    const auto frameValidCount = frameList.count_enabled();
+    const auto frameTotalCount = frameList.size();
+    print_list_valid_count("- Marker count: ", markerValidCount,
+                           markerTotalCount);
+    print_list_valid_count("- Attribute count: ", attrValidCount,
+                           attrTotalCount);
+    print_list_valid_count("- Frame count: ", frameValidCount, frameTotalCount);
+
+    std::stringstream ss;
+    addFrameListToStringStream(frameList, ss);
+    MMSOLVER_MAYA_INFO("- Frames:" << ss.str());
 }
 
 void console_log_solver_iteration_pre_solve(const LogLevel log_level,

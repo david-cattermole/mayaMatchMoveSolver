@@ -53,10 +53,13 @@
 // MM Solver
 #include "mmSolver/adjust/adjust_base.h"
 #include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 
 namespace mmsolver {
 
@@ -78,6 +81,7 @@ public:
         , m_acceptOnlyBetter(true)
         , m_removeUnusedMarkers(false)
         , m_removeUnusedAttributes(false)
+        , m_removeUnusedFrames(false)
         , m_imageWidth(2048.0)
         , m_supportAutoDiffForward(false)
         , m_supportAutoDiffCentral(false)
@@ -128,6 +132,7 @@ private:
                                  // than at start.
     bool m_removeUnusedMarkers;  // Remove unused Markers from solve?
     bool m_removeUnusedAttributes;  // Remove unused Attributes from solve?
+    bool m_removeUnusedFrames;      // Remove unused Frames from solve?
     double m_imageWidth;            // Defines pixel size in camera space.
     FrameSolveMode m_frameSolveMode;
     SceneGraphMode m_sceneGraphMode;
@@ -144,10 +149,10 @@ private:
 
     // Solver Objects
     CameraPtrList m_cameraList;
-    MarkerPtrList m_markerList;
+    MarkerList m_markerList;
     BundlePtrList m_bundleList;
-    AttrPtrList m_attrList;
-    MTimeArray m_frameList;
+    AttrList m_attrList;
+    FrameList m_frameList;
     StiffAttrsPtrList m_stiffAttrsList;
     SmoothAttrsPtrList m_smoothAttrsList;
 

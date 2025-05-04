@@ -46,6 +46,7 @@
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
@@ -122,8 +123,8 @@ private:
     bool m_use_camera_transform;
     MMatrix m_camera_transform_matrix;
 
-    MarkerPtrList m_marker_list_a;
-    MarkerPtrList m_marker_list_b;
+    MarkerList m_marker_list_a;
+    MarkerList m_marker_list_b;
     BundlePtrList m_bundle_list;
 
     // Frames A and B

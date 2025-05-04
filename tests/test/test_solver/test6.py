@@ -124,7 +124,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         }
 
         affects_mode = 'addAttrsToMarkers'
-        self.runSolverAffects(affects_mode, **kwargs)
+        self.runSolverAffects(affects_mode, frame=allFrames, **kwargs)
 
         # Solve primary frames (first, middle and last), and sub-divide.
         for frames in framesList:

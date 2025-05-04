@@ -738,12 +738,19 @@ class SolverStandard(solverbase.SolverBase):
             for action, vaction in generator:
                 yield action, vaction
 
+        all_frame_list = set()
+        for f in root_frame_list:
+            all_frame_list.add(f.get_number())
+        for f in frame_list:
+            all_frame_list.add(f.get_number())
+        all_frame_list = [frame.Frame(f) for f in sorted(all_frame_list)]
+
         # Pre-calculate the 'affects' relationship.
         generator = solverutils.compile_solver_affects(
-            col, mkr_list, attr_list, precomputed_data, withtest
+            col, mkr_list, attr_list, all_frame_list, precomputed_data, withtest
         )
         for action, vaction in generator:
-            yield action, vaction
+            yield action, None
 
         if use_single_frame is True:
             generator = solverstandardutils.compile_single_frame(

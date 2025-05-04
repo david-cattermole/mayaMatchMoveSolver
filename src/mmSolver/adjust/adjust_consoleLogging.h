@@ -30,6 +30,21 @@ namespace mmsolver {
 
 void console_log_separator_line();
 
+void console_log_warn_no_valid_markers(const MarkerList &markerList);
+void console_log_warn_no_valid_attrs(const AttrList &attrList);
+void console_log_warn_no_valid_frames(const FrameList &frameList);
+
+void console_log_warn_unused_markers(const MarkerList &markerList);
+void console_log_warn_unused_attributes(const AttrList &attrList);
+
+void console_log_solver_header_simple(const MarkerList &markerList,
+                                      const AttrList &attrList,
+                                      const FrameList &frameList);
+void console_log_solver_header_extended(const MarkerList &markerList,
+                                        const AttrList &attrList,
+                                        const FrameList &frameList,
+                                        const SolverOptions &solverOptions);
+
 void console_log_solver_iteration_pre_solve(const LogLevel log_level,
                                             const bool is_normal_call,
                                             const bool is_jacobian_call,

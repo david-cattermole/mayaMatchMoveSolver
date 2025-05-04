@@ -59,10 +59,11 @@
 #include <maya/MDGContextGuard.h>
 #endif
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/mmdata.h>
 #include <mmcore/mmmath.h>
 
+// MM Solver
 #include "adjust_base.h"
 #include "adjust_consoleLogging.h"
 #include "adjust_data.h"
@@ -113,7 +114,7 @@ MString generateDirtyCommand(const int numberOfMarkerErrors,
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = userData->errorToMarkerList[i];
 
-        MarkerPtr marker = userData->markerList[markerPair.first];
+        MarkerPtr marker = userData->markerList.get_marker(markerPair.first);
         MString markerName = marker->getNodeName();
         const int markerName_idx =
             getStringArrayIndexOfValue(dgDirtyNodeNames, markerName);
@@ -352,19 +353,20 @@ int solveFunc_calculateJacobianMatrixForParameter(
     //  to set attribute values and re-evaluate them in Maya's
     //  DG.
     IndexPair attrPair = userData->paramToAttrList[parameterIndex];
-    AttrPtr attr = userData->attrList[attrPair.first];
+    AttrIndex attrIndex = attrPair.first;
+    AttrPtr attr = userData->attrList.get_attr(attrIndex);
     // TODO: Get the camera that is best for the attribute,
     //  not just index 0.
-    MarkerPtr mkr = userData->markerList[0];
+    MarkerPtr mkr = userData->markerList.get_marker(0);
     CameraPtr cam = mkr->getCamera();
 
     const double value = parameters[parameterIndex];
     const double deltaA = calculateParameterDelta(value, delta, 1, attr);
 
     std::vector<bool> frameIndexEnabled;
-    frameIndexEnabled.reserve(userData->paramFrameMatrix.height());
-    for (auto j = 0; j < userData->paramFrameMatrix.height(); j++) {
-        const auto value = userData->paramFrameMatrix.at(parameterIndex, j);
+    frameIndexEnabled.reserve(userData->paramToFrameMatrix.height());
+    for (auto j = 0; j < userData->paramToFrameMatrix.height(); j++) {
+        const auto value = userData->paramToFrameMatrix.at(parameterIndex, j);
         frameIndexEnabled.push_back(value);
     }
 
@@ -525,10 +527,10 @@ int solveFunc_calculateJacobianMatrix(
     userData->computation->setProgress(progressMin);
 
     std::vector<bool> evalMeasurements(numberOfMarkers, false);
-    determineMarkersToBeEvaluated(numberOfParameters, numberOfMarkers,
-                                  userData->solverOptions->delta,
-                                  userData->previousParamList, parameters,
-                                  userData->errorToParamMatrix, evalMeasurements);
+    determineMarkersToBeEvaluated(
+        numberOfParameters, numberOfMarkers, userData->solverOptions->delta,
+        userData->previousParamList, parameters, userData->errorToParamMatrix,
+        evalMeasurements);
 
     // Calculate the jacobian matrix.
     std::vector<double> paramListA(numberOfParameters, 0);
@@ -557,7 +559,8 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("adjust_solveFunc solveFunc");
 
-    SolverData *userData = static_cast<SolverData *>(rawUserData);
+    MMSOLVER_ASSERT(rawUserData, "User data given to solveFunc must be valid.");
+    auto *userData = static_cast<SolverData *>(rawUserData);
     userData->timer.funcBenchTimer.start();
     userData->timer.funcBenchTicks.start();
 
@@ -580,8 +583,7 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
 
     auto imageWidth = userData->solverOptions->imageWidth;
 
-    const auto frameListLength = userData->frameList.length();
-    auto frameCount = frameListLength;
+    const auto frameCount = userData->frameList.size();
     if (!userData->doCalcJacobian && frameCount > 1) {
         userData->computation->setProgress(userData->iterNum);
     }
@@ -658,7 +660,7 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     if (!userData->doCalcJacobian) {
         calculation_status = solveFunc_measureErrors(
             numberOfMarkerErrors, numberOfAttrStiffnessErrors,
-            numberOfAttrSmoothnessErrors, numberOfMarkers, frameListLength,
+            numberOfAttrSmoothnessErrors, numberOfMarkers, frameCount,
             profileCategory, imageWidth, numberOfParameters, numberOfErrors,
             parameters, errors, jacobian, userData, userData->timer, error_avg,
             error_max, error_min);

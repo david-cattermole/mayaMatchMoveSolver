@@ -101,6 +101,8 @@ class TestSolver5(solverUtils.SolverTestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
+        frames = range(start, end + 1)
+
         kwargs = {
             'camera': cameras,
             'marker': markers,
@@ -108,15 +110,14 @@ class TestSolver5(solverUtils.SolverTestCase):
         }
 
         affects_mode = 'addAttrsToMarkers'
-        self.runSolverAffects(affects_mode, **kwargs)
+        self.runSolverAffects(affects_mode, frame=frames, **kwargs)
 
         # Run solver!
         results = []
         s = time.time()
-        for f in range(start, end + 1):
-            frames = f
+        for f in frames:
             result = maya.cmds.mmSolver(
-                frame=frames,
+                frame=f,
                 iterations=10,
                 solverType=solver_index,
                 sceneGraphMode=scene_graph_mode,

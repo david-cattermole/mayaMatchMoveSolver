@@ -58,6 +58,7 @@
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
@@ -79,7 +80,7 @@ bool compute_relative_pose(
     const double ppy_pix_b,
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
-    const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
+    const MarkerList &marker_list_a, const MarkerList &marker_list_b,
     openMVG::sfm::RelativePose_Info &pose_info);
 
 bool construct_two_camera_sfm_data_scene(
@@ -93,9 +94,9 @@ bool construct_two_camera_sfm_data_scene(
 bool triangulate_relative_pose(
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
-    const std::vector<uint32_t> &vec_inliers,
-    const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
-    BundlePtrList &bundle_list, openMVG::sfm::SfM_Data &scene);
+    const std::vector<uint32_t> &vec_inliers, const MarkerList &marker_list_a,
+    const MarkerList &marker_list_b, BundlePtrList &bundle_list,
+    openMVG::sfm::SfM_Data &scene);
 
 bool bundle_adjustment(openMVG::sfm::SfM_Data &scene);
 

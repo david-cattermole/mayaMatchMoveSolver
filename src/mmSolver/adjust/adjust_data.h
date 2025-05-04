@@ -39,20 +39,25 @@
 #include <maya/MStringArray.h>
 
 // MM Solver Libs
+#include <mmlens/lens_model.h>
 #include <mmsolverlibs/debug.h>
 
 // MM Scene Graph
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
-#include <mmlens/lens_model.h>
 
 #include "adjust_defines.h"
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/core/matrix_bool_2d.h"
+#include "mmSolver/core/matrix_bool_3d.h"
+#include "mmSolver/core/types.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
@@ -104,11 +109,11 @@ enum class LogLevel {
 
 // The LogLevel that will print "normal" iterations to the terminal/Maya
 // Output Window.
-const LogLevel LOG_LEVEL_PRINT_NORMAL_ITERATIONS = LogLevel::kVerbose;
+const LogLevel LOG_LEVEL_PRINT_NORMAL_ITERATIONS = LogLevel::kInfo;
 
 // The LogLevel that will print "jacobian" iterations to the terminal/Maya
 // Output Window.
-const LogLevel LOG_LEVEL_PRINT_JACOBIAN_ITERATIONS = LogLevel::kDebug;
+const LogLevel LOG_LEVEL_PRINT_JACOBIAN_ITERATIONS = LogLevel::kVerbose;
 
 // The LogLevel that will enable print verbose information ("verbose =
 // true") to terminal/Maya Output Window.
@@ -199,6 +204,7 @@ struct SolverOptions {
     // Auto-adjust the input solve objects before solving?
     bool removeUnusedMarkers;
     bool removeUnusedAttributes;
+    bool removeUnusedFrames;
 
     // All the different supported features by the currently active
     // solver type.
@@ -226,6 +232,7 @@ struct SolverOptions {
         , frameSolveMode(FrameSolveMode::kAllFrameAtOnce)
         , removeUnusedMarkers(false)
         , removeUnusedAttributes(false)
+        , removeUnusedFrames(false)
         , solverSupportsAutoDiffForward(false)
         , solverSupportsAutoDiffCentral(false)
         , solverSupportsParameterBounds(false)
@@ -236,10 +243,10 @@ struct SolverOptions {
 struct SolverData {
     // Solver Objects.
     CameraPtrList cameraList;
-    MarkerPtrList markerList;
+    MarkerList markerList;
     BundlePtrList bundleList;
-    AttrPtrList attrList;
-    MTimeArray frameList;  // Times to solve
+    AttrList attrList;
+    FrameList frameList;  // Frames to solve
     SmoothAttrsPtrList smoothAttrsList;
     StiffAttrsPtrList stiffAttrsList;
 
@@ -263,8 +270,9 @@ struct SolverData {
     std::vector<std::pair<int, int>> errorToMarkerList;
     std::vector<MPoint> markerPosList;
     std::vector<double> markerWeightList;
-    mmsolver::MatrixBool2D paramFrameMatrix;
-    mmsolver::MatrixBool2D errorToParamMatrix;
+    MatrixBool2D paramToFrameMatrix;
+    MatrixBool2D errorToParamMatrix;
+    MatrixBool3D markerToAttrToFrameMatrix;
 
     // Internal Solver Data.
     std::vector<double> paramList;

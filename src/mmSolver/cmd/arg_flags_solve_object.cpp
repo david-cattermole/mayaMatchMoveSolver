@@ -33,10 +33,12 @@
 // Internal Objects
 #include "mmSolver/adjust/adjust_data.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_marker_group.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
@@ -92,9 +94,9 @@ MStatus createMarkerGroupFromMarkerNodeName(const MString &markerName,
 
 MStatus parseSolveObjectArguments(const MArgDatabase &argData,
                                   CameraPtrList &out_cameraList,
-                                  MarkerPtrList &out_markerList,
+                                  MarkerList &out_markerList,
                                   BundlePtrList &out_bundleList,
-                                  AttrPtrList &out_attrList) {
+                                  AttrList &out_attrList) {
     MStatus status = MStatus::kSuccess;
 
     out_cameraList.clear();
@@ -231,7 +233,8 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
 
             // Marker
             for (unsigned int j = 0; j < out_markerList.size(); ++j) {
-                if (out_markerList[j]->getNodeName() == markerName) {
+                MarkerPtr marker = out_markerList.get_marker(j);
+                if (marker->getNodeName() == markerName) {
                     MMSOLVER_MAYA_ERR(
                         "Marker name cannot be specified more than once. "
                         << "markerName=" << markerName);
@@ -250,7 +253,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             CHECK_MSTATUS_AND_RETURN_IT(status);
             marker->setMarkerGroup(markerGroup);
 
-            out_markerList.push_back(marker);
+            out_markerList.push_back(marker, /*enabled=*/true);
             out_bundleList.push_back(bundle);
         }
     }
@@ -316,7 +319,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
                 attr->setScaleValue(scaleValueStr.asDouble());
             }
 
-            out_attrList.push_back(attr);
+            out_attrList.push_back(attr, /*enabled=*/true);
             MPlug attrPlug = attr->getPlug();
         }
     }

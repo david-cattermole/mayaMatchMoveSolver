@@ -139,6 +139,7 @@ class TestSolver8(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
+            'frame': frames,
         }
 
         # save the output
@@ -152,7 +153,6 @@ class TestSolver8(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            frame=frames,
             iterations=1000,
             solverType=solver_index,
             sceneGraphMode=scene_graph_mode,

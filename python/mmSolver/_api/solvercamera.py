@@ -230,7 +230,7 @@ class SolverCamera(solverbase.SolverBase):
 
         :rtype: int
         """
-        return self._data.get('solver_version', const.SOLVER_VERSION_DEFAULT)
+        return self._data.get('solver_version', const.SOLVER_CAM_SOLVER_VERSION_DEFAULT_VALUE)
 
     def set_solver_version(self, value):
         """

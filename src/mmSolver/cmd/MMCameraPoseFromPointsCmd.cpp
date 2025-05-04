@@ -63,6 +63,7 @@
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/sfm/camera_from_known_points.h"
 #include "mmSolver/sfm/sfm_utils.h"
@@ -240,7 +241,7 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
         bundle->setNodeName(bundleName);
         marker->setBundle(bundle);
 
-        m_marker_list.push_back(marker);
+        m_marker_list.push_back(marker, /*enabled=*/true);
     }
     MMSOLVER_MAYA_VRB("parse m_marker_list size: " << m_marker_list.size());
 
@@ -296,14 +297,14 @@ MStatus MMCameraPoseFromPointsCmd::doIt(const MArgList &args) {
         MMSOLVER_MAYA_VRB("principal point (pixel): " << ppx_pix << "x"
                                                       << ppy_pix);
 
-        MarkerPtrList marker_list;
+        MarkerList marker_list;
         BundlePtrList bundle_list;
         std::vector<std::pair<double, double>> marker_coords;
         std::vector<std::tuple<double, double, double>> bundle_coords;
         std::shared_ptr<mmlens::LensModel> lensModel;
 
         for (auto j = 0; j < m_marker_list.size(); ++j) {
-            auto marker = m_marker_list[j];
+            auto marker = m_marker_list.get_marker(j);
             auto marker_success = ::mmsolver::sfm::add_marker_at_frame(
                 time, image_width, image_height, lensModel, marker,
                 marker_coords);
@@ -315,7 +316,7 @@ MStatus MMCameraPoseFromPointsCmd::doIt(const MArgList &args) {
             auto bundle_success = ::mmsolver::sfm::add_bundle_at_frame(
                 time, bundle, bundle_coords);
             if (bundle_success) {
-                marker_list.push_back(marker);
+                marker_list.push_back(marker, /*enabled=*/true);
                 bundle_list.push_back(bundle);
             }
         }

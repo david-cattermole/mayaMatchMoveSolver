@@ -75,6 +75,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
+            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -82,7 +83,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
+        result = maya.cmds.mmSolver(verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 
@@ -135,6 +136,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
+            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -142,7 +144,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
+        result = maya.cmds.mmSolver(verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 
@@ -194,6 +196,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
+            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -201,7 +204,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
+        result = maya.cmds.mmSolver(verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 

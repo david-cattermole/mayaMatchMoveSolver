@@ -126,13 +126,16 @@ class TestSolver12(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
+            'frame': frames,
         }
+
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
         assert 'mmSolver' in dir(maya.cmds)
         s = time.time()
         result = maya.cmds.mmSolver(
-            frame=frames,
             solverType=solver_index,
             sceneGraphMode=scene_graph_mode,
             iterations=1000,

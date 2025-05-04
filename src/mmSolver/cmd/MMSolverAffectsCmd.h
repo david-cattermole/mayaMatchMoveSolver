@@ -38,26 +38,25 @@
 #include <maya/MSyntax.h>
 
 // MM Solver
+#include "mmSolver/core/frame_list.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-
-// Command arguments:
-
-// The type of mode for the mmSolverAffects command.
-#define MODE_FLAG "-md"
-#define MODE_FLAG_LONG "-mode"
-
-// Possible values for the 'mode' flag.
-#define MODE_VALUE_ADD_ATTRS_TO_MARKERS "addAttrsToMarkers"
-#define MODE_VALUE_RETURN_STRING "returnString"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 
 namespace mmsolver {
 
+enum class GraphMode : uint8_t {
+    kNormal = 0,
+    kSimple = 1,
+    kUnspecified = 255,
+};
+
 class MMSolverAffectsCmd : public MPxCommand {
 public:
-    MMSolverAffectsCmd(){};
+    MMSolverAffectsCmd() : m_mode(), m_graph_mode(GraphMode::kUnspecified){};
 
     virtual ~MMSolverAffectsCmd();
 
@@ -82,17 +81,29 @@ private:
     // The 'mode' of this command.
     MString m_mode;
 
+    // The 'graph mode' of this command.
+    GraphMode m_graph_mode;
+
+    // Frames
+    FrameList m_frameList;
+
     // Objects
     CameraPtrList m_cameraList;
-    MarkerPtrList m_markerList;
+    MarkerList m_markerList;
     BundlePtrList m_bundleList;
-    AttrPtrList m_attrList;
+    AttrList m_attrList;
     StiffAttrsPtrList m_stiffAttrsList;
     SmoothAttrsPtrList m_smoothAttrsList;
+
+    // Validated objects.
+    FrameList m_validFrameList;
+    MarkerList m_validMarkerList;
+    AttrList m_validAttrList;
 
     // Undo/Redo
     MDGModifier m_addAttr_dgmod;
     MDGModifier m_setAttr_dgmod;
+    MAnimCurveChange m_curveChange;
 };
 
 }  // namespace mmsolver

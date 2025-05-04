@@ -21,12 +21,14 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+import datetime
 import pprint
 
 import mmSolver.logger
 import mmSolver._api.solveresult as solveresult
 import mmSolver._api.action as api_action
 import mmSolver._api.constant as const
+import mmSolver.utils.converttypes as converttypes
 
 LOG = mmSolver.logger.get_logger()
 
@@ -93,6 +95,7 @@ def run_validate_action(vaction):
     vfunc_is_mmsolver_v1 = api_action.action_func_is_mmSolver_v1(vaction)
     vfunc_is_mmsolver_v2 = api_action.action_func_is_mmSolver_v2(vaction)
     vfunc_is_camera_solve = api_action.action_func_is_camera_solve(vaction)
+    # vfunc_is_mmsolveraffects = api_action.action_func_is_mmSolverAffects(vaction)
     vfunc_is_mmsolver = any((vfunc_is_mmsolver_v1, vfunc_is_mmsolver_v2))
 
     num_param = 0
@@ -112,18 +115,26 @@ def run_validate_action(vaction):
         )
         return state
 
+    debug_func_inputs_outputs = False
+    if debug_func_inputs_outputs:
+        current_datetime = datetime.datetime.now()
+        LOG.debug(
+            'Running: %s vfunc=%r vargs=%s vkwargs=%s',
+            current_datetime,
+            vfunc,
+            pprint.pformat(vargs),
+            pprint.pformat(vkwargs),
+        )
+
     # Run validate function
-    LOG.debug(
-        'Running: vfunc=%r vargs=%s vkwargs=%s',
-        vfunc,
-        pprint.pformat(vargs),
-        pprint.pformat(vkwargs),
-    )
     solve_data = vfunc(*vargs, **vkwargs)
-    LOG.debug(
-        'Returned: solve_data=%r',
-        solve_data,
-    )
+
+    if debug_func_inputs_outputs:
+        LOG.debug(
+            'Returned: %s vfunc solve_data=%s',
+            current_datetime,
+            pprint.pformat(solve_data),
+        )
 
     if vfunc_is_mmsolver is False:
         msg = 'Validated frames: frames=%r'
@@ -149,27 +160,29 @@ def run_validate_action(vaction):
 
     solres = solveresult.SolveResult(solve_data)
 
+    print_stats = solres.get_print_stats()
+    num_param = print_stats.get('number_of_parameters', 0)
+    num_err = print_stats.get('number_of_errors', 0)
+    if num_param == 0 or num_err == 0 or num_param > num_err:
+        frames_string = converttypes.intListToString(frames)
+        msg = (
+            'Invalid parameters and errors (param=%r errors=%r frames=%r), '
+            'skipping solve: %r'
+        )
+        message = msg % (num_param, num_err, num_frames, frames_string)
+        state = create_action_state(
+            status=const.ACTION_STATUS_FAILED,
+            message=message,
+            error_number=num_err,
+            parameter_number=num_param,
+            frames_number=num_frames,
+            frames=frames_string,
+        )
+        return state
+
     use_valid_frame_check = False
     if use_valid_frame_check is False:
-        print_stats = solres.get_print_stats()
-        num_param = print_stats.get('number_of_parameters', 0)
-        num_err = print_stats.get('number_of_errors', 0)
-        if num_param == 0 or num_err == 0 or num_param > num_err:
-            msg = (
-                'Invalid parameters and errors (param=%r errors=%r frames=%r), '
-                'skipping solve: %r'
-            )
-            message = msg % (num_param, num_err, num_frames, list(sorted(frames)))
-            state = create_action_state(
-                status=const.ACTION_STATUS_FAILED,
-                message=message,
-                error_number=num_err,
-                parameter_number=num_param,
-                frames_number=num_frames,
-                frames=frames,
-            )
-            return state
-
+        frames_string = converttypes.intListToString(frames)
         msg = 'Validated parameters, errors and frames: param=%r errors=%r frames=%r'
         message = msg % (num_param, num_err, num_frames)
         state = create_action_state(
@@ -178,32 +191,12 @@ def run_validate_action(vaction):
             error_number=num_err,
             parameter_number=num_param,
             frames_number=num_frames,
-            frames=frames,
+            frames=frames_string,
         )
         return state
     else:
         # In the future it may make sense to check for "valid frames" that
         # the solver can solve and report these to the user.
-
-        print_stats = solres.get_print_stats()
-        num_param = print_stats.get('number_of_parameters', 0)
-        num_err = print_stats.get('number_of_errors', 0)
-        if num_param == 0 or num_err == 0 or num_param > num_err:
-            msg = (
-                'Invalid parameters and errors (param=%r errors=%r frames=%r), '
-                'skipping solve: %r'
-            )
-            message = msg % (num_param, num_err, num_frames, list(sorted(frames)))
-            state = create_action_state(
-                status=const.ACTION_STATUS_FAILED,
-                message=message,
-                error_number=num_err,
-                parameter_number=num_param,
-                frames_number=num_frames,
-                frames=frames,
-            )
-            return state
-
         solver_valid_frames = solres.get_solver_valid_frame_list()
         if len(solver_valid_frames) == 0:
             # This error should be raised if ALL the frames in the
@@ -211,17 +204,19 @@ def run_validate_action(vaction):
             # should just be skipped and the solve should be continued.
             solver_invalid_frames = solres.get_solver_invalid_frame_list()
             assert len(solver_invalid_frames) == len(frames)
-            msg = 'All frames are invalid, skipping solve: %r' % list(sorted(frames))
+            frames_string = converttypes.intListToString(frames)
+            msg = 'All frames are invalid, skipping solve: %r' % frames_string
             state = create_action_state(
                 status=const.ACTION_STATUS_FAILED,
                 message=msg,
                 error_number=num_err,
                 parameter_number=num_param,
                 frames_number=num_frames,
-                frames=frames,
+                frames=frames_string,
             )
             return state
 
+        frames_string = converttypes.intListToString(solver_valid_frames)
         msg = 'Validated solver frames: %r'
         message = msg % solver_valid_frames
         state = create_action_state(
@@ -230,7 +225,7 @@ def run_validate_action(vaction):
             error_number=num_err,
             parameter_number=num_param,
             frames_number=num_frames,
-            frames=frames,
+            frames=frames_string,
         )
         return state
 

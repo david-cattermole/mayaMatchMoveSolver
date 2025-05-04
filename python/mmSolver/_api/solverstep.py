@@ -273,6 +273,8 @@ class SolverStep(solverbase.SolverBase):
         assert value in const.SCENE_GRAPH_MODE_LIST
         self._data['scene_graph_mode'] = value
 
+    ############################################################################
+
     def get_verbose(self):
         """
         Should we print lots of information to the terminal?
@@ -377,6 +379,13 @@ class SolverStep(solverbase.SolverBase):
     def set_remove_unused_attributes(self, value):
         assert isinstance(value, (bool, int))
         self._data['remove_unused_attributes'] = bool(value)
+
+    def get_remove_unused_frames(self):
+        return self._data.get('remove_unused_frames')
+
+    def set_remove_unused_frames(self, value):
+        assert isinstance(value, (bool, int))
+        self._data['remove_unused_frames'] = bool(value)
 
     ############################################################################
 
@@ -507,6 +516,15 @@ class SolverStep(solverbase.SolverBase):
 
     ##########################################
 
+    def get_use_affects(self):
+        return self._data.get('use_affects')
+
+    def set_use_affects(self, value):
+        assert isinstance(value, (bool, int))
+        self._data['use_affects'] = bool(value)
+
+    ##########################################
+
     def compile(self, col, mkr_list, attr_list, withtest=False):
         """
         Compiles data given into flags for a single run of 'mmSolver'.
@@ -630,6 +648,25 @@ class SolverStep(solverbase.SolverBase):
         kwargs['attr'] = attrs
         kwargs['frame'] = frames
 
+        # Run affects
+        use_affects = self.get_use_affects()
+        if use_affects is None:
+            use_affects = True
+        if use_affects is True:
+            affects_args = []
+            affects_kwargs = dict()
+            affects_kwargs['camera'] = cameras
+            affects_kwargs['marker'] = markers
+            affects_kwargs['attr'] = attrs
+            affects_kwargs['frame'] = frames
+            affects_kwargs['mode'] = 'addAttrsToMarkers'
+            action = api_action.Action(
+                func='maya.cmds.mmSolverAffects',
+                args=affects_args,
+                kwargs=affects_kwargs,
+            )
+            yield action, None
+
         if stiff_flags:
             kwargs['attrStiffness'] = stiff_flags
         if smooth_flags:
@@ -703,13 +740,27 @@ class SolverStep(solverbase.SolverBase):
         kwargs['timeEvalMode'] = self.get_time_eval_mode()
 
         if is_solver_v1 is True:
-            value = self.get_remove_unused_markers()
-            if value is not None:
-                kwargs['removeUnusedMarkers'] = value
+            if withtest is True:
+                # When testing first, the mmSolverAffects command is
+                # not run first which means the frame and marker
+                # validation will not be run. Therefore we explicitly
+                # disable using the validation marker/attributes for
+                # the test.
+                kwargs['removeUnusedMarkers'] = False
+                kwargs['removeUnusedAttributes'] = False
+                kwargs['removeUnusedFrames'] = False
+            else:
+                value = self.get_remove_unused_markers()
+                if value is not None:
+                    kwargs['removeUnusedMarkers'] = value
 
-            value = self.get_remove_unused_attributes()
-            if value is not None:
-                kwargs['removeUnusedAttributes'] = value
+                value = self.get_remove_unused_attributes()
+                if value is not None:
+                    kwargs['removeUnusedAttributes'] = value
+
+                value = self.get_remove_unused_frames()
+                if value is not None:
+                    kwargs['removeUnusedFrames'] = value
 
         if is_solver_v2 is True:
             key = 'verbose'

@@ -104,6 +104,7 @@ class TestSolver2(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
+            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
@@ -112,11 +113,9 @@ class TestSolver2(solverUtils.SolverTestCase):
         # Run solver, with more attributes than markers; We expect an error.
         s = time.time()
         result = maya.cmds.mmSolver(
-            frame=frames,
             iterations=1000,
             solverType=solver_index,
             sceneGraphMode=scene_graph_mode,
-            verbose=True,
             **kwargs
         )
         e = time.time()
@@ -147,19 +146,14 @@ class TestSolver2(solverUtils.SolverTestCase):
             'camera': cameras,
             'marker': markers,
             'attr': node_attrs,
+            'frame': frames,
         }
 
         affects_mode = 'addAttrsToMarkers'
         self.runSolverAffects(affects_mode, **kwargs)
 
         s = time.time()
-        result = maya.cmds.mmSolver(
-            frame=frames,
-            iterations=1000,
-            solverType=solver_index,
-            verbose=True,
-            **kwargs
-        )
+        result = maya.cmds.mmSolver(iterations=1000, solverType=solver_index, **kwargs)
         e = time.time()
         print('total time:', e - s)
 

@@ -33,7 +33,9 @@
 // Internal Objects
 #include "mmSolver/adjust/adjust_data.h"
 #include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/adjust/adjust_relationships.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_attr_list.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
@@ -53,7 +55,7 @@ void createAttributeDetailsSyntax(MSyntax &syntax) {
 }
 
 MStatus parseAttributeDetailsArguments(
-    const MArgDatabase &argData, const AttrPtrList &attrList,
+    const MArgDatabase &argData, const AttrList &attrList,
     StiffAttrsPtrList &out_stiffAttrsList,
     SmoothAttrsPtrList &out_smoothAttrsList) {
     MStatus status = MStatus::kSuccess;
@@ -80,10 +82,10 @@ MStatus parseAttributeDetailsArguments(
             // Find the already created Attribute.
             MString nodeAttrName = stiffnessArgs.asString(0);
             AttrPtr foundAttr;
-            int foundIndex = 0;
-            for (AttrPtrListCIt ait = attrList.cbegin(); ait != attrList.cend();
-                 ++ait) {
-                AttrPtr attr = *ait;
+            AttrIndex foundIndex = 0;
+            for (AttrIndex attrIndex = 0; attrIndex < attrList.size();
+                 ++attrIndex) {
+                AttrPtr attr = attrList.get_attr(attrIndex);
                 if (nodeAttrName == attr->getName()) {
                     foundAttr = attr;
                     break;
@@ -138,10 +140,10 @@ MStatus parseAttributeDetailsArguments(
             // Find the already created Attribute.
             MString nodeAttrName = smoothnessArgs.asString(0);
             AttrPtr foundAttr;
-            int foundIndex = 0;
-            for (AttrPtrListCIt ait = attrList.cbegin(); ait != attrList.cend();
-                 ++ait) {
-                AttrPtr attr = *ait;
+            AttrIndex foundIndex = 0;
+            for (AttrIndex attrIndex = 0; attrIndex < attrList.size();
+                 ++attrIndex) {
+                AttrPtr attr = attrList.get_attr(attrIndex);
                 if (nodeAttrName == attr->getName()) {
                     foundAttr = attr;
                     break;

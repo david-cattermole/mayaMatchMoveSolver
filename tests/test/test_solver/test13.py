@@ -114,7 +114,11 @@ class TestSolver13(solverUtils.SolverTestCase):
         }
 
         affects_mode = 'addAttrsToMarkers'
-        self.runSolverAffects(affects_mode, **kwargs)
+        self.runSolverAffects(
+            affects_mode,
+            frame=frames,
+            **kwargs
+        )
 
         # Run solver!
         s = time.time()
@@ -161,9 +165,8 @@ class TestSolver13(solverUtils.SolverTestCase):
             mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
         )
 
-    # NOTE: This solver and scene graph combination fails to solve for
-    # some reason.
-    #
+    # # NOTE: This solver and scene graph combination fails to solve for
+    # # some reason.
     # def test_init_ceres_lmdif_maya_dag(self):
     #     self.do_solve(
     #         'ceres_lmdif',

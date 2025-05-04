@@ -132,7 +132,11 @@ class TestTriangulation(solverUtils.SolverTestCase):
 
         affects_mode = 'addAttrsToMarkers'
         self.runSolverAffects(
-            affects_mode, camera=cameras, marker=markers, attr=node_attrs
+            affects_mode,
+            camera=cameras,
+            marker=markers,
+            attr=node_attrs,
+            frame=frames,
         )
 
         # Run solver!

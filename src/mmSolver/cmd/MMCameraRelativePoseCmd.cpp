@@ -116,6 +116,9 @@ maya.cmds.mmCameraRelativePose(
 #include <maya/MTransformationMatrix.h>
 #include <maya/MTypes.h>
 
+// MM Solver Libs
+#include <mmsolverlibs/debug.h>
+
 // MM Solver
 #include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/mayahelper/maya_attr.h"
@@ -123,6 +126,7 @@ maya.cmds.mmCameraRelativePose(
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_list.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/sfm/camera_relative_pose.h"
 #include "mmSolver/sfm/sfm_utils.h"
@@ -408,19 +412,20 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         std::shared_ptr<mmlens::LensModel> lensModel_a;
         std::shared_ptr<mmlens::LensModel> lensModel_b;
         {
-            MarkerPtrList markerList;
-            markerList.push_back(marker_a);
-            markerList.push_back(marker_b);
+            MarkerList markerList;
+            markerList.push_back(marker_a, /*enabled=*/true);
+            markerList.push_back(marker_b, /*enabled=*/true);
 
             CameraPtrList cameraList;
             cameraList.push_back(m_camera_a);
             cameraList.push_back(m_camera_b);
 
-            AttrPtrList attrList;
+            AttrList attrList;
 
-            MTimeArray frameList;
-            frameList.append(m_time_a);
-            frameList.append(m_time_b);
+            FrameList frameList;
+            frameList.reserve(2);
+            frameList.push_back(m_frame_a, /*enabled=*/true);
+            frameList.push_back(m_frame_b, /*enabled=*/true);
 
             std::vector<std::shared_ptr<mmlens::LensModel>>
                 markerFrameToLensModelList;
@@ -443,8 +448,8 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             m_image_height_a, m_image_height_b, lensModel_a, lensModel_b,
             marker_a, marker_b, m_marker_coords_a, m_marker_coords_b);
         if (success) {
-            m_marker_list_a.push_back(marker_a);
-            m_marker_list_b.push_back(marker_b);
+            m_marker_list_a.push_back(marker_a, /*enabled=*/true);
+            m_marker_list_b.push_back(marker_b, /*enabled=*/true);
             m_bundle_list.push_back(bundle);
         }
     }

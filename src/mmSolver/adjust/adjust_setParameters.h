@@ -29,7 +29,7 @@
 namespace mmsolver {
 
 MStatus setParameters(const int numberOfParameters, const double *parameters,
-                      SolverData *ud);
+                      SolverData *userData);
 
 }  // namespace mmsolver
 

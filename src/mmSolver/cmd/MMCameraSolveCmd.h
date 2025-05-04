@@ -31,10 +31,9 @@
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MPxCommand.h>
-#include <maya/MSyntax.h>
 #include <maya/MStatus.h>
+#include <maya/MSyntax.h>
 #include <maya/MTime.h>
-
 
 namespace mmsolver {
 

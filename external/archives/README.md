@@ -14,6 +14,8 @@ downloaded from [Autodesk](https://www.autodesk.com/):
 - Autodesk_Maya_2020_ML_Linux_64bit.tgz
 - Autodesk_Maya_2022_ML_Linux_64bit.tgz
 - Autodesk_Maya_2023_ML_Linux_64bit.tgz
+- Autodesk_Maya_2024_Linux_64bit.tgz
+- Autodesk_Maya_2025_1_Update_Linux.tgz
 
 ## LDPK
 

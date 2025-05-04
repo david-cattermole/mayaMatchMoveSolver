@@ -331,6 +331,7 @@ struct SolverData {
         , curveChange(nullptr)
         , computation(nullptr)
         , userInterrupted(false)
+        , mayaSessionState()
         , logLevel(LogLevel::kInfo){};
 };
 

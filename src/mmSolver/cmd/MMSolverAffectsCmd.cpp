@@ -190,29 +190,29 @@ MStatus setAttrsOnMarkers(
     MMSOLVER_MAYA_VRB(
         "mmSolverAffects: setAttrsOnMarkers: "
         "markerList.count_enabled()="
-        << markerList.count_enabled())
+        << markerList.count_enabled());
     MMSOLVER_MAYA_VRB(
         "mmSolverAffects: setAttrsOnMarkers: "
         "markerList.count_disabled()="
-        << markerList.count_disabled())
+        << markerList.count_disabled());
 
     MMSOLVER_MAYA_VRB(
         "mmSolverAffects: setAttrsOnMarkers: "
         "attrList.count_enabled()="
-        << attrList.count_enabled())
+        << attrList.count_enabled());
     MMSOLVER_MAYA_VRB(
         "mmSolverAffects: setAttrsOnMarkers: "
         "attrList.count_disabled()="
-        << attrList.count_disabled())
+        << attrList.count_disabled());
 
     MMSOLVER_MAYA_VRB(
         "mmSolverAffects: setAttrsOnMarkers: "
         "frameList.count_enabled()="
-        << frameList.count_enabled())
+        << frameList.count_enabled());
     MMSOLVER_MAYA_VRB(
         "mmSolverAffects: setAttrsOnMarkers: "
         "frameList.count_disabled()="
-        << frameList.count_disabled())
+        << frameList.count_disabled());
 
     mmsolver::debug::TimestampBenchmark create_attrs_timer =
         mmsolver::debug::TimestampBenchmark();

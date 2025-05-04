@@ -55,7 +55,7 @@
     do {                                                             \
         MStreamUtils::stdErrorStream()                               \
             << __FILE__ << ':' << __LINE__ << ' ' << x << std::endl; \
-    } while (0)
+    } while (0);
 #endif
 
 #ifdef _WIN32  // Windows MSVC
@@ -74,7 +74,7 @@
         if (verbose) {                                        \
             MStreamUtils::stdErrorStream() << x << std::endl; \
         }                                                     \
-    } while (0)
+    } while (0);
 #endif
 
 #ifdef _WIN32  // Windows MSVC
@@ -89,7 +89,7 @@
 #define MMSOLVER_MAYA_ERR(x)                                           \
     do {                                                               \
         MStreamUtils::stdErrorStream() << "ERROR: " << x << std::endl; \
-    } while (0)
+    } while (0);
 #endif
 
 #ifdef _WIN32  // Windows MSVC
@@ -104,7 +104,7 @@
 #define MMSOLVER_MAYA_WRN(x)                                             \
     do {                                                                 \
         MStreamUtils::stdErrorStream() << "WARNING: " << x << std::endl; \
-    } while (0)
+    } while (0);
 #endif
 
 #ifdef _WIN32  // Windows MSVC
@@ -119,7 +119,7 @@
 #define MMSOLVER_MAYA_INFO(x)                             \
     do {                                                  \
         MStreamUtils::stdErrorStream() << x << std::endl; \
-    } while (0)
+    } while (0);
 #endif
 
 namespace debug {}  // namespace debug

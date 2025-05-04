@@ -28,7 +28,7 @@
 namespace mmsolver {
 
 // Ceres Summary Termination Types:
-const std::string ceresReasons[5] = {
+const std::string CERES_REASONS[5] = {
 
     // reason 0
     "Ceres CONVERGENCE",

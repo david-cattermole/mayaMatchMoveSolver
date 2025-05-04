@@ -275,7 +275,7 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
     solveResult.jacobianEvals = summary.num_jacobian_evaluations;
 
     const size_t reason_number = static_cast<int>(summary.termination_type);
-    const std::string& reason = mmsolver::ceresReasons[reason_number];
+    const std::string& reason = mmsolver::CERES_REASONS[reason_number];
     solveResult.reason_number = reason_number;
     solveResult.reason = reason + " (" + summary.message + ")";
     solveResult.errorFinal = summary.final_cost;

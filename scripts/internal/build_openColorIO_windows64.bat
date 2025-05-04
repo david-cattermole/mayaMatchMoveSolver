@@ -48,7 +48,11 @@ SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
 
 :: What directory to build the project in?
-SET BUILD_DIR_BASE=%PROJECT_ROOT%\..
+::
+:: Note: BUILD_DIR_BASE should already be set by the calling script.
+:: If not, use default location.
+IF "%BUILD_DIR_BASE%"=="" SET BUILD_DIR_BASE=%PROJECT_ROOT%\..
+ECHO Build directory base: %BUILD_DIR_BASE%
 
 :: Install directory.
 SET OPENCOLORIO_INSTALL_PATH=%BUILD_DIR_BASE%\build_opencolorio\install\maya%MAYA_VERSION%_windows64\

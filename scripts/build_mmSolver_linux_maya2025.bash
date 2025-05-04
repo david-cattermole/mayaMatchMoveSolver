@@ -20,6 +20,13 @@
 #
 # Builds the Maya MatchMove Solver project.
 
+# Build location - where to build the project.
+#
+# Defaults to ${PROJECT_ROOT}/.. if not set.
+if [ -z "$BUILD_DIR_BASE" ]; then
+    BUILD_DIR_BASE="$(pwd)/.."
+fi
+
 # Maya
 MAYA_VERSION=2025
 MAYA_LOCATION=/usr/autodesk/maya2025/

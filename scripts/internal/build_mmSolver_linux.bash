@@ -55,7 +55,13 @@ INSTALL_MODULE_DIR="${HOME}/maya/${MAYA_VERSION}/modules"
 BUILD_PACKAGE=1
 
 # What directory to build the project in?
-BUILD_DIR_BASE="${PROJECT_ROOT}/../"
+#
+# Note: BUILD_DIR_BASE should already be set by the calling script.
+# If not, use default location.
+if [ -z "$BUILD_DIR_BASE" ]; then
+    BUILD_DIR_BASE="${PROJECT_ROOT}/.."
+fi
+echo "Build directory base: ${BUILD_DIR_BASE}"
 
 # What type of build? "Release" or "Debug"?
 BUILD_TYPE=Release

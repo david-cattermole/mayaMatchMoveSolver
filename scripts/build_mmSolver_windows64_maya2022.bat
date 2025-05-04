@@ -21,6 +21,11 @@ SETLOCAL
 ::
 :: Builds the Maya MatchMove Solver project.
 
+:: Build location - where to build the project.
+::
+:: Defaults to %PROJECT_ROOT%\..\build_repro if not set.
+IF "%BUILD_DIR_BASE%"=="" SET BUILD_DIR_BASE=%CD%\..
+
 :: Maya directories
 ::
 :: Note: Do not enclose the MAYA_VERSION in quotes, it will

@@ -60,6 +60,26 @@ Note: Replace XXXX, with the Maya version to build for.
 Following the steps above you will have the Maya plug-in compiled, and
 installed into your `%USERPROFILE%\maya\MAYA_VERSION\modules` directory.
 
+# Customizing Build Location
+
+By default, mmSolver will build in the directory `%PROJECT_ROOT%\..`
+(a subfolder in the parent directory of your project root). You can
+override this location by setting the `BUILD_DIR_BASE` environment
+variable before running the build script:
+
+```cmd
+:: Set a custom build directory
+> SET BUILD_DIR_BASE=D:\custom\build\path
+> scripts\build_mmSolver_windows64_maya2024.bat
+```
+
+Setting a custom build directory can be useful when:
+
+- You want to keep build files on a different disk drive.
+- You're building multiple versions and want separate build
+  directories.
+- You have limited space in the default location.
+
 # Run Test Suite
 
 If you use the build script, you can automatically run the test suite

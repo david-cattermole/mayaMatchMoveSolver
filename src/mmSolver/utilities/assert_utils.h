@@ -83,10 +83,10 @@
 // happened.
 //
 // Similar to the "panic!()" macro in Rust.
-#define MMSOLVER_PANIC(...) MMSOLVER_CORE_PANIC(##__VA_ARGS__)
+#define MMSOLVER_PANIC(...) MMSOLVER_CORE_PANIC(__VA_ARGS__)
 
 // Quit the program, showing a message why and where the failure happened.
-#define MMSOLVER_TODO(...) MMSOLVER_CORE_TODO(##__VA_ARGS__)
+#define MMSOLVER_TODO(...) MMSOLVER_CORE_TODO(__VA_ARGS__)
 
 #undef MMASSERT_PROJECT_NAME
 #undef MMASSERT_PROJECT_VERSION

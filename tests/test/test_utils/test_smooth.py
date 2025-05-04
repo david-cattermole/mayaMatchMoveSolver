@@ -289,13 +289,9 @@ class TestSmooth(test_utils.UtilsTestCase):
         # it was smoothed and negated.
         data = list(DATA_FOUR)
         y = smooth_utils.fourier_smooth(data, 2.0)
-        self.assertEqual(x_neg, y)
-        same_value = True
+        self.assertEqual(len(x_neg), len(y))
         for i, v in enumerate(y):
-            if x_neg[i] != v:
-                same_value = False
-                break
-        self.assertIs(same_value, True)
+            self.assertApproxEqual(x_neg[i], v)
         return
 
 

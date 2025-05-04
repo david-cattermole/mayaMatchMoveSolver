@@ -24,10 +24,7 @@
 #define DEBUG_UTILS_H
 
 // STL
-#include <cstdint>   // uint32_t, uint64_t
-#include <iomanip>   // setfill, setw
 #include <iostream>  // cout, cerr, endl
-#include <string>    // string
 
 // Maya
 //

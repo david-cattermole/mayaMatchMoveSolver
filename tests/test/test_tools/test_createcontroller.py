@@ -303,9 +303,16 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         self.assertEqual(maya.cmds.getAttr(ctrl + '.translateX', time=mid), 20.0)
         self.assertEqual(maya.cmds.getAttr(ctrl + '.translateY', time=mid), 30.0)
         self.assertEqual(maya.cmds.getAttr(ctrl + '.translateZ', time=mid), 10.0)
-        self.assertApproxEqual(
-            maya.cmds.getAttr(ctrl + '.rotateY', time=mid), 19.5454545455
-        )
+
+        maya_version = maya.cmds.about(api=True)
+        # print('maya_version:', maya_version)
+        ry = 29.47950580181985
+        if maya_version < 20220000:
+            # Old versions of Maya calculated this differently for
+            # some strange reason.
+            ry = 19.5454545455
+
+        self.assertApproxEqual(maya.cmds.getAttr(ctrl + '.rotateY', time=mid), ry)
         return
 
     def create_hierarchy_scene(self, start, end):

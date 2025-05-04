@@ -212,7 +212,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         CHECK_MSTATUS(status);
 #endif
 
-        const short filmFit = camera->getFilmFitValue();
+        const int16_t filmFit = camera->getFilmFitValue();
         const double filmBackWidth =
             camera->getFilmbackWidthValue(frame, timeEvalMode);
         const double filmBackHeight =

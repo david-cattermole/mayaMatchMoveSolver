@@ -9,7 +9,7 @@ This directory contains a copy of a sub-set of frames from the OpenMVG
 project, plus CMake build scripts that have been written for
 mmSolver.
 
-The goal of this copying was to fix diffult crashing caused by the
+The goal of this copying was to fix difficult crashing caused by the
 build scripts in OpenMVG that are resolved when compiling together
 with mmSolver.
 
@@ -18,13 +18,13 @@ Therefore only a select number of features of OpenMVG have been used.
 
 ## Source Repository
 
-This project was copied from the following lcoation:
+This project was copied from the following location:
 
 Page: https://github.com/openMVG/openMVG
 Documentation: https://openmvg.readthedocs.io/en/latest/
 Git URL: https://github.com/openMVG/openMVG.git
 Git Tag: v2.1
-Git Commmit: 01193a245ee3c36458e650b1cf4402caad8983ef
+Git Commit: 01193a245ee3c36458e650b1cf4402caad8983ef
 
 ## Copied Files
 
@@ -136,7 +136,7 @@ openMVG/src/third_party/histogram/histogram.hpp
 ## solver_resection_kernel.cpp
 
 The "solver_resection_kernel.cpp" file has been edited comment out P3P
-algorithims in "solver_resection_p3p_ke.hpp" and
+algorithms in "solver_resection_p3p_ke.hpp" and
 "solver_resection_p3p_kneip.hpp" and
 "solver_resection_up2p_kukelova.hpp".
 

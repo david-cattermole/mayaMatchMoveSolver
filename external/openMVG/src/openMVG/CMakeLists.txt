@@ -66,14 +66,14 @@ target_link_libraries(openMVG PRIVATE
 
 target_include_directories(openMVG PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../)
 
-if (USE_AVX2)
+if (openMVG_USE_AVX2)
   target_compile_options(openMVG PUBLIC "-DOPENMVG_USE_AVX2")
   if (UNIX)
     target_compile_options(openMVG PUBLIC "-mavx2")
   endif ()
 endif ()
 
-if (USE_AVX)
+if (openMVG_USE_AVX)
   target_compile_options(openMVG PUBLIC "-DOPENMVG_USE_AVX")
   if (UNIX)
     target_compile_options(openMVG PUBLIC "-mavx")

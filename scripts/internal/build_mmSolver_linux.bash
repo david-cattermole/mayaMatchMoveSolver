@@ -168,6 +168,8 @@ ${CMAKE_EXE} \
     -Dmmsolverlibs_cpp_DIR=${MMSOLVERLIBS_CMAKE_CONFIG_DIR} \
     -DOpenColorIO_DIR=${OPENCOLORIO_CMAKE_CONFIG_DIR} \
     -DOCIO_INSTALL_EXT_PACKAGES=NONE \
+    -DopenMVG_USE_AVX=1 \
+    -DopenMVG_USE_AVX2=1 \
     -Dexpat_DIR=${expat_DIR} \
     -Dexpat_LIBRARY=${expat_LIBRARY} \
     -Dexpat_INCLUDE_DIR=${expat_INCLUDE_DIR} \

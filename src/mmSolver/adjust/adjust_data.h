@@ -208,8 +208,18 @@ struct SolverOptions {
 
     // All the different supported features by the currently active
     // solver type.
+    //
+    // TODO: Move these into another struct of it's own? That way
+    // individual solvers can be defined with what they support and
+    // the solver can check for these at runtime.
+    //
+    // TODO: 'AutoDiff*' as it is used in the code is actually
+    // performing finite-differentiation. We should rename the code,
+    // and add support for real auto-differentiation.
     bool solverSupportsAutoDiffForward;
     bool solverSupportsAutoDiffCentral;
+    // bool solverSupportsFiniteDiffForward;
+    // bool solverSupportsFiniteDiffCentral;
     bool solverSupportsParameterBounds;
     bool solverSupportsRobustLoss;
 

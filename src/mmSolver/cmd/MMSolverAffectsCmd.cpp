@@ -364,7 +364,7 @@ MStatus setAttrsOnMarkers(
     }
     setAttr_dgmod.doIt();
 
-    {
+    if (debug) {
         create_curve_timer.stop();
         const double duration_seconds = create_curve_timer.get_seconds();
         MMSOLVER_MAYA_INFO(

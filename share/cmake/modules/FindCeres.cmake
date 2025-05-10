@@ -258,7 +258,7 @@ if(NOT Ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND Ceres_ALLOW_DOWNLOAD)
   # Hack to let imported target be built from ExternalProject_Add
   file(MAKE_DIRECTORY ${Ceres_INCLUDE_DIR})
 
-  set(Ceres_dependencies "Eigen3 glog")
+  set(Ceres_dependencies Eigen3 glog)
   if(NOT MMSOLVER_USE_GLOG)
     # No need to use 'glog' if 'miniglog' feature is enabled.
     set(Ceres_dependencies "Eigen3")

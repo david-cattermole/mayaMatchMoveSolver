@@ -58,10 +58,19 @@ find_package(Threads REQUIRED)
 
 add_library(openMVG ${OPENMVG_SOURCE_FILES})
 
+if (MMSOLVER_USE_GLOG)
+  target_link_libraries(openMVG PRIVATE
+    glog::glog
+  )
+else()
+  include(MMSolverUtils)
+  find_ceres_miniglog_include_dir(miniglog_include_dir)
+  target_include_directories(openMVG PRIVATE "${miniglog_include_dir}")
+endif()
+
 target_link_libraries(openMVG PRIVATE
   Eigen3::Eigen
   ceres
-  glog::glog
 )
 
 target_include_directories(openMVG PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../)

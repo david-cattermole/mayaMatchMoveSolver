@@ -195,17 +195,10 @@ if(NOT Ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND Ceres_ALLOW_DOWNLOAD)
   set(Ceres_PREFIX ${_EXTERNAL_BUILD_DIR}/ceres)
 
   # The full 'glog' library is faster than the cut-down 'miniglog'
-  # embedded in Ceres. Different platforms enable/disable this because
-  # of build issues.
-  #
-  set(Ceres_USE_MINIGLOG 0)
-  if (WIN32 AND NOT UNIX)
-    # 'miniglog' is disabled on Windows because of build errors on MSVC
-    # with a conflict of the 'ERROR' severity identifer clashing with
-    # something else in mmSolver.
+  # embedded in Ceres, but it also adds a dependency.
+  if (MMSOLVER_USE_GLOG)
     set(Ceres_USE_MINIGLOG 0)
   else()
-    # 'glog' is disabled on Linux because of linking/build errors.
     set(Ceres_USE_MINIGLOG 1)
   endif()
 
@@ -265,8 +258,14 @@ if(NOT Ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND Ceres_ALLOW_DOWNLOAD)
   # Hack to let imported target be built from ExternalProject_Add
   file(MAKE_DIRECTORY ${Ceres_INCLUDE_DIR})
 
+  set(Ceres_dependencies "Eigen3 glog")
+  if(NOT MMSOLVER_USE_GLOG)
+    # No need to use 'glog' if 'miniglog' feature is enabled.
+    set(Ceres_dependencies "Eigen3")
+  endif()
+
   ExternalProject_Add(ceres_install
-    DEPENDS Eigen3 glog
+    DEPENDS ${Ceres_dependencies}
     PREFIX ${Ceres_PREFIX}
     GIT_REPOSITORY ${Ceres_URL}
     GIT_TAG "${Ceres_GIT_TAG}"

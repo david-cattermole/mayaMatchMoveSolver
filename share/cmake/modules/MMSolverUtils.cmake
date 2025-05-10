@@ -328,3 +328,26 @@ function(compile_qt_resources_qrc_to_rcc_file
             COMMENT "Building Icons (with Qt Resource Compiler) (${input_file})..."
     )
 endfunction()
+
+# Find the Ceres "miniglog" include from looking up the Ceres include
+# path.
+function(find_ceres_miniglog_include_dir output_var)
+  get_target_property(ceres_include_dirs ceres INTERFACE_INCLUDE_DIRECTORIES)
+  # An example of "${ceres_include_dirs}" is:
+  # /build_mmsolver/cmake_linux_maya2025_Release/ext/install/ceres/include
+  #
+  # ... where the "glog/logging.h" file can be found is:
+  # /build_mmsolver/cmake_linux_maya2025_Release/ext/install/ceres/include/ceres/internal/miniglog/glog/logging.h
+  #
+  # ...and in this case the "${output_var}" value would be:
+  # /build_mmsolver/cmake_linux_maya2025_Release/ext/install/ceres/include/ceres/internal/miniglog/
+
+  # It's not great that we need to hard-code this sub-path rather than
+  # using CMake's 'find_path', however the problem with using
+  # 'find_path' is that find_path is run during the CMake build
+  # generation phase *not* when actually compiling. This means
+  # 'find_path' works fine but only if ceres is already built, which
+  # cannot happen until the 'miniglog' include is found - so it's a
+  # "chicken and egg" situation.
+  set(${output_var} "${ceres_include_dirs}/ceres/internal/miniglog/" PARENT_SCOPE)
+endfunction()

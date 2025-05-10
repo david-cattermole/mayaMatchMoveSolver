@@ -244,10 +244,20 @@ include(MMColorIOUtils)
 mmcolorio_find_packages()
 mmcolorio_target_link_packages(mmSolver)
 
+# Google glog is required for Ceres, but can be disabled in favour of
+# the Ceres embedded 'miniglog'.
+if (MMSOLVER_USE_GLOG)
+  target_link_libraries(mmSolver
+    PRIVATE glog::glog
+  )
+else()
+  find_ceres_miniglog_include_dir(miniglog_include_dir)
+  target_include_directories(mmSolver PRIVATE "${miniglog_include_dir}")
+endif()
+
 # Link all libraries.
 target_link_libraries(mmSolver
   PRIVATE cminpack::cminpack
-  PRIVATE glog::glog
   PRIVATE Eigen3::Eigen
   PRIVATE ceres
   PRIVATE openMVG

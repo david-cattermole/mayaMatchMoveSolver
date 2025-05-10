@@ -83,6 +83,10 @@ MMSOLVER_BUILD_ICONS=1
 MMSOLVER_BUILD_CONFIG=1
 MMSOLVER_BUILD_TESTS=0
 
+# 'glog' is disabled (hence 'miniglog' is enabled) on Linux because of
+# linking/build errors.
+MMSOLVER_USE_GLOG=0
+
 # Allows you to see the build command lines, to help debugging build
 # problems. Set to ON to enable, and OFF to disable.
 MMSOLVER_BUILD_VERBOSE=OFF
@@ -162,6 +166,7 @@ ${CMAKE_EXE} \
     -DMMSOLVER_BUILD_ICONS=${MMSOLVER_BUILD_ICONS} \
     -DMMSOLVER_BUILD_CONFIG=${MMSOLVER_BUILD_CONFIG} \
     -DMMSOLVER_BUILD_TESTS=${MMSOLVER_BUILD_TESTS} \
+    -DMMSOLVER_USE_GLOG=${MMSOLVER_USE_GLOG} \
     -DMAYA_LOCATION=${MAYA_LOCATION} \
     -DMAYA_VERSION=${MAYA_VERSION} \
     -Dmmsolverlibs_rust_DIR=${MMSOLVERLIBS_RUST_DIR} \

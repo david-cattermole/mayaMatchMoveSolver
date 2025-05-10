@@ -42,7 +42,9 @@ set(CMAKE_FIND_USE_PACKAGE_REGISTRY OFF CACHE BOOL
 # all.
 #
 # https://github.com/google/glog
-find_package(glog 0.5.0 REQUIRED)
+if (MMSOLVER_USE_GLOG)
+  find_package(glog 0.5.0 REQUIRED)
+endif()
 
 # CMinpack - Minimizer Package (for C)
 #

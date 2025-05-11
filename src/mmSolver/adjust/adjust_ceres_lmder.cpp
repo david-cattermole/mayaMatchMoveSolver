@@ -225,8 +225,11 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
 
     // Allow solve to get worse before it gets better. The parameters
     // with the lowest error is always picked at the end of the solve.
-    options.use_nonmonotonic_steps = false;
-    options.max_num_consecutive_invalid_steps = 5;  // Allow some invalid steps.
+    //
+    // NOTE: This only affects Trust Region algorithms.
+    const uint8_t max_invalid_steps = 0;  // or 5?
+    options.use_nonmonotonic_steps = max_invalid_steps > 0;
+    options.max_num_consecutive_invalid_steps = max_invalid_steps;
 
     // TODO: Should we bound the solver time?
     options.max_solver_time_in_seconds = 1e9;

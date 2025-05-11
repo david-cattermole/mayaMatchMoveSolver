@@ -119,6 +119,11 @@ class TestSolverIssue176(solverUtils.SolverTestCase):
         successes = [result[0] != 'success=1' for result in results]
         self.assertEqual(any(successes), False)
 
+    def test_init_ceres_line_search_lbfgs_der(self):
+        self.do_solve(
+            'ceres_line_search_lbfgs_der', mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER
+        )
+
     def test_init_ceres_lmder(self):
         self.do_solve('ceres_lmder', mmapi.SOLVER_TYPE_CERES_LMDER)
 

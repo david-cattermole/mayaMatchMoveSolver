@@ -139,6 +139,11 @@ class TestSolverSmoothness(solverUtils.SolverTestCase):
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
 
+    def test_init_ceres_line_search_lbfgs_der(self):
+        self.do_solve(
+            'ceres_line_search_lbfgs_der', mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER
+        )
+
     def test_init_ceres_lmder(self):
         self.do_solve('ceres_lmder', mmapi.SOLVER_TYPE_CERES_LMDER)
 

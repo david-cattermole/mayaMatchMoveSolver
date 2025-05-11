@@ -24,7 +24,7 @@
 
 #ifdef MMSOLVER_USE_CERES
 
-#include "adjust_ceres_lmder.h"
+#include "adjust_ceres_line_search_lbfgs_der.h"
 
 // STL
 #include <math.h>
@@ -56,6 +56,7 @@
 
 // MM Solver
 #include "adjust_ceres_base.h"
+#include "adjust_consoleLogging.h"
 #include "adjust_solveFunc.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
@@ -68,6 +69,58 @@
 namespace mmsolver {
 
 namespace {
+
+//
+class LoggingCallback : public ::ceres::IterationCallback {
+public:
+public:
+    explicit LoggingCallback(const mmsolver::LogLevel log_level)
+        : m_log_level(log_level) {}
+
+    ~LoggingCallback() = default;
+
+    ::ceres::CallbackReturnType operator()(
+        const ::ceres::IterationSummary& summary) {
+        const bool verbose = false;
+        MMSOLVER_MAYA_VRB(
+            "adjust_ceres_line_search_lbfgs_der LoggingCallback::operator()");
+
+        // const char* lineFormat =
+        //     "% 4d: f:% 8e d:% 3.2e g:% 3.2e h:% 3.2e "
+        //     "rho:% 3.2e mu:% 3.2e eta:% 3.2e li:% 3d";
+        // char formatBuffer[128];
+        // sprintf(formatBuffer, lineFormat, summary.iteration, summary.cost,
+        //         summary.cost_change, summary.gradient_max_norm,
+        //         summary.step_norm, summary.relative_decrease,
+        //         summary.trust_region_radius, summary.eta,
+        //         summary.linear_solver_iterations);
+        // MStreamUtils::stdErrorStream() << std::string(formatBuffer) << "\n";
+
+        const bool is_normal_call = true;
+        const bool is_jacobian_call = false;
+        const bool do_calc_jacobian = false;
+        const int32_t iter_num = summary.iteration;
+        const int32_t func_eval_num = 0;
+        const int32_t jac_iter_num = 0;
+        const double error_avg = summary.cost;
+        const double error_min = summary.cost;
+        const double error_max = summary.cost;
+        // cumulative_time_in_seconds
+        console_log_solver_iteration_pre_solve(
+            m_log_level, is_normal_call, is_jacobian_call, do_calc_jacobian,
+            iter_num, func_eval_num, jac_iter_num);
+        console_log_solver_iteration_post_solve(
+            m_log_level, is_normal_call, is_jacobian_call, do_calc_jacobian,
+            error_avg, error_min, error_max);
+
+        // ::ceres::SOLVER_ABORT
+        // ::ceres::SOLVER_TERMINATE_SUCCESSFULLY
+        return ::ceres::SOLVER_CONTINUE;
+    }
+
+private:
+    mmsolver::LogLevel m_log_level;
+};
 
 // Cost function adapter for Ceres that wraps the existing solve
 // function "solveFunc".
@@ -88,28 +141,33 @@ public:
                   double** jacobians) const override {
         const bool verbose = false;
         MMSOLVER_MAYA_VRB(
-            "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate");
+            "adjust_ceres_line_search_lbfgs_der "
+            "ResidualAndJacobianFunction::Evaluate");
 
         const int numberOfParameters = parameter_block_sizes()[0];
         const int numberOfResiduals = num_residuals();
         const int numberOfJacobians = numberOfParameters * numberOfResiduals;
         MMSOLVER_MAYA_VRB(
-            "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+            "adjust_ceres_line_search_lbfgs_der "
+            "ResidualAndJacobianFunction::Evaluate "
             "numberOfParameters: "
             << numberOfParameters);
         MMSOLVER_MAYA_VRB(
-            "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+            "adjust_ceres_line_search_lbfgs_der "
+            "ResidualAndJacobianFunction::Evaluate "
             "numberOfResiduals: "
             << numberOfResiduals);
         MMSOLVER_MAYA_VRB(
-            "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+            "adjust_ceres_line_search_lbfgs_der "
+            "ResidualAndJacobianFunction::Evaluate "
             "numberOfJacobians: "
             << numberOfJacobians);
 
         if (verbose) {
             for (auto i = 0; i < numberOfParameters; i++) {
                 MMSOLVER_MAYA_VRB(
-                    "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+                    "adjust_ceres_line_search_lbfgs_der "
+                    "ResidualAndJacobianFunction::Evaluate "
                     "parameters[0]["
                     << i << "] = " << parameters[0][i]);
             }
@@ -117,7 +175,8 @@ public:
 
         const bool do_jacobians = jacobians && jacobians[0];
         MMSOLVER_MAYA_VRB(
-            "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+            "adjust_ceres_line_search_lbfgs_der "
+            "ResidualAndJacobianFunction::Evaluate "
             "do_jacobians: "
             << do_jacobians);
         double* jacobians_block = nullptr;
@@ -166,7 +225,8 @@ public:
         if (verbose) {
             for (auto i = 0; i < numberOfResiduals; i++) {
                 MMSOLVER_MAYA_VRB(
-                    "adjust_ceres_lmder ResidualAndJacobianFunction::Evaluate "
+                    "adjust_ceres_line_search_lbfgs_der "
+                    "ResidualAndJacobianFunction::Evaluate "
                     "residuals["
                     << i << "] = " << residuals[i]);
             }
@@ -174,7 +234,7 @@ public:
             if (do_jacobians) {
                 for (auto i = 0; i < numberOfJacobians; i++) {
                     MMSOLVER_MAYA_VRB(
-                        "adjust_ceres_lmder "
+                        "adjust_ceres_line_search_lbfgs_der "
                         "ResidualAndJacobianFunction::Evaluate "
                         "jacobians[0]["
                         << i << "] = " << jacobians[0][i]);
@@ -192,13 +252,18 @@ private:
 
 }  // namespace
 
-bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
-                          const int numberOfParameters,
-                          const int numberOfErrors,
-                          std::vector<double>& paramList,
-                          std::vector<double>& errorList,
-                          std::vector<double>& paramWeightList,
-                          SolverData& userData, SolverResult& solveResult) {
+enum class CeresLinearSolverMode : uint8_t {
+    kDenseQr = 0,
+    kSparseNormalCholesky = 1,
+    kIterativeSchur = 2,
+    kNumCeresSolverMode,
+};
+
+bool solve_3d_ceres_line_search_lbfgs_der(
+    SolverOptions& solverOptions, const int numberOfParameters,
+    const int numberOfErrors, std::vector<double>& paramList,
+    std::vector<double>& errorList, std::vector<double>& paramWeightList,
+    SolverData& userData, SolverResult& solveResult) {
     const bool verbose = false;
 
     ::ceres::Problem::Options problemOptions;
@@ -214,30 +279,71 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
     double* param_ptr = paramList.data();
     problem.AddResidualBlock(cost_function, nullptr, param_ptr);
 
+    const CeresLinearSolverMode linear_solver_mode =
+        CeresLinearSolverMode::kSparseNormalCholesky;
+
     ::ceres::Solver::Options options;
 
-    options.minimizer_type = ::ceres::TRUST_REGION;
-    options.trust_region_strategy_type = ::ceres::LEVENBERG_MARQUARDT;
+    options.minimizer_type = ::ceres::LINE_SEARCH;
+    options.line_search_interpolation_type = ::ceres::CUBIC;
+
+    options.line_search_direction_type =
+        ::ceres::LineSearchDirectionType::LBFGS;
+    options.max_lbfgs_rank = 20;
+    options.use_approximate_eigenvalue_bfgs_scaling = false;
+
+    // In order for the assumptions underlying the BFGS and LBFGS
+    // methods to be satisfied the WOLFE algorithm must be used.
+    // http://ceres-solver.org/nnls_solving.html#line-search-methods
+    options.line_search_type = ::ceres::WOLFE;
+
+    // Line search related parameters
+    options.line_search_sufficient_curvature_decrease = 0.9;
+    options.line_search_sufficient_function_decrease = 1e-4;
+    options.max_line_search_step_contraction = 1e-3;
+    options.min_line_search_step_contraction = 0.6;
+    options.max_line_search_step_expansion = 10.0;
+    options.min_line_search_step_size = 1e-9;
+    options.max_num_line_search_direction_restarts = 5;
+    options.max_num_line_search_step_size_iterations = 20;
 
     // See "How do I choose the right linear solver?";
     // http://ceres-solver.org/solving_faqs.html#solving
-    options.linear_solver_type = ::ceres::DENSE_QR;
+    if (linear_solver_mode == CeresLinearSolverMode::kDenseQr) {
+        options.linear_solver_type = ::ceres::DENSE_QR;
+        options.preconditioner_type = ::ceres::JACOBI;
+    } else if (linear_solver_mode ==
+               CeresLinearSolverMode::kSparseNormalCholesky) {
+        options.linear_solver_type = ::ceres::SPARSE_NORMAL_CHOLESKY;
+        options.preconditioner_type = ::ceres::JACOBI;
+        options.dynamic_sparsity = true;
+    } else if (linear_solver_mode == CeresLinearSolverMode::kIterativeSchur) {
+        options.linear_solver_type = ::ceres::ITERATIVE_SCHUR;
+        options.preconditioner_type = ::ceres::SCHUR_JACOBI;
+        options.use_explicit_schur_complement = true;
+        options.min_linear_solver_iterations = 0;
+        options.max_linear_solver_iterations = 500;
+    }
 
-    // Allow solve to get worse before it gets better. The parameters
-    // with the lowest error is always picked at the end of the solve.
-    options.use_nonmonotonic_steps = false;
-    options.max_num_consecutive_invalid_steps = 5;  // Allow some invalid steps.
+    // Bound the solver time (1 minute).
+    options.max_solver_time_in_seconds = 1 * 60;
 
-    // TODO: Should we bound the solver time?
-    options.max_solver_time_in_seconds = 1e9;
+    // This high number of iterations is essentially intended to
+    // enable the solver to find the minimum within the maximum solver
+    // time allowed (see above).
+    options.max_num_iterations = 100000;
 
-    options.max_num_iterations = solverOptions.iterMax;
     options.function_tolerance = solverOptions.function_tolerance;
     options.parameter_tolerance = solverOptions.parameter_tolerance;
     options.gradient_tolerance = solverOptions.gradient_tolerance;
-    options.initial_trust_region_radius = solverOptions.tau;
     options.jacobi_scaling = true;
     options.num_threads = 1;
+
+    // // For debugging:
+    // {
+    //     options.check_gradients = true;
+    //     options.gradient_check_relative_precision = 1e-4;
+    // }
 
     options.minimizer_progress_to_stdout = false;
     options.logging_type = ::ceres::SILENT;
@@ -246,11 +352,24 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
         options.logging_type = ::ceres::PER_MINIMIZER_ITERATION;
     }
 
+    // auto* logging_callback = new LoggingCallback(userData.logLevel);
+    // options.callbacks.push_back(logging_callback);
+
+    // // TODO: Add parameter bounds.
+    // for (int i = 0; i < numberOfParameters; i++) {
+    //     if (paramWeightList[i] < 1.0) {
+    //         // TODO: Set parameter bounds.
+    //         problem.SetParameterLowerBound(param_ptr, i, -1e8);
+    //         problem.SetParameterUpperBound(param_ptr, i, 1e8);
+    //     }
+    // }
+
     ::ceres::Solver::Summary summary;
     ::ceres::Solve(options, &problem, &summary);
 
     if (verbose) {
-        MMSOLVER_MAYA_VRB("Ceres Solver Success: " << summary.IsSolutionUsable());
+        MMSOLVER_MAYA_VRB(
+            "Ceres Solver Success: " << summary.IsSolutionUsable());
         MMSOLVER_MAYA_VRB(summary.BriefReport());
         MMSOLVER_MAYA_VRB(summary.FullReport());
     }
@@ -266,12 +385,6 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
     solveResult.reason_number = reason_number;
     solveResult.reason = reason + " (" + summary.message + ")";
     solveResult.errorFinal = summary.final_cost;
-
-    // solveResult.iterationAttempts = (int) levmar_info[9];
-    // solveResult.errorInitial = summary.initial_cost;
-    // solveResult.errorJt = levmar_info[2];
-    // solveResult.errorDp = levmar_info[3];
-    // solveResult.errorMaximum = levmar_info[4];
 
     if (solveResult.success) {
         // NOTE: Parameters are updated in-place.

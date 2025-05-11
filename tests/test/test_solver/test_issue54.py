@@ -238,6 +238,22 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.assertApproxEqual(rx, 360.0, eps=0.01)
         self.assertApproxEqual(ry, 360.0, eps=0.01)
 
+    def test_init_ceres_line_search_lbfgs_der(self):
+        """
+        Solve nodal camera on a single frame, using ceres.
+        """
+        self.do_solve_with_initial_value_zero(
+            'ceres_line_search_lbfgs_der', mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER
+        )
+        self.do_solve_with_initial_value_twenty(
+            'ceres_line_search_lbfgs_der',
+            mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER,
+        )
+        self.do_solve_with_initial_value_threeSixty(
+            'ceres_line_search_lbfgs_der',
+            mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER,
+        )
+
     def test_init_ceres_lmder(self):
         """
         Solve nodal camera on a single frame, using ceres.

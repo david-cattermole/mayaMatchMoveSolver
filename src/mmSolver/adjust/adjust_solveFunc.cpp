@@ -511,7 +511,9 @@ int solveFunc_calculateJacobianMatrix(
 
     MMSOLVER_ASSERT(
         (userData->solverOptions->solverType == SOLVER_TYPE_CMINPACK_LMDER) ||
-            (userData->solverOptions->solverType == SOLVER_TYPE_CERES_LMDER),
+            (userData->solverOptions->solverType == SOLVER_TYPE_CERES_LMDER) ||
+            (userData->solverOptions->solverType ==
+             SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER),
         "Only CMinpack LMDER and Ceres LMDER can calculate a jacobian matrix "
         "manually.");
     int autoDiffType = userData->solverOptions->autoDiffType;

@@ -55,6 +55,7 @@
 #include <mmsolverlibs/debug.h>
 
 // MM Solver
+#include "adjust_ceres_line_search_lbfgs_der.h"
 #include "adjust_ceres_lmder.h"
 #include "adjust_ceres_lmdif.h"
 #include "adjust_cminpack_lmder.h"
@@ -104,6 +105,10 @@ std::vector<SolverTypePair> getSolverTypes() {
     solverType.second = SOLVER_TYPE_CERES_LMDER_NAME;
     solverTypes.push_back(solverType);
 
+    solverType.first = SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER;
+    solverType.second = SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER_NAME;
+    solverTypes.push_back(solverType);
+
     return solverTypes;
 }
 
@@ -136,7 +141,9 @@ SolverTypePair getSolverTypeDefault() {
                 << "\"" << SOLVER_TYPE_CMINPACK_LMDIF_NAME << "\", "
                 << "\"" << SOLVER_TYPE_CMINPACK_LMDER_NAME << "\", "
                 << "\"" << SOLVER_TYPE_CERES_LMDIF_NAME << "\", "
-                << "or \"" << SOLVER_TYPE_CERES_LMDER_NAME << "\"; "
+                << "\"" << SOLVER_TYPE_CERES_LMDER_NAME << "\", "
+                << "or \"" << SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER_NAME
+                << "\"; "
                 << "; value=" << defaultSolver);
         }
     }
@@ -1482,6 +1489,12 @@ MStatus solveFrames(
         solve_3d_ceres_lmder(solverOptions, numberOfParameters, numberOfErrors,
                              out_paramList, out_errorList, paramWeightList,
                              userData, out_cmdResult.solverResult);
+    } else if (solverOptions.solverType ==
+               SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER) {
+        solve_3d_ceres_line_search_lbfgs_der(
+            solverOptions, numberOfParameters, numberOfErrors, out_paramList,
+            out_errorList, paramWeightList, userData,
+            out_cmdResult.solverResult);
     } else {
         MMSOLVER_MAYA_ERR("mmSolver: Solver Type is invalid. solverType="
                           << solverOptions.solverType);

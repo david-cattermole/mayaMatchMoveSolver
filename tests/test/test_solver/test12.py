@@ -160,6 +160,42 @@ class TestSolver12(solverUtils.SolverTestCase):
         self.assertApproxEqual(tx, -6.0)
         self.assertApproxEqual(ty, 3.6)
 
+    def test_init_ceres_line_search_lbfgs_der_maya_dag_single_frame(self):
+        single_frame = True
+        self.do_solve(
+            'ceres_line_search_lbfgs_der',
+            mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+            single_frame,
+        )
+
+    def test_init_ceres_line_search_lbfgs_der_maya_dag_multi_frame(self):
+        single_frame = False
+        self.do_solve(
+            'ceres_line_search_lbfgs_der',
+            mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+            single_frame,
+        )
+
+    def test_init_ceres_line_search_lbfgs_der_mmscenegraph_single_frame(self):
+        single_frame = True
+        self.do_solve(
+            'ceres_line_search_lbfgs_der',
+            mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            single_frame,
+        )
+
+    def test_init_ceres_line_search_lbfgs_der_mmscenegraph_multi_frame(self):
+        single_frame = False
+        self.do_solve(
+            'ceres_line_search_lbfgs_der',
+            mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            single_frame,
+        )
+
     def test_init_ceres_lmder_maya_dag_single_frame(self):
         single_frame = True
         self.do_solve(

@@ -158,6 +158,14 @@ class TestLens3(solverUtils.SolverTestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
+    def test_init_ceres_line_search_lbfgs_der(self):
+        """
+        Solve lens distortion on a single frame, using ceres.
+        """
+        self.do_solve(
+            'ceres_line_search_lbfgs_der', mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER
+        )
+
     def test_init_ceres_lmder(self):
         """
         Solve lens distortion on a single frame, using ceres.

@@ -36,6 +36,7 @@ set(SOURCE_FILES
   ${main_build_constant_output_file}
   mmSolver/adjust/adjust_base.cpp
   mmSolver/adjust/adjust_ceres_base.cpp
+  mmSolver/adjust/adjust_ceres_line_search_lbfgs_der.cpp
   mmSolver/adjust/adjust_ceres_lmder.cpp
   mmSolver/adjust/adjust_ceres_lmdif.cpp
   mmSolver/adjust/adjust_cminpack_base.cpp

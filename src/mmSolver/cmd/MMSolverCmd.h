@@ -126,6 +126,7 @@ private:
                                  //                     2=cminpack_lmder,
                                  //                     3=ceres_lmdif,
                                  //                     4=ceres_lmder.
+                                 //                     5=ceres_line_search_lbfgs_der.
     int m_timeEvalMode;          // How to evaluate values at different times?
     bool m_acceptOnlyBetter;     // Do not accept solved parameter values
                                  // if the average devation is higher

@@ -154,6 +154,20 @@ class TestSolver11(solverUtils.SolverTestCase):
         results = [mmapi.SolveResult(result)]
         self.checkSolveResults(results, allow_max_avg_error=3.5, allow_max_error=3.5)
 
+    def test_ceres_line_search_lbfgs_der_maya_dag(self):
+        self.do_solve(
+            'ceres_line_search_lbfgs_der',
+            mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
+
+    def test_ceres_line_search_lbfgs_der_mmscenegraph(self):
+        self.do_solve(
+            'ceres_line_search_lbfgs_der',
+            mmapi.SOLVER_TYPE_CERES_LINE_SEARCH_LBFGS_DER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
+
     def test_ceres_lmder_maya_dag(self):
         self.do_solve(
             'ceres_lmder',

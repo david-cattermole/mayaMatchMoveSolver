@@ -122,16 +122,13 @@ def main():
     # '2020-12-04_14_26'.
     now_str = time.strftime('%Y-%m-%d_%H_%M')
     prefix = 'tmp_{0}_'.format(now_str)
-    f = tempfile.NamedTemporaryFile(
-        mode='w', prefix=prefix, suffix=file_ext, delete=False
-    )
-    if f.closed:
-        msg = "Error: Couldn't open file.\n%r"
-        msg = msg % f.name
-        tde4.postQuestionRequester(TITLE, msg, 'Ok')
-        return
-    f.write(data_str)
-    f.close()
+    with tempfile.NamedTemporaryFile(mode='w', prefix=prefix, suffix=file_ext, delete=False) as f:
+        if f.closed:
+            msg = "Error: Couldn't open file.\n"
+            msg += repr(f.name)
+            tde4.postQuestionRequester(TITLE, msg, 'Ok')
+            return
+        f.write(data_str)
 
     # Override the user's clipboard with the temporary file path.
     if uvtrack_format.SUPPORT_CLIPBOARD is True:

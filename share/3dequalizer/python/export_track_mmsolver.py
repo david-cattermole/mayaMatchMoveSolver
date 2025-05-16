@@ -124,14 +124,13 @@ def main():
         if path.find(EXT, len(path) - 3) == -1:
             # Ensure the file path ends with the extension, if not add it.
             path += EXT
-        f = open(path, 'w')
-        if f.closed:
-            msg = "Error, couldn't open file.\n"
-            msg += repr(path)
-            tde4.postQuestionRequester(TITLE, msg, 'Ok')
-            return
-        f.write(data_str)
-        f.close()
+        with open(path, 'w') as f:
+            if f.closed:
+                msg = "Error, couldn't open file.\n"
+                msg += repr(path)
+                tde4.postQuestionRequester(TITLE, msg, 'Ok')
+                return
+            f.write(data_str)
     return
 
 

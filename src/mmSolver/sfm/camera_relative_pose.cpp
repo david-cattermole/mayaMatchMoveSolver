@@ -96,9 +96,9 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                           const openMVG::cameras::IntrinsicBase *intrinsics2,
                           const openMVG::Mat &x1, const openMVG::Mat &x2,
                           openMVG::sfm::RelativePose_Info &relativePose_info,
-                          const std::pair<size_t, size_t> &size_ima1,
-                          const std::pair<size_t, size_t> &size_ima2,
-                          const size_t max_iteration_count) {
+                          const std::pair<uint32_t, uint32_t> &size_ima1,
+                          const std::pair<uint32_t, uint32_t> &size_ima2,
+                          const uint32_t max_iteration_count) {
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
@@ -243,12 +243,12 @@ bool compute_relative_pose(
 
     // Compute the relative pose thanks to an essential matrix
     // estimation.
-    const std::pair<size_t, size_t> image_size_a(
-        static_cast<size_t>(image_width_a),
-        static_cast<size_t>(image_height_a));
-    const std::pair<size_t, size_t> image_size_b(
-        static_cast<size_t>(image_width_b),
-        static_cast<size_t>(image_height_b));
+    const std::pair<uint32_t, uint32_t> image_size_a(
+        static_cast<uint32_t>(image_width_a),
+        static_cast<uint32_t>(image_height_a));
+    const std::pair<uint32_t, uint32_t> image_size_b(
+        static_cast<uint32_t>(image_width_b),
+        static_cast<uint32_t>(image_height_b));
     auto num_max_iter = 4096;
     bool robust_pose_ok = robust_relative_pose(
         &cam_a, &cam_b, marker_coords_matrix_a, marker_coords_matrix_b,
@@ -315,10 +315,10 @@ bool construct_two_camera_sfm_data_scene(
     const double ppx_pix_a, const double ppx_pix_b, const double ppy_pix_a,
     const double ppy_pix_b, const openMVG::sfm::RelativePose_Info &pose_info,
     openMVG::sfm::SfM_Data &scene) {
-    auto image_width_size_a = static_cast<size_t>(image_width_a);
-    auto image_width_size_b = static_cast<size_t>(image_width_b);
-    auto image_height_size_a = static_cast<size_t>(image_height_a);
-    auto image_height_size_b = static_cast<size_t>(image_height_b);
+    auto image_width_size_a = static_cast<uint32_t>(image_width_a);
+    auto image_width_size_b = static_cast<uint32_t>(image_width_b);
+    auto image_height_size_a = static_cast<uint32_t>(image_height_a);
+    auto image_height_size_b = static_cast<uint32_t>(image_height_b);
 
     // Setup a SfM scene with two view corresponding the pictures
     scene.views[0].reset(new openMVG::sfm::View(

@@ -95,9 +95,9 @@ namespace sfm {
 //   to match OpenMVG (rather than Maya).
 bool robust_camera_pose_from_known_points(
     const openMVG::Mat &points_2d, const openMVG::Mat &points_3d,
-    const std::pair<size_t, size_t> &image_size, const double focal_length_pix,
-    const double ppx_pix, const double ppy_pix,
-    const size_t max_iteration_count, openMVG::Mat34 &out_projection_matrix) {
+    const std::pair<uint32_t, uint32_t> &image_size,
+    const double focal_length_pix, const double ppx_pix, const double ppy_pix,
+    const uint32_t max_iteration_count, openMVG::Mat34 &out_projection_matrix) {
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
@@ -193,8 +193,9 @@ bool compute_camera_pose_from_known_points(
     openMVG::Mat bundle_coords_matrix =
         convert_bundle_coords_to_matrix_flip_z(bundle_coords);
 
-    const std::pair<size_t, size_t> image_size(
-        static_cast<size_t>(image_width), static_cast<size_t>(image_height));
+    const std::pair<uint32_t, uint32_t> image_size(
+        static_cast<uint32_t>(image_width),
+        static_cast<uint32_t>(image_height));
 
     openMVG::Mat34 projection_matrix;
     auto num_max_iter = 1024;

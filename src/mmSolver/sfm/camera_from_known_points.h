@@ -77,9 +77,9 @@ namespace sfm {
 
 bool robust_camera_pose_from_known_points(
     const openMVG::Mat &points_2d, const openMVG::Mat &points_3d,
-    const std::pair<size_t, size_t> &image_size, const double focal_length_pix,
-    const double ppx_pix, const double ppy_pix,
-    const size_t max_iteration_count, openMVG::Mat34 &out_projection_matrix);
+    const std::pair<uint32_t, uint32_t> &image_size,
+    const double focal_length_pix, const double ppx_pix, const double ppy_pix,
+    const uint32_t max_iteration_count, openMVG::Mat34 &out_projection_matrix);
 
 bool compute_camera_pose_from_known_points(
     const int32_t image_width, const int32_t image_height,

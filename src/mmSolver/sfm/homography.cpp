@@ -65,9 +65,9 @@ using KernelType = openMVG::robust::ACKernelAdaptor<
 
 bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
                        openMVG::Mat3 &homography_matrix,
-                       const std::pair<size_t, size_t> &size_ima1,
-                       const std::pair<size_t, size_t> &size_ima2,
-                       const size_t max_iteration_count) {
+                       const std::pair<uint32_t, uint32_t> &size_ima1,
+                       const std::pair<uint32_t, uint32_t> &size_ima2,
+                       const uint32_t max_iteration_count) {
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
@@ -154,12 +154,12 @@ bool compute_homography(
     openMVG::Mat marker_coords_matrix_b =
         convert_marker_coords_to_matrix(marker_coords_b);
 
-    const std::pair<size_t, size_t> image_size_a(
-        static_cast<size_t>(image_width_a),
-        static_cast<size_t>(image_height_a));
-    const std::pair<size_t, size_t> image_size_b(
-        static_cast<size_t>(image_width_b),
-        static_cast<size_t>(image_height_b));
+    const std::pair<uint32_t, uint32_t> image_size_a(
+        static_cast<uint32_t>(image_width_a),
+        static_cast<uint32_t>(image_height_a));
+    const std::pair<uint32_t, uint32_t> image_size_b(
+        static_cast<uint32_t>(image_width_b),
+        static_cast<uint32_t>(image_height_b));
 
     const auto num_max_iter = 4096;
     bool robust_pose_ok = robust_homography(

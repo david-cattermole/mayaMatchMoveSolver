@@ -43,9 +43,9 @@ namespace sfm {
 
 bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
                        openMVG::Mat3 &homography_matrix,
-                       const std::pair<size_t, size_t> &size_ima1,
-                       const std::pair<size_t, size_t> &size_ima2,
-                       const size_t max_iteration_count);
+                       const std::pair<uint32_t, uint32_t> &size_ima1,
+                       const std::pair<uint32_t, uint32_t> &size_ima2,
+                       const uint32_t max_iteration_count);
 
 bool compute_homography(
     const int32_t image_width_a, const int32_t image_width_b,

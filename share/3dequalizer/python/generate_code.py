@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2022 David Cattermole.
+# Copyright (C) 2022, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -28,6 +28,10 @@ Example usage:
 $ cd <project root>
 $ python share/3dequalizer/python/generate_code.py -i share/3dequalizer/python/import_tracks_mmsolver.py -o share/3dequalizer/scriptdb/import_tracks_mmsolver.py
 
+$ python share/3dequalizer/python/generate_code.py -i share/3dequalizer/python/copy_track_mmsolver.py -o share/3dequalizer/scriptdb/copy_track_mmsolver.py
+
+$ python share/3dequalizer/python/generate_code.py -i share/3dequalizer/python/export_track_mmsolver.py -o share/3dequalizer/scriptdb/export_track_mmsolver.py
+
 The generated output code will still need to be manually edited before
 the file can be run properly. This includes:
 - Removing unneeded Python imports.
@@ -48,6 +52,7 @@ WRITE_FLAG = '--write'
 NEW_LINE = '\n'
 TRIPLE_DOUBLE_QUOTES = '"""'
 TRIPLE_SINGLE_QUOTES = "'''"
+TOKEN_FILTER_LINE = '# GENERATE_FILTER_LINE'
 TOKEN_INCLUDE_FILE = '# INCLUDE_FILE'
 TOKEN_BEGIN_FILE = '# BEGIN_FILE'
 TOKEN_END_FILE = '# END_FILE'
@@ -122,10 +127,52 @@ def _read_text_file(file_path):
     return text_contents
 
 
+def _pre_remove_filtered_lines_from_python_script(text_contents):
+    new_lines = []
+    lines = text_contents.split(NEW_LINE)
+    for line in lines:
+        if line.strip().endswith(TOKEN_FILTER_LINE):
+            continue
+        if '3DE4.script.hide' in line:
+            continue
+        new_lines.append(line)
+    new_text_contents = NEW_LINE.join(new_lines)
+
+    return new_text_contents
+
+
+def _post_remove_filtered_lines_from_python_script(text_contents):
+    new_lines = []
+    lines = text_contents.split(NEW_LINE)
+    for line in lines:
+        if line.strip().startswith(TOKEN_INCLUDE_FILE):
+            continue
+        if line.strip().startswith(TOKEN_BEGIN_FILE):
+            continue
+        if line.strip().startswith(TOKEN_END_FILE):
+            continue
+        new_lines.append(line)
+    new_text_contents = NEW_LINE.join(new_lines)
+
+    return new_text_contents
+
+
+def _remove_import_use_lines_from_python_script(text_contents, python_module_name):
+    python_module_use = python_module_name + '.'
+
+    new_lines = []
+    lines = text_contents.split(NEW_LINE)
+    for line in lines:
+        new_line = line.replace(python_module_use, '')
+        new_lines.append(new_line)
+    new_text_contents = NEW_LINE.join(new_lines)
+
+    return new_text_contents
+
+
 def _remove_comments_from_python_script(
     text_contents, file_begin_index=None, file_end_index=None
 ):
-    print("_remove_comments_from_python_script")
     # Remove line comments.
     new_lines = []
     lines = text_contents.split(NEW_LINE)
@@ -207,6 +254,8 @@ def _startswith_triple_quotes(text):
 def _filter_python_script(existing_import_lines, text_contents):
     new_lines = []
 
+    text_contents = _pre_remove_filtered_lines_from_python_script(text_contents)
+
     # Filter all import lines that are already existing in the parent
     # file.
     lines = text_contents.split(NEW_LINE)
@@ -264,14 +313,19 @@ def main(input_file_path, output_file_path):
 
     assert input_file_path.endswith('.py')
     base_text_contents = _read_text_file(input_file_path)
+    base_text_contents = _pre_remove_filtered_lines_from_python_script(
+        base_text_contents
+    )
     existing_import_lines = _find_python_imports(base_text_contents)
 
     file_path_tokens = _find_injection_sub_file_path_tokens_in_text(base_text_contents)
     for file_path_token in file_path_tokens:
         print('Include File Path: %r' % file_path_token)
         sub_file_path = _resolve_file_path(base_directory, file_path_token)
-        assert sub_file_path.endswith('.py')
-        # Only Python scripts are currently supported.
+        assert sub_file_path.endswith(
+            '.py'
+        ), 'Only Python scripts are currently supported.'
+
         sub_text_contents = _read_text_file(sub_file_path)
         sub_text_contents = _filter_python_script(
             existing_import_lines, sub_text_contents
@@ -280,7 +334,16 @@ def main(input_file_path, output_file_path):
             base_text_contents, file_path_token, sub_text_contents
         )
 
-    print(base_text_contents)
+        module_file_name = os.path.basename(sub_file_path)
+        module_name, _ = os.path.splitext(module_file_name)
+        base_text_contents = _remove_import_use_lines_from_python_script(
+            base_text_contents, module_name
+        )
+
+    base_text_contents = _post_remove_filtered_lines_from_python_script(
+        base_text_contents
+    )
+
     if output_file_path is not None:
         with open(output_file_path, 'w') as f:
             f.write(base_text_contents)

@@ -60,7 +60,8 @@ import time
 
 import tde4
 
-import uvtrack_format
+import uvtrack_format  # GENERATE_FILTER_LINE
+# INCLUDE_FILE uvtrack_format.py
 
 
 TITLE = 'Copy 2D Tracks to MM Solver...'
@@ -68,10 +69,15 @@ EXT = '.uv'
 
 
 def main():
-    camera = tde4.getCurrentCamera()
     point_group = tde4.getCurrentPGroup()
-    if camera is None or point_group is None:
-        msg = 'There is no current Point Group or Camera.'
+    if point_group is None:
+        msg = 'Please activate a Point Group.'
+        tde4.postQuestionRequester(TITLE, msg, 'Ok')
+        return
+
+    camera = tde4.getCurrentCamera()
+    if camera is None:
+        msg = 'Please activate a Camera.'
         tde4.postQuestionRequester(TITLE, msg, 'Ok')
         return
 
@@ -81,12 +87,16 @@ def main():
         # retrieve point's parent pgroup (not necessarily being the current
         # one!)...
         point_group = tde4.getContextMenuParentObject()
+        if point_group is None:
+            msg = 'Please select some points.'
+            tde4.postQuestionRequester(TITLE, msg, 'Ok')
+            return
         points = tde4.getPointList(point_group, 1)
     else:
         # otherwise use regular selection...
         points = tde4.getPointList(point_group, 1)
     if len(points) == 0:
-        msg = 'There are no selected points.'
+        msg = 'Please select some points.'
         tde4.postQuestionRequester(TITLE, msg, 'Ok')
         return
 
@@ -122,7 +132,9 @@ def main():
     # '2020-12-04_14_26'.
     now_str = time.strftime('%Y-%m-%d_%H_%M')
     prefix = 'tmp_{0}_'.format(now_str)
-    with tempfile.NamedTemporaryFile(mode='w', prefix=prefix, suffix=file_ext, delete=False) as f:
+    with tempfile.NamedTemporaryFile(
+        mode='w', prefix=prefix, suffix=file_ext, delete=False
+    ) as f:
         if f.closed:
             msg = "Error: Couldn't open file.\n"
             msg += repr(f.name)

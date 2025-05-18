@@ -1,6 +1,6 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# Copyright (C) 2018, 2019, 2020, 2021 David Cattermole.
+# Copyright (C) 2018, 2019, 2020, 2021, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version:  v1.11
+# 3DE4.script.version:  v1.12
 #
 # 3DE4.script.gui:      Main Window::3DE4::File::Export
 # 3DE4.script.gui:      Object Browser::Context Menu Point
@@ -70,6 +70,7 @@ UV_TRACK_FORMAT_VERSION_1 = 1
 UV_TRACK_FORMAT_VERSION_2 = 2
 UV_TRACK_FORMAT_VERSION_3 = 3
 UV_TRACK_FORMAT_VERSION_4 = 4
+UV_TRACK_FORMAT_VERSION_5 = 5
 
 UV_TRACK_HEADER_VERSION_2 = {
     'version': UV_TRACK_FORMAT_VERSION_2,
@@ -83,9 +84,13 @@ UV_TRACK_HEADER_VERSION_4 = {
     'version': UV_TRACK_FORMAT_VERSION_4,
 }
 
+UV_TRACK_HEADER_VERSION_5 = {
+    'version': UV_TRACK_FORMAT_VERSION_5,
+}
+
 # Preferred UV Track format version (changes the format
 # version used for writing data).
-UV_TRACK_FORMAT_VERSION_PREFERRED = UV_TRACK_FORMAT_VERSION_4
+UV_TRACK_FORMAT_VERSION_PREFERRED = UV_TRACK_FORMAT_VERSION_5
 
 # Do we have support for new features of 3DE tde4 module?
 SUPPORT_PERSISTENT_ID = 'getPointPersistentID' in dir(tde4)
@@ -105,10 +110,15 @@ RS_DISTANCE_KEY = 'rscontentdistance='
 
 
 def main():
-    camera = tde4.getCurrentCamera()
     point_group = tde4.getCurrentPGroup()
-    if camera is None or point_group is None:
-        msg = 'There is no current Point Group or Camera.'
+    if point_group is None:
+        msg = 'Please activate a Point Group.'
+        tde4.postQuestionRequester(TITLE, msg, 'Ok')
+        return
+
+    camera = tde4.getCurrentCamera()
+    if camera is None:
+        msg = 'Please activate a Camera.'
         tde4.postQuestionRequester(TITLE, msg, 'Ok')
         return
 
@@ -118,12 +128,16 @@ def main():
         # retrieve point's parent pgroup (not necessarily being the current
         # one!)...
         point_group = tde4.getContextMenuParentObject()
+        if point_group is None:
+            msg = 'Please select some points.'
+            tde4.postQuestionRequester(TITLE, msg, 'Ok')
+            return
         points = tde4.getPointList(point_group, 1)
     else:
         # otherwise use regular selection...
         points = tde4.getPointList(point_group, 1)
     if len(points) == 0:
-        msg = 'There are no selected points.'
+        msg = 'Please select some points.'
         tde4.postQuestionRequester(TITLE, msg, 'Ok')
         return
 
@@ -175,14 +189,13 @@ def main():
         if path.find(EXT, len(path) - 3) == -1:
             # Ensure the file path ends with the extension, if not add it.
             path += EXT
-        f = open(path, 'w')
-        if f.closed:
-            msg = "Error, couldn't open file.\n"
-            msg += repr(path)
-            tde4.postQuestionRequester(TITLE, msg, 'Ok')
-            return
-        f.write(data_str)
-        f.close()
+        with open(path, 'w') as f:
+            if f.closed:
+                msg = "Error, couldn't open file.\n"
+                msg += repr(path)
+                tde4.postQuestionRequester(TITLE, msg, 'Ok')
+                return
+            f.write(data_str)
     return
 
 
@@ -570,6 +583,154 @@ def _get_3d_data_from_point(point_group, point):
     return point_3d_data
 
 
+def _convert_to_matrix_4x4(pos, rotate, scale):
+    """
+    Combine a 3D object's position, rotation and scale into a
+    transformation matrix.
+
+    :param pos: The 3DE Camera containing 2D 'points' data.
+    :type pos: vl_sdv.vec3d
+
+    :param rotate: Rotation 3x3 matrix.
+    :type rotate: vl_sdv.mat3d
+
+    :param scale: Uniform scale value.
+    :type scale: float
+
+    :returns: Transform 4x4 matrix.
+    :rtype: vl_sdv.mat4d
+    """
+    assert isinstance(pos, vl_sdv.vec3d)
+    assert isinstance(rotate, vl_sdv.mat3d)
+    assert isinstance(scale, float)
+
+    # NOTE: vl_sdv matrices appear to be row-major.
+    scaled_rotation = rotate * scale
+    transform = vl_sdv.igl3d(pos, scaled_rotation)
+    return transform.mat()
+
+
+def _convert_matrix_to_flat_tuple(matrix):
+    """
+    Convert a matrix to a flat list of numbers.
+
+    :param matrix: 3x3 or 4x4 matrix.
+    :type matrix: vl_sdv.mat3d or vl_sdv.mat4d
+
+    :returns: List of 9 or 16 float numbers.
+    :rtype: list[float]
+    """
+    assert isinstance(matrix, (vl_sdv.mat3d, vl_sdv.mat4d))
+
+    # NOTE: vl_sdv matrices appear to be row-major.
+    rows = matrix.list()
+    flat_list = []
+    for row in rows:
+        flat_list.extend(row)
+
+    assert len(flat_list) in [9, 16]
+    return tuple(flat_list)
+
+
+def _get_scene_data():
+    """
+    Get 3DE scene information.
+
+    :returns: Dictionary of the 3DE Scene data.
+    :rtype: dict
+    """
+    data = {}
+
+    scene_rotate = tde4.getSceneRotation3D()
+    scene_pos = tde4.getScenePosition3D()
+    scene_scale = tde4.getSceneScale3D()
+
+    transform_matrix = _convert_to_matrix_4x4(
+        vl_sdv.vec3d(scene_pos), vl_sdv.mat3d(scene_rotate), scene_scale
+    )
+    transform_matrix_flat = _convert_matrix_to_flat_tuple(transform_matrix)
+    assert len(transform_matrix_flat) == 16
+    data['transform'] = transform_matrix_flat
+
+    return data
+
+
+def _get_3d_transform_from_point_group(point_group, camera, frame_zero, cam_num_frames):
+    """
+    Get 3D transform from 3DE point group.
+
+    :param point_group: 3DE point group id.
+    :type point_group: str
+
+    :param camera: The 3DE Camera id.
+    :type camera: str
+
+    :param frame_zero: The frame number that is considered 'zero'.
+    :type frame_zero: int
+
+    :param cam_num_frames: Number of frames in the camera.
+    :type cam_num_frames: int
+
+    :returns: Dictionary of 3D transform data for each frame.
+    :rtype: dict
+    """
+    data = {}
+
+    # 3DE starts at frame '1' (one) regardless of the 'start frame'.
+    frames = range(1, cam_num_frames + 1)
+    assert len(frames) == cam_num_frames
+
+    for frame in frames:
+        pg_rotate = tde4.getPGroupRotation3D(point_group, camera, frame)
+        pg_pos = tde4.getPGroupPosition3D(point_group, camera, frame)
+        pg_scale = tde4.getPGroupScale3D(point_group)
+
+        transform_matrix = _convert_to_matrix_4x4(
+            vl_sdv.vec3d(pg_pos), vl_sdv.mat3d(pg_rotate), pg_scale
+        )
+        transform_matrix_flat = _convert_matrix_to_flat_tuple(transform_matrix)
+
+        f = frame + frame_zero
+        data[f] = transform_matrix_flat
+
+    assert len(data) == cam_num_frames
+    return data
+
+
+def _get_pgroup_data(point_group, camera, frame_zero, cam_num_frames):
+    """
+    Get 3DE point group information.
+
+    :param point_group: 3DE point group id.
+    :type point_group: str
+
+    :param camera: The 3DE Camera id.
+    :type camera: str
+
+    :param frame_zero: The frame number that is considered 'zero'.
+    :type frame_zero: int
+
+    :param cam_num_frames: Number of frames in the camera.
+    :type cam_num_frames: int
+
+    :returns: Dictionary of 3D transform data for each frame.
+    :rtype: dict
+    """
+    point_group_name = tde4.getPGroupName(point_group)
+    point_group_type = tde4.getPGroupType(point_group)
+
+    transform_data = _get_3d_transform_from_point_group(
+        point_group, camera, frame_zero, cam_num_frames
+    )
+
+    point_group_data = {
+        'name': point_group_name,
+        'type': point_group_type,
+        'transform': transform_data,
+    }
+    return point_group_data
+
+
 def generate(point_group, camera, points, fmt=None, **kwargs):
     """
     Return a str, ready to be written to a text file.
@@ -610,6 +771,8 @@ def generate(point_group, camera, points, fmt=None, **kwargs):
         data = _generate_v3(point_group, camera, points, **kwargs)
     elif fmt == UV_TRACK_FORMAT_VERSION_4:
         data = _generate_v4(point_group, camera, points, **kwargs)
+    elif fmt == UV_TRACK_FORMAT_VERSION_5:
+        data = _generate_v5(point_group, camera, points, **kwargs)
     return data
 
 
@@ -666,8 +829,8 @@ def _generate_v1(
     if len(points) == 0:
         return data_str
 
-    frame0 = int(start_frame)
-    frame0 -= 1
+    frame_zero = int(start_frame)
+    frame_zero -= 1
 
     data_str += '{0:d}\n'.format(len(points))
 
@@ -682,7 +845,7 @@ def _generate_v1(
         num_valid_frame = 0
         pos_list = []
         weight_list = []
-        frame = 1  # 3DE starts at frame '1' regardless of the 'start-frame'.
+        frame = 1  # 3DE starts at frame '1' (one) regardless of the 'start frame'.
         for v in c2d:
             if v[0] == -1.0 or v[1] == -1.0:
                 # No valid data here.
@@ -705,7 +868,7 @@ def _generate_v1(
             # Number of points with valid positions
             num_valid_frame += 1
 
-            f = frame + frame0
+            f = frame + frame_zero
             if rs_distance is not None:
                 v = vl_sdv.vec2d(v[0], v[1])
                 v = _remove_rs_from_2d_point(point_group, camera, frame, v, rs_distance)
@@ -730,7 +893,7 @@ def _generate_v1(
     return data_str
 
 
-def _generate_camera_data(camera, lens, frame0):
+def _generate_camera_data(camera, lens, frame_zero):
     camera_data = {}
     cam_num_frames = tde4.getCameraNoFrames(camera)
 
@@ -752,7 +915,7 @@ def _generate_camera_data(camera, lens, frame0):
         # to be static, only focal length can be dynamic.
         focal_length = tde4.getCameraFocalLength(camera, frame)
         frame_data = {
-            'frame': frame + frame0,
+            'frame': frame + frame_zero,
             'focal_length_cm': focal_length,
         }
         camera_data['per_frame'].append(frame_data)
@@ -760,7 +923,7 @@ def _generate_camera_data(camera, lens, frame0):
     return camera_data
 
 
-def _generate_v2_v3_and_v4(point_group, camera, points, version=None, **kwargs):
+def _generate_v2_v3_v4_and_v5(point_group, camera, points, version=None, **kwargs):
     """
     Generate the UV file format contents, using JSON format.
 
@@ -806,6 +969,7 @@ def _generate_v2_v3_and_v4(point_group, camera, points, version=None, **kwargs):
         UV_TRACK_FORMAT_VERSION_2,
         UV_TRACK_FORMAT_VERSION_3,
         UV_TRACK_FORMAT_VERSION_4,
+        UV_TRACK_FORMAT_VERSION_5,
     ]
 
     start_frame = kwargs.get('start_frame')
@@ -828,6 +992,8 @@ def _generate_v2_v3_and_v4(point_group, camera, points, version=None, **kwargs):
         data = UV_TRACK_HEADER_VERSION_3.copy()
     elif version == UV_TRACK_FORMAT_VERSION_4:
         data = UV_TRACK_HEADER_VERSION_4.copy()
+    elif version == UV_TRACK_FORMAT_VERSION_5:
+        data = UV_TRACK_HEADER_VERSION_5.copy()
     else:
         raise ValueError("Version number is invalid; %r" % version)
 
@@ -838,13 +1004,19 @@ def _generate_v2_v3_and_v4(point_group, camera, points, version=None, **kwargs):
     if len(points) == 0:
         return ''
 
-    frame0 = int(start_frame)
-    frame0 -= 1
+    frame_zero = int(start_frame)
+    frame_zero -= 1
 
     data['num_points'] = len(points)
     data['is_undistorted'] = None
     if version == UV_TRACK_FORMAT_VERSION_2:
         data['is_undistorted'] = bool(undistort)
+
+    if version in [UV_TRACK_FORMAT_VERSION_5]:
+        data['scene'] = _get_scene_data()
+        data['point_group'] = _get_pgroup_data(
+            point_group, camera, frame_zero, cam_num_frames
+        )
 
     data['points'] = []
     for point in points:
@@ -865,11 +1037,15 @@ def _generate_v2_v3_and_v4(point_group, camera, points, version=None, **kwargs):
         valid_mode = _get_point_valid_mode(point_group, point)
 
         # Get the 3D point position
-        if version in [UV_TRACK_FORMAT_VERSION_3, UV_TRACK_FORMAT_VERSION_4]:
+        if version in [
+            UV_TRACK_FORMAT_VERSION_3,
+            UV_TRACK_FORMAT_VERSION_4,
+            UV_TRACK_FORMAT_VERSION_5,
+        ]:
             point_data['3d'] = _get_3d_data_from_point(point_group, point)
 
         # Write per-frame position data
-        frame = 1  # 3DE starts at frame '1' regardless of the 'start frame'.
+        frame = 1  # 3DE starts at frame '1' (one) regardless of the 'start frame'.
         point_data['per_frame'] = []
         pos_block = tde4.getPointPosition2DBlock(
             point_group, point, camera, 1, cam_num_frames
@@ -903,18 +1079,22 @@ def _generate_v2_v3_and_v4(point_group, camera, points, version=None, **kwargs):
                 pos_undist = tde4.removeDistortion2D(camera, frame, pos_undist)
             weight = _get_point_weight(point_group, point, camera, frame)
 
-            f = frame + frame0
+            f = frame + frame_zero
             frame_data = {'frame': f, 'pos': pos_undist, 'weight': weight}
-            if version in [UV_TRACK_FORMAT_VERSION_3, UV_TRACK_FORMAT_VERSION_4]:
+            if version in [
+                UV_TRACK_FORMAT_VERSION_3,
+                UV_TRACK_FORMAT_VERSION_4,
+                UV_TRACK_FORMAT_VERSION_5,
+            ]:
                 frame_data['pos_dist'] = pos
             point_data['per_frame'].append(frame_data)
             frame += 1
 
         data['points'].append(point_data)
 
-    if version == UV_TRACK_FORMAT_VERSION_4:
+    if version in [UV_TRACK_FORMAT_VERSION_4, UV_TRACK_FORMAT_VERSION_5]:
         lens = tde4.getCameraLens(camera)
-        data['camera'] = _generate_camera_data(camera, lens, frame0)
+        data['camera'] = _generate_camera_data(camera, lens, frame_zero)
 
     data_str = json.dumps(data)
     return data_str
@@ -959,7 +1139,7 @@ def _generate_v2(
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
     """
-    return _generate_v2_v3_and_v4(
+    return _generate_v2_v3_v4_and_v5(
         point_group,
         camera,
         points,
@@ -1005,7 +1185,7 @@ def _generate_v3(point_group, camera, points, start_frame=None, rs_distance=None
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
     """
-    return _generate_v2_v3_and_v4(
+    return _generate_v2_v3_v4_and_v5(
         point_group,
         camera,
         points,
@@ -1050,11 +1230,56 @@ def _generate_v4(point_group, camera, points, start_frame=None, rs_distance=None
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
     """
-    return _generate_v2_v3_and_v4(
+    return _generate_v2_v3_v4_and_v5(
         point_group,
         camera,
         points,
         version=UV_TRACK_FORMAT_VERSION_4,
+        start_frame=start_frame,
+        rs_distance=rs_distance,
+    )
+
+
+def _generate_v5(point_group, camera, points, start_frame=None, rs_distance=None):
+    """
+    Generate the UV file format contents, using JSON format.
+
+    Each point will store:
+    - Point name
+    - X, Y position (in UV coordinates, per-frame) as distorted and
+      undistorted
+    - Point weight (per-frame)
+    - Point Set name
+    - Point 'Persistent ID'
+    - 3D Point X, Y and Z
+    - 3D Point X, Y and Z locked status.
+
+    :param point_group: The 3DE Point Group containing 'points'
+    :type point_group: str
+
+    :param camera: The 3DE Camera containing 2D 'points' data.
+    :type camera: str
+
+    :param points: The list of 3DE Points representing 2D data to
+                   save.
+    :type points: list of str
+
+    :param start_frame: The frame number to be considered at
+                        'first frame'. Defaults to 1001 if set to None.
+    :type start_frame: None or int
+
+    :param rs_distance: If not None, correct rolling shutter effects on
+        the 2D points at the content distance rs_distance.
+    :type rs_distance: None or float
+
+    :returns: A JSON format string, with the UV Track data in it.
+    :rtype: str
+    """
+    return _generate_v2_v3_v4_and_v5(
+        point_group,
+        camera,
+        points,
+        version=UV_TRACK_FORMAT_VERSION_5,
         start_frame=start_frame,
         rs_distance=rs_distance,
     )

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>277</width>
-    <height>447</height>
+    <height>499</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -127,6 +127,16 @@
         </item>
         <item row="0" column="1">
          <widget class="QComboBox" name="renameMarkersDefaultComboBox"/>
+        </item>
+        <item row="4" column="1">
+         <widget class="QComboBox" name="bundleSpaceDefaultComboBox"/>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="bundleSpaceDefaultLabel">
+          <property name="text">
+           <string>Bundle Space Default:</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

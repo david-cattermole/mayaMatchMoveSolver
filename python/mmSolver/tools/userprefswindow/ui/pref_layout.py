@@ -64,6 +64,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         self.updateLoadMarkerUIDistortionModeDefaultWidget(config)
         self.updateLoadMarkerUIUseOverscanDefaultWidget(config)
         self.updateLoadMarkerUILoadBundlePositionsDefaultWidget(config)
+        self.updateLoadMarkerUIBundleSpaceDefaultWidget(config)
 
         # Deprecated options, kept for backwards compatibility, but
         # they are hidden by default anyway.
@@ -171,6 +172,23 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
     def getLoadMarkerUILoadBundlePositionsDefaultConfigValue(self):
         key = pref_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_KEY
         label = self.loadBundlePositionsDefaultComboBox.currentText()
+        value = userprefs_lib.get_value_from_label(key, label)
+        return value
+
+    def updateLoadMarkerUIBundleSpaceDefaultWidget(self, config):
+        key = pref_const.LOAD_MARKER_UI_BUNDLE_SPACE_DEFAULT_KEY
+        value = userprefs_lib.get_value(config, key)
+        label = userprefs_lib.get_label_from_value(key, value)
+        assert isinstance(label, pycompat.TEXT_TYPE)
+        labels = userprefs_lib.get_labels(key)
+        self.bundleSpaceDefaultComboBox.clear()
+        self.bundleSpaceDefaultComboBox.addItems(labels)
+        self.bundleSpaceDefaultComboBox.setCurrentText(label)
+        return
+
+    def getLoadMarkerUIBundleSpaceDefaultConfigValue(self):
+        key = pref_const.LOAD_MARKER_UI_BUNDLE_SPACE_DEFAULT_KEY
+        label = self.bundleSpaceDefaultComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value
 

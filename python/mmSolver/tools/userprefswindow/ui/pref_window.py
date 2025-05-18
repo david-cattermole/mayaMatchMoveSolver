@@ -92,6 +92,7 @@ class PrefWindow(BaseWindow):
             pref_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_KEY,
             pref_const.LOAD_MARKER_UI_USE_OVERSCAN_DEFAULT_KEY,
             pref_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_KEY,
+            pref_const.LOAD_MARKER_UI_BUNDLE_SPACE_DEFAULT_KEY,
             pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
             pref_const.SOLVER_UI_SOLVER_OPTIONS_KEY,
         ]
@@ -129,6 +130,10 @@ class PrefWindow(BaseWindow):
             (
                 pref_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_KEY,
                 self.subForm.getLoadMarkerUILoadBundlePositionsDefaultConfigValue,
+            ),
+            (
+                pref_const.LOAD_MARKER_UI_BUNDLE_SPACE_DEFAULT_KEY,
+                self.subForm.getLoadMarkerUIBundleSpaceDefaultConfigValue,
             ),
             (
                 pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,

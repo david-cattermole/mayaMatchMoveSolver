@@ -43,6 +43,9 @@ class MarkerData(object):
         self._bnd_lock_x = None
         self._bnd_lock_y = None
         self._bnd_lock_z = None
+        self._bnd_world_x = keyframedata.KeyframeData()
+        self._bnd_world_y = keyframedata.KeyframeData()
+        self._bnd_world_z = keyframedata.KeyframeData()
 
     def get_name(self):
         return self._name
@@ -128,6 +131,24 @@ class MarkerData(object):
     def set_bundle_lock_z(self, value):
         self._bnd_lock_z = value
 
+    def get_bundle_world_x(self):
+        return self._bnd_world_x
+
+    def set_bundle_world_x(self, value):
+        self._bnd_world_x = value
+
+    def get_bundle_world_y(self):
+        return self._bnd_world_y
+
+    def set_bundle_world_y(self, value):
+        self._bnd_world_y = value
+
+    def get_bundle_world_z(self):
+        return self._bnd_world_z
+
+    def set_bundle_world_z(self, value):
+        self._bnd_world_z = value
+
     name = property(get_name, set_name)
     id = property(get_id, set_id)
     x = property(get_x, set_x)
@@ -142,3 +163,6 @@ class MarkerData(object):
     bundle_lock_x = property(get_bundle_lock_x, set_bundle_lock_x)
     bundle_lock_y = property(get_bundle_lock_y, set_bundle_lock_y)
     bundle_lock_z = property(get_bundle_lock_z, set_bundle_lock_z)
+    bundle_world_x = property(get_bundle_world_x, set_bundle_world_x)
+    bundle_world_y = property(get_bundle_world_y, set_bundle_world_y)
+    bundle_world_z = property(get_bundle_world_z, set_bundle_world_z)

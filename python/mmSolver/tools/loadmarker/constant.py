@@ -1,4 +1,4 @@
-# Copyright (C) 2018 David Cattermole.
+# Copyright (C) 2018, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -33,6 +33,7 @@ UV_TRACK_FORMAT_VERSION_1 = 1
 UV_TRACK_FORMAT_VERSION_2 = 2
 UV_TRACK_FORMAT_VERSION_3 = 3
 UV_TRACK_FORMAT_VERSION_4 = 4
+UV_TRACK_FORMAT_VERSION_5 = 5
 
 UV_TRACK_HEADER_VERSION_2 = {
     'version': UV_TRACK_FORMAT_VERSION_2,
@@ -44,6 +45,10 @@ UV_TRACK_HEADER_VERSION_3 = {
 
 UV_TRACK_HEADER_VERSION_4 = {
     'version': UV_TRACK_FORMAT_VERSION_4,
+}
+
+UV_TRACK_HEADER_VERSION_5 = {
+    'version': UV_TRACK_FORMAT_VERSION_5,
 }
 
 
@@ -75,5 +80,6 @@ CONFIG_PATH_LOAD_MODE = 'data/load_mode'
 CONFIG_PATH_USE_OVERSCAN = 'data/use_overscan'
 CONFIG_PATH_DISTORTION_MODE = 'data/distortion_mode'
 CONFIG_PATH_LOAD_BUNDLE_POSITION = 'data/load_bundle_position'
+CONFIG_PATH_BUNDLE_SPACE = 'data/bundle_space'
 CONFIG_PATH_RENAME_MARKERS = 'data/rename_markers'
 CONFIG_PATH_RENAME_MARKERS_NAME = 'data/rename_markers_name'

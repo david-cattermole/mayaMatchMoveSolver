@@ -81,9 +81,14 @@ def _load_nodes(
     collection_data,
     mkr_data_list,
     load_bnd_pos,
+    bundle_space,
     camera_field_of_view,
 ):
     new_mkr_list = None
+
+    world_space_bundle_position = bool(
+        bundle_space == userprefs_const.LOAD_MARKER_UI_BUNDLE_SPACE_DEFAULT_WORLD_LABEL
+    )
 
     if load_mode == const.LOAD_MODE_NEW_VALUE:
         # Get Camera and MarkerGroup.
@@ -114,6 +119,7 @@ def _load_nodes(
             col=col,
             with_bundles=True,
             load_bundle_position=load_bnd_pos,
+            world_space_bundle_position=world_space_bundle_position,
             camera_field_of_view=camera_field_of_view,
         )
 
@@ -127,6 +133,7 @@ def _load_nodes(
             mkr_list,
             mkr_data_list,
             load_bundle_position=load_bnd_pos,
+            world_space_bundle_position=world_space_bundle_position,
             camera_field_of_view=camera_field_of_view,
         )
     else:
@@ -186,6 +193,7 @@ class LoadMarkerWindow(BaseWindow):
         use_overscan = self.subForm.getUseOverscanValue()
         undistorted = undist_mode == const.UNDISTORTION_MODE_VALUE
         width, height = self.subForm.getImageResolution()
+        bundle_space = self.subForm.getBundleSpaceText()
 
         # Otherwise when we try to rename markers, the tool will get
         # errors.
@@ -240,6 +248,7 @@ class LoadMarkerWindow(BaseWindow):
                     collection_data,
                     mkr_data_list,
                     load_bnd_pos,
+                    bundle_space,
                     camera_field_of_view,
                 )
 
@@ -297,6 +306,7 @@ class LoadMarkerWindow(BaseWindow):
             if config is not None:
                 config.set_value(const.CONFIG_PATH_USE_OVERSCAN, use_overscan)
                 config.set_value(const.CONFIG_PATH_LOAD_BUNDLE_POSITION, load_bnd_pos)
+                config.set_value(const.CONFIG_PATH_BUNDLE_SPACE, bundle_space)
                 config.set_value(const.CONFIG_PATH_DISTORTION_MODE, undist_mode)
                 config.set_value(const.CONFIG_PATH_LOAD_MODE, load_mode)
                 config.set_value(const.CONFIG_PATH_RENAME_MARKERS, rename_markers)

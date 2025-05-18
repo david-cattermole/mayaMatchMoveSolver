@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019, 2020 David Cattermole.
+# Copyright (C) 2018, 2019, 2020, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -132,6 +132,68 @@ Format version 4::
         }
     }
 
+
+Format version 5::
+
+    {
+        'version': int,
+        'num_points': int,
+        'is_undistorted': None,  # Deprecated
+        'scene': {
+            # 4x4 matrix in row-major order.
+            'transform': (
+                float, float, float, float,
+                float, float, float, float,
+                float, float, float, float,
+                float, float, float, float
+            )
+        },
+        'point_group': {
+            'name': str,
+            'type': str,  # 'CAMERA' or 'OBJECT' or 'MOCAP'.
+            'transform': {
+                # 4x4 matrix in row-major order.
+                frame: (float, float, float, float,
+                        float, float, float, float,
+                        float, float, float, float,
+                        float, float, float, float)
+            }
+        },
+        'points': {
+            'name': str,
+            'id': int,  # or None
+            'set_name': str,
+            'per_frame': [
+                {
+                    'frame': int,
+                    'pos_dist': (float, float),
+                    'pos': (float, float),
+                    'weight': float
+                },
+            ],
+            '3d': {
+                'x': float, # or None
+                'y': float, # or None
+                'z': float, # or None
+                'x_lock': bool, # or None
+                'y_lock': bool, # or None
+                'z_lock': bool  # or None
+            }
+        },
+        'camera': {
+            'resolution': (int, int),
+            'film_back_cm': (float, float),
+            'lens_center_offset_cm': (float, float),
+            'per_frame': [
+                {
+                    'frame': int,
+                    'focal_length_cm': float,
+                },
+            ],
+        }
+    }
+
+
 """
 
 from __future__ import absolute_import
@@ -140,6 +202,8 @@ from __future__ import print_function
 
 import math
 import json
+
+import maya.api.OpenMaya as OpenMaya2
 
 import mmSolver.logger
 
@@ -197,7 +261,9 @@ def _parse_point_info_v2_v3(mkr_data, point_data):
     return mkr_data
 
 
-def _parse_point_3d_data_v3(mkr_data, point_data):
+def _parse_point_3d_data_v3_v4_and_v5(
+    mkr_data, point_data, scene_data, point_group_data
+):
     """
     Parses the 3D data from individual point data.
 
@@ -207,9 +273,18 @@ def _parse_point_3d_data_v3(mkr_data, point_data):
     :param point_data: The data dictionary, from the file format.
     :type point_data: dict
 
+    :param scene_data: The data for the scene.
+    :type scene_data: dict
+
+    :param point_group_data: The data for the point group.
+    :type point_group_data: dict
+
     :returns: A modified MarkerData, with bundle information set.
     :rtype: MarkerData
     """
+    assert scene_data is None or isinstance(scene_data, dict)
+    assert point_group_data is None or isinstance(point_group_data, dict)
+
     point_3d = point_data.get('3d')
     assert isinstance(point_3d, dict)
     x = point_3d.get('x')
@@ -231,14 +306,67 @@ def _parse_point_3d_data_v3(mkr_data, point_data):
     mkr_data.set_bundle_lock_x(x_lock)
     mkr_data.set_bundle_lock_y(y_lock)
     mkr_data.set_bundle_lock_z(z_lock)
+
+    has_xyz = isinstance(x, float) and isinstance(y, float) and isinstance(z, float)
+    if scene_data is None or point_group_data is None or not has_xyz:
+        return mkr_data
+    assert isinstance(scene_data, dict)
+    assert isinstance(point_group_data, dict)
+
+    scene_transform_flat = scene_data.get('transform')
+    has_scene_transform = (
+        scene_transform_flat is not None and len(scene_transform_flat) == 16
+    )
+
+    point_group_type = point_group_data.get('type')
+    ignore_point_group_transform = point_group_type == 'CAMERA'
+
+    point_group_transform_data = point_group_data.get('transform')
+    has_point_group_transform = len(point_group_transform_data.keys()) > 0
+
+    if not has_scene_transform or not has_point_group_transform:
+        return mkr_data
+
+    # Calculate bundle world-space position.
+    local_point_xyz = OpenMaya2.MPoint(x, y, z)
+    if ignore_point_group_transform:
+        # World-space matrix position of the bundle.
+        scene_transform_matrix = OpenMaya2.MMatrix(scene_transform_flat)
+        world_point_xyz = scene_transform_matrix * local_point_xyz
+
+        mkr_data.bundle_world_x = world_point_xyz.x
+        mkr_data.bundle_world_y = world_point_xyz.y
+        mkr_data.bundle_world_z = world_point_xyz.z
+        return mkr_data
+
+    # Calculate (per-frame) bundle world-space position.
+    for frame in point_group_transform_data.keys():
+        point_group_transform_matrix_flat = point_group_transform_data[frame]
+        assert len(point_group_transform_matrix_flat) == 16
+        frame = int(frame)
+
+        scene_transform_matrix = OpenMaya2.MMatrix(scene_transform_flat)
+        point_group_transform_matrix = OpenMaya2.MMatrix(
+            point_group_transform_matrix_flat
+        )
+
+        # World-space matrix position of the bundle.
+        world_transform_matrix = scene_transform_matrix * point_group_transform_matrix
+        world_point_xyz = world_transform_matrix * local_point_xyz
+
+        mkr_data.bundle_world_x.set_value(frame, world_point_xyz.x)
+        mkr_data.bundle_world_y.set_value(frame, world_point_xyz.y)
+        mkr_data.bundle_world_z.set_value(frame, world_point_xyz.z)
+
     return mkr_data
 
 
-def _parse_per_frame_v2_v3_v4(mkr_data, per_frame_data, pos_key=None):
+def _parse_per_frame_v2_v3_v4_v5(mkr_data, per_frame_data, pos_key=None):
     """
     Get the MarkerData per-frame, including X, Y, weight and enabled
     values.
 
+    :param mkr_data: The Marker data to set.
     :type mkr_data: MarkerData
 
     :param per_frame_data: List of per-frame data structures.
@@ -252,6 +380,8 @@ def _parse_per_frame_v2_v3_v4(mkr_data, per_frame_data, pos_key=None):
     """
     if pos_key is None:
         pos_key = 'pos'
+    assert isinstance(pos_key, str)
+
     frames = []
     for frame_data in per_frame_data:
         frame_num = frame_data.get('frame')
@@ -294,12 +424,20 @@ def _parse_marker_occluded_frames_v1_v2_v3(mkr_data, frames):
     return mkr_data
 
 
-def _parse_v2_and_v3(file_path, undistorted=None, with_3d_pos=None):
+def _parse_v2_v3_v4_and_v5(
+    data, scene_data=None, point_group_data=None, undistorted=None, with_3d_pos=None
+):
     """
-    Parse the UV file format, using JSON.
+    Parse the UV file format.
 
-    :param file_path: File path to read.
-    :type file_path: str
+    :param data: The data to parse, from the file path.
+    :type data: dict
+
+    :param scene_data: The point group data. Only used with v5 format.
+    :type scene_data: dict
+
+    :param point_group_data: The point group data. Only used with v5 format.
+    :type point_group_data: dict
 
     :param undistorted: Should we choose the undistorted or distorted
                         marker data?
@@ -313,6 +451,10 @@ def _parse_v2_and_v3(file_path, undistorted=None, with_3d_pos=None):
 
     :return: List of MarkerData objects.
     """
+    assert isinstance(data, dict)
+    assert scene_data is None or isinstance(scene_data, dict)
+    assert point_group_data is None or isinstance(point_group_data, dict)
+
     if with_3d_pos is None:
         with_3d_pos = False
 
@@ -322,21 +464,20 @@ def _parse_v2_and_v3(file_path, undistorted=None, with_3d_pos=None):
     if undistorted is True:
         pos_key = 'pos'
 
-    mkr_data_list = []
-    with open(file_path) as f:
-        data = json.load(f)
-
-    msg = 'Per-frame tracking data was not found on marker, skipping. ' 'name=%r'
+    msg = 'Per-frame tracking data was not found on marker, skipping. name=%r'
     points = data.get('points', [])
+    mkr_data_list = []
     for point_data in points:
         mkr_data = markerdata.MarkerData()
 
         # Static point information.
         mkr_data = _parse_point_info_v2_v3(mkr_data, point_data)
 
-        # 3D point data
+        # 3D point data.
         if with_3d_pos is True:
-            mkr_data = _parse_point_3d_data_v3(mkr_data, point_data)
+            mkr_data = _parse_point_3d_data_v3_v4_and_v5(
+                mkr_data, point_data, scene_data, point_group_data
+            )
 
         per_frame = point_data.get('per_frame', [])
         if len(per_frame) == 0:
@@ -344,14 +485,14 @@ def _parse_v2_and_v3(file_path, undistorted=None, with_3d_pos=None):
             LOG.warning(msg, name)
             continue
 
-        # Create marker per-frame data
-        mkr_data, frames = _parse_per_frame_v2_v3_v4(
+        # Create marker per-frame data.
+        mkr_data, frames = _parse_per_frame_v2_v3_v4_v5(
             mkr_data,
             per_frame,
             pos_key=pos_key,
         )
 
-        # Fill in occluded point frames
+        # Fill in occluded point frames.
         mkr_data = _parse_marker_occluded_frames_v1_v2_v3(
             mkr_data,
             frames,
@@ -361,17 +502,16 @@ def _parse_v2_and_v3(file_path, undistorted=None, with_3d_pos=None):
     return mkr_data_list
 
 
-def _parse_camera_fov_v4(file_path):
+def _parse_camera_fov_v4(data):
     """
-    Parse the UV file format, using JSON.
+    Parse the camera FoV value.
 
-    :param file_path: File path to read.
-    :type file_path: str
+    :param data: The data to parse, from the file path.
+    :type data: dict
 
     :return: List of MarkerData objects.
     """
-    with open(file_path) as f:
-        data = json.load(f)
+    assert isinstance(data, dict)
 
     camera_data = data.get('camera', {})
     img_width, img_height = camera_data.get('resolution', (0, 0))
@@ -383,6 +523,7 @@ def _parse_camera_fov_v4(file_path):
         focal_length = frame_data['focal_length_cm']
 
         # Calculate angle of view from focal length and film back.
+
         angle_x = math.atan(film_back_x / (2.0 * focal_length))
         angle_y = math.atan(film_back_y / (2.0 * focal_length))
         angle_x = math.degrees(2.0 * angle_x)
@@ -397,8 +538,10 @@ def parse_v1(file_path, **kwargs):
     """
     Parse the UV file format or 3DEqualizer .txt format.
 
-    :param file_path:
-    :return:
+    :param file_path: File path to read.
+    :type file_path: str
+
+    :return: List of MarkerData objects.
     """
     with open(file_path, 'r') as f:
         lines = f.readlines()
@@ -479,7 +622,11 @@ def parse_v2(file_path, **kwargs):
     :return: List of MarkerData objects.
     """
     file_info = fileinfo.create_file_info(marker_undistorted=True)
-    mkr_data_list = _parse_v2_and_v3(file_path, undistorted=True, with_3d_pos=False)
+
+    with open(file_path) as f:
+        data = json.load(f)
+
+    mkr_data_list = _parse_v2_v3_v4_and_v5(data, undistorted=True, with_3d_pos=False)
     return file_info, mkr_data_list
 
 
@@ -501,13 +648,16 @@ def parse_v3(file_path, **kwargs):
     with_3d_pos = kwargs.get('with_3d_pos', True)
     assert isinstance(with_3d_pos, bool)
 
+    with open(file_path) as f:
+        data = json.load(f)
+
     file_info = fileinfo.create_file_info(
         marker_distorted=True,
         marker_undistorted=True,
         bundle_positions=True,
     )
-    mkr_data_list = _parse_v2_and_v3(
-        file_path,
+    mkr_data_list = _parse_v2_v3_v4_and_v5(
+        data,
         undistorted=undistorted,
         with_3d_pos=with_3d_pos,
     )
@@ -532,8 +682,11 @@ def parse_v4(file_path, **kwargs):
     with_3d_pos = kwargs.get('with_3d_pos', True)
     assert isinstance(with_3d_pos, bool)
 
+    with open(file_path) as f:
+        data = json.load(f)
+
     cam_fov_list = _parse_camera_fov_v4(
-        file_path,
+        data,
     )
     file_info = fileinfo.create_file_info(
         marker_distorted=True,
@@ -541,8 +694,58 @@ def parse_v4(file_path, **kwargs):
         bundle_positions=True,
         camera_field_of_view=cam_fov_list,
     )
-    mkr_data_list = _parse_v2_and_v3(
-        file_path,
+    mkr_data_list = _parse_v2_v3_v4_and_v5(
+        data,
+        undistorted=undistorted,
+        with_3d_pos=with_3d_pos,
+    )
+    return file_info, mkr_data_list
+
+
+def parse_v5(file_path, **kwargs):
+    """
+    Parse the UV file format, using JSON.
+
+    Accepts the keyword 'undistorted', 'overscan_x' and 'overscan_y'.
+
+    :param file_path: File path to read.
+    :type file_path: str
+
+    :return: List of MarkerData objects.
+    """
+    # Should we choose the undistorted or distorted marker data?
+    undistorted = kwargs.get('undistorted', None)
+    assert undistorted is None or isinstance(undistorted, bool)
+
+    with_3d_pos = kwargs.get('with_3d_pos', True)
+    assert isinstance(with_3d_pos, bool)
+
+    with open(file_path) as f:
+        data = json.load(f)
+
+    scene_data = data.get('scene', dict())
+    scene_transform = scene_data.get('transform')
+    has_scene_transform = scene_transform is not None and len(scene_transform) == 16
+
+    point_group_data = data.get('point_group', dict())
+    point_group_transform = point_group_data.get('transform')
+    has_point_group_transform = (
+        isinstance(point_group_transform, dict) and len(point_group_transform) > 0
+    )
+
+    cam_fov_list = _parse_camera_fov_v4(data)
+    file_info = fileinfo.create_file_info(
+        marker_distorted=True,
+        marker_undistorted=True,
+        bundle_positions=True,
+        scene_transform=has_scene_transform,
+        point_group_transform=has_point_group_transform,
+        camera_field_of_view=cam_fov_list,
+    )
+    mkr_data_list = _parse_v2_v3_v4_and_v5(
+        data,
+        scene_data=scene_data,
+        point_group_data=point_group_data,
         undistorted=undistorted,
         with_3d_pos=with_3d_pos,
     )
@@ -550,7 +753,6 @@ def parse_v4(file_path, **kwargs):
 
 
 class LoaderUVTrack(loader.LoaderBase):
-
     name = 'UV Track Points (*.uv)'
     file_exts = ['.uv']
     args = ['undistorted', 'with_3d_pos']
@@ -577,6 +779,8 @@ class LoaderUVTrack(loader.LoaderBase):
             file_info, mkr_data_list = parse_v3(file_path, **kwargs)
         elif version == const.UV_TRACK_FORMAT_VERSION_4:
             file_info, mkr_data_list = parse_v4(file_path, **kwargs)
+        elif version == const.UV_TRACK_FORMAT_VERSION_5:
+            file_info, mkr_data_list = parse_v5(file_path, **kwargs)
         else:
             msg = 'Could not determine format version for UV Track file.'
             raise excep.ParserError(msg)

@@ -105,6 +105,18 @@ def get_user_prefs_load_bundle_positions_default():
     )
 
 
+def get_user_prefs_bundle_space_default():
+    config = userprefs_lib.get_config()
+    key = userprefs_const.LOAD_MARKER_UI_BUNDLE_SPACE_DEFAULT_KEY
+    value = userprefs_lib.get_value(config, key)
+    result = None
+    if value == userprefs_const.LOAD_MARKER_UI_BUNDLE_SPACE_DEFAULT_LOCAL_VALUE:
+        result = userprefs_const.LOAD_MARKER_UI_BUNDLE_SPACE_DEFAULT_LOCAL_LABEL
+    elif value == userprefs_const.LOAD_MARKER_UI_BUNDLE_SPACE_DEFAULT_WORLD_VALUE:
+        result = userprefs_const.LOAD_MARKER_UI_BUNDLE_SPACE_DEFAULT_WORLD_LABEL
+    return result
+
+
 def get_user_prefs_rename_markers_default():
     config = userprefs_lib.get_config()
     key = userprefs_const.LOAD_MARKER_UI_RENAME_MARKERS_DEFAULT_KEY
@@ -131,6 +143,9 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
         self.distortionMode_model = QtCore.QStringListModel()
         self.distortionMode_comboBox.setModel(self.distortionMode_model)
+
+        self.bndSpace_model = QtCore.QStringListModel()
+        self.bndSpace_comboBox.setModel(self.bndSpace_model)
 
         self.createConnections()
         self.populateUi()
@@ -259,11 +274,11 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.overscan_checkBox.setChecked(value)
         self.updateOverscanValues()
 
-        default_value = get_user_prefs_load_bundle_positions_default()
-        value = get_config_value(
-            config, const.CONFIG_PATH_LOAD_BUNDLE_POSITION, default_value
-        )
-        self.loadBndPositions_checkBox.setChecked(value)
+        default_value = get_user_prefs_bundle_space_default()
+        value = get_config_value(config, const.CONFIG_PATH_BUNDLE_SPACE, default_value)
+        self.populateBundleSpaceModel(self.bndSpace_model)
+        index = self.bndSpace_model.stringList().index(value)
+        self.bndSpace_comboBox.setCurrentIndex(index)
         return
 
     def updateFileInfo(self):
@@ -292,6 +307,8 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         text += 'Undistorted Data: {lens_undist}\n'
         text += 'Bundle Positions: {positions}\n'
         text += 'With Camera FOV: {has_camera_fov}\n'
+        text += 'Scene Transform: {has_scene_transform}\n'
+        text += 'Point Group Transform: {has_point_group_transform}\n'
         info = fileutils.get_file_info_strings(file_path, mayareadfile.read)
 
         # Change point names into single string.
@@ -528,7 +545,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
     def populateDistortionModeModel(self, model):
         """
-        Add entries of cameras in the scene into the given camera model.
+        Add lens distortion modes into the given model.
 
         :param model: The Qt model to add cameras to.
         :type model: QtCore.QStringListModel
@@ -539,6 +556,19 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             const.UNDISTORTION_MODE_VALUE,
             const.DISTORTION_MODE_VALUE,
         ]
+        model.setStringList(values)
+        return
+
+    def populateBundleSpaceModel(self, model):
+        """
+        Add bundle spaces into the given model.
+
+        :param model: The Qt model to add cameras to.
+        :type model: QtCore.QStringListModel
+
+        :return:
+        """
+        values = userprefs_const.LOAD_MARKER_UI_BUNDLE_SPACE_DEFAULT_LABELS
         model.setStringList(values)
         return
 
@@ -781,6 +811,10 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             return value
         value = self.loadBndPositions_checkBox.isChecked()
         return value
+
+    def getBundleSpaceText(self):
+        text = self.bndSpace_comboBox.currentText()
+        return text
 
     def getImageResolution(self):
         width = self.imageResWidth_spinBox.value()

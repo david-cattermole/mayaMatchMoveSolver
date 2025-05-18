@@ -130,6 +130,8 @@ def get_file_info_strings(file_path, read_func):
         'lens_undist': '?',
         'positions': '?',
         'has_camera_fov': '?',
+        'has_scene_transform': '?',
+        'has_point_group_transform': '?',
     }
     file_info, mkr_data_list = read_func(file_path)
     if isinstance(mkr_data_list, list) is False:
@@ -166,6 +168,8 @@ def get_file_info_strings(file_path, read_func):
     info['lens_undist'] = file_info.marker_undistorted
     info['positions'] = file_info.bundle_positions
     info['has_camera_fov'] = bool(file_info.camera_field_of_view)
+    info['has_scene_transform'] = bool(file_info.scene_transform)
+    info['has_point_group_transform'] = bool(file_info.point_group_transform)
     return info
 
 

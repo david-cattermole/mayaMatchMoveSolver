@@ -65,9 +65,13 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             ('uvtrack', 'test_v1.uv'),
             ('uvtrack', 'test_v3.uv'),
             ('uvtrack', 'test_v4.uv'),
+            ('uvtrack', 'test_v5_pgroup_camera_single_point.uv'),
+            ('uvtrack', 'test_v5_pgroup_object_single_point.uv'),
         )
         for dir_name, file_name in values:
             path = self.get_data_path(dir_name, file_name)
+            print('path:', path)
+            assert os.path.isfile(path)
 
             read_func = marker_read.read
             valid = lib_fileutils.is_valid_file_path(path, read_func)
@@ -81,7 +85,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
 
             file_info_data = lib_fileutils.get_file_info_strings(path, read_func)
             assert isinstance(file_info_data, dict)
-            assert len(file_info_data) == 11
+            assert len(file_info_data) == 13
             keys = file_info_data.keys()
             assert 'fmt' in keys
             assert 'fmt_name' in keys
@@ -94,6 +98,8 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             assert 'lens_undist' in keys
             assert 'positions' in keys
             assert 'has_camera_fov' in keys
+            assert 'has_scene_transform' in keys
+            assert 'has_point_group_transform' in keys
 
             start_dir = lib_utils.get_start_directory(path)
             assert os.path.isdir(start_dir) is True
@@ -122,12 +128,12 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             'test_v3.uv',  # only contains 1 point
             'test_v3_with_3d_point.uv',
             'test_v4.uv',  # only contains 1 point
+            'test_v5_pgroup_camera_single_point.uv',  # only contains 1 point, and 3d point data.
+            'test_v5_pgroup_object_single_point.uv',  # only contains 1 point, and 3d point data.
         ]
         for file_name in file_names:
             path = self.get_data_path('uvtrack', file_name)
             create_marker.main()
-            # mkr =
-            # mkr_list = [mkr]
             _, mkr_data_list = marker_read.read(path)
             mkr_list = lib_utils.get_selected_markers()
             marker_read.update_nodes(
@@ -188,6 +194,10 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             self.get_data_path('uvtrack', 'test_v1.uv'),
             self.get_data_path('uvtrack', 'test_v3.uv'),
             self.get_data_path('uvtrack', 'test_v4.uv'),
+            self.get_data_path('uvtrack', 'test_v5_pgroup_camera_single_point.uv'),
+            self.get_data_path('uvtrack', 'test_v5_pgroup_camera_many_points.uv'),
+            self.get_data_path('uvtrack', 'test_v5_pgroup_object_single_point.uv'),
+            self.get_data_path('uvtrack', 'test_v5_pgroup_object_many_points.uv'),
             self.get_data_path('uvtrack', 'loadmarker_corners.uv'),
             self.get_data_path('uvtrack', 'cameraTrackRnD.uv'),
             self.get_data_path('uvtrack', 'stA.uv'),

@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019, 2020 David Cattermole.
+# Copyright (C) 2018, 2019, 2020, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -217,7 +217,85 @@ def __set_attr_keyframes(
     return anim_fn
 
 
-def __set_node_data(mkr, bnd, mkr_data, load_bnd_pos, overscan_x, overscan_y):
+def __set_node_data_bundle_local(mkr_data, bnd_node):
+    bnd_x = mkr_data.get_bundle_x()
+    bnd_y = mkr_data.get_bundle_y()
+    bnd_z = mkr_data.get_bundle_z()
+    bnd_lock_x = mkr_data.get_bundle_lock_x()
+    bnd_lock_y = mkr_data.get_bundle_lock_y()
+    bnd_lock_z = mkr_data.get_bundle_lock_z()
+
+    maya.cmds.setAttr(bnd_node + '.translateX', lock=False)
+    maya.cmds.setAttr(bnd_node + '.translateY', lock=False)
+    maya.cmds.setAttr(bnd_node + '.translateZ', lock=False)
+
+    if isinstance(bnd_x, float):
+        maya.cmds.setAttr(bnd_node + '.translateX', bnd_x)
+    if isinstance(bnd_y, float):
+        maya.cmds.setAttr(bnd_node + '.translateY', bnd_y)
+    if isinstance(bnd_z, float):
+        maya.cmds.setAttr(bnd_node + '.translateZ', bnd_z)
+
+    if isinstance(bnd_lock_x, bool) and bnd_lock_x:
+        maya.cmds.setAttr(bnd_node + '.translateX', lock=True)
+    if isinstance(bnd_lock_y, bool) and bnd_lock_y:
+        maya.cmds.setAttr(bnd_node + '.translateY', lock=True)
+    if isinstance(bnd_lock_z, bool) and bnd_lock_z:
+        maya.cmds.setAttr(bnd_node + '.translateZ', lock=True)
+
+    return
+
+
+def __set_node_data_bundle_world(mkr_data, bnd_node):
+    bnd_world_x = mkr_data.get_bundle_world_x()
+    bnd_world_y = mkr_data.get_bundle_world_y()
+    bnd_world_z = mkr_data.get_bundle_world_z()
+
+    has_keyframe_data = isinstance(bnd_world_x, keyframedata.KeyframeData)
+
+    bnd_lock_x = mkr_data.get_bundle_lock_x()
+    bnd_lock_y = mkr_data.get_bundle_lock_y()
+    bnd_lock_z = mkr_data.get_bundle_lock_z()
+    bnd_lock_xyz = bnd_lock_x or bnd_lock_y or bnd_lock_z
+
+    maya.cmds.setAttr(bnd_node + '.translateX', lock=False)
+    maya.cmds.setAttr(bnd_node + '.translateY', lock=False)
+    maya.cmds.setAttr(bnd_node + '.translateZ', lock=False)
+
+    if has_keyframe_data is True:
+        assert isinstance(bnd_world_x, keyframedata.KeyframeData)
+        assert isinstance(bnd_world_y, keyframedata.KeyframeData)
+        assert isinstance(bnd_world_z, keyframedata.KeyframeData)
+        assert bnd_world_x.get_length() > 0
+        assert bnd_world_y.get_length() > 0
+        assert bnd_world_z.get_length() > 0
+        __set_attr_keyframes(bnd_node, 'translateX', bnd_world_x)
+        __set_attr_keyframes(bnd_node, 'translateY', bnd_world_y)
+        __set_attr_keyframes(bnd_node, 'translateZ', bnd_world_z)
+    else:
+        assert isinstance(bnd_world_x, float)
+        assert isinstance(bnd_world_y, float)
+        assert isinstance(bnd_world_z, float)
+        maya.cmds.setAttr(bnd_node + '.translateX', bnd_world_x)
+        maya.cmds.setAttr(bnd_node + '.translateY', bnd_world_y)
+        maya.cmds.setAttr(bnd_node + '.translateZ', bnd_world_z)
+
+    if bnd_lock_xyz is True:
+        maya.cmds.setAttr(bnd_node + '.translateX', lock=True)
+        maya.cmds.setAttr(bnd_node + '.translateY', lock=True)
+        maya.cmds.setAttr(bnd_node + '.translateZ', lock=True)
+    return
+
+
+def __set_node_data(
+    mkr,
+    bnd,
+    mkr_data,
+    load_bnd_pos,
+    world_space_bnd_pos,
+    overscan_x,
+    overscan_y,
+):
     """
     Set and override the data on the given marker node.
 
@@ -235,6 +313,9 @@ def __set_node_data(mkr, bnd, mkr_data, load_bnd_pos, overscan_x, overscan_y):
     :param load_bnd_pos: Should we set Bundle positions?
     :type load_bnd_pos: bool
 
+    :param world_space_bnd_pos: Bundle positions should be in world-space.
+    :type world_space_bnd_pos: bool
+
     :param overscan_x: Overscan factor to apply to the MarkerData x values.
     :type overscan_x: float
 
@@ -248,6 +329,7 @@ def __set_node_data(mkr, bnd, mkr_data, load_bnd_pos, overscan_x, overscan_y):
     assert bnd is None or isinstance(bnd, mmapi.Bundle)
     assert isinstance(mkr_data, markerdata.MarkerData)
     assert load_bnd_pos is None or isinstance(load_bnd_pos, bool)
+    assert isinstance(world_space_bnd_pos, bool)
     assert isinstance(overscan_x, float)
     assert isinstance(overscan_y, float)
     mkr_node = mkr.get_node()
@@ -307,30 +389,43 @@ def __set_node_data(mkr, bnd, mkr_data, load_bnd_pos, overscan_x, overscan_y):
     # Set Bundle Position
     if bnd and load_bnd_pos:
         bnd_node = bnd.get_node()
-        bnd_x = mkr_data.get_bundle_x()
-        bnd_y = mkr_data.get_bundle_y()
-        bnd_z = mkr_data.get_bundle_z()
-        bnd_lock_x = mkr_data.get_bundle_lock_x()
-        bnd_lock_y = mkr_data.get_bundle_lock_y()
-        bnd_lock_z = mkr_data.get_bundle_lock_z()
 
-        maya.cmds.setAttr(bnd_node + '.translateX', lock=False)
-        maya.cmds.setAttr(bnd_node + '.translateY', lock=False)
-        maya.cmds.setAttr(bnd_node + '.translateZ', lock=False)
+        if world_space_bnd_pos is True:
+            is_world_static = (
+                isinstance(mkr_data.bundle_world_x, float)
+                and isinstance(mkr_data.bundle_world_y, float)
+                and isinstance(mkr_data.bundle_world_z, float)
+            )
 
-        if isinstance(bnd_x, float):
-            maya.cmds.setAttr(bnd_node + '.translateX', bnd_x)
-        if isinstance(bnd_y, float):
-            maya.cmds.setAttr(bnd_node + '.translateY', bnd_y)
-        if isinstance(bnd_z, float):
-            maya.cmds.setAttr(bnd_node + '.translateZ', bnd_z)
+            has_world_xyz = False
+            if is_world_static:
+                has_world_xyz = True
+            else:
+                world_x_count = mkr_data.bundle_world_x.get_length()
+                world_y_count = mkr_data.bundle_world_y.get_length()
+                world_z_count = mkr_data.bundle_world_z.get_length()
+                has_world_xyz = (
+                    world_x_count > 0
+                    and world_x_count == world_y_count == world_z_count
+                )
 
-        if isinstance(bnd_lock_x, bool):
-            maya.cmds.setAttr(bnd_node + '.translateX', lock=True)
-        if isinstance(bnd_lock_y, bool):
-            maya.cmds.setAttr(bnd_node + '.translateY', lock=True)
-        if isinstance(bnd_lock_z, bool):
-            maya.cmds.setAttr(bnd_node + '.translateZ', lock=True)
+            if has_world_xyz:
+                __set_node_data_bundle_world(mkr_data, bnd_node)
+            else:
+                # We were asked to give bundle positions in
+                # world-space, but we cannot do that. Warning the user
+                # seems appropriate.
+                msg = (
+                    '%r | %r; '
+                    'World-space bundle data does not exist, '
+                    'cannot set world-space position.'
+                )
+                LOG.warning(msg, mkr_name, bnd_node)
+
+                __set_node_data_bundle_local(mkr_data, bnd_node)
+        else:
+            __set_node_data_bundle_local(mkr_data, bnd_node)
+
     return mkr, bnd
 
 
@@ -341,6 +436,7 @@ def create_nodes(
     col=None,
     with_bundles=None,
     load_bundle_position=None,
+    world_space_bundle_position=None,
     camera_field_of_view=None,
 ):
     """
@@ -366,6 +462,9 @@ def create_nodes(
     :param load_bundle_position: Apply the 3D positions to bundle.
     :type load_bundle_position: bool
 
+    :param world_space_bundle_position: Set 3D bundle positions in world space?
+    :type world_space_bundle_position: bool
+
     :param camera_field_of_view: The camera field of view of the
                                  original camera with this 2D data.
     :type camera_field_of_view: [(int, float, float)]
@@ -373,15 +472,22 @@ def create_nodes(
     :returns: List of Markers.
     :rtype: [Marker, ..]
     """
-    if with_bundles is None:
-        with_bundles = True
-    if load_bundle_position is None:
-        load_bundle_position = True
     assert isinstance(cam, mmapi.Camera)
     assert isinstance(mkr_grp, mmapi.MarkerGroup)
     assert col is None or isinstance(col, mmapi.Collection)
+
+    if with_bundles is None:
+        with_bundles = True
     assert isinstance(with_bundles, bool)
+
+    if load_bundle_position is None:
+        load_bundle_position = True
     assert isinstance(load_bundle_position, bool)
+
+    if world_space_bundle_position is None:
+        world_space_bundle_position = False
+    assert isinstance(world_space_bundle_position, bool)
+
     assert camera_field_of_view is None or isinstance(
         camera_field_of_view, (list, tuple)
     )
@@ -413,7 +519,13 @@ def create_nodes(
             if mkr is not None:
                 # Set attributes and add into list
                 __set_node_data(
-                    mkr, bnd, mkr_data, load_bundle_position, overscan_x, overscan_y
+                    mkr,
+                    bnd,
+                    mkr_data,
+                    load_bundle_position,
+                    world_space_bundle_position,
+                    overscan_x,
+                    overscan_y,
                 )
                 mkr_list.append(mkr)
 
@@ -503,19 +615,39 @@ def _find_marker_data(mkr, mkr_data_list):
     return found_mkr_data
 
 
-def _update_node(mkr, bnd, mkr_data, load_bundle_position, overscan_x, overscan_y):
+def _update_node(
+    mkr,
+    bnd,
+    mkr_data,
+    load_bundle_position,
+    world_space_bundle_position,
+    overscan_x,
+    overscan_y,
+):
     """
     Set the MarkerData on the given Marker and Bundle.
     """
     assert isinstance(mkr, mmapi.Marker)
     assert bnd is None or isinstance(bnd, mmapi.Bundle)
     assert isinstance(mkr_data, markerdata.MarkerData)
-    __set_node_data(mkr, bnd, mkr_data, load_bundle_position, overscan_x, overscan_y)
+    __set_node_data(
+        mkr,
+        bnd,
+        mkr_data,
+        load_bundle_position,
+        world_space_bundle_position,
+        overscan_x,
+        overscan_y,
+    )
     return
 
 
 def update_nodes(
-    mkr_list, mkr_data_list, load_bundle_position=None, camera_field_of_view=None
+    mkr_list,
+    mkr_data_list,
+    load_bundle_position=None,
+    world_space_bundle_position=None,
+    camera_field_of_view=None,
 ):
     """
     Update the given mkr_list with data from mkr_data_list.
@@ -530,6 +662,9 @@ def update_nodes(
     :param load_bundle_position: Apply the 3D positions to bundle.
     :type load_bundle_position: bool
 
+    :param world_space_bundle_position: Set 3D bundle positions in world space?
+    :type world_space_bundle_position: bool
+
     :param camera_field_of_view: The camera field of view of the
                                  original camera with this 2D data.
     :type camera_field_of_view: [(int, float, float)]
@@ -539,9 +674,12 @@ def update_nodes(
     """
     if load_bundle_position is None:
         load_bundle_position = True
+    if world_space_bundle_position is None:
+        world_space_bundle_position = False
     assert isinstance(mkr_list, (list, tuple, set))
     assert isinstance(mkr_data_list, (list, tuple, set))
     assert isinstance(load_bundle_position, bool)
+    assert isinstance(world_space_bundle_position, bool)
     assert camera_field_of_view is None or isinstance(
         camera_field_of_view, (list, tuple)
     )
@@ -570,7 +708,15 @@ def update_nodes(
         cam_shp = cam.get_shape_node()
         fallback_overscan = (1.0, 1.0)
         overscan_x, overscan_y = overscan_per_camera.get(cam_shp, fallback_overscan)
-        _update_node(mkr, bnd, mkr_data, load_bundle_position, overscan_x, overscan_y)
+        _update_node(
+            mkr,
+            bnd,
+            mkr_data,
+            load_bundle_position,
+            world_space_bundle_position,
+            overscan_x,
+            overscan_y,
+        )
     else:
         # Make a copy of mkr_list and mkr_data_list, to avoid any
         # possibility of the given arguments mkr_list and mkr_data_list
@@ -591,7 +737,13 @@ def update_nodes(
                 fallback_overscan,
             )
             _update_node(
-                mkr, bnd, mkr_data, load_bundle_position, overscan_x, overscan_y
+                mkr,
+                bnd,
+                mkr_data,
+                load_bundle_position,
+                world_space_bundle_position,
+                overscan_x,
+                overscan_y,
             )
             mkr_data_list.remove(mkr_data)
             mkr_list_changed.append(mkr)

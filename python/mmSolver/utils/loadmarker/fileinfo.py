@@ -32,6 +32,8 @@ FileInfo = collections.namedtuple(
         'marker_distorted',
         'marker_undistorted',
         'bundle_positions',
+        'scene_transform',
+        'point_group_transform',
         'camera_field_of_view',
     ],
 )
@@ -41,6 +43,8 @@ def create_file_info(
     marker_distorted=None,
     marker_undistorted=None,
     bundle_positions=None,
+    scene_transform=None,
+    point_group_transform=None,
     camera_field_of_view=None,
 ):
     """
@@ -52,12 +56,18 @@ def create_file_info(
         marker_undistorted = False
     if bundle_positions is None:
         bundle_positions = False
+    if scene_transform is None:
+        scene_transform = False
+    if point_group_transform is None:
+        point_group_transform = False
     if camera_field_of_view is None:
         camera_field_of_view = []
     file_info = FileInfo(
         marker_distorted=marker_distorted,
         marker_undistorted=marker_undistorted,
         bundle_positions=bundle_positions,
+        scene_transform=scene_transform,
+        point_group_transform=point_group_transform,
         camera_field_of_view=camera_field_of_view,
     )
     return file_info

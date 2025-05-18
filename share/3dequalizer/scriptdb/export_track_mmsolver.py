@@ -909,8 +909,12 @@ def _generate_camera_data(camera, lens, frame_zero):
     lco_y = tde4.getLensLensCenterY(lens)
     camera_data['lens_center_offset_cm'] = (lco_x, lco_y)
 
+    # 3DE starts at frame '1' (one) regardless of the 'start frame'.
+    frames = range(1, cam_num_frames + 1)
+    assert len(frames) == cam_num_frames
+
     camera_data['per_frame'] = []
-    for frame in range(1, cam_num_frames):
+    for frame in frames:
         # Note: In 3DEqualizer, film back and lens center is assumed
         # to be static, only focal length can be dynamic.
         focal_length = tde4.getCameraFocalLength(camera, frame)

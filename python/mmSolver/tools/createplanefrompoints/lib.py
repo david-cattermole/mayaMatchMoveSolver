@@ -170,7 +170,6 @@ def create_plane_from_points(world_points, name=None):
     transform_node, _creator_node = maya.cmds.polyPlane(axis=[0.0, 1.0, 0.0], name=name)
 
     _set_mesh_transform_matrix(transform_node, plane_matrix)
-    # _set_mesh_transform_mmatrix(transform_node, plane_mmatrix)
 
     # Assign 'lambert1' to mesh.
     maya.cmds.sets(transform_node, edit=True, forceElement='initialShadingGroup')

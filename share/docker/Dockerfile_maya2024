@@ -2,7 +2,7 @@
 #
 # $ cd /path/to/project/root/mayaMatchMoveSolver/
 # $ docker build --file share/docker/Dockerfile_maya2024 -t mmsolver-linux-maya2024-build .
-# $ docker run --rm --interactive --volume "${PWD}:/mmSolver" --tty mmsolver-linux-maya2024-build
+# $ docker run --rm --interactive --volume "${PWD}:/mmSolver" --tty mmsolver-linux-maya2024-build bash
 #
 #
 # Once the docker image is built and run, you can execute the
@@ -49,7 +49,7 @@ RUN dnf install --assumeyes \
        nss \
        libnsl \
        dbus \
-       redhat-lsb-core \ 
+       redhat-lsb-core \
        pcre-utf16 \
        pciutils \
        libXdamage
@@ -136,6 +136,7 @@ RUN dnf install --assumeyes \
 # TODO: Define a minimum Rust version to install.
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
     && source ${HOME}/.cargo/env
+ENV PATH=/root/.cargo/bin:$PATH
 
 # Development tools for Maya 2024.
 RUN dnf install --assumeyes \
@@ -161,4 +162,4 @@ ENV MAYA_DISABLE_CIP=1
 WORKDIR /mmSolver
 
 # Maya 2024 development environment.
-ENTRYPOINT [ "scl", "enable", "gcc-toolset-11", "bash" ]
+ENTRYPOINT [ "scl", "enable", "gcc-toolset-11" ]

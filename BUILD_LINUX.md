@@ -16,7 +16,7 @@ On a Linux (or Windows) host Bash or Power Shell terminal, run:
 ```commandline
 $ cd <project root>
 $ docker build --file share/docker/Dockerfile_mayaXXXX -t mmsolver-linux-mayaXXXX-build .
-$ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-mayaXXXX-build
+$ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-mayaXXXX-build bash
 
 # Inside the docker container
 $ ./scripts/build_mmSolver_linux_mayaXXXX.bash

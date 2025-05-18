@@ -2,7 +2,7 @@
 #
 # $ cd /path/to/project/root/mayaMatchMoveSolver/
 # $ docker build --file share/docker/Dockerfile_maya2023 -t mmsolver-linux-maya2023-build .
-# $ docker run --rm --interactive --volume "${PWD}:/mmSolver" --tty mmsolver-linux-maya2023-build
+# $ docker run --rm --interactive --volume "${PWD}:/mmSolver" --tty mmsolver-linux-maya2023-build bash
 #
 #
 # Once the docker image is built and run, you can execute the
@@ -151,6 +151,7 @@ RUN yum install --assumeyes \
 # TODO: Define a minimum Rust version to install.
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
     && source ${HOME}/.cargo/env
+ENV PATH=/root/.cargo/bin:$PATH
 
 # Install Maya from archive.
 ADD ./external/archives/Autodesk_Maya_2023_ML_Linux_64bit.tgz /temp
@@ -170,5 +171,4 @@ ENTRYPOINT [ \
                "rh-python36", \
                "devtoolset-9", \
                "llvm-toolset-7", \
-               "rh-git218", \
-                   "bash"]
+               "rh-git218" ]

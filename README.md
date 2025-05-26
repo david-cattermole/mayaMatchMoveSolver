@@ -57,6 +57,7 @@ changes.
 
 | Releases                                                                                | Description                                        |
 | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| [v0.5.3](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.5.3)   | Change solver validation and world-space bundles.  |
 | [v0.5.2](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.5.2)   | Bug fix for Maya 2024+.                            |
 | [v0.5.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.5.1)   | Support for Maya 2025.                             |
 | [v0.5.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.5.0)   | Silhouette Renderer and Improved MM ImagePlane.    |

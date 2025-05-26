@@ -259,7 +259,7 @@ automatically restored when the Load Marker UI is re-opened.
 
    * - Bundle Space
      - sets which space to set Bundle positions in; ``Local-Space`` or
-       ``World-Space`. Starting with mmSolver v0.5.3, Bundles are
+       ``World-Space``. Starting with mmSolver v0.5.3, Bundles are
        loaded in ``World-Space`` by default.
 
    * - Image Resolution

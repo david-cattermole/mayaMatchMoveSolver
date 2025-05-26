@@ -685,6 +685,13 @@ general functions behave, by default.
        UI solving has finished. If *No*, the :ref:`Solver UI <solver-ui-ref>`
        will not be adjusted.
 
+   * - Solver Options
+     - *Default* or *Developer*
+     - If set as *Developer*, the :ref:`Solver UI <solver-ui-ref>`
+       will display extended options intended for users testing or
+       experimenting with new features, or for developers of
+       mmSolver..
+
    * - Rename Markers Default
      - *Yes* or *No*
      - Controls the default value used for the "Rename Markers" option
@@ -705,6 +712,10 @@ general functions behave, by default.
      - Controls the default value shown in the :ref:`Load Markers
        <load-markers-ref>` UI.
 
+   * - Bundle Space Default
+     - *Local-Space* or *World-Space*
+     - Controls the default value shown in the :ref:`Load Markers
+       <load-markers-ref>` UI.
 
 Usage:
 

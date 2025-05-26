@@ -228,8 +228,8 @@ automatically restored when the Load Marker UI is re-opened.
 
    * - Rename Markers
      - will run the :ref:`Marker Bundle Rename
-       <marker-bundle-rename-tool-ref> tool on the loaded markers with
-       the given name.
+       <marker-bundle-rename-tool-ref>` tool on the loaded markers
+       with the given name.
 
    * - Camera
      - is the camera node you wish to place the newly created Markers
@@ -256,6 +256,11 @@ automatically restored when the Load Marker UI is re-opened.
      - will allow loading 3D point information saved along with the 2D
        Marker data. Only some formats (for example ``.uv``) can store
        both 2D and 3D data in one file.
+
+   * - Bundle Space
+     - sets which space to set Bundle positions in; ``Local-Space`` or
+       ``World-Space`. Starting with mmSolver v0.5.3, Bundles are
+       loaded in ``World-Space`` by default.
 
    * - Image Resolution
      - is for use with 3DEqualizer4 ``.txt`` or PFTrack ``.txt /

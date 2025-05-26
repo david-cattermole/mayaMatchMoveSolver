@@ -356,7 +356,7 @@ all end in tears.</p>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='140655129874384'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='140655129871568'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='140655129874128'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='140673758025488'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='140673758025552'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='140673758025616'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1575,7 +1575,7 @@ given file.</p></li>
 <p>Provides a base interface for marker import plug-ins.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mmSolver.utils.loadmarker.fileinfo.FileInfo">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.fileinfo.</span></span><span class="sig-name descname"><span class="pre">FileInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">marker_distorted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_undistorted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.fileinfo.</span></span><span class="sig-name descname"><span class="pre">FileInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">marker_distorted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_undistorted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_group_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo" title="Permalink to this definition">#</a></dt>
 <dd><dl class="py property">
 <dt class="sig sig-object py" id="mmSolver.utils.loadmarker.fileinfo.FileInfo.bundle_positions">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bundle_positions</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo.bundle_positions" title="Permalink to this definition">#</a></dt>
@@ -1585,7 +1585,7 @@ given file.</p></li>
 <dl class="py property">
 <dt class="sig sig-object py" id="mmSolver.utils.loadmarker.fileinfo.FileInfo.camera_field_of_view">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">camera_field_of_view</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo.camera_field_of_view" title="Permalink to this definition">#</a></dt>
-<dd><p>Alias for field number 3</p>
+<dd><p>Alias for field number 5</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1600,11 +1600,23 @@ given file.</p></li>
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.fileinfo.FileInfo.point_group_transform">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">point_group_transform</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo.point_group_transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.fileinfo.FileInfo.scene_transform">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scene_transform</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo.scene_transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.loadmarker.fileinfo.create_file_info">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.fileinfo.</span></span><span class="sig-name descname"><span class="pre">create_file_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">marker_distorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_undistorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_positions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.fileinfo.create_file_info" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.fileinfo.</span></span><span class="sig-name descname"><span class="pre">create_file_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">marker_distorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_undistorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_positions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_group_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.fileinfo.create_file_info" title="Permalink to this definition">#</a></dt>
 <dd><p>Create the type of contents available in the file format.</p>
 </dd></dl>
 
@@ -1841,6 +1853,36 @@ given file.</p></li>
 <span class="sig-name descname"><span class="pre">set_bundle_lock_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_lock_z" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.markerdata.MarkerData.get_bundle_world_x">
+<span class="sig-name descname"><span class="pre">get_bundle_world_x</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.get_bundle_world_x" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_world_x">
+<span class="sig-name descname"><span class="pre">set_bundle_world_x</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_world_x" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.markerdata.MarkerData.get_bundle_world_y">
+<span class="sig-name descname"><span class="pre">get_bundle_world_y</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.get_bundle_world_y" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_world_y">
+<span class="sig-name descname"><span class="pre">set_bundle_world_y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_world_y" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.markerdata.MarkerData.get_bundle_world_z">
+<span class="sig-name descname"><span class="pre">get_bundle_world_z</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.get_bundle_world_z" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_world_z">
+<span class="sig-name descname"><span class="pre">set_bundle_world_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_world_z" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="mmSolver.utils.loadmarker.markerdata.MarkerData.name">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.name" title="Permalink to this definition">#</a></dt>
@@ -1909,6 +1951,21 @@ given file.</p></li>
 <dl class="py property">
 <dt class="sig sig-object py" id="mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_lock_z">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bundle_lock_z</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_lock_z" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_world_x">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bundle_world_x</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_world_x" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_world_y">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bundle_world_y</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_world_y" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_world_z">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bundle_world_z</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_world_z" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2197,6 +2254,66 @@ The dictionary looks like this, format version 2:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>Format version 5:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s1">&#39;num_points&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s1">&#39;is_undistorted&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
+    <span class="s1">&#39;scene&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># 4x4 matrix in row-major order.</span>
+        <span class="s1">&#39;transform&#39;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span>
+        <span class="p">)</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;point_group&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1"># &#39;CAMERA&#39; or &#39;OBJECT&#39; or &#39;MOCAP&#39;.</span>
+        <span class="s1">&#39;transform&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1"># 4x4 matrix in row-major order.</span>
+            <span class="n">frame</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;points&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="c1"># or None</span>
+        <span class="s1">&#39;set_name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s1">&#39;per_frame&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;frame&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="s1">&#39;pos_dist&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                <span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="p">},</span>
+        <span class="p">],</span>
+        <span class="s1">&#39;3d&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;x_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;y_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;z_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span>  <span class="c1"># or None</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;camera&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+        <span class="s1">&#39;film_back_cm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+        <span class="s1">&#39;lens_center_offset_cm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+        <span class="s1">&#39;per_frame&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;frame&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="s1">&#39;focal_length_cm&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.determine_format_version">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.uvtrack.</span></span><span class="sig-name descname"><span class="pre">determine_format_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.determine_format_version" title="Permalink to this definition">#</a></dt>
@@ -2213,10 +2330,10 @@ The dictionary looks like this, format version 2:</p>
 <dd><p>Parse the UV file format or 3DEqualizer .txt format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_path</strong> – </p>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – File path to read.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>List of MarkerData objects.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2253,6 +2370,21 @@ The dictionary looks like this, format version 2:</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.parse_v4">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.uvtrack.</span></span><span class="sig-name descname"><span class="pre">parse_v4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.parse_v4" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the UV file format, using JSON.</p>
+<p>Accepts the keyword ‘undistorted’, ‘overscan_x’ and ‘overscan_y’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – File path to read.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of MarkerData objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.parse_v5">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.uvtrack.</span></span><span class="sig-name descname"><span class="pre">parse_v5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.parse_v5" title="Permalink to this definition">#</a></dt>
 <dd><p>Parse the UV file format, using JSON.</p>
 <p>Accepts the keyword ‘undistorted’, ‘overscan_x’ and ‘overscan_y’.</p>
 <dl class="field-list simple">
@@ -2732,9 +2864,62 @@ affects the world transform.</p></li>
 markers</p></li>
 </ul>
 <dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.nodeaffects.find_plugs_affecting_bundle">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.nodeaffects.</span></span><span class="sig-name descname"><span class="pre">find_plugs_affecting_bundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bnd_tfm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_tfm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam_tfms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.nodeaffects.find_plugs_affecting_bundle" title="Permalink to this definition">#</a></dt>
+<dd><p>Find plugs that affect the world-matrix transform of the
+bundle transform node for the given frames.</p>
+<p>The ‘cam_tfms’ argument is for bundles that may be impacted by the
+screen-space matrix that views the ‘bnd_tfm’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bnd_tfm</strong> (<em>str</em>) – The input bundle (transform) node to query.</p></li>
+<li><p><strong>mkr_tfm</strong> (<em>str</em>) – The connected marker node to this bundle.</p></li>
+<li><p><strong>cam_tfms</strong> (<em>None</em>) – Not yet supported. The cameras that should be
+considered.</p></li>
+<li><p><strong>frames</strong> (<em>[</em><em>int</em><em>, </em><em>..</em><em>] or </em><em>None</em>) – Sequence of frame numbers (optional).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An unordered list of Maya attributes in ‘node.attr’ string
+format.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[str, ..]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.nodeaffects.find_plugs_affected_by_marker">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.nodeaffects.</span></span><span class="sig-name descname"><span class="pre">find_plugs_affected_by_marker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_tfm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam_tfm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.nodeaffects.find_plugs_affected_by_marker" title="Permalink to this definition">#</a></dt>
+<dd><p>Find plugs that are affected by the given marker transform
+node for the given frames.</p>
+<p>The ‘cam_tfm’ argument is the camera transform node owns the
+(‘mkr_tfm’) marker transform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mkr_tfm</strong> (<em>str</em>) – The input marker (transform) node to query.</p></li>
+<li><p><strong>cam_tfm</strong> (<em>str</em><em> or </em><em>None</em>) – The camera that should be considered (optional).</p></li>
+<li><p><strong>frames</strong> (<em>[</em><em>int</em><em>, </em><em>..</em><em>] or </em><em>None</em>) – Sequence of frame numbers (optional).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An unordered list of Maya attributes in ‘node.attr’ string
+format.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[str, ..]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.nodeaffects.find_plugs_affecting_transform">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.nodeaffects.</span></span><span class="sig-name descname"><span class="pre">find_plugs_affecting_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tfm_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam_tfm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.nodeaffects.find_plugs_affecting_transform" title="Permalink to this definition">#</a></dt>
-<dd><p>Find plugs that affect the world-matrix transform of the node.</p>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.nodeaffects.</span></span><span class="sig-name descname"><span class="pre">find_plugs_affecting_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tfm_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam_tfm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.nodeaffects.find_plugs_affecting_transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Find plugs that affect the world-matrix transform of the node
+for the given frames.</p>
 <p>The ‘cam_tfm’ argument is for nodes that may be impacted by the
 screen-space matrix that views the ‘tfm_node’.</p>
 <dl class="field-list simple">
@@ -2742,6 +2927,7 @@ screen-space matrix that views the ‘tfm_node’.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tfm_node</strong> (<em>str</em>) – The input node to query.</p></li>
 <li><p><strong>cam_tfm</strong> (<em>str</em><em> or </em><em>None</em>) – The camera that should be considered (optional).</p></li>
+<li><p><strong>frames</strong> (<em>[</em><em>int</em><em>, </em><em>..</em><em>] or </em><em>None</em>) – Sequence of frame numbers (optional).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -4888,6 +5074,8 @@ panel/editor.</p>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo.camera_field_of_view"><code class="docutils literal notranslate"><span class="pre">FileInfo.camera_field_of_view</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo.marker_distorted"><code class="docutils literal notranslate"><span class="pre">FileInfo.marker_distorted</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo.marker_undistorted"><code class="docutils literal notranslate"><span class="pre">FileInfo.marker_undistorted</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo.point_group_transform"><code class="docutils literal notranslate"><span class="pre">FileInfo.point_group_transform</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo.scene_transform"><code class="docutils literal notranslate"><span class="pre">FileInfo.scene_transform</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.fileinfo.create_file_info"><code class="docutils literal notranslate"><span class="pre">create_file_info()</span></code></a></li>
@@ -4926,6 +5114,12 @@ panel/editor.</p>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_lock_y"><code class="docutils literal notranslate"><span class="pre">MarkerData.set_bundle_lock_y()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.get_bundle_lock_z"><code class="docutils literal notranslate"><span class="pre">MarkerData.get_bundle_lock_z()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_lock_z"><code class="docutils literal notranslate"><span class="pre">MarkerData.set_bundle_lock_z()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.get_bundle_world_x"><code class="docutils literal notranslate"><span class="pre">MarkerData.get_bundle_world_x()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_world_x"><code class="docutils literal notranslate"><span class="pre">MarkerData.set_bundle_world_x()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.get_bundle_world_y"><code class="docutils literal notranslate"><span class="pre">MarkerData.get_bundle_world_y()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_world_y"><code class="docutils literal notranslate"><span class="pre">MarkerData.set_bundle_world_y()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.get_bundle_world_z"><code class="docutils literal notranslate"><span class="pre">MarkerData.get_bundle_world_z()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.set_bundle_world_z"><code class="docutils literal notranslate"><span class="pre">MarkerData.set_bundle_world_z()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.name"><code class="docutils literal notranslate"><span class="pre">MarkerData.name</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.id"><code class="docutils literal notranslate"><span class="pre">MarkerData.id</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.x"><code class="docutils literal notranslate"><span class="pre">MarkerData.x</span></code></a></li>
@@ -4940,6 +5134,9 @@ panel/editor.</p>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_lock_x"><code class="docutils literal notranslate"><span class="pre">MarkerData.bundle_lock_x</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_lock_y"><code class="docutils literal notranslate"><span class="pre">MarkerData.bundle_lock_y</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_lock_z"><code class="docutils literal notranslate"><span class="pre">MarkerData.bundle_lock_z</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_world_x"><code class="docutils literal notranslate"><span class="pre">MarkerData.bundle_world_x</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_world_y"><code class="docutils literal notranslate"><span class="pre">MarkerData.bundle_world_y</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData.bundle_world_z"><code class="docutils literal notranslate"><span class="pre">MarkerData.bundle_world_z</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-mmSolver.utils.loadmarker.formats">Formats</a><ul>
@@ -4969,6 +5166,7 @@ panel/editor.</p>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.formats.uvtrack.parse_v2"><code class="docutils literal notranslate"><span class="pre">parse_v2()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.formats.uvtrack.parse_v3"><code class="docutils literal notranslate"><span class="pre">parse_v3()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.formats.uvtrack.parse_v4"><code class="docutils literal notranslate"><span class="pre">parse_v4()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.loadmarker.formats.uvtrack.parse_v5"><code class="docutils literal notranslate"><span class="pre">parse_v5()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack"><code class="docutils literal notranslate"><span class="pre">LoaderUVTrack</span></code></a><ul>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack.name"><code class="docutils literal notranslate"><span class="pre">LoaderUVTrack.name</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack.file_exts"><code class="docutils literal notranslate"><span class="pre">LoaderUVTrack.file_exts</span></code></a></li>
@@ -5012,6 +5210,8 @@ panel/editor.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-mmSolver.utils.nodeaffects">Node Affects</a><ul>
+<li><a class="reference internal" href="#mmSolver.utils.nodeaffects.find_plugs_affecting_bundle"><code class="docutils literal notranslate"><span class="pre">find_plugs_affecting_bundle()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.nodeaffects.find_plugs_affected_by_marker"><code class="docutils literal notranslate"><span class="pre">find_plugs_affected_by_marker()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.nodeaffects.find_plugs_affecting_transform"><code class="docutils literal notranslate"><span class="pre">find_plugs_affecting_transform()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.nodeaffects.find_marker_attr_mapping_raw"><code class="docutils literal notranslate"><span class="pre">find_marker_attr_mapping_raw()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.nodeaffects.sort_into_hierarchy_groups"><code class="docutils literal notranslate"><span class="pre">sort_into_hierarchy_groups()</span></code></a></li>

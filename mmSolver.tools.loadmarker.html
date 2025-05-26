@@ -366,7 +366,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.mayareadfile.create_nodes">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.mayareadfile.</span></span><span class="sig-name descname"><span class="pre">create_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_data_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_grp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_bundles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_bundle_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.mayareadfile.create_nodes" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.mayareadfile.</span></span><span class="sig-name descname"><span class="pre">create_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_data_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_grp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_bundles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_bundle_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">world_space_bundle_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.mayareadfile.create_nodes" title="Permalink to this definition">#</a></dt>
 <dd><p>Create Markers for all given MarkerData objects</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -379,6 +379,7 @@ be created under.</p></li>
 <li><p><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a><em> or </em><em>None</em>) – Collection to add Markers to.</p></li>
 <li><p><strong>with_bundles</strong> (<em>bool</em>) – Create a bundle for each Marker.</p></li>
 <li><p><strong>load_bundle_position</strong> (<em>bool</em>) – Apply the 3D positions to bundle.</p></li>
+<li><p><strong>world_space_bundle_position</strong> (<em>bool</em>) – Set 3D bundle positions in world space?</p></li>
 <li><p><strong>camera_field_of_view</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>]</em>) – The camera field of view of the
 original camera with this 2D data.</p></li>
 </ul>
@@ -394,7 +395,7 @@ original camera with this 2D data.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.mayareadfile.update_nodes">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.mayareadfile.</span></span><span class="sig-name descname"><span class="pre">update_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_data_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_bundle_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.mayareadfile.update_nodes" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.mayareadfile.</span></span><span class="sig-name descname"><span class="pre">update_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_data_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_bundle_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">world_space_bundle_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.mayareadfile.update_nodes" title="Permalink to this definition">#</a></dt>
 <dd><p>Update the given mkr_list with data from mkr_data_list.
 The length of both lists must match.</p>
 <dl class="field-list simple">
@@ -403,6 +404,7 @@ The length of both lists must match.</p>
 <li><p><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>..</em><em>]</em>) – Markers to update.</p></li>
 <li><p><strong>mkr_data_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.loadmarker.markerdata.MarkerData" title="mmSolver.utils.loadmarker.markerdata.MarkerData"><em>MarkerData</em></a><em>, </em><em>..</em><em>]</em>) – The MarkerData list to search for a match.</p></li>
 <li><p><strong>load_bundle_position</strong> (<em>bool</em>) – Apply the 3D positions to bundle.</p></li>
+<li><p><strong>world_space_bundle_position</strong> (<em>bool</em>) – Set 3D bundle positions in world space?</p></li>
 <li><p><strong>camera_field_of_view</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>]</em>) – The camera field of view of the
 original camera with this 2D data.</p></li>
 </ul>
@@ -467,6 +469,11 @@ original camera with this 2D data.</p></li>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.set_selected_nodes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">set_selected_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.set_selected_nodes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.get_active_viewport_camera">
@@ -551,6 +558,12 @@ original camera with this 2D data.</p></li>
 <dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.deferred_revert_of_config_value">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">deferred_revert_of_config_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.deferred_revert_of_config_value" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the user preferences to a value, as a deferred fashion.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.rename_markers_and_bundles">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">rename_markers_and_bundles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.rename_markers_and_bundles" title="Permalink to this definition">#</a></dt>
+<dd><p>Rename all markers and bundles with a name.</p>
 </dd></dl>
 
 <span class="target" id="module-mmSolver.tools.loadmarker.lib.fieldofview"></span><p>Camera field of view maths related functions.</p>
@@ -679,6 +692,7 @@ provided camera to calculate the overscan.</p></li>
 <li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_cameras"><code class="docutils literal notranslate"><span class="pre">get_cameras()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_marker_groups"><code class="docutils literal notranslate"><span class="pre">get_marker_groups()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_selected_markers"><code class="docutils literal notranslate"><span class="pre">get_selected_markers()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.set_selected_nodes"><code class="docutils literal notranslate"><span class="pre">set_selected_nodes()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_active_viewport_camera"><code class="docutils literal notranslate"><span class="pre">get_active_viewport_camera()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_start_directory"><code class="docutils literal notranslate"><span class="pre">get_start_directory()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.create_new_camera"><code class="docutils literal notranslate"><span class="pre">create_new_camera()</span></code></a></li>
@@ -686,6 +700,7 @@ provided camera to calculate the overscan.</p></li>
 <li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_default_image_resolution"><code class="docutils literal notranslate"><span class="pre">get_default_image_resolution()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.trigger_maya_to_refresh"><code class="docutils literal notranslate"><span class="pre">trigger_maya_to_refresh()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.deferred_revert_of_config_value"><code class="docutils literal notranslate"><span class="pre">deferred_revert_of_config_value()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.rename_markers_and_bundles"><code class="docutils literal notranslate"><span class="pre">rename_markers_and_bundles()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.fieldofview.get_camera_field_of_view"><code class="docutils literal notranslate"><span class="pre">get_camera_field_of_view()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.fieldofview.calculate_overscan_ratio"><code class="docutils literal notranslate"><span class="pre">calculate_overscan_ratio()</span></code></a></li>
 </ul>

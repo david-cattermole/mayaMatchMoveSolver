@@ -347,10 +347,10 @@
 using <cite>MM Solver</cite>.</p>
 <section id="load-markers">
 <span id="load-markers-ref"></span><h2>Load Markers<a class="headerlink" href="#load-markers" title="Permalink to this heading">#</a></h2>
-<figure class="align-right" id="id1">
+<figure class="align-right" id="id3">
 <a class="reference internal image-reference" href="_images/tools_loadmarker_overview.png"><img alt="Load Markers UI" src="_images/tools_loadmarker_overview.png" style="width: 347.9px; height: 364.7px;" /></a>
 <figcaption>
-<p><span class="caption-text">Load Markers UI</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Load Markers UI</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <p>The Load Markers UI allows loading of <code class="docutils literal notranslate"><span class="pre">.uv</span></code> (mmSolver), <code class="docutils literal notranslate"><span class="pre">.txt</span></code>
@@ -516,9 +516,9 @@ Clipboard, then the Load Marker UI will auto-load the file path.</p></li>
 <p>When the <strong>Load</strong> button is run, the options used in the Load Marker UI
 will be saved to the user’s home directory. The saved options are
 automatically restored when the Load Marker UI is re-opened.</p>
-<div class="table-wrapper colwidths-auto docutils container" id="id2">
-<table class="docutils align-default" id="id2">
-<caption><span class="caption-text">Load Marker Options</span><a class="headerlink" href="#id2" title="Permalink to this table">#</a></caption>
+<div class="table-wrapper colwidths-auto docutils container" id="id4">
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">Load Marker Options</span><a class="headerlink" href="#id4" title="Permalink to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Description</p></th>
@@ -529,33 +529,38 @@ automatically restored when the Load Marker UI is re-opened.</p>
 <td><p>allows you to create new Markers or replace data on selected
 Markers.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Camera</p></td>
+<tr class="row-odd"><td><p>Rename Markers</p></td>
+<td><p>will run the :ref:<a href="#id1"><span class="problematic" id="id2">`</span></a>Marker Bundle Rename
+&lt;marker-bundle-rename-tool-ref&gt; tool on the loaded markers with
+the given name.</p></td>
+</tr>
+<tr class="row-even"><td><p>Camera</p></td>
 <td><p>is the camera node you wish to place the newly created Markers
 under. You may also create a new camera node.</p></td>
 </tr>
-<tr class="row-even"><td><p>Marker Group</p></td>
+<tr class="row-odd"><td><p>Marker Group</p></td>
 <td><p>is the Marker Group (under the <strong>Camera</strong>) that you wish to
 create the Markers underneath. You may create a new Marker
 Group, using the <code class="docutils literal notranslate"><span class="pre">&lt;Create</span> <span class="pre">New&gt;</span></code> option.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Distortion Mode</p></td>
+<tr class="row-even"><td><p>Distortion Mode</p></td>
 <td><p>will allow choosing the type of 2D point data to create or
 load. Some formats (for example <code class="docutils literal notranslate"><span class="pre">.uv</span></code>) can store both
 undistorted and distorted 2D data.</p></td>
 </tr>
-<tr class="row-even"><td><p>Use Embedded Overscan</p></td>
+<tr class="row-odd"><td><p>Use Embedded Overscan</p></td>
 <td><p>will use the camera field of view (FOV) embedded inside the
 file to automatically calculate the correct 2D
 position. <code class="docutils literal notranslate"><span class="pre">.uv</span></code> is the only currently supported format. Use
 <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code> or <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code>
 version 1.7+ inside 3DEqualizer for this feature to be enabled.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Load Bundle Positions</p></td>
+<tr class="row-even"><td><p>Load Bundle Positions</p></td>
 <td><p>will allow loading 3D point information saved along with the 2D
 Marker data. Only some formats (for example <code class="docutils literal notranslate"><span class="pre">.uv</span></code>) can store
 both 2D and 3D data in one file.</p></td>
 </tr>
-<tr class="row-even"><td><p>Image Resolution</p></td>
+<tr class="row-odd"><td><p>Image Resolution</p></td>
 <td><p>is for use with 3DEqualizer4 <code class="docutils literal notranslate"><span class="pre">.txt</span></code> or PFTrack <code class="docutils literal notranslate"><span class="pre">.txt</span> <span class="pre">/</span>
 <span class="pre">.2dt</span></code> files, which are stored with plate resolution embedded
 into the 2D data. Use this field to choose the correct plate
@@ -567,10 +572,10 @@ resolution for the 2D data that was exported.</p></td>
 </section>
 <section id="updating-replacing-markers-in-maya">
 <span id="update-markers-in-maya-ref"></span><h3>Updating / Replacing Markers in Maya<a class="headerlink" href="#updating-replacing-markers-in-maya" title="Permalink to this heading">#</a></h3>
-<figure class="align-right" id="id3">
-<a class="reference internal image-reference" href="_images/tools_loadmarker_load_mode_replace.png"><img alt="Replace the selected Marker nodes." src="_images/tools_loadmarker_load_mode_replace.png" style="width: 298.2px; height: 312.59999999999997px;" /></a>
+<figure class="align-right" id="id5">
+<a class="reference internal image-reference" href="_images/tools_loadmarker_load_mode_replace.png"><img alt="Replace the selected Marker nodes." src="_images/tools_loadmarker_load_mode_replace.png" style="width: 296.4px; height: 321.0px;" /></a>
 <figcaption>
-<p><span class="caption-text">Replace the selected Marker nodes.</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Replace the selected Marker nodes.</span><a class="headerlink" href="#id5" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <p>Marker nodes in Maya can be overwritten with newly tracked data.</p>

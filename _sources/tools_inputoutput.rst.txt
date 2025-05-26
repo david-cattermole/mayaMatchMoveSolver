@@ -226,6 +226,11 @@ automatically restored when the Load Marker UI is re-opened.
      - allows you to create new Markers or replace data on selected
        Markers.
 
+   * - Rename Markers
+     - will run the :ref:`Marker Bundle Rename
+       <marker-bundle-rename-tool-ref> tool on the loaded markers with
+       the given name.
+
    * - Camera
      - is the camera node you wish to place the newly created Markers
        under. You may also create a new camera node.

@@ -10,7 +10,9 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Ubuntu 24.04 does not have Python 3.7 anymore, so we must move
+    # back to Ubuntu 22.04 for compatibility.
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version: ["3.7"]

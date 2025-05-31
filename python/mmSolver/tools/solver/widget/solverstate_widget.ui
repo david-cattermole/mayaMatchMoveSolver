@@ -33,6 +33,9 @@
     <layout class="QHBoxLayout" name="statusLine_layout">
      <item>
       <widget class="QLabel" name="statusLine_label">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Status of the solver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>Status.</string>
        </property>
@@ -46,6 +49,9 @@
       <widget class="QLineEdit" name="solveInfoLine_lineEdit">
        <property name="enabled">
         <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Solver information.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string/>

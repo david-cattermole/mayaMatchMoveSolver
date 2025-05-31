@@ -69,6 +69,9 @@
        </property>
        <item>
         <widget class="QCheckBox" name="globalSolve_checkBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Solve all attributes and frames in one solver process.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Solve All at Once (slow)</string>
          </property>
@@ -76,6 +79,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="onlyRootFrames_checkBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Only solve the root frames, do not solve all frames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Solve Only Root Frames</string>
          </property>
@@ -106,6 +112,9 @@
        </property>
        <item>
         <widget class="QCheckBox" name="solveFocalLength_checkBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, allow camera focal length attributes in the solve.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Solve Focal Length</string>
          </property>
@@ -113,6 +122,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="solveLensDistortion_checkBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, allow lens distortion attributes in the solve.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Solve Lens Distortion</string>
          </property>
@@ -148,6 +160,9 @@
          </property>
          <item>
           <widget class="QLabel" name="sceneGraphMode_label">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Manually choose the type of scene graph should the solver use.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>Scene Graph</string>
            </property>
@@ -161,12 +176,18 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Manually choose the type of scene graph should the solver use.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
           </widget>
          </item>
         </layout>
        </item>
        <item>
         <widget class="QCheckBox" name="evalComplexGraphs_checkBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Force the solver to evaluate complex Maya DG networks.&lt;/p&gt;&lt;p&gt;... such as mesh rivets.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Evaluate Mesh Rivets</string>
          </property>
@@ -202,6 +223,9 @@
          </property>
          <item>
           <widget class="QLabel" name="solverType_label">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;What type of solver engine to solve with?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>Solver</string>
            </property>
@@ -214,6 +238,9 @@
              <horstretch>1</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;What type of solver engine to solve with?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>

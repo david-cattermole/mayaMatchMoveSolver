@@ -72,6 +72,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="add_toolButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add selected object(s) to solver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>+</string>
        </property>
@@ -95,6 +98,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="remove_toolButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Remove selected object(s) from solver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>-</string>
        </property>

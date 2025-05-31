@@ -17,6 +17,9 @@
 #
 """
 A widget for visualising a specific set of (integer) frame numbers.
+
+TODO: Can we simply delay the root frame calculation until later? This
+would avoid a lot of delay in the UI, and speed up the UI a lot.
 """
 
 from __future__ import absolute_import

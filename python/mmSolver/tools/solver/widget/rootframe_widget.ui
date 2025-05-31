@@ -43,6 +43,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="userFrames_lineEdit">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Chosen frames to be solved as root frames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="placeholderText">
         <string>&lt;choose root frames&gt;</string>
        </property>
@@ -50,6 +53,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="previous_toolButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Move current Maya frame to previous user frame.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>&lt;</string>
        </property>
@@ -57,6 +63,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="add_toolButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add current Maya frame to user frames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>+</string>
        </property>
@@ -64,6 +73,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="remove_toolButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Remove current Maya frame to user frames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>-</string>
        </property>
@@ -71,6 +83,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="next_toolButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Move current Maya frame to next user frame.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>&gt;</string>
        </property>
@@ -101,6 +116,9 @@
      </item>
      <item>
       <widget class="QCheckBox" name="perMarkerFrames_checkBox">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable per-marker root frames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>Per-Marker</string>
        </property>
@@ -111,6 +129,9 @@
      </item>
      <item>
       <widget class="QSpinBox" name="perMarkerFrames_spinBox">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each marker will at least this number of root frames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
@@ -152,6 +173,9 @@
      </item>
      <item>
       <widget class="QCheckBox" name="spanFrames_checkBox">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable span-based root frames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>Span</string>
        </property>
@@ -162,6 +186,9 @@
      </item>
      <item>
       <widget class="QSpinBox" name="spanFrames_spinBox">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;At least each span of N frames will have a root frame.&lt;/p&gt;&lt;p&gt;Change this number to control root frame density.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
        </property>

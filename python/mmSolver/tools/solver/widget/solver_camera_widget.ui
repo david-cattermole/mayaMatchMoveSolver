@@ -72,6 +72,9 @@
        </property>
        <item row="0" column="0">
         <widget class="QLabel" name="originFrame_label">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The frame number when the camera will be at the origin.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Origin Frame</string>
          </property>
@@ -79,6 +82,9 @@
        </item>
        <item row="0" column="1">
         <widget class="QSpinBox" name="originFrame_spinBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The frame number when the camera will be at the origin.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="buttonSymbols">
           <enum>QAbstractSpinBox::NoButtons</enum>
          </property>
@@ -95,6 +101,9 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="sceneScale_label">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How large is the camera move?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Scene Scale</string>
          </property>
@@ -102,6 +111,9 @@
        </item>
        <item row="1" column="1">
         <widget class="QDoubleSpinBox" name="sceneScale_doubleSpinBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How large is the camera move?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="buttonSymbols">
           <enum>QAbstractSpinBox::NoButtons</enum>
          </property>
@@ -131,6 +143,9 @@
        </property>
        <item>
         <widget class="QCheckBox" name="solveFocalLength_checkBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, allow camera focal length attributes in the solve.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Solve Focal Length</string>
          </property>
@@ -138,6 +153,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="solveLensDistortion_checkBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, allow lens distortion attributes in the solve.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Solve Lens Distortion</string>
          </property>
@@ -173,6 +191,9 @@
          </property>
          <item>
           <widget class="QLabel" name="solverType_label">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;What type of solver engine to solve with?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>Solver</string>
            </property>
@@ -185,6 +206,9 @@
              <horstretch>1</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;What type of solver engine to solve with?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>

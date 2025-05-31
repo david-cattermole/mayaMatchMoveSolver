@@ -822,48 +822,6 @@ def set_solver_span_frames_on_collection(col, value):
 #######################################################################
 
 
-def get_solver_root_frames_from_collection(col):
-    """
-    Get the value of solver 'Root Frames', from a Collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :returns: The string representation of the frames.
-    :rtype: str
-    """
-    value = get_value_from_node(
-        col.get_node(),
-        const.SOLVER_ROOT_FRAMES_ATTR,
-        attr_type=const.SOLVER_ROOT_FRAMES_ATTR_TYPE,
-        default_value=const.SOLVER_ROOT_FRAMES_DEFAULT_VALUE,
-    )
-    return value
-
-
-def set_solver_root_frames_on_collection(col, value):
-    """
-    Set the value of solver 'Root Frames' on a Collection.
-
-    :param col: The Collection to change.
-    :type col: Collection
-
-    :param value: Value to set to.
-    :type value: str
-    """
-    set_value_on_node(
-        col.get_node(),
-        const.SOLVER_ROOT_FRAMES_ATTR,
-        value,
-        attr_type=const.SOLVER_ROOT_FRAMES_ATTR_TYPE,
-        default_value=const.SOLVER_ROOT_FRAMES_DEFAULT_VALUE,
-    )
-    return
-
-
-#######################################################################
-
-
 def get_solver_only_root_frames_from_collection(col):
     """
     Get the value of solver 'Only Root Frames', from a Collection.

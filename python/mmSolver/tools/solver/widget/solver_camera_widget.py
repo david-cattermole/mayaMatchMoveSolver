@@ -101,14 +101,6 @@ class CameraRootFrameWidget(rootframe_widget.RootFrameWidget):
     def setSpanFramesValue(self, col, value):
         lib_col_state.set_solver_span_frames_on_collection(col, value)
 
-    def getRootFramesValue(self, col):
-        value = lib_col_state.get_solver_root_frames_from_collection(col)
-        return value
-
-    def setRootFramesValue(self, col, value):
-        lib_col_state.set_solver_root_frames_on_collection(col, value)
-        return
-
 
 class CameraFrameRangeWidget(framerange_widget.FrameRangeWidget):
     def getRangeTypeValue(self, col):

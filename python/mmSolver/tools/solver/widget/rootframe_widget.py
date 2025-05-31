@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import time
+from datetime import datetime
 
 import mmSolver.ui.qtpyutils as qtpyutils
 
@@ -34,7 +35,6 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.time as utils_time
-import mmSolver.api as mmapi
 
 import mmSolver.ui.converttypes as convert_types
 import mmSolver.tools.solver.lib.state as lib_state
@@ -47,35 +47,7 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def calculate_root_frames(
-    mkr_list,
-    start_frame,
-    end_frame,
-    extra_frames,
-    use_per_marker_frames,
-    per_marker_frames,
-    use_span_frames,
-    span_frames,
-):
-    s = time.time()
-
-    frames = extra_frames
-    if use_per_marker_frames and len(mkr_list) > 0:
-        frames = mmapi.get_root_frames_from_markers(
-            mkr_list, per_marker_frames, start_frame, end_frame
-        )
-    frames = mmapi.root_frames_list_combine(frames, extra_frames)
-
-    if use_span_frames:
-        frames = mmapi.root_frames_subdivide(frames, span_frames)
-
-    e = time.time()
-    LOG.debug('RootFrameWidget calculate_root_frames: %r seconds', e - s)
-    return frames
-
-
 class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
-
     userFramesChanged = QtCore.Signal()
     rootFramesChanged = QtCore.Signal()
     sendWarning = QtCore.Signal(str)
@@ -130,16 +102,11 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
     def setSpanFramesValue(self, col, value):
         raise NotImplementedError
 
-    def getRootFramesValue(self, col):
-        raise NotImplementedError
-
-    def setRootFramesValue(self, col, value):
-        raise NotImplementedError
-
     def updateModel(self):
         """
         Refresh the widgets with the current Maya scene state.
         """
+        s_datetime = datetime.now()
         s_func = time.time()
 
         col = lib_state.get_active_collection()
@@ -151,12 +118,8 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         s = time.time()
         user_int_list = []
         user_string = self.getUserFramesValue(col)
-        root_string = self.getRootFramesValue(col)
-        if user_string is None and root_string is None:
+        if user_string is None:
             user_int_list = list(set([start_frame, end_frame]))
-            user_string = convert_types.intListToString(user_int_list)
-        if user_string is None and root_string is not None:
-            user_int_list = convert_types.stringToIntList(root_string)
             user_string = convert_types.intListToString(user_int_list)
         else:
             user_int_list = convert_types.stringToIntList(user_string)
@@ -168,29 +131,16 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         per_marker_frames = self.getPerMarkerFramesValue(col)
         span_frames = self.getSpanFramesValue(col)
         e = time.time()
-        LOG.debug('RootFrameWidget updateModel convert types: %r seconds', e - s)
-
-        mkr_list = col.get_marker_list()
-        root_frames = calculate_root_frames(
-            mkr_list,
-            start_frame,
-            end_frame,
-            user_int_list,
-            use_per_marker_frames,
-            per_marker_frames,
-            use_span_frames,
-            span_frames,
+        LOG.debug(
+            'RootFrameWidget updateModel convert types: %s - %r seconds',
+            s_datetime.isoformat(),
+            e - s,
         )
-        if len(root_frames) < 2:
-            LOG.warn('Auto Root Frames failed to calculate.')
-        root_string = convert_types.intListToString(root_frames)
 
         self.setUserFramesValue(col, user_string)
-        self.setRootFramesValue(col, root_string)
 
         block = self.blockSignals(True)
         self.userFrames_lineEdit.setText(user_string)
-        self.rootFrames_lineEdit.setText(root_string)
         self.perMarkerFrames_checkBox.setChecked(use_per_marker_frames)
         self.perMarkerFrames_spinBox.setValue(per_marker_frames)
         self.spanFrames_checkBox.setChecked(use_span_frames)
@@ -198,7 +148,11 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         self.blockSignals(block)
 
         e_func = time.time()
-        LOG.debug('RootFrameWidget updateModel: %r seconds', e_func - s_func)
+        LOG.debug(
+            'RootFrameWidget updateModel: %s - %r seconds',
+            s_datetime.isoformat(),
+            e_func - s_func,
+        )
         return
 
     @QtCore.Slot()

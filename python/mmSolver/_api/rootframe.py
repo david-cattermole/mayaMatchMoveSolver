@@ -128,6 +128,11 @@ def _default_to_regular(d):
 
 
 def _markers_to_data_lists(mkr_list, start_frame, end_frame, min_frames_per_marker):
+    assert isinstance(mkr_list, (list, set))
+    assert isinstance(min_frames_per_marker, int)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
+
     mkr_node_list = []
     mkr_enabled_frames = {}
     mkr_min_frames_count = {}
@@ -173,6 +178,10 @@ def get_root_frames_from_markers(
     :returns: List of frame numbers.
     :rtype: [int, ..]
     """
+    assert isinstance(mkr_list, (list, set))
+    assert isinstance(min_frames_per_marker, int)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
     # In future, this paper has a very promising "key-frame selection
     # criterion", which could be used to increase quality and speed of
     # bundle-adjustment.
@@ -268,6 +277,7 @@ def get_root_frames_from_markers(
 
 
 def _frame_list_max_frame_distance(frame_list):
+    assert isinstance(frame_list, (list, set))
     frame_list = list(sorted(set(frame_list)))
 
     max_frame_distance = 0
@@ -345,5 +355,7 @@ def root_frames_list_combine(frame_list_a, frame_list_b):
     :returns: List of frame numbers.
     :rtype: [int, ..]
     """
+    assert isinstance(frame_list_a, (list, set))
+    assert isinstance(frame_list_b, (list, set))
     frame_list = set(frame_list_a) | set(frame_list_b)
     return list(sorted(frame_list))

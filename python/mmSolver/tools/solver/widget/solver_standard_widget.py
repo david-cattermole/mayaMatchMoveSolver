@@ -101,14 +101,6 @@ class StandardRootFrameWidget(rootframe_widget.RootFrameWidget):
     def setSpanFramesValue(self, col, value):
         lib_col_state.set_solver_span_frames_on_collection(col, value)
 
-    def getRootFramesValue(self, col):
-        value = lib_col_state.get_solver_root_frames_from_collection(col)
-        return value
-
-    def setRootFramesValue(self, col, value):
-        lib_col_state.set_solver_root_frames_on_collection(col, value)
-        return
-
 
 class StandardFrameRangeWidget(framerange_widget.FrameRangeWidget):
     def getRangeTypeValue(self, col):
@@ -324,26 +316,22 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
         global_solve_enabled = True
         only_root_frames_enabled = True
         eval_complex_graphs_enabled = True
-        frameRange_enabled = True
         rootFrames_enabled = True
         if range_type == const.RANGE_TYPE_CURRENT_FRAME_VALUE:
             global_solve_enabled = False
             only_root_frames_enabled = False
             eval_complex_graphs_enabled = False
-            frameRange_enabled = True
             rootFrames_enabled = False
         else:
+            rootFrames_enabled = True
             if global_solve is True:
                 only_root_frames_enabled = False
                 only_root_frames = False
                 eval_complex_graphs_enabled = False
-                rootFrames_enabled = True
-                frameRange_enabled = True
             if only_root_frames is True:
                 global_solve_enabled = False
                 global_solve = False
-                frameRange_enabled = False
-                rootFrames_enabled = True
+                only_root_frames_enabled = True
                 eval_complex_graphs_enabled = True
 
         block = self.blockSignals(True)
@@ -357,7 +345,6 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
         self.evalComplexGraphs_checkBox.setEnabled(eval_complex_graphs_enabled)
         self.solveFocalLength_checkBox.setChecked(solve_focal_length)
         self.solveLensDistortion_checkBox.setChecked(solve_lens_distortion)
-        self.frameRange_widget.setEnabled(frameRange_enabled)
         self.rootFrames_widget.setEnabled(rootFrames_enabled)
         self.blockSignals(block)
 
@@ -382,7 +369,6 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
             self.globalSolveChanged.emit()
 
         block = self.blockSignals(True)
-        self.frameRange_widget.setEnabled(not value)
         self.globalSolve_checkBox.setEnabled(not value)
         self.blockSignals(block)
 

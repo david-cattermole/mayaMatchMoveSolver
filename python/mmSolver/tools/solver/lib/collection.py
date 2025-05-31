@@ -29,9 +29,12 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 
 import mmSolver.ui.uiutils as uiutils
+import mmSolver.ui.converttypes as convert_types
+
 import mmSolver.utils.time as utils_time
 import mmSolver.utils.converttypes as converttypes
 import mmSolver.utils.python_compat as pycompat
+
 import mmSolver.tools.userpreferences.constant as userprefs_const
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.solver.lib.state as lib_state
@@ -355,13 +358,74 @@ def __get_collection_frame_numbers(col, range_type):
     return frame_nums
 
 
+def _calculate_root_frames(
+    mkr_list,
+    start_frame,
+    end_frame,
+    extra_frames,
+    use_per_marker_frames,
+    per_marker_frames,
+    use_span_frames,
+    span_frames,
+):
+    assert isinstance(mkr_list, (list, set))
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
+    assert isinstance(extra_frames, (list, set))
+    assert isinstance(use_per_marker_frames, bool)
+    assert isinstance(per_marker_frames, int)
+    assert isinstance(use_span_frames, bool)
+    assert isinstance(span_frames, int)
+    s = time.time()
+
+    frames = extra_frames
+    if use_per_marker_frames and len(mkr_list) > 0:
+        frames = mmapi.get_root_frames_from_markers(
+            mkr_list, per_marker_frames, start_frame, end_frame
+        )
+    frames = mmapi.root_frames_list_combine(frames, extra_frames)
+
+    if use_span_frames:
+        frames = mmapi.root_frames_subdivide(frames, span_frames)
+
+    e = time.time()
+    LOG.debug('RootFrameWidget calculate_root_frames: %r seconds', e - s)
+    return frames
+
+
 def __get_collection_root_frame_numbers(col):
-    root_frame_num_string = col_state.get_solver_root_frames_from_collection(col)
-    if root_frame_num_string is None:
-        start, end = utils_time.get_maya_timeline_range_inner()
-        root_frame_num_string = '{0},{1}'.format(start, end)
-    root_frame_nums = converttypes.stringToIntList(root_frame_num_string)
-    return root_frame_nums
+    range_type = col_state.get_solver_range_type_from_collection(col)
+    by_frame = col_state.get_solver_increment_by_frame_from_collection(col)
+    frame_string = col_state.get_solver_frames_from_collection(col)
+    frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
+    start_frame = min(frame_nums)
+    end_frame = max(frame_nums)
+
+    user_string = col_state.get_solver_user_frames_from_collection(col)
+    user_int_list = convert_types.stringToIntList(user_string)
+
+    use_per_marker_frames = col_state.get_solver_use_per_marker_frames_from_collection(
+        col
+    )
+    per_marker_frames = col_state.get_solver_per_marker_frames_from_collection(col)
+    use_span_frames = col_state.get_solver_use_span_frames_from_collection(col)
+    span_frames = col_state.get_solver_span_frames_from_collection(col)
+
+    mkr_list = col.get_marker_list()
+    root_frames = _calculate_root_frames(
+        mkr_list,
+        start_frame,
+        end_frame,
+        user_int_list,
+        use_per_marker_frames,
+        per_marker_frames,
+        use_span_frames,
+        span_frames,
+    )
+    if len(root_frames) < 2:
+        LOG.warn('Auto Root Frames failed to calculate.')
+
+    return root_frames
 
 
 def __compile_solver_basic_tab(col, solver_type, scene_graph_mode):

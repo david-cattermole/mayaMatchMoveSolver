@@ -34,8 +34,6 @@ except RuntimeError:
     pass
 import maya.cmds
 
-import mmSolver.api as mmapi
-
 import test.test_solver.solverutils as solverUtils
 
 
@@ -48,9 +46,6 @@ def deconstruct_result(command_kwargs, result):
 
     print('command_kwargs:', command_kwargs)
     print('result:', result)
-
-    cam_tfm_a = command_kwargs['cameraA']
-    cam_tfm_b = command_kwargs['cameraB']
 
     mkr_bnd_list = command_kwargs['markerBundle']
 
@@ -208,6 +203,9 @@ class TestCameraRelativePose(solverUtils.SolverTestCase):
 
         deconstruct_result(kwargs, result)
 
+        # TODO: Test the re-projection deviation between the marker
+        # and bundles to ensure they are under a specific minimum.
+
         # save the output
         file_name = 'solver_camera_relative_pose_five_point_pose1_after.ma'
         path = self.get_data_path(file_name)
@@ -288,6 +286,9 @@ class TestCameraRelativePose(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         deconstruct_result(kwargs, result)
+
+        # TODO: Test the re-projection deviation between the marker
+        # and bundles to ensure they are under a specific minimum.
 
         # save the output
         file_name = 'solver_camera_relative_pose_eight_point_pose1_after.ma'

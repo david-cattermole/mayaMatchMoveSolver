@@ -629,9 +629,9 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
 
     auto landmarks = scene.GetLandmarks();
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
-    auto i = 0;
+    auto output_bundle_index = 0;
     for (auto it : landmarks) {
-        auto key = it.first;
+        auto inlier_idx = it.first;
         auto landmark = it.second;
         auto pos = landmark.X;
         const double tx = pos[0];
@@ -640,22 +640,27 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         const double tz = -pos[2];
         MPoint maya_translate(tx, ty, tz);
 
-        if (i >= m_bundle_list.size()) {
-            MMSOLVER_MAYA_ERR("Bundle index \""
-                              << i
-                              << "\" is outside bounds, camera pose failed.");
+        if ((output_bundle_index >= m_bundle_list.size()) ||
+            (inlier_idx >= m_bundle_list.size())) {
+            MMSOLVER_MAYA_ERR(
+                "mmCameraRelativePose: "
+                "Bundle index \""
+                << output_bundle_index
+                << "\" is outside bounds, camera pose failed.");
             MMCameraRelativePoseCmd::setResult(emptyResult);
             return status;
         }
 
-        auto bnd = m_bundle_list[i];
+        auto bnd = m_bundle_list[inlier_idx];
         auto bnd_name = bnd->getNodeName();
-        MMSOLVER_MAYA_VRB("landmark bnd: " << bnd_name.asChar() << " | " << key
-                                           << " x=" << tx << " y=" << ty
-                                           << " z=" << tz);
+        MMSOLVER_MAYA_VRB(
+            "mmCameraRelativePose: "
+            "landmark bnd: "
+            << bnd_name.asChar() << " | " << inlier_idx << " x=" << tx
+            << " y=" << ty << " z=" << tz);
 
         maya_translate *= m_camera_transform_matrix;
-        outResult.append(static_cast<double>(i));
+        outResult.append(static_cast<double>(output_bundle_index));
         outResult.append(maya_translate.x);
         outResult.append(maya_translate.y);
         outResult.append(maya_translate.z);
@@ -674,7 +679,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
             attr_tz.setValue(maya_translate.z, m_dgmod, m_curveChange);
         }
 
-        ++i;
+        ++output_bundle_index;
     }
 
     m_dgmod.doIt();

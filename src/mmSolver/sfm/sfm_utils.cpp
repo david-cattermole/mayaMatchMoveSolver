@@ -221,7 +221,9 @@ MStatus parseCameraSelectionList(
     const bool verbose = false;
 
     if (selection_list.length() == 0) {
-        MMSOLVER_MAYA_ERR("No camera given.");
+        MMSOLVER_MAYA_ERR(
+            "sfm_utils parseCameraSelectionList: "
+            "No camera given.");
         CHECK_MSTATUS(MS::kFailure);
         return MS::kFailure;
     }
@@ -235,7 +237,10 @@ MStatus parseCameraSelectionList(
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MString transform_node_name = nodeDagPath.fullPathName();
-    MMSOLVER_MAYA_VRB("Camera name: " << transform_node_name.asChar());
+    MMSOLVER_MAYA_VRB(
+        "sfm_utils parseCameraSelectionList: "
+        "Camera name: "
+        << transform_node_name.asChar());
 
     auto object_type = computeObjectType(node_obj, nodeDagPath);
     if (object_type == ObjectType::kCamera) {
@@ -266,8 +271,10 @@ MStatus parseCameraSelectionList(
                                    sensor_height_mm);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
-        MMSOLVER_MAYA_ERR("Given node is not a valid camera: "
-                          << transform_node_name.asChar());
+        MMSOLVER_MAYA_ERR(
+            "sfm_utils parseCameraSelectionList: "
+            "Given node is not a valid camera: "
+            << transform_node_name.asChar());
         status = MS::kFailure;
         return status;
     }
@@ -295,7 +302,10 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MString transform_node_name = nodeDagPath.fullPathName();
-        MMSOLVER_MAYA_VRB("Camera name: " << transform_node_name.asChar());
+        MMSOLVER_MAYA_VRB(
+            "sfm_utils parse_camera_argument: "
+            "Camera name: \""
+            << transform_node_name.asChar() << "\"");
 
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kCamera) {
@@ -321,8 +331,10 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
             camera_ry_attr.setAttrName(MString("rotateY"));
             camera_rz_attr.setAttrName(MString("rotateZ"));
         } else {
-            MMSOLVER_MAYA_ERR("Given node is not a valid camera: "
-                              << transform_node_name.asChar());
+            MMSOLVER_MAYA_ERR(
+                "sfm_utils parse_camera_argument: "
+                "Given node is not a valid camera: "
+                << transform_node_name.asChar());
             status = MS::kFailure;
             return status;
         }
@@ -457,7 +469,7 @@ bool add_bundle_at_frame(
     return success;
 }
 
-bool is_valid_pose(openMVG::geometry::Pose3 &pose) {
+bool is_valid_pose(const openMVG::geometry::Pose3 &pose) {
     const auto center = pose.center();
     const auto pos = pose.translation();
     const auto rotate = pose.rotation();
@@ -533,12 +545,15 @@ MTransformationMatrix convert_openmvg_transform_to_maya_transform_matrix(
     double rotate_radians[3] = {-euler_rotation.x, -euler_rotation.y,
                                 euler_rotation.z};
 
-    MMSOLVER_MAYA_VRB("pose maya translation: "
-                      << maya_translate_vector.x << ","
-                      << maya_translate_vector.y << ","
-                      << maya_translate_vector.z);
-    MMSOLVER_MAYA_VRB("pose maya euler rotation (ZXY): " << rx << "," << ry
-                                                         << "," << rz);
+    MMSOLVER_MAYA_VRB(
+        "sfm_utils convert_openmvg_transform_to_maya_transform_matrix: "
+        "pose maya translation: "
+        << "(" << maya_translate_vector.x << "," << maya_translate_vector.y
+        << "," << maya_translate_vector.z << ")");
+    MMSOLVER_MAYA_VRB(
+        "sfm_utils convert_openmvg_transform_to_maya_transform_matrix: "
+        "pose maya euler rotation (ZXY): "
+        << "(" << rx << "," << ry << "," << rz << ")");
 
     // Convert back into matrix.
     MTransformationMatrix transform;
@@ -549,19 +564,39 @@ MTransformationMatrix convert_openmvg_transform_to_maya_transform_matrix(
 }
 
 MTransformationMatrix convert_pose_to_maya_transform_matrix(
-    openMVG::geometry::Pose3 &pose) {
+    const openMVG::geometry::Pose3 &pose,
+    const double camera_translation_scale) {
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
-    auto pose_center = pose.center();
-    auto pose_translation = pose.translation();
-    auto pose_rotation = pose.rotation();
-    MMSOLVER_MAYA_VRB("pose center: " << pose_center);
-    MMSOLVER_MAYA_VRB("pose translation: " << pose_translation);
-    MMSOLVER_MAYA_VRB("pose rotation: " << pose_rotation);
+    // The translation component of the camera pose is scaled based on
+    // these assumptions:
+    //
+    // 1) the camera poses are relative to the origin, so a scale
+    //    effectively scales the translation between the first and
+    //    second camera poses.
+    //
+    // 2) the camera_translation_scale is 1.0 when there are no known
+    //    3D positions.
+    const auto pose_center = pose.center() * camera_translation_scale;
+    const auto pose_translation = pose.translation() * camera_translation_scale;
+    const auto pose_rotation = pose.rotation();
+    MMSOLVER_MAYA_VRB(
+        "sfm_utils convert_pose_to_maya_transform_matrix: "
+        "pose center: "
+        << pose_center);
+    MMSOLVER_MAYA_VRB(
+        "sfm_utils convert_pose_to_maya_transform_matrix: "
+        "pose translation: "
+        << pose_translation);
+    MMSOLVER_MAYA_VRB(
+        "sfm_utils convert_pose_to_maya_transform_matrix: "
+        "pose rotation: "
+        << pose_rotation);
     if (!is_valid_pose(pose)) {
         MMSOLVER_MAYA_WRN(
-            "convert_pose_to_maya_transform_matrix: Pose is not valid!");
+            "sfm_utils convert_pose_to_maya_transform_matrix: "
+            "Pose is not valid!");
         MTransformationMatrix transform;
         return transform;
     }

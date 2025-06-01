@@ -95,8 +95,10 @@ bool triangulate_relative_pose(
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
     const std::vector<uint32_t> &vec_inliers, const MarkerList &marker_list_a,
-    const MarkerList &marker_list_b, BundlePtrList &bundle_list,
-    openMVG::sfm::SfM_Data &scene);
+    const MarkerList &marker_list_b, const BundlePtrList &bundle_list,
+    const std::vector<double> &bundle_position_xyz_list,
+    const MMatrix &camera_transform_matrix, openMVG::sfm::SfM_Data &out_scene,
+    double &out_camera_translation_scale);
 
 bool bundle_adjustment(openMVG::sfm::SfM_Data &scene);
 

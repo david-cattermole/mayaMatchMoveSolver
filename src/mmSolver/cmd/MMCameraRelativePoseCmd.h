@@ -42,6 +42,7 @@
 #include <maya/MTimeArray.h>
 
 // Maya helpers
+#include "mmSolver/core/frame.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -126,10 +127,11 @@ private:
     MarkerList m_marker_list_a;
     MarkerList m_marker_list_b;
     BundlePtrList m_bundle_list;
+    std::vector<double> m_bundle_pos_list;
 
     // Frames A and B
-    uint32_t m_frame_a;
-    uint32_t m_frame_b;
+    FrameNumber m_frame_a;
+    FrameNumber m_frame_b;
     MTime m_time_a;
     MTime m_time_b;
 

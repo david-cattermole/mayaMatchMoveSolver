@@ -355,22 +355,39 @@ bool triangulate_relative_pose(
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
     const std::vector<uint32_t> &vec_inliers, const MarkerList &marker_list_a,
-    const MarkerList &marker_list_b, BundlePtrList &bundle_list,
-    openMVG::sfm::SfM_Data &scene) {
+    const MarkerList &marker_list_b, const BundlePtrList &bundle_list,
+    const std::vector<double> &bundle_position_xyz_list,
+    const MMatrix &camera_transform_matrix, openMVG::sfm::SfM_Data &out_scene,
+    double &out_camera_translation_scale) {
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
+    std::vector<double> relative_bnd_distances;
+    relative_bnd_distances.reserve(bundle_list.size());
+
     auto num = 0;
-    openMVG::sfm::Landmarks &landmarks = scene.structure;
-    openMVG::geometry::Pose3 pose_a = scene.poses[scene.views[0]->id_pose];
-    openMVG::geometry::Pose3 pose_b = scene.poses[scene.views[1]->id_pose];
+    openMVG::sfm::Landmarks &landmarks = out_scene.structure;
+    openMVG::geometry::Pose3 pose_a =
+        out_scene.poses[out_scene.views[0]->id_pose];
+    openMVG::geometry::Pose3 pose_b =
+        out_scene.poses[out_scene.views[1]->id_pose];
     for (const auto inlier_idx : vec_inliers) {
-        auto coord_a = marker_coords_a[inlier_idx];
-        auto coord_b = marker_coords_b[inlier_idx];
-        auto coord_x_a = std::get<0>(coord_a);
-        auto coord_y_a = std::get<1>(coord_a);
-        auto coord_x_b = std::get<0>(coord_b);
-        auto coord_y_b = std::get<1>(coord_b);
+        const auto inlier_idx_x = (inlier_idx * 3) + 0;
+        const auto inlier_idx_y = (inlier_idx * 3) + 1;
+        const auto inlier_idx_z = (inlier_idx * 3) + 2;
+        const double known_bnd_pos_x = bundle_position_xyz_list[inlier_idx_x];
+        const double known_bnd_pos_y = bundle_position_xyz_list[inlier_idx_y];
+        const double known_bnd_pos_z = bundle_position_xyz_list[inlier_idx_z];
+        const bool is_known_bundle_pos =
+            (!std::isnan(known_bnd_pos_x) && !std::isnan(known_bnd_pos_y) &&
+             !std::isnan(known_bnd_pos_z));
+
+        const auto coord_a = marker_coords_a[inlier_idx];
+        const auto coord_b = marker_coords_b[inlier_idx];
+        const auto coord_x_a = std::get<0>(coord_a);
+        const auto coord_y_a = std::get<1>(coord_a);
+        const auto coord_x_b = std::get<0>(coord_b);
+        const auto coord_y_b = std::get<1>(coord_b);
 
         const auto feature_a =
             openMVG::features::SIOPointFeature(coord_x_a, coord_y_a);
@@ -381,17 +398,45 @@ bool triangulate_relative_pose(
 
         // Point triangulation
         openMVG::Vec3 bundle_pos;
+
+        // DEFAULT is the same as INVERSE_DEPTH_WEIGHTED_MIDPOINT.
         const auto triangulation_method =
             openMVG::ETriangulationMethod::DEFAULT;
+
         auto triangulate_ok = openMVG::Triangulate2View(
             pose_a.rotation(), pose_a.translation(),
-            (*scene.intrinsics[0])(feature_coord_a), pose_b.rotation(),
-            pose_b.translation(), (*scene.intrinsics[1])(feature_coord_b),
+            (*out_scene.intrinsics[0])(feature_coord_a), pose_b.rotation(),
+            pose_b.translation(), (*out_scene.intrinsics[1])(feature_coord_b),
             bundle_pos, triangulation_method);
         if (triangulate_ok) {
+            if (is_known_bundle_pos) {
+                // If there are known bundle positions already, we can
+                // use the triangulated 3D points of the known bundles
+                // to estimate the scale of the relative pose, as that
+                // is the main problem with relative poses from two
+                // views - the translation between cameras is
+                // arbitrary. This trick allows us to compute the
+                // translation scale.
+                MPoint origin_pos;
+                MPoint known_bundle_pos(known_bnd_pos_x, known_bnd_pos_y,
+                                        known_bnd_pos_z);
+                MPoint relative_known_bundle_pos =
+                    known_bundle_pos * camera_transform_matrix.inverse();
+
+                MPoint maya_bundle_pos(bundle_pos[0], bundle_pos[1],
+                                       bundle_pos[2]);
+                const double distance_to_camera_a =
+                    origin_pos.distanceTo(relative_known_bundle_pos);
+                const double distance_to_camera_b =
+                    origin_pos.distanceTo(maya_bundle_pos);
+                const double distance_ratio =
+                    distance_to_camera_b / distance_to_camera_a;
+                relative_bnd_distances.push_back(distance_ratio);
+            }
+
             // Add a new landmark (3D point with it's 2d observations)
-            const auto id_view_a = scene.views[0]->id_view;
-            const auto id_view_b = scene.views[1]->id_view;
+            const auto id_view_a = out_scene.views[0]->id_view;
+            const auto id_view_b = out_scene.views[1]->id_view;
             openMVG::sfm::Landmark landmark;
             landmark.obs[id_view_a] =
                 openMVG::sfm::Observation(feature_coord_a, inlier_idx);
@@ -399,6 +444,7 @@ bool triangulate_relative_pose(
                 openMVG::sfm::Observation(feature_coord_b, inlier_idx);
             landmark.X = bundle_pos;
             landmarks.insert({inlier_idx, landmark});
+
             if (verbose) {
                 auto mkr_a = marker_list_a.get_marker(inlier_idx);
                 auto mkr_b = marker_list_b.get_marker(inlier_idx);
@@ -411,10 +457,39 @@ bool triangulate_relative_pose(
                 MMSOLVER_MAYA_VRB(
                     "Triangulated Marker B: " << mkr_name_b.asChar());
                 MMSOLVER_MAYA_VRB("Triangulated Bundle: " << bnd_name.asChar());
+                MMSOLVER_MAYA_VRB("Triangulated XYZ: ("
+                                  << bundle_pos[0] << ", " << bundle_pos[1]
+                                  << ", " << bundle_pos[2] << ")"
+                                  << " | known=" << is_known_bundle_pos);
             }
             num++;
+        } else {
+            if (verbose) {
+                auto bnd = bundle_list[inlier_idx];
+                auto bnd_name = bnd->getNodeName();
+                MMSOLVER_MAYA_VRB(
+                    "FAILED Triangulated Bundle: " << bnd_name.asChar());
+                MMSOLVER_MAYA_VRB("FAILED Triangulated XYZ: ("
+                                  << bundle_pos[0] << ", " << bundle_pos[1]
+                                  << ", " << bundle_pos[2] << ")");
+            }
         }
     }
+
+    out_camera_translation_scale = 1.0;
+    if (relative_bnd_distances.size() > 0) {
+        // The average between the triangulated bundle and the known
+        // bundle positions are used to get a good fit.
+        //
+        // TODO: We could use the median to try and avoid outliers?
+        out_camera_translation_scale = 0.0;
+        for (auto i = 0; i < relative_bnd_distances.size(); i++) {
+            const double relative_bnd_distance = relative_bnd_distances[i];
+            out_camera_translation_scale += relative_bnd_distance;
+        }
+        out_camera_translation_scale /= relative_bnd_distances.size();
+    }
+
     return num > 0;
 }
 

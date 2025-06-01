@@ -217,7 +217,9 @@ bool compute_camera_pose_from_known_points(
     auto pose = openMVG::geometry::Pose3(
         rotation_matrix, -rotation_matrix.transpose() * translation_vector);
 
-    out_pose_transform = convert_pose_to_maya_transform_matrix(pose);
+    double camera_translation_scale = 1.0;
+    out_pose_transform =
+        convert_pose_to_maya_transform_matrix(pose, camera_translation_scale);
 
     return true;
 }

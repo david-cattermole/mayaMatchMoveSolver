@@ -155,6 +155,13 @@ maya.cmds.mmCameraRelativePose(
 #define MARKER_BUNDLE_SHORT_FLAG "-mb"
 #define MARKER_BUNDLE_LONG_FLAG "-markerBundle"
 
+// NOTE: The Bundle Positions are expected to be in the same
+// world-space as cameraA, so when looking through cameraA, the bundle
+// positions should align/match to the related marker (with some
+// deviation).
+#define BUNDLE_POSITION_SHORT_FLAG "-bp"
+#define BUNDLE_POSITION_LONG_FLAG "-bundlePosition"
+
 namespace mmsolver {
 
 MMCameraRelativePoseCmd::~MMCameraRelativePoseCmd() {}
@@ -192,10 +199,10 @@ MSyntax MMCameraRelativePoseCmd::newSyntax() {
     CHECK_MSTATUS(syntax.addFlag(CAMERA_B_SHORT_FLAG, CAMERA_B_LONG_FLAG,
                                  MSyntax::kSelectionItem));
 
-    CHECK_MSTATUS(syntax.addFlag(FRAME_A_SHORT_FLAG, FRAME_A_LONG_FLAG,
-                                 MSyntax::kUnsigned));
-    CHECK_MSTATUS(syntax.addFlag(FRAME_B_SHORT_FLAG, FRAME_B_LONG_FLAG,
-                                 MSyntax::kUnsigned));
+    CHECK_MSTATUS(
+        syntax.addFlag(FRAME_A_SHORT_FLAG, FRAME_A_LONG_FLAG, MSyntax::kLong));
+    CHECK_MSTATUS(
+        syntax.addFlag(FRAME_B_SHORT_FLAG, FRAME_B_LONG_FLAG, MSyntax::kLong));
 
     CHECK_MSTATUS(syntax.addFlag(USE_CAMERA_TRANSFORM_SHORT_FLAG,
                                  USE_CAMERA_TRANSFORM_LONG_FLAG,
@@ -205,6 +212,11 @@ MSyntax MMCameraRelativePoseCmd::newSyntax() {
                                  MARKER_BUNDLE_LONG_FLAG, MSyntax::kString,
                                  MSyntax::kString, MSyntax::kString));
     CHECK_MSTATUS(syntax.makeFlagMultiUse(MARKER_BUNDLE_SHORT_FLAG));
+
+    CHECK_MSTATUS(syntax.addFlag(BUNDLE_POSITION_SHORT_FLAG,
+                                 BUNDLE_POSITION_LONG_FLAG, MSyntax::kDouble,
+                                 MSyntax::kDouble, MSyntax::kDouble));
+    CHECK_MSTATUS(syntax.makeFlagMultiUse(BUNDLE_POSITION_SHORT_FLAG));
 
     return syntax;
 }
@@ -225,6 +237,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     m_marker_list_a.clear();
     m_marker_list_b.clear();
     m_bundle_list.clear();
+    m_bundle_pos_list.clear();
     m_marker_coords_a.clear();
     m_marker_coords_b.clear();
     m_image_width_a = 1;
@@ -240,14 +253,18 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
 
     m_frame_a = 1;
     if (argData.isFlagSet(FRAME_A_SHORT_FLAG)) {
-        status = argData.getFlagArgument(FRAME_A_SHORT_FLAG, 0, m_frame_a);
+        int value = 0;
+        status = argData.getFlagArgument(FRAME_A_SHORT_FLAG, 0, value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+        m_frame_a = static_cast<FrameNumber>(value);
     }
 
     m_frame_b = 1;
     if (argData.isFlagSet(FRAME_B_SHORT_FLAG)) {
-        status = argData.getFlagArgument(FRAME_B_SHORT_FLAG, 0, m_frame_b);
+        int value = 0;
+        status = argData.getFlagArgument(FRAME_B_SHORT_FLAG, 0, value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+        m_frame_b = static_cast<FrameNumber>(value);
     }
 
     m_use_camera_transform = false;
@@ -265,9 +282,9 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    auto uiUnit = MTime::uiUnit();
-    auto frame_value_a = static_cast<double>(m_frame_a);
-    auto frame_value_b = static_cast<double>(m_frame_b);
+    const auto uiUnit = MTime::uiUnit();
+    const auto frame_value_a = static_cast<double>(m_frame_a);
+    const auto frame_value_b = static_cast<double>(m_frame_b);
     m_time_a = MTime(frame_value_a, uiUnit);
     m_time_b = MTime(frame_value_b, uiUnit);
 
@@ -292,23 +309,37 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     {
-        auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+        const auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
         m_camera_a->getRotateOrder(m_camera_rotate_order_a, m_time_a,
                                    timeEvalMode);
         m_camera_b->getRotateOrder(m_camera_rotate_order_b, m_time_b,
                                    timeEvalMode);
     }
 
-    MMSOLVER_MAYA_VRB("image A: " << m_image_width_a << "x"
-                                  << m_image_height_a);
-    MMSOLVER_MAYA_VRB("image B: " << m_image_width_b << "x"
-                                  << m_image_height_b);
-    MMSOLVER_MAYA_VRB("sensor (mm) A: " << m_sensor_width_mm_a << "x"
-                                        << m_sensor_height_mm_a);
-    MMSOLVER_MAYA_VRB("sensor (mm) B: " << m_sensor_width_mm_b << "x"
-                                        << m_sensor_height_mm_b);
-    MMSOLVER_MAYA_VRB("focal (mm) A: " << m_focal_length_mm_a);
-    MMSOLVER_MAYA_VRB("focal (mm) B: " << m_focal_length_mm_b);
+    MMSOLVER_MAYA_VRB(
+        "mmCameraRelativePose: "
+        "image A: "
+        << m_image_width_a << "x" << m_image_height_a);
+    MMSOLVER_MAYA_VRB(
+        "mmCameraRelativePose: "
+        "image B: "
+        << m_image_width_b << "x" << m_image_height_b);
+    MMSOLVER_MAYA_VRB(
+        "mmCameraRelativePose: "
+        "sensor (mm) A: "
+        << m_sensor_width_mm_a << "x" << m_sensor_height_mm_a);
+    MMSOLVER_MAYA_VRB(
+        "mmCameraRelativePose: "
+        "sensor (mm) B: "
+        << m_sensor_width_mm_b << "x" << m_sensor_height_mm_b);
+    MMSOLVER_MAYA_VRB(
+        "mmCameraRelativePose: "
+        "focal (mm) A: "
+        << m_focal_length_mm_a);
+    MMSOLVER_MAYA_VRB(
+        "mmCameraRelativePose: "
+        "focal (mm) B: "
+        << m_focal_length_mm_b);
 
     // The camera A matrix that will be used to offset the relative
     // pose result.
@@ -331,28 +362,104 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    // Parse objects into Camera intrinsics and Tracking Markers.
-    uint32_t numberOfMarkerBundleFlags =
+    const uint32_t numberOfBundlePositionFlags =
+        argData.numberOfFlagUses(BUNDLE_POSITION_SHORT_FLAG);
+    const uint32_t numberOfMarkerBundleFlags =
         argData.numberOfFlagUses(MARKER_BUNDLE_SHORT_FLAG);
+    const bool hasBundlePositionFlags = numberOfBundlePositionFlags > 0;
+    if (hasBundlePositionFlags &&
+        (numberOfMarkerBundleFlags != numberOfBundlePositionFlags)) {
+        MMSOLVER_MAYA_ERR(
+            "mmCameraRelativePose: "
+            "Bundle Position argument list must have "
+            "same number of arguments "
+            "as marker bundles("
+            << MARKER_BUNDLE_SHORT_FLAG << "/" << MARKER_BUNDLE_LONG_FLAG
+            << "); " << BUNDLE_POSITION_LONG_FLAG << "="
+            << numberOfBundlePositionFlags << " | " << MARKER_BUNDLE_LONG_FLAG
+            << "=" << numberOfMarkerBundleFlags);
+        return MS::kFailure;
+    }
+
+    m_marker_list_a.reserve(numberOfMarkerBundleFlags);
+    m_marker_list_b.reserve(numberOfMarkerBundleFlags);
+    m_bundle_list.reserve(numberOfMarkerBundleFlags);
+    m_bundle_pos_list.reserve(numberOfBundlePositionFlags * 3);
+    m_marker_coords_a.reserve(numberOfMarkerBundleFlags);
+    m_marker_coords_b.reserve(numberOfMarkerBundleFlags);
+
+    // Temporary variables, for querying lens models for markers.
+    //
+    // Defined outside loop to re-use memory, and avoid fragmentation.
+    std::shared_ptr<mmlens::LensModel> lensModel_a;
+    std::shared_ptr<mmlens::LensModel> lensModel_b;
+    MarkerList markerList;
+    CameraPtrList cameraList;
+    AttrList attrList;  // Empty, but needed for 'constructLensModelList'.
+    FrameList frameList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> markerFrameToLensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> attrFrameToLensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> lensModelList;
+
+    // Temporary variables
+    MDagPath dagPath;
+    MString markerNameA;
+    MString markerNameB;
+    MString bundleName;
+    MObject markerObject;
+    MObject bundleObject;
+
+    markerList.reserve(2);
+    cameraList.reserve(2);
+    frameList.reserve(2);
+
+    // Parse objects into Camera intrinsics and Tracking Markers.
     for (uint32_t i = 0; i < numberOfMarkerBundleFlags; ++i) {
+        // Reset reused variables.
+        markerNameA.clear();
+        markerNameB.clear();
+        bundleName.clear();
+        lensModel_a.reset();
+        lensModel_b.reset();
+
         MArgList markerBundleArgs;
-        ObjectType objectType = ObjectType::kUnknown;
-        MDagPath dagPath;
-        MString markerNameA = "";
-        MString markerNameB = "";
-        MString bundleName = "";
-        MObject markerObject;
-        MObject bundleObject;
         status = argData.getFlagArgumentList(MARKER_BUNDLE_SHORT_FLAG, i,
                                              markerBundleArgs);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-
         if (markerBundleArgs.length() != 3) {
             MMSOLVER_MAYA_ERR(
+                "mmCameraRelativePose: "
                 "Marker Bundle argument list must have 3 arguments; "
                 << "\"markerA\", \"markerB\",  \"bundle\".");
             continue;
         }
+
+        // Bundles with "NaN" values are considered unknown.
+        double bundlePosition_x = NAN;
+        double bundlePosition_y = NAN;
+        double bundlePosition_z = NAN;
+        if (hasBundlePositionFlags) {
+            MArgList bundlePositionArgs;
+            status = argData.getFlagArgumentList(BUNDLE_POSITION_SHORT_FLAG, i,
+                                                 bundlePositionArgs);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            if (bundlePositionArgs.length() != 3) {
+                MMSOLVER_MAYA_ERR(
+                    "mmCameraRelativePose: "
+                    "Bundle Position argument list must have 3 arguments; "
+                    "(pos_x, pos_y, pos_z)");
+                continue;
+            }
+
+            bundlePosition_x = bundlePositionArgs.asDouble(0, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            bundlePosition_y = bundlePositionArgs.asDouble(1, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            bundlePosition_z = bundlePositionArgs.asDouble(2, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+        }
+
+        ObjectType objectType = ObjectType::kUnknown;
 
         markerNameA = markerBundleArgs.asString(0, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -362,11 +469,16 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
-            MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
-                              << markerNameA.asChar());
+            MMSOLVER_MAYA_ERR(
+                "mmCameraRelativePose: "
+                "Given marker node is not a Marker; "
+                << markerNameA.asChar());
             continue;
         }
-        MMSOLVER_MAYA_VRB("Got markerNameA: " << markerNameA.asChar());
+        MMSOLVER_MAYA_VRB(
+            "mmCameraRelativePose: "
+            "Got markerNameA: "
+            << markerNameA.asChar());
 
         markerNameB = markerBundleArgs.asString(1, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -376,11 +488,16 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
-            MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
-                              << markerNameB.asChar());
+            MMSOLVER_MAYA_ERR(
+                "mmCameraRelativePose: "
+                "Given marker node is not a Marker; "
+                << markerNameB.asChar());
             continue;
         }
-        MMSOLVER_MAYA_VRB("Got markerNameB: " << markerNameB.asChar());
+        MMSOLVER_MAYA_VRB(
+            "mmCameraRelativePose: "
+            "Got markerNameB: "
+            << markerNameB.asChar());
 
         bundleName = markerBundleArgs.asString(2, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -390,11 +507,22 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(bundleObject, dagPath);
         if (objectType != ObjectType::kBundle) {
-            MMSOLVER_MAYA_ERR("Given bundle node is not a Bundle; "
-                              << bundleName.asChar());
+            MMSOLVER_MAYA_ERR(
+                "mmCameraRelativePose: "
+                "Given bundle node is not a Bundle; "
+                << bundleName.asChar());
             continue;
         }
-        MMSOLVER_MAYA_VRB("Got bundleName: " << bundleName.asChar());
+        MMSOLVER_MAYA_VRB(
+            "mmCameraRelativePose: "
+            "Got bundleName: "
+            << bundleName.asChar());
+
+        MMSOLVER_MAYA_VRB(
+            "mmCameraRelativePose: "
+            "Got bundlePosition: ("
+            << bundlePosition_x << ", " << bundlePosition_y << ", "
+            << bundlePosition_z << ")");
 
         BundlePtr bundle = BundlePtr(new Bundle());
         bundle->setNodeName(bundleName);
@@ -409,30 +537,23 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         marker_b->setBundle(bundle);
         marker_b->setCamera(m_camera_b);
 
-        std::shared_ptr<mmlens::LensModel> lensModel_a;
-        std::shared_ptr<mmlens::LensModel> lensModel_b;
+        // Get lens models for each marker, a and b.
         {
-            MarkerList markerList;
+            markerList.clear();
             markerList.push_back(marker_a, /*enabled=*/true);
             markerList.push_back(marker_b, /*enabled=*/true);
 
-            CameraPtrList cameraList;
+            cameraList.clear();
             cameraList.push_back(m_camera_a);
             cameraList.push_back(m_camera_b);
 
-            AttrList attrList;
-
-            FrameList frameList;
-            frameList.reserve(2);
+            frameList.clear();
             frameList.push_back(m_frame_a, /*enabled=*/true);
             frameList.push_back(m_frame_b, /*enabled=*/true);
 
-            std::vector<std::shared_ptr<mmlens::LensModel>>
-                markerFrameToLensModelList;
-            std::vector<std::shared_ptr<mmlens::LensModel>>
-                attrFrameToLensModelList;
-            std::vector<std::shared_ptr<mmlens::LensModel>> lensModelList;
-
+            markerFrameToLensModelList.clear();
+            attrFrameToLensModelList.clear();
+            lensModelList.clear();
             status = mmsolver::constructLensModelList(
                 cameraList, markerList, attrList, frameList,
                 markerFrameToLensModelList, attrFrameToLensModelList,
@@ -443,7 +564,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             lensModel_b = markerFrameToLensModelList[1];
         }
 
-        auto success = ::mmsolver::sfm::add_marker_pair_at_frame(
+        const auto success = ::mmsolver::sfm::add_marker_pair_at_frame(
             m_time_a, m_time_b, m_image_width_a, m_image_width_b,
             m_image_height_a, m_image_height_b, lensModel_a, lensModel_b,
             marker_a, marker_b, m_marker_coords_a, m_marker_coords_b);
@@ -451,12 +572,24 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             m_marker_list_a.push_back(marker_a, /*enabled=*/true);
             m_marker_list_b.push_back(marker_b, /*enabled=*/true);
             m_bundle_list.push_back(bundle);
+            m_bundle_pos_list.push_back(bundlePosition_x);
+            m_bundle_pos_list.push_back(bundlePosition_y);
+            m_bundle_pos_list.push_back(bundlePosition_z);
         }
     }
 
-    MMSOLVER_MAYA_VRB("parse m_marker_list_a size: " << m_marker_list_a.size());
-    MMSOLVER_MAYA_VRB("parse m_marker_list_b size: " << m_marker_list_b.size());
-    MMSOLVER_MAYA_VRB("parse m_bundle_list size: " << m_bundle_list.size());
+    MMSOLVER_MAYA_VRB(
+        "mmCameraRelativePose: "
+        "parse m_marker_list_a size: "
+        << m_marker_list_a.size());
+    MMSOLVER_MAYA_VRB(
+        "mmCameraRelativePose: "
+        "parse m_marker_list_b size: "
+        << m_marker_list_b.size());
+    MMSOLVER_MAYA_VRB(
+        "mmCameraRelativePose: "
+        "parse m_bundle_list size: "
+        << m_bundle_list.size());
     MMSOLVER_ASSERT(m_marker_list_a.size() == m_marker_list_b.size(),
                     "Must have matching marker counts.");
     MMSOLVER_ASSERT(m_marker_list_a.size() == m_bundle_list.size(),
@@ -502,7 +635,11 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         ppy_pix_b, m_marker_coords_a, m_marker_coords_b, m_marker_list_a,
         m_marker_list_b, pose_info);
     if (!relative_pose_ok) {
-        MMSOLVER_MAYA_ERR("Compute Relative pose failed.");
+        MMSOLVER_MAYA_ERR(
+            "mmCameraRelativePose: "
+            "Compute Relative pose failed using "
+            << m_marker_list_a.size() << " markers; "
+            << "frame A=" << m_frame_a << " frame B=" << m_frame_b << ".");
         MMCameraRelativePoseCmd::setResult(emptyResult);
         return status;
     }
@@ -513,7 +650,9 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         focal_length_pix_a, focal_length_pix_b, ppx_pix_a, ppx_pix_b, ppy_pix_a,
         ppy_pix_b, pose_info, scene);
     if (!sfm_data_ok) {
-        MMSOLVER_MAYA_ERR("Failed to construct two camera SfM scene.");
+        MMSOLVER_MAYA_ERR(
+            "mmCameraRelativePose: "
+            "Failed to construct two camera SfM scene.");
         MMCameraRelativePoseCmd::setResult(emptyResult);
         return status;
     }
@@ -522,14 +661,22 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     // work are discarded (removed from the list of inliers).
     //
     // Init structure by inlier triangulation
+    double camera_translation_scale = 1.0;
     auto triangulate_ok = ::mmsolver::sfm::triangulate_relative_pose(
         m_marker_coords_a, m_marker_coords_b, pose_info.vec_inliers,
-        m_marker_list_a, m_marker_list_b, m_bundle_list, scene);
+        m_marker_list_a, m_marker_list_b, m_bundle_list, m_bundle_pos_list,
+        m_camera_transform_matrix, scene, camera_translation_scale);
     if (!triangulate_ok) {
-        MMSOLVER_MAYA_ERR("Triangulate relative pose points failed.");
+        MMSOLVER_MAYA_ERR(
+            "mmCameraRelativePose: "
+            "Triangulate relative pose points failed.");
         MMCameraRelativePoseCmd::setResult(emptyResult);
         return status;
     }
+    MMSOLVER_MAYA_VRB(
+        "mmCameraRelativePose: "
+        "camera_translation_scale: "
+        << camera_translation_scale);
 
     // Refine the scene.
 #if 0
@@ -537,7 +684,8 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     // very far from camera, which caused the solve to fail miserably.
     auto adjust_ok = ::mmsolver::sfm::bundle_adjustment(scene);
     if (!adjust_ok) {
-        MMSOLVER_MAYA_ERR("Bundle Adjustment failed.");
+        MMSOLVER_MAYA_ERR("mmCameraRelativePose: "
+                          "Bundle Adjustment failed.");
         status = MS::kFailure;
         MMCameraRelativePoseCmd::setResult(emptyResult);
         return status;
@@ -553,10 +701,13 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     auto poses = scene.GetPoses();
     auto intrinsics = scene.GetIntrinsics();
     for (auto it : views) {
-        auto key = it.first;
-        auto view = *it.second;
-        auto pose_id = view.id_pose;
-        MMSOLVER_MAYA_VRB("view: " << key << "=" << pose_id);
+        const auto key = it.first;
+        const auto view = *it.second;
+        const auto pose_id = view.id_pose;
+        MMSOLVER_MAYA_VRB(
+            "mmCameraRelativePose: "
+            "view: "
+            << key << "=" << pose_id);
 
         // Per-camera values
         auto attr_tx = m_camera_tx_attr_b;
@@ -578,9 +729,10 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
             rotate_order = m_camera_rotate_order_a;
         }
 
-        auto pose = scene.GetPoseOrDie(&view);
-        auto transform =
-            ::mmsolver::sfm::convert_pose_to_maya_transform_matrix(pose);
+        const auto pose = scene.GetPoseOrDie(&view);
+        const auto transform =
+            ::mmsolver::sfm::convert_pose_to_maya_transform_matrix(
+                pose, camera_translation_scale);
 
         auto transform_matrix = transform.asMatrix();
         transform_matrix = transform_matrix * m_camera_transform_matrix;
@@ -603,11 +755,11 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         outResult.append(transform_matrix(3, 3));
 
         if (m_set_values) {
-            auto world_euler_rotation =
+            const auto world_euler_rotation =
                 MEulerRotation::decompose(transform_matrix, rotate_order);
-            auto rotate_x = world_euler_rotation.x * RADIANS_TO_DEGREES;
-            auto rotate_y = world_euler_rotation.y * RADIANS_TO_DEGREES;
-            auto rotate_z = world_euler_rotation.z * RADIANS_TO_DEGREES;
+            const auto rotate_x = world_euler_rotation.x * RADIANS_TO_DEGREES;
+            const auto rotate_y = world_euler_rotation.y * RADIANS_TO_DEGREES;
+            const auto rotate_z = world_euler_rotation.z * RADIANS_TO_DEGREES;
 
             const auto translate_x = transform_matrix(3, 0);
             const auto translate_y = transform_matrix(3, 1);
@@ -627,6 +779,9 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     auto attr_ty = Attr();
     auto attr_tz = Attr();
 
+    const MMatrix inverse_camera_transform_matrix =
+        m_camera_transform_matrix.inverse();
+
     auto landmarks = scene.GetLandmarks();
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     auto output_bundle_index = 0;
@@ -639,6 +794,24 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         // Fixes the Camera +Z/-Z issue with Maya compared to OpenMVG.
         const double tz = -pos[2];
         MPoint maya_translate(tx, ty, tz);
+
+        const auto inlier_idx_x = (inlier_idx * 3) + 0;
+        const auto inlier_idx_y = (inlier_idx * 3) + 1;
+        const auto inlier_idx_z = (inlier_idx * 3) + 2;
+        const double known_bnd_pos_x = m_bundle_pos_list[inlier_idx_x];
+        const double known_bnd_pos_y = m_bundle_pos_list[inlier_idx_y];
+        const double known_bnd_pos_z = m_bundle_pos_list[inlier_idx_z];
+        const bool is_known_bundle_pos =
+            (!std::isnan(known_bnd_pos_x) && !std::isnan(known_bnd_pos_y) &&
+             !std::isnan(known_bnd_pos_z));
+        if (is_known_bundle_pos) {
+            // The known bundle position is expected to already
+            // contain the 'm_camera_transform_matrix' baked in.
+            maya_translate.x = known_bnd_pos_x;
+            maya_translate.y = known_bnd_pos_y;
+            maya_translate.z = known_bnd_pos_z;
+            maya_translate *= inverse_camera_transform_matrix;
+        }
 
         if ((output_bundle_index >= m_bundle_list.size()) ||
             (inlier_idx >= m_bundle_list.size())) {
@@ -656,8 +829,9 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         MMSOLVER_MAYA_VRB(
             "mmCameraRelativePose: "
             "landmark bnd: "
-            << bnd_name.asChar() << " | " << inlier_idx << " x=" << tx
-            << " y=" << ty << " z=" << tz);
+            << bnd_name.asChar() << " | inlier_idx=" << inlier_idx
+            << " x=" << maya_translate.x << " y=" << maya_translate.y
+            << " z=" << maya_translate.z << " | known=" << is_known_bundle_pos);
 
         maya_translate *= m_camera_transform_matrix;
         outResult.append(static_cast<double>(output_bundle_index));

@@ -17,6 +17,34 @@
 #
 """
 The camera solver - allows solving static and animated attributes.
+
+The way an incremental solver should work is by starting with 2 root
+frames and then incrementally adding frames. Each additional frame
+must be adding attributes to solve and then locking them. Do not allow
+re-solving attributes that have been solved before.
+
+TODO: We may also try an approach such as:
+
+1a) Start by calculating a relative camera pose from 2 root frames.
+
+1b) Triangulate all bundles that are shared between both root frames.
+
+2a) Find all camera frames that share at least 3 bundles that were
+    correctly triangulated.
+
+2b) Use PnP algorithm to estimate camera poses.
+
+2c) Run bundle-adjustment with all cameras and frames.
+
+3a) Find all camera frames that are not calculated.
+
+3b) Use camera relative pose estimation (using known 3D points) to add
+    a new camera frame.
+
+3) Repeat step 2 to 3, until all frames are estimated.
+
+4) Run bundle-adjustment with all cameras and frames.
+
 """
 
 from __future__ import absolute_import
@@ -25,7 +53,7 @@ from __future__ import print_function
 
 import math
 import collections
-import pprint
+# import pprint
 
 import maya.cmds
 import maya.api.OpenMaya as OpenMaya2
@@ -143,10 +171,22 @@ def _compute_connected_frame_scores(
     mkr_nodes_a = enabled_marker_nodes[root_frame_a]
     assert isinstance(mkr_nodes_a, set)
 
+    # TODO: This is a hard-coded logic, so we do not select another
+    # frame that is closer than max_frame_distance away from the
+    # current root_frame_a.
+    #
+    # If the future we should use more sophisticated logic to avoid
+    # picking the frames closest, such as using homography similarity.
+    max_frame_distance = 5
+
     scores = []
     for frame in possible_frames:
         mkr_nodes_b = enabled_marker_nodes[frame]
         assert isinstance(mkr_nodes_b, set)
+
+        distance = abs(root_frame_a - frame)
+        if distance < max_frame_distance:
+            continue
 
         score = 0
         mkr_nodes = mkr_nodes_a & mkr_nodes_b
@@ -176,6 +216,7 @@ def _bundle_node_is_solved_well(bnd_node, value_min, value_max):
             tx < BUNDLE_VALUE_MAX,
             ty < BUNDLE_VALUE_MAX,
             tz < BUNDLE_VALUE_MAX,
+            tx != 0.0 and ty != 0.0 and tz != 0.0,
         ]
     )
     return bnd_is_good
@@ -235,6 +276,7 @@ def _sub_bundle_adjustment(
     cam_shp_node_attrs,
     lens_node_attrs,
     frames,
+    known_bnd_nodes=None,
     adjust_camera_translate=None,
     adjust_camera_rotate=None,
     adjust_bundle_positions=None,
@@ -252,6 +294,9 @@ def _sub_bundle_adjustment(
     assert isinstance(adjust_bundle_positions, bool)
     assert isinstance(adjust_camera_intrinsics, bool)
     assert isinstance(adjust_lens_distortion, bool)
+
+    if known_bnd_nodes is None:
+        known_bnd_nodes = set()
 
     if solver_version is None:
         solver_version = const.SOLVER_CAM_SOLVER_VERSION_DEFAULT_VALUE
@@ -325,6 +370,11 @@ def _sub_bundle_adjustment(
         mkr_bnd = (mkr_node, cam_shp, bnd_node)
         markers.append(mkr_bnd)
 
+        if bnd_node in known_bnd_nodes:
+            # Known Bundle are not solved, but they are used in the
+            # solve.
+            continue
+
         if adjust_bundle_positions is True:
             for attr in TRANSLATE_ATTRS:
                 # TODO: Try to limit the values (eg. -1e4 to 1e4) allowed by bundles, so
@@ -378,6 +428,7 @@ def _sub_bundle_adjustment(
             verbose=verbose,
             **kwargs
         )
+        # LOG.debug('mmSolver result: %s', pprint.pformat(result))
         assert result[0] == 'success=1'
     elif solver_version == const.SOLVER_VERSION_TWO:
         log_level = const.LOG_LEVEL_INFO_VALUE
@@ -393,6 +444,7 @@ def _sub_bundle_adjustment(
             logLevel=log_level,
             **kwargs
         )
+        # LOG.debug('mmSolver_v2 result: %s', pprint.pformat(result))
         assert result is True
     else:
         raise NotImplementedError
@@ -448,6 +500,7 @@ def _bundle_adjust(
     if verbose is None:
         verbose = False
     assert isinstance(adjust_camera_translate, bool)
+
     assert isinstance(adjust_camera_rotate, bool)
     assert isinstance(adjust_bundle_positions, bool)
     assert isinstance(adjust_camera_intrinsics, bool)
@@ -576,12 +629,17 @@ def _solve_relative_poses(
     assert isinstance(verbose, bool)
     failed_frames = set()
 
+    known_bnd_nodes = set()
+
+    iteration = 0
     tmp_possible_frames = list(possible_frames)
     while len(tmp_possible_frames) > 0:
+        iteration += 1
+
         if root_frame_a in tmp_possible_frames:
             tmp_possible_frames.remove(root_frame_a)
 
-        # The closest frame number ot the root frame, so we move
+        # The closest frame number to the root frame, so we move
         # incrementally outwards from the root frame.
         possible_frame = min(tmp_possible_frames, key=lambda x: abs(x - root_frame_a))
         tmp_possible_frames.remove(possible_frame)
@@ -593,10 +651,14 @@ def _solve_relative_poses(
             # Already failed to solve, no need to try again.
             continue
 
+        LOG.debug('iteration: %s', iteration)
+        LOG.debug('possible_frame: %s', possible_frame)
+
         mkr_nodes_b = enabled_marker_nodes[possible_frame]
         mkr_nodes = set(mkr_nodes_a) & set(mkr_nodes_b)
         common_mkr_list = [marker.Marker(node=n) for n in mkr_nodes]
 
+        shared_bnd_nodes = set()
         mkr_bnd_nodes = set()
         new_mkr_bnd_list = []
         for mkr in common_mkr_list:
@@ -607,27 +669,81 @@ def _solve_relative_poses(
             mkr_node = mkr.get_node()
             bnd_node = bnd.get_node()
 
+            shared_bnd_nodes.add(bnd_node)
+
             mkr_bnd = (mkr_node, mkr_node, bnd_node)
             new_mkr_bnd_list.append(mkr_bnd)
 
             mkr_bnd = (mkr_node, bnd_node)
             mkr_bnd_nodes.add(mkr_bnd)
 
+        # NaN values are a way to signal the Bundle position is
+        # unknown, where as non-NaN values are known.
+        known_mkr_bnd_nodes = set()
+        LOG.debug('len(known_bnd_nodes): %s', len(known_bnd_nodes))
+        known_bnd_pos_list = [(float('nan'), float('nan'), float('nan'))] * (
+            len(new_mkr_bnd_list)
+        )
+        known_bnd_count = 0
+        for i, (mkr_node_a, mkr_node_b, bnd_node) in enumerate(new_mkr_bnd_list):
+            if bnd_node not in known_bnd_nodes:
+                continue
+            known_bnd_count += 1
+
+            mkr_bnd = (mkr_node_a, bnd_node)
+            known_mkr_bnd_nodes.add(mkr_bnd)
+
+            bnd_pos_x = maya.cmds.getAttr(bnd_node + '.translateX')
+            bnd_pos_y = maya.cmds.getAttr(bnd_node + '.translateY')
+            bnd_pos_z = maya.cmds.getAttr(bnd_node + '.translateZ')
+            known_bnd_pos_list[i] = (bnd_pos_x, bnd_pos_y, bnd_pos_z)
+        LOG.debug('known_bnd_count: %s', known_bnd_count)
+
+        # Camera relative pose.
         kwargs = {
             'frameA': root_frame_a,
             'frameB': possible_frame,
             'cameraA': cam_tfm,
             'cameraB': cam_tfm,
             'markerBundle': new_mkr_bnd_list,
+            'bundlePosition': known_bnd_pos_list,
             'useCameraTransform': True,
             'setValues': True,
         }
         # LOG.debug('mmCameraRelativePose kwargs: %s', pprint.pformat(kwargs))
         result = maya.cmds.mmCameraRelativePose(**kwargs)
+        # LOG.debug('mmCameraRelativePose result: %s', pprint.pformat(result))
         if result is None:
             LOG.debug('Failed Camera Pose: %s to %s', root_frame_a, possible_frame)
-            failed_frames.add(possible_frame)
-            continue
+
+            # If there are at least 3 or more known bundle positions,
+            # we can use a Perspective-N-Points (PnP) algorithm to
+            # compute the position of the camera pose, without using
+            # camera relative pose estimation.
+
+            if known_bnd_count >= 3:
+                # PnP camera pose.
+                kwargs = {
+                    'setValues': True,
+                    'frame': possible_frame,
+                    'camera': cam_tfm,
+                    'marker': list(sorted(known_mkr_bnd_nodes)),
+                }
+                # LOG.debug('mmCameraPoseFromPoints kwargs: %s', pprint.pformat(kwargs))
+                result = maya.cmds.mmCameraPoseFromPoints(**kwargs)
+                # LOG.debug('mmCameraPoseFromPoints result: %s', pprint.pformat(result))
+                if result is None:
+                    LOG.debug(
+                        'Failed Camera Pose (from existing 3D Points): %s',
+                        possible_frame,
+                    )
+                    # If this fails, should we try the camera relative
+                    # pose as well?
+                    failed_frames.add(possible_frame)
+                    continue
+            else:
+                failed_frames.add(possible_frame)
+                continue
 
         mkr_nodes, bnd_nodes = _filter_badly_solved_bundles(
             mkr_bnd_nodes, BUNDLE_VALUE_MIN, BUNDLE_VALUE_MAX
@@ -638,6 +754,7 @@ def _solve_relative_poses(
         solved_frames.add(possible_frame)
         accumulated_mkr_nodes = accumulated_mkr_nodes | mkr_nodes
         accumulated_bnd_nodes = accumulated_bnd_nodes | bnd_nodes
+        known_bnd_nodes = known_bnd_nodes | bnd_nodes
 
         # Refine the solve.
         solved_frames_count = len(solved_frames)
@@ -647,7 +764,7 @@ def _solve_relative_poses(
             animcurve_utils.euler_filter_plug(cam_tfm, 'rotateZ')
 
             frames = list(sorted(solved_frames))
-            _bundle_adjust(
+            _sub_bundle_adjustment(
                 col_node,
                 cam_tfm,
                 cam_shp,
@@ -655,6 +772,7 @@ def _solve_relative_poses(
                 cam_shp_node_attrs,
                 lens_node_attrs,
                 frames,
+                known_bnd_nodes=known_bnd_nodes,
                 adjust_camera_translate=True,
                 adjust_camera_rotate=True,
                 adjust_bundle_positions=True,
@@ -707,6 +825,8 @@ def _triangulate_bundles(
                 triangulated_count += 1
             else:
                 LOG.warn('Failed to triangulated Bundle: %s', bnd_node)
+                # TODO: Add attribute to define if the bundle has been
+                # initialised or is valid?
                 maya.cmds.setAttr(bnd_node + '.translateX', 0.0)
                 maya.cmds.setAttr(bnd_node + '.translateY', 0.0)
                 maya.cmds.setAttr(bnd_node + '.translateZ', 0.0)
@@ -1017,10 +1137,10 @@ def _runSolverAffects(
     solveraffects.reset_marker_used_hints(mkr_nodes)
     solveraffects.reset_attr_used_hints(col_node, node_attr_plugs)
 
-    LOG.debug('maya.cmds.mmSolverAffects camera: %s', pprint.pformat(cameras))
-    LOG.debug('maya.cmds.mmSolverAffects marker: %s', pprint.pformat(markers))
-    LOG.debug('maya.cmds.mmSolverAffects attr: %s', pprint.pformat(node_attrs))
-    LOG.debug('maya.cmds.mmSolverAffects frame: %s', pprint.pformat(all_frames))
+    # LOG.debug('maya.cmds.mmSolverAffects camera: %s', pprint.pformat(cameras))
+    # LOG.debug('maya.cmds.mmSolverAffects marker: %s', pprint.pformat(markers))
+    # LOG.debug('maya.cmds.mmSolverAffects attr: %s', pprint.pformat(node_attrs))
+    # LOG.debug('maya.cmds.mmSolverAffects frame: %s', pprint.pformat(all_frames))
 
     affects_mode = 'addAttrsToMarkers'
     graph_mode = 'simple'
@@ -1124,7 +1244,7 @@ def camera_solve(
         start_frame,
         end_frame,
     )
-    LOG.debug('affectsResult: %s', pprint.pformat(affectsResult))
+    # LOG.debug('affectsResult: %s', pprint.pformat(affectsResult))
 
     # Find the frame with the best connectivity to all other root
     # frames. This is not the frame that gives the most solved frames,
@@ -1159,7 +1279,7 @@ def camera_solve(
     while len(possible_frames) > 0:
         LOG.debug('root_frame_a: %s', root_frame_a)
 
-        # Only solves the frame that are possible to be solved from the root frame.
+        # Only solves the frame that is possible to be solved from the root frame.
         relative_pose_frames = []
         pose_frame_scores = frame_scores_map[root_frame_a]
         for frame, score in pose_frame_scores:

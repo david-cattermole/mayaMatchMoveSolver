@@ -11,12 +11,13 @@ Center 2D On Selection
 ----------------------
 
 Forces the active viewport camera to lock it’s center to the currently
-selected transform node.
-
-A viewport camera can only center on one node at a time.
+selected transform node. The Center 2D window can be used to offset
+the 2D offset horizontally/vertically.
 
 While centering is turned on, it overrides Maya's normal 2D Pan/Zoom
 settings.
+
+.. note:: A viewport camera can only center on one node at a time.
 
 Usage to *apply* the centering effect:
 
@@ -32,6 +33,24 @@ Usage to *apply* the centering effect:
 4) Use the Pan/Zoom tool (default hotkey is backslash (' \\ ') key),
    to zoom in and out. Play the Maya timeline and use the centered view as
    needed.
+
+5) Click on the 'Apply 2D Center' menu option box to display the
+   'Center 2D Offset' window.
+
+   - Drag the Horizontal, Vertical and Zoom sliders to offset the 2D centering.
+
+   - Click 'Apply' button to apply the Center 2D.
+
+   - Click 'Remove' button to remove the Center 2D.
+
+   - Click 'Reset All' button to reset all the 2D offsets.
+
+   - Click 'Close' button to close the window.
+
+.. figure:: images/tools_center_2d_offset_ui.png
+    :alt: Center 2D Offset UI
+    :align: center
+    :width: 60%
 
 Usage to *remove* centering effect:
 

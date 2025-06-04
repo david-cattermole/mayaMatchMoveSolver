@@ -100,8 +100,7 @@ def main():
             reproject_utils.remove_reprojection_from_camera(cam_tfm, cam_shp)
             reproject_utils.reset_pan_zoom(cam_tfm, cam_shp)
         elif len(nodes) == 1:
-            msg = 'Applying 2D centering to %r'
-            LOG.warning(msg, nodes)
+            LOG.warning('Applying 2D centering to %r', nodes)
             mmapi.load_plugin()
             reproj_nodes = reproject_utils.find_reprojection_nodes(cam_tfm, cam_shp)
             if len(reproj_nodes) > 0:
@@ -160,6 +159,7 @@ def remove():
         LOG.warning(msg)
         return
 
+    LOG.warning('Removing 2D centering from %r', cam_tfm)
     try:
         mmapi.set_solver_running(True)
         mmapi.load_plugin()

@@ -78,6 +78,7 @@
             "display_tools/display_popup/---Viewport",
             "display_tools/display_popup/center_twodee",
             "display_tools/display_popup/center_twodee_remove",
+            "display_tools/display_popup/center_twodee_ui",
             "display_tools/display_popup/---",
             "display_tools/display_popup/toggle_viewport_geom",
             "display_tools/display_popup/toggle_viewport_ctrls",

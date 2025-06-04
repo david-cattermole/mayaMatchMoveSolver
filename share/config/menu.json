@@ -81,6 +81,7 @@
             "display_tools/---Viewport",
             "display_tools/center_twodee",
             "display_tools/center_twodee_remove",
+            "display_tools/center_twodee_ui",
             "display_tools/---",
             "display_tools/toggle_viewport_geom",
             "display_tools/toggle_viewport_ctrls",

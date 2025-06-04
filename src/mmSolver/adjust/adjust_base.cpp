@@ -372,7 +372,8 @@ bool set_maya_attribute_values(
             auto attr_name_char = attr_name.asChar();
 
             MMSOLVER_MAYA_ERR(
-                "set_maya_attribute_values was given an invalid value to set:"
+                "mmSolver: set_maya_attribute_values was given an invalid "
+                "value to set:"
                 << " frame=" << frame << " attr name=" << attr_name_char
                 << " solver value=" << solver_value
                 << " bound value=" << real_value << " offset=" << offset
@@ -399,7 +400,9 @@ bool compute_error_stats(const int numberOfMarkerErrors,
         const double err = errorDistanceList[i];
         if (!std::isfinite(err)) {
             MMSOLVER_MAYA_ERR(
-                "Error distance value is invalid, skipping: " << err);
+                "mmSolver: compute_error_stats: "
+                "Error distance value is invalid, skipping: "
+                << err);
             continue;
         }
         out_errorAvg += err;

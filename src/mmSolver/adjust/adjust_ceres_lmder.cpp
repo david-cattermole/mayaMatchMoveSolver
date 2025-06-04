@@ -219,15 +219,25 @@ bool solve_3d_ceres_lmder(SolverOptions& solverOptions,
     options.minimizer_type = ::ceres::TRUST_REGION;
     options.trust_region_strategy_type = ::ceres::LEVENBERG_MARQUARDT;
 
+    const bool small_solve = numberOfParameters < 128;
+    const bool is_dense_ratio = (numberOfParameters * 10) < numberOfErrors;
+
     // See "How do I choose the right linear solver?";
     // http://ceres-solver.org/solving_faqs.html#solving
-    options.linear_solver_type = ::ceres::DENSE_QR;
+    if (small_solve || is_dense_ratio) {
+        options.linear_solver_type = ::ceres::DENSE_QR;
+    } else {
+        options.linear_solver_type = ::ceres::SPARSE_NORMAL_CHOLESKY;
+    }
 
     // Allow solve to get worse before it gets better. The parameters
     // with the lowest error is always picked at the end of the solve.
     //
     // NOTE: This only affects Trust Region algorithms.
-    const uint8_t max_invalid_steps = 0;  // or 5?
+    uint8_t max_invalid_steps = 0;
+    if (small_solve) {
+        max_invalid_steps = 5;
+    }
     options.use_nonmonotonic_steps = max_invalid_steps > 0;
     options.max_num_consecutive_invalid_steps = max_invalid_steps;
 

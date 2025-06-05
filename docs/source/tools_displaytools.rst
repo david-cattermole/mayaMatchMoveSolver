@@ -43,7 +43,7 @@ Usage to *apply* the centering effect:
 
    - Click 'Remove' button to remove the Center 2D.
 
-   - Click 'Reset All' button to reset all the 2D offsets.
+   - Click 'Reset Offset' button to reset all the 2D offsets.
 
    - Click 'Close' button to close the window.
 

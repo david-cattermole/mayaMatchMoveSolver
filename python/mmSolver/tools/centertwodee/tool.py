@@ -35,6 +35,14 @@ import mmSolver.utils.reproject as reproject_utils
 LOG = mmSolver.logger.get_logger()
 
 
+def _update_ui_nodes():
+    import mmSolver.tools.centertwodee.ui.centertwodee_window as window
+
+    window_instance = window.CenterTwoDeeWindow.get_instance()
+    if window_instance is not None:
+        window_instance.update_nodes()
+
+
 def main():
     """
     Center the selected transform onto the camera view.
@@ -54,12 +62,14 @@ def main():
     if model_editor is None:
         msg = 'Please select an active 3D viewport.'
         LOG.warning(msg)
+        _update_ui_nodes()
         return
 
     cam_tfm, cam_shp = viewport_utils.get_viewport_camera(model_editor)
     if cam_shp is None:
         msg = 'Please select an active 3D viewport to get a camera.'
         LOG.warning(msg)
+        _update_ui_nodes()
         return
 
     try:
@@ -140,6 +150,7 @@ def main():
             maya.cmds.select(save_sel, replace=True)
     finally:
         mmapi.set_solver_running(False)
+        _update_ui_nodes()
     return
 
 
@@ -151,12 +162,14 @@ def remove():
     if model_editor is None:
         msg = 'Please select an active 3D viewport.'
         LOG.warning(msg)
+        _update_ui_nodes()
         return
 
     cam_tfm, cam_shp = viewport_utils.get_viewport_camera(model_editor)
     if cam_shp is None:
         msg = 'Please select an active 3D viewport to get a camera.'
         LOG.warning(msg)
+        _update_ui_nodes()
         return
 
     LOG.warning('Removing 2D centering from %r', cam_tfm)
@@ -167,6 +180,7 @@ def remove():
         reproject_utils.reset_pan_zoom(cam_tfm, cam_shp)
     finally:
         mmapi.set_solver_running(False)
+        _update_ui_nodes()
     return
 
 

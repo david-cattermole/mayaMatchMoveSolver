@@ -65,8 +65,11 @@ class CenterTwoDeeWindow(BaseWindow):
         super(CenterTwoDeeWindow, self).__init__(parent, name=name)
         self.setupUi(self)
         self.addSubForm(centertwodee_layout.CenterTwoDeeLayout)
-        self.offset_node, self.camera_shape = lib.get_offset_nodes()
         self.form = self.getSubForm()
+
+        self.offset_node = None
+        self.camera_shape = None
+        self.update_nodes()
 
         # Set slider defaults in subform
         self.set_initial_values()
@@ -81,7 +84,7 @@ class CenterTwoDeeWindow(BaseWindow):
         self.form.zoom_horizontalSlider.valueChanged.connect(self.form.zoomValueChanged)
         self.form.horizontal_signal.connect(self.horizontal_offset_node_update)
         self.form.vertical_signal.connect(self.vertical_offset_node_update)
-        self.form.zoom_signal.connect(self.camera_shape_update)
+        self.form.zoom_signal.connect(self.zoom_camera_shape_update)
 
         self.setWindowTitle(const.WINDOW_TITLE)
         self.setWindowFlags(QtCore.Qt.Tool)
@@ -94,7 +97,7 @@ class CenterTwoDeeWindow(BaseWindow):
         self.closeBtn.show()
         self.createBtn.setText('Apply')
         self.applyBtn.setText('Remove')
-        self.resetBtn.setText('Reset All')
+        self.resetBtn.setText('Reset Offset')
 
         self.createBtn.clicked.connect(self.apply_center)
         self.applyBtn.clicked.connect(self.remove_center)
@@ -132,7 +135,7 @@ class CenterTwoDeeWindow(BaseWindow):
         return
 
     @QtCore.Slot(float)
-    def camera_shape_update(self, value):
+    def zoom_camera_shape_update(self, value):
         output = lib.process_value(input_value=value, source='slider', zoom=True)
         if self.camera_shape:
             lib.set_zoom(self.camera_shape, output)
@@ -148,11 +151,28 @@ class CenterTwoDeeWindow(BaseWindow):
 
         tool.remove()
 
+    def update_nodes(self):
+        self.offset_node, self.camera_shape = lib.get_offset_nodes()
+
+        enabled = bool(self.offset_node and self.camera_shape)
+        self.form.horizontal_horizontalSlider.setEnabled(enabled)
+        self.form.vertical_horizontalSlider.setEnabled(enabled)
+        self.form.zoom_horizontalSlider.setEnabled(enabled)
+
+        if enabled is True:
+            self.form.camera_lineEdit.setText(self.camera_shape)
+        else:
+            self.form.camera_lineEdit.setText('')
+
+            # Ensure both are not set.
+            self.offset_node = None
+            self.camera_shape = None
+
     def reset_options(self):
         self.form.reset_options()
 
     def set_initial_values(self):
-        if not self.offset_node:
+        if not self.offset_node or not self.camera_shape:
             horizontal_slider_value = const.DEFAULT_SLIDER_VALUE
             vertical_slider_value = const.DEFAULT_SLIDER_VALUE
             zoom_slider_value = const.DEFAULT_SLIDER_VALUE

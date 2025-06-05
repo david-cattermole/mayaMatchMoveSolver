@@ -22,7 +22,21 @@ SETLOCAL
 :: Builds the Maya MatchMove Solver project for all supported
 :: operating systems, with Windows as a host operating system.
 
-set PROJECT_ROOT=%~dp0
+set PROJECT_ROOT=%~dp0\..\
+echo Project Root (relative): %PROJECT_ROOT%
+
+
+:: Get absolute path of PROJECT_ROOT.
+:: https://stackoverflow.com/questions/1645843/resolve-absolute-path-from-relative-path-and-or-file-name
+::
+:: 1. Save current directory and change to target directory
+pushd %PROJECT_ROOT%
+:: 2. Save value of CD variable (current directory)
+set PROJECT_ROOT=%CD%
+:: 3. Restore original directory
+popd
+echo Project Root (abspath): %PROJECT_ROOT%
+
 
 :: Windows - Maya 2020 Build
 call scripts/build_mmSolver_windows64_maya2020.bat
@@ -39,26 +53,37 @@ call scripts/build_mmSolver_windows64_maya2024.bat
 :: Windows - Maya 2025 Build
 call scripts/build_mmSolver_windows64_maya2025.bat
 
+
+:: Docker common variables.
+set DOCKERFILE_DIR=%PROJECT_ROOT%\share\docker
+set VOLUME="%PROJECT_ROOT%:/mmSolver"
+
 :: Linux - Maya 2019 Build
-docker buildx build --file "%PROJECT_ROOT%share\docker\Dockerfile_maya2019" -t mmsolver-linux-maya2019-build "%PROJECT_ROOT%"
-docker container run --volume "%PROJECT_ROOT%:/mmSolver" mmsolver-linux-maya2019-build "bash -c './scripts/build_mmSolver_linux_maya2019.bash'"
+set NAME=mmsolver-linux-maya2019-build
+docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2019" -t %NAME% "%PROJECT_ROOT%"
+docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2019.bash'"
 
 :: Linux - Maya 2020 Build
-docker buildx build --file "%PROJECT_ROOT%share\docker\Dockerfile_maya2020" -t mmsolver-linux-maya2020-build "%PROJECT_ROOT%"
-docker container run --volume "%PROJECT_ROOT%:/mmSolver" mmsolver-linux-maya2020-build "bash -c './scripts/build_mmSolver_linux_maya2020.bash'"
+set NAME=mmsolver-linux-maya2020-build
+docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2020" -t %NAME% "%PROJECT_ROOT%"
+docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2020.bash'"
 
 :: Linux - Maya 2022 Build
-docker buildx build --file "%PROJECT_ROOT%share\docker\Dockerfile_maya2022" -t mmsolver-linux-maya2022-build "%PROJECT_ROOT%"
-docker container run --volume "%PROJECT_ROOT%:/mmSolver" mmsolver-linux-maya2022-build "bash -c './scripts/build_mmSolver_linux_maya2022.bash'"
+set NAME=mmsolver-linux-maya2022-build
+docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2022" -t %NAME% "%PROJECT_ROOT%"
+docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2022.bash'"
 
 :: Linux - Maya 2023 Build
-docker buildx build --file "%PROJECT_ROOT%share\docker\Dockerfile_maya2023" -t mmsolver-linux-maya2023-build "%PROJECT_ROOT%"
-docker container run --volume "%PROJECT_ROOT%:/mmSolver" mmsolver-linux-maya2023-build "bash -c './scripts/build_mmSolver_linux_maya2023.bash'"
+set NAME=mmsolver-linux-maya2023-build
+docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2023" -t %NAME% "%PROJECT_ROOT%"
+docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2023.bash'"
 
 :: Linux - Maya 2024 Build
-docker buildx build --file "%PROJECT_ROOT%share\docker\Dockerfile_maya2024" -t mmsolver-linux-maya2024-build "%PROJECT_ROOT%"
-docker container run --volume "%PROJECT_ROOT%:/mmSolver" mmsolver-linux-maya2024-build "bash -c './scripts/build_mmSolver_linux_maya2024.bash'"
+set NAME=mmsolver-linux-maya2024-build
+docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2024" -t %NAME% "%PROJECT_ROOT%"
+docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2024.bash'"
 
 :: Linux - Maya 2025 Build
-docker buildx build --file "%PROJECT_ROOT%share\docker\Dockerfile_maya2025" -t mmsolver-linux-maya2025-build "%PROJECT_ROOT%"
-docker container run --volume "%PROJECT_ROOT%:/mmSolver" mmsolver-linux-maya2025-build "bash -c './scripts/build_mmSolver_linux_maya2025.bash'"
+set NAME=mmsolver-linux-maya2025-build
+docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2025" -t %NAME% "%PROJECT_ROOT%"
+docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2025.bash'"

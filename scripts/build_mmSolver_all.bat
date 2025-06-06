@@ -53,6 +53,9 @@ call scripts/build_mmSolver_windows64_maya2024.bat
 :: Windows - Maya 2025 Build
 call scripts/build_mmSolver_windows64_maya2025.bat
 
+:: Windows - Maya 2026 Build
+call scripts/build_mmSolver_windows64_maya2026.bat
+
 
 :: Docker common variables.
 set DOCKERFILE_DIR=%PROJECT_ROOT%\share\docker

@@ -349,10 +349,14 @@ tasks.</p>
 <section id="center-2d-on-selection">
 <span id="center-2d-on-selection-tool-ref"></span><h2>Center 2D On Selection<a class="headerlink" href="#center-2d-on-selection" title="Permalink to this heading">#</a></h2>
 <p>Forces the active viewport camera to lock it’s center to the currently
-selected transform node.</p>
-<p>A viewport camera can only center on one node at a time.</p>
+selected transform node. The Center 2D window can be used to offset
+the 2D offset horizontally/vertically.</p>
 <p>While centering is turned on, it overrides Maya’s normal 2D Pan/Zoom
 settings.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A viewport camera can only center on one node at a time.</p>
+</div>
 <p>Usage to <em>apply</em> the centering effect:</p>
 <ol class="arabic simple">
 <li><p>Select transform node.</p></li>
@@ -366,7 +370,20 @@ transform node.</p></li>
 <li><p>Use the Pan/Zoom tool (default hotkey is backslash (’ \ ‘) key),
 to zoom in and out. Play the Maya timeline and use the centered view as
 needed.</p></li>
+<li><p>Click on the ‘Apply 2D Center’ menu option box to display the
+‘Center 2D Offset’ window.</p>
+<ul class="simple">
+<li><p>Drag the Horizontal, Vertical and Zoom sliders to offset the 2D centering.</p></li>
+<li><p>Click ‘Apply’ button to apply the Center 2D.</p></li>
+<li><p>Click ‘Remove’ button to remove the Center 2D.</p></li>
+<li><p>Click ‘Reset Offset’ button to reset all the 2D offsets.</p></li>
+<li><p>Click ‘Close’ button to close the window.</p></li>
+</ul>
+</li>
 </ol>
+<figure class="align-center">
+<a class="reference internal image-reference" href="images/tools_center_2d_offset_ui.png"><img alt="Center 2D Offset UI" src="images/tools_center_2d_offset_ui.png" style="width: 60%;" /></a>
+</figure>
 <p>Usage to <em>remove</em> centering effect:</p>
 <ol class="arabic simple">
 <li><p>Run ‘Remove 2D Center’ tool.</p>

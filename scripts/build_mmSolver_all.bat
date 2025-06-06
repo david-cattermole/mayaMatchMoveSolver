@@ -90,3 +90,8 @@ docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver
 set NAME=mmsolver-linux-maya2025-build
 docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2025" -t %NAME% "%PROJECT_ROOT%"
 docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2025.bash'"
+
+:: Linux - Maya 2026 Build
+set NAME=mmsolver-linux-maya2026-build
+docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2026" -t %NAME% "%PROJECT_ROOT%"
+docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2026.bash'"

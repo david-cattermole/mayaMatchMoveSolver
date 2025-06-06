@@ -1,0 +1,164 @@
+# To create and run the docker container in PowerShell or BASH:
+#
+# $ cd /path/to/project/root/mayaMatchMoveSolver/
+# $ docker build --file share/docker/Dockerfile_maya2026 -t mmsolver-linux-maya2026-build .
+# $ docker run --rm --interactive --volume "${PWD}:/mmSolver" --tty mmsolver-linux-maya2026-build bash
+#
+#
+# Once the docker image is built and run, you can execute the
+# following...
+#
+#
+# Install Python and run tools:
+#
+# $ source ./scripts/python_venv_activate_maya2026.bash
+# $ ./scripts/python_linter_run_pylint.bash
+# $ ./scripts/python_linter_run_flake8.bash
+# $ ./scripts/python_linter_run_cpplint.bash
+# $ ./scripts/python_formatter_run_black_check.bash
+# $ deactivate
+#
+#
+# Build CMake project:
+#
+# $ ./scripts/build_mmSolver_linux_maya2026.bash
+# $ mayapy tests/runTests.py
+#
+
+FROM rockylinux:8
+
+# Maya documentation for installing on RHEL8 / Rocky8:
+# https://help.autodesk.com/view/MAYAUL/2025/ENU/?guid=GUID-D2B5433C-E0D2-421B-9BD8-24FED217FD7F
+#
+# And this forum post:
+# https://forums.autodesk.com/t5/maya-forum/install-maya-2023-update-3-on-rocky-linux-8-7-instructions/td-p/11735138
+
+# Install Extra Packages Enterprise Linux (EPEL) repo for extra tools.
+RUN dnf install --assumeyes https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
+       && dnf install --assumeyes epel-release \
+       && dnf update --assumeyes \
+       && dnf makecache
+
+# General packages
+RUN dnf install --assumeyes \
+       glibc \
+       libSM \
+       libICE \
+       zlib \
+       openssl-libs \
+       nss \
+       libnsl \
+       dbus \
+       redhat-lsb-core \
+       pcre-utf16 \
+       pciutils \
+       libXdamage
+
+# Multimedia Packages
+RUN dnf install --assumeyes \
+       mesa-libGL \
+       mesa-libGL-devel \
+       mesa-libGLU \
+       mesa-libGLw \
+       gamin \
+       audiofile-devel \
+       e2fsprogs-libs \
+       libcap \
+       libdrm \
+       libmng \
+       speech-dispatcher \
+       cups \
+       libpng15
+
+# X Window – Xcb – X11 Packages
+RUN dnf install --assumeyes \
+       libX11 \
+       libXScrnSaver \
+       libXau \
+       libXcomposite \
+       libXcursor \
+       libXext \
+       libXfixes \
+       libXi \
+       libXinerama \
+       libXmu \
+       libXp \
+       libXpm \
+       libXrandr \
+       libXrender \
+       libXt \
+       libXtst \
+       libxcb \
+       libxkbcommon \
+       libxkbcommon-x11 \
+       libxshmfence \
+       xcb-util \
+       xcb-util-image \
+       xcb-util-keysyms \
+       xcb-util-renderutil \
+       xcb-util-wm \
+       xorg-x11-server-Xorg \
+       xorg-x11-server-Xvfb
+
+# Install fonts needed by Maya.
+# This is probably only needed by the GUI (which we will not open),
+# but it's good to have everything needed, just in case.
+RUN dnf install --assumeyes \
+       fontconfig \
+       freetype \
+       xorg-x11-fonts-ISO8859-1-100dpi \
+       xorg-x11-fonts-ISO8859-1-75dpi \
+       liberation-mono-fonts \
+       liberation-fonts-common \
+       liberation-sans-fonts \
+       liberation-serif-fonts
+
+# OpenSource "mesa" OpenGL Driver.
+RUN dnf install --assumeyes \
+       mesa-libGLw \
+       mesa-libGLU \
+       mesa-libGL-devel \
+       mesa-libEGL-devel \
+       mesa-libGLES-devel \
+       mesa-libGLU-devel \
+       mesa-libGLw-devel \
+       libglvnd \
+       libglvnd-opengl \
+       libglvnd-egl \
+       libglvnd-glx \
+       libglvnd-gles \
+       libglvnd-core-devel \
+       libglvnd-devel
+
+# Install latest stable Rust with 'rustup'.
+#
+# TODO: Define a minimum Rust version to install.
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
+    && source ${HOME}/.cargo/env
+ENV PATH=/root/.cargo/bin:$PATH
+
+# Development tools for Maya 2026.
+RUN dnf install --assumeyes \
+       git \
+       python39 \
+       cmake \
+       clang-tools-extra \
+       gcc-toolset-11
+
+# Install Maya from archive.
+ADD ./external/archives/Autodesk_Maya_2026_ML_Linux_64bit.tgz /temp
+# 'rpm --force' is needed to override the dependency conflict of using
+# 'tcl' (which is required by 'gcc-toolset-11', because it's a
+# "software collection" using environment modules written in tcl).
+RUN rpm -Uvh --force /temp/Packages/Maya2026*.rpm && rm -r /temp
+ENV MAYA_LOCATION=/usr/autodesk/maya/
+ENV PATH=$MAYA_LOCATION/bin:$PATH
+
+# Workaround for Maya "Segmentation fault (core dumped)" issue.
+# See https://forums.autodesk.com/t5/maya-general/render-crash-on-linux/m-p/5608552/highlight/true
+ENV MAYA_DISABLE_CIP=1
+
+WORKDIR /mmSolver
+
+# Maya 2026 development environment.
+ENTRYPOINT [ "scl", "enable", "gcc-toolset-11" ]

@@ -54,10 +54,15 @@ CWD=`pwd`
 if [ -z "$BUILD_DIR_BASE" ]; then
     BUILD_DIR_BASE="${PROJECT_ROOT}/.."
 fi
-echo "Build directory base: ${BUILD_DIR_BASE}"
+echo "Build root directory base: ${BUILD_DIR_BASE}"
+
+# OpenColorIO build related stuff will go here.
+BUILD_OCIO_DIR_NAME="build_opencolorio"
+BUILD_OCIO_DIR_BASE="${BUILD_OCIO_DIR_BASE}/${BUILD_OCIO_DIR_NAME}"
+echo "Build OpenColorIO directory base: ${BUILD_OCIO_DIR_BASE}"
 
 # Install directory.
-OPENCOLORIO_INSTALL_PATH="${BUILD_DIR_BASE}/build_opencolorio/install/maya${MAYA_VERSION}_linux/"
+OCIO_INSTALL_PATH="${BUILD_OCIO_DIR_BASE}/install/maya${MAYA_VERSION}_linux/"
 
 # What type of build? "Release" or "Debug"?
 BUILD_TYPE=Release
@@ -72,6 +77,16 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PROJECT_ROOT=`readlink -f ${DIR}/../..`
 echo "Project Root: ${PROJECT_ROOT}"
 
+# We don't want to find system packages.
+CMAKE_IGNORE_PATH="/lib;/lib64;/usr;/usr/lib;/usr/lib64;/usr/local;/usr/local/lib;/usr/local/lib64;"
+
+# Build OpenColorIO project
+cd ${BUILD_DIR_BASE}
+BUILD_DIR_NAME="cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}"
+BUILD_DIR="${BUILD_OCIO_DIR_BASE}/${BUILD_DIR_NAME}"
+mkdir -p ${BUILD_DIR}
+cd ${BUILD_DIR}
+
 # Make sure source code archive is downloaded and exists.
 SOURCE_TARBALL="${PROJECT_ROOT}/external/archives/${OPENCOLORIO_TARBALL_NAME}"
 if [ ! -f "${SOURCE_TARBALL}" ]; then
@@ -80,7 +95,8 @@ if [ ! -f "${SOURCE_TARBALL}" ]; then
     exit 1
 fi
 
-EXTRACT_OUT_DIR="${PROJECT_ROOT}/external/working/maya${MAYA_VERSION}_linux"
+# Extract the OpenColorIO archive.
+EXTRACT_OUT_DIR="${BUILD_OCIO_DIR_BASE}/source/maya${MAYA_VERSION}_linux"
 if [ ! -d "${EXTRACT_OUT_DIR}" ]; then
     echo "${EXTRACT_OUT_DIR} does not exist, creating it..."
     mkdir -p "${EXTRACT_OUT_DIR}"
@@ -93,15 +109,7 @@ if [ ! -d "${SOURCE_ROOT}" ]; then
     ${CMAKE_EXE} -E chdir ${EXTRACT_OUT_DIR} tar xf ${SOURCE_TARBALL}
 fi
 
-# We don't want to find system packages.
-CMAKE_IGNORE_PATH="/lib;/lib64;/usr;/usr/lib;/usr/lib64;/usr/local;/usr/local/lib;/usr/local/lib64;"
-
-# Build OpenColorIO project
-cd ${BUILD_DIR_BASE}
-BUILD_DIR_NAME="cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}"
-BUILD_DIR="${BUILD_DIR_BASE}/build_opencolorio/${BUILD_DIR_NAME}"
-mkdir -p ${BUILD_DIR}
-cd ${BUILD_DIR}
+echo "Building opencolorio... (${SOURCE_ROOT})"
 
 # Renaming the library name and C++ namespace, is so that software
 # looking for the "regular" OpenColorIO will not conflict with the
@@ -112,7 +120,7 @@ MMSOLVER_OCIO_NAMESPACE="OpenColorIO_mmSolver"
 ${CMAKE_EXE} \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-    -DCMAKE_INSTALL_PREFIX=${OPENCOLORIO_INSTALL_PATH} \
+    -DCMAKE_INSTALL_PREFIX=${OCIO_INSTALL_PATH} \
     -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH} \
     -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
     -DCMAKE_CXX_STANDARD=${CXX_STANDARD} \

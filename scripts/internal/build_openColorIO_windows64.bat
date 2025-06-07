@@ -52,10 +52,15 @@ ECHO Project Root: %PROJECT_ROOT%
 :: Note: BUILD_DIR_BASE should already be set by the calling script.
 :: If not, use default location.
 IF "%BUILD_DIR_BASE%"=="" SET BUILD_DIR_BASE=%PROJECT_ROOT%\..
-ECHO Build directory base: %BUILD_DIR_BASE%
+ECHO Build root directory base: %BUILD_DIR_BASE%
+
+:: OpenColorIO build related stuff will go here.
+SET BUILD_OCIO_DIR_NAME=build_opencolorio
+SET BUILD_OCIO_DIR_BASE=%BUILD_DIR_BASE%\%BUILD_OCIO_DIR_NAME%
+ECHO Build OpenColorIO directory base: %BUILD_OCIO_DIR_BASE%
 
 :: Install directory.
-SET OPENCOLORIO_INSTALL_PATH=%BUILD_DIR_BASE%\build_opencolorio\install\maya%MAYA_VERSION%_windows64\
+SET OCIO_INSTALL_PATH=%BUILD_OCIO_DIR_BASE%\install\maya%MAYA_VERSION%_windows64\
 
 :: What type of build? "Release" or "Debug"?
 SET BUILD_TYPE=Release
@@ -63,30 +68,6 @@ SET BUILD_TYPE=Release
 :: Allows you to see the build command lines, to help debugging build
 :: problems. Set to ON to enable, and OFF to disable.
 SET MMSOLVER_BUILD_VERBOSE=OFF
-
-:: Make sure source code archive is downloaded and exists.
-SET SOURCE_TARBALL=%PROJECT_ROOT%\external\archives\%OPENCOLORIO_TARBALL_NAME%
-IF NOT EXIST %SOURCE_TARBALL% (
-    ECHO %SOURCE_TARBALL% does not exist.
-    ECHO Please download the tar.gz file from https://github.com/AcademySoftwareFoundation/OpenColorIO/releases
-    EXIT /b 1
-)
-
-SET EXTRACT_OUT_DIR=%PROJECT_ROOT%\external\working\maya%MAYA_VERSION%_windows64
-IF NOT EXIST %EXTRACT_OUT_DIR% (
-   ECHO %EXTRACT_OUT_DIR% does not exist, creating it...
-   MKDIR %EXTRACT_OUT_DIR%
-)
-SET SOURCE_ROOT=%EXTRACT_OUT_DIR%\%OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME%\
-IF NOT EXIST %SOURCE_ROOT% (
-   ECHO %SOURCE_ROOT% does not exist, extracting tarball...
-   :: The 'tar' command is unlikely to be available on Windows, so we
-   :: use CMake because we know it has 'tar'.
-   %CMAKE_EXE% -E chdir %EXTRACT_OUT_DIR% tar xf %SOURCE_TARBALL%
-)
-
-
-ECHO Building opencolorio... (%SOURCE_ROOT%)
 
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
@@ -107,15 +88,41 @@ SET CMAKE_CXX_COMPILER=cl
 
 :: Build OpenColorIO project
 SET BUILD_DIR_NAME=cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%
-SET BUILD_DIR=%BUILD_DIR_BASE%\build_opencolorio\%BUILD_DIR_NAME%
+SET BUILD_DIR=%BUILD_OCIO_DIR_BASE%\%BUILD_DIR_NAME%
 ECHO BUILD_DIR_BASE: %BUILD_DIR_BASE%
+ECHO BUILD_OCIO_DIR_NAME: %BUILD_OCIO_DIR_NAME%
+ECHO BUILD_OCIO_DIR_BASE: %BUILD_OCIO_DIR_BASE%
 ECHO BUILD_DIR_NAME: %BUILD_DIR_NAME%
 ECHO BUILD_DIR: %BUILD_DIR%
 CHDIR "%BUILD_DIR_BASE%"
-MKDIR "build_opencolorio"
-CHDIR "%BUILD_DIR_BASE%\build_opencolorio\"
+MKDIR "%BUILD_OCIO_DIR_NAME%"
+CHDIR "%BUILD_OCIO_DIR_BASE%"
 MKDIR "%BUILD_DIR_NAME%"
 CHDIR "%BUILD_DIR%"
+
+:: Make sure source code archive is downloaded and exists.
+SET SOURCE_TARBALL=%PROJECT_ROOT%\external\archives\%OPENCOLORIO_TARBALL_NAME%
+IF NOT EXIST %SOURCE_TARBALL% (
+    ECHO %SOURCE_TARBALL% does not exist.
+    ECHO Please download the tar.gz file from https://github.com/AcademySoftwareFoundation/OpenColorIO/releases
+    EXIT /b 1
+)
+
+:: Extract the OpenColorIO archive.
+SET EXTRACT_OUT_DIR=%BUILD_OCIO_DIR_BASE%\source\maya%MAYA_VERSION%_windows64
+IF NOT EXIST %EXTRACT_OUT_DIR% (
+   ECHO %EXTRACT_OUT_DIR% does not exist, creating it...
+   MKDIR %EXTRACT_OUT_DIR%
+)
+SET SOURCE_ROOT=%EXTRACT_OUT_DIR%\%OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME%\
+IF NOT EXIST %SOURCE_ROOT% (
+   ECHO %SOURCE_ROOT% does not exist, extracting tarball...
+   :: The 'tar' command is unlikely to be available on Windows, so we
+   :: use CMake because we know it has 'tar'.
+   %CMAKE_EXE% -E chdir %EXTRACT_OUT_DIR% tar xf %SOURCE_TARBALL%
+)
+
+ECHO Building opencolorio... (%SOURCE_ROOT%)
 
 :: Renaming the library name and C++ namespace, is so that software
 :: looking for the "regular" OpenColorIO will not conflict with the
@@ -126,7 +133,7 @@ SET MMSOLVER_OCIO_NAMESPACE="OpenColorIO_mmSolver"
 %CMAKE_EXE% -G %CMAKE_GENERATOR% ^
     -DBUILD_SHARED_LIBS=ON ^
     -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
-    -DCMAKE_INSTALL_PREFIX=%OPENCOLORIO_INSTALL_PATH% ^
+    -DCMAKE_INSTALL_PREFIX=%OCIO_INSTALL_PATH% ^
     -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
     -DCMAKE_C_COMPILER=%CMAKE_C_COMPILER% ^
     -DCMAKE_CXX_COMPILER=%CMAKE_CXX_COMPILER% ^

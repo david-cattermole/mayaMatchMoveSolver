@@ -61,7 +61,17 @@ BUILD_PACKAGE=1
 if [ -z "$BUILD_DIR_BASE" ]; then
     BUILD_DIR_BASE="${PROJECT_ROOT}/.."
 fi
-echo "Build directory base: ${BUILD_DIR_BASE}"
+echo "Build root directory base: ${BUILD_DIR_BASE}"
+
+# OpenColorIO build dir.
+BUILD_OCIO_DIR_NAME="build_opencolorio"
+BUILD_OCIO_DIR_BASE="${BUILD_DIR_BASE}/${BUILD_OCIO_DIR_NAME}"
+echo "Build OpenColorIO directory base: ${BUILD_OCIO_DIR_BASE}"
+
+# mmSolverLibs build dir.
+BUILD_MMSOLVERLIBS_DIR_NAME="build_mmsolverlibs"
+BUILD_MMSOLVERLIBS_DIR_BASE="${BUILD_DIR_BASE}/${BUILD_MMSOLVERLIBS_DIR_NAME}"
+echo "Build mmSolverLibs directory base: ${BUILD_MMSOLVERLIBS_DIR_BASE}"
 
 # What type of build? "Release" or "Debug"?
 BUILD_TYPE=Release
@@ -102,15 +112,15 @@ PYTHON_VIRTUAL_ENV_DIR_NAME="python_venv_linux_maya${MAYA_VERSION}"
 source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"
 
 # Where to find the mmsolverlibs Rust libraries and headers.
-MMSOLVERLIBS_INSTALL_DIR="${BUILD_DIR_BASE}/build_mmsolverlibs/install/maya${MAYA_VERSION}_linux/"
+MMSOLVERLIBS_INSTALL_DIR="${BUILD_MMSOLVERLIBS_DIR_BASE}/install/maya${MAYA_VERSION}_linux/"
 MMSOLVERLIBS_CMAKE_CONFIG_DIR="${MMSOLVERLIBS_INSTALL_DIR}/lib64/cmake/mmsolverlibs_cpp"
-MMSOLVERLIBS_RUST_DIR="${BUILD_DIR_BASE}/build_mmsolverlibs/rust_linux_maya${MAYA_VERSION}/${BUILD_TYPE_DIR}"
+MMSOLVERLIBS_RUST_DIR="${BUILD_MMSOLVERLIBS_DIR_BASE}/rust_linux_maya${MAYA_VERSION}/${BUILD_TYPE_DIR}"
 
 # Paths for dependencies.
-EXTERNAL_BUILD_DIR="${BUILD_DIR_BASE}/build_opencolorio/cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}/ext/dist"
-OPENCOLORIO_INSTALL_DIR="${BUILD_DIR_BASE}/build_opencolorio/install/maya${MAYA_VERSION}_linux/"
-OPENCOLORIO_CMAKE_CONFIG_DIR="${OPENCOLORIO_INSTALL_DIR}/lib64/cmake/OpenColorIO/"
-OPENCOLORIO_CMAKE_FIND_MODULES_DIR="${PROJECT_ROOT}/external/working/maya${MAYA_VERSION}_linux/${OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME}/share/cmake/modules"
+EXTERNAL_BUILD_DIR="${BUILD_OCIO_DIR_BASE}/cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}/ext/dist"
+OCIO_INSTALL_DIR="${BUILD_OCIO_DIR_BASE}/install/maya${MAYA_VERSION}_linux/"
+OCIO_CMAKE_CONFIG_DIR="${OCIO_INSTALL_DIR}/lib64/cmake/OpenColorIO/"
+OCIO_CMAKE_FIND_MODULES_DIR="${BUILD_OCIO_DIR_BASE}/source/maya${MAYA_VERSION}_linux/${OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME}/share/cmake/modules"
 
 expat_DIR="${EXTERNAL_BUILD_DIR}/${EXPAT_RELATIVE_CMAKE_DIR}"
 expat_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include/"
@@ -148,7 +158,7 @@ ${CMAKE_EXE} \
     -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
     -DCMAKE_CXX_STANDARD=${CXX_STANDARD} \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-    -DCMAKE_MODULE_PATH=${OPENCOLORIO_CMAKE_FIND_MODULES_DIR} \
+    -DCMAKE_MODULE_PATH=${OCIO_CMAKE_FIND_MODULES_DIR} \
     -DCMAKE_VERBOSE_MAKEFILE=${MMSOLVER_BUILD_VERBOSE} \
     -DOPENGL_INCLUDE_DIR=${OPENGL_INCLUDE_DIR} \
     -DMMSOLVER_VFX_PLATFORM=${VFX_PLATFORM} \
@@ -171,7 +181,7 @@ ${CMAKE_EXE} \
     -DMAYA_VERSION=${MAYA_VERSION} \
     -Dmmsolverlibs_rust_DIR=${MMSOLVERLIBS_RUST_DIR} \
     -Dmmsolverlibs_cpp_DIR=${MMSOLVERLIBS_CMAKE_CONFIG_DIR} \
-    -DOpenColorIO_DIR=${OPENCOLORIO_CMAKE_CONFIG_DIR} \
+    -DOpenColorIO_DIR=${OCIO_CMAKE_CONFIG_DIR} \
     -DOCIO_INSTALL_EXT_PACKAGES=NONE \
     -DopenMVG_USE_AVX=1 \
     -DopenMVG_USE_AVX2=1 \

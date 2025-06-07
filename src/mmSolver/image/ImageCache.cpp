@@ -54,6 +54,82 @@
 namespace mmsolver {
 namespace image {
 
+inline bool check_enough_image_cache_capacity(
+    const ImageCache &image_cache, const size_t pixel_data_byte_count,
+    const MString &file_path) {
+    const size_t cpu_capacity_bytes = image_cache.get_cpu_capacity_bytes();
+    const size_t gpu_capacity_bytes = image_cache.get_gpu_capacity_bytes();
+
+    const bool cpu_zero_capacity = cpu_capacity_bytes == 0;
+    const bool gpu_zero_capacity = gpu_capacity_bytes == 0;
+
+    const bool cpu_low_capacity = cpu_capacity_bytes < pixel_data_byte_count;
+    const bool gpu_low_capacity = gpu_capacity_bytes < pixel_data_byte_count;
+
+    if ((cpu_zero_capacity || gpu_zero_capacity) ||
+        (cpu_low_capacity || gpu_low_capacity)) {
+        const size_t requested_megabytes =
+            pixel_data_byte_count / BYTES_TO_MEGABYTES;
+        std::string requested_megabytes_str =
+            mmstring::numberToStringWithCommas(requested_megabytes);
+
+        // Check CPU capacity.
+        if (cpu_zero_capacity || cpu_low_capacity) {
+            const size_t capacity_megabytes =
+                cpu_capacity_bytes / BYTES_TO_MEGABYTES;
+            std::string capacity_megabytes_str =
+                mmstring::numberToStringWithCommas(capacity_megabytes);
+
+            if (pixel_data_byte_count == 0) {
+                MMSOLVER_MAYA_ERR(
+                    "mmsolver::ImageCache: read_texture_image_file:"
+                    << " Cannot read \"" << file_path.asChar() << "\"."
+                    << " CPU Cache capacity is zero."
+                    << " CPU cache capacity = " << capacity_megabytes_str
+                    << "MB.");
+            } else {
+                MMSOLVER_MAYA_ERR(
+                    "mmsolver::ImageCache: read_texture_image_file:"
+                    << " Cannot read \"" << file_path.asChar() << "\"."
+                    << " CPU Cache capacity is too low."
+                    << " CPU cache capacity = " << capacity_megabytes_str
+                    << "MB, "
+                    << " requested memory size = " << requested_megabytes_str
+                    << "MB.");
+            }
+        }
+
+        // Check GPU capacity.
+        if (gpu_zero_capacity || gpu_low_capacity) {
+            const size_t capacity_megabytes =
+                gpu_capacity_bytes / BYTES_TO_MEGABYTES;
+            std::string capacity_megabytes_str =
+                mmstring::numberToStringWithCommas(capacity_megabytes);
+
+            if (pixel_data_byte_count == 0) {
+                MMSOLVER_MAYA_ERR(
+                    "mmsolver::ImageCache: read_texture_image_file:"
+                    << " Cannot read \"" << file_path.asChar() << "\"."
+                    << " GPU Cache capacity is zero."
+                    << " GPU cache capacity = " << capacity_megabytes_str
+                    << "MB.");
+            } else {
+                MMSOLVER_MAYA_ERR(
+                    "mmsolver::ImageCache: read_texture_image_file:"
+                    << " Cannot read \"" << file_path.asChar() << "\"."
+                    << " GPU Cache capacity is too low."
+                    << " GPU cache capacity = " << capacity_megabytes_str
+                    << "MB, "
+                    << " requested memory size = " << requested_megabytes_str
+                    << "MB.");
+            }
+        }
+
+        return false;
+    }
+    return true;
+}
+
 MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                                   ImageCache &image_cache, MImage &temp_image,
                                   mmimage::ImagePixelBuffer &temp_pixel_buffer,
@@ -64,6 +140,11 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
     MMSOLVER_ASSERT(
         texture_manager != nullptr,
         "Texture manager must be valid to read an image into texture memory.");
+
+    if (!check_enough_image_cache_capacity(
+            image_cache, /*pixel_data_byte_count=*/0, file_path)) {
+        return nullptr;
+    }
 
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file:"
@@ -145,9 +226,16 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
         // // image.verticalFlip();
     }
 
-    if (!maya_owned_pixel_data) {
+    if (!static_cast<bool>(maya_owned_pixel_data)) {
         MMSOLVER_MAYA_ERR("mmsolver::ImageCache: read_texture_image_file: "
                           << "Invalid pixel data!");
+        return nullptr;
+    }
+
+    const size_t pixel_data_byte_count =
+        width * height * num_channels * bytes_per_channel;
+    if (!check_enough_image_cache_capacity(image_cache, pixel_data_byte_count,
+                                           resolved_file_path)) {
         return nullptr;
     }
 
@@ -168,8 +256,6 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                       << "gpu_inserted=" << texture_data.texture());
 
     // Duplicate the Maya-owned pixel data for our image cache.
-    const size_t pixel_data_byte_count =
-        width * height * num_channels * bytes_per_channel;
     image_pixel_data = ImagePixelData();
     const bool allocated_ok = image_pixel_data.allocate_pixels(
         width, height, num_channels, pixel_data_type);
@@ -523,9 +609,12 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert_item(
         }
 
         m_gpu_used_bytes += texture_data.byte_count();
-        MMSOLVER_ASSERT(m_gpu_used_bytes <= m_gpu_capacity_bytes,
-                        "It is not possible for the used GPU Cache memory to "
-                        "exceed the GPU Cache capacity.");
+        MMSOLVER_ASSERT(
+            m_gpu_used_bytes <= m_gpu_capacity_bytes,
+            "It is not possible for the used GPU Cache memory to "
+            "exceed the GPU Cache capacity."
+                << " m_gpu_used_bytes=" << m_gpu_used_bytes
+                << " m_gpu_capacity_bytes=" << m_gpu_capacity_bytes);
 
         // Make 'item_key' the most-recently-used item key, because when we
         // insert an item into the cache, it's used most recently.

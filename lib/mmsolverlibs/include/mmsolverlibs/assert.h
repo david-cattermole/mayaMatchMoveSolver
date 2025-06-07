@@ -116,7 +116,7 @@ namespace assert {
 namespace {
 
 std::string to_canonical_path(const char* input) {
-    if (!input) {
+    if (!static_cast<bool>(input)) {
         // Handle null pointer.
         return "";
     }
@@ -147,7 +147,7 @@ inline const char* get_relative_path(const char* file_path) {
     const std::string project_root_clean = to_canonical_path(project_root);
 
     const size_t index = file_path_clean.find(project_root_clean);
-    const bool found = index != file_path_clean.npos;
+    const bool found = index != std::string::npos;
     if (!found && index == 0) {
         // Project root not found in path.
         return file_path;
@@ -164,17 +164,17 @@ inline void ostream_add_function_line(std::ostream& ostream, const char* file,
 }
 
 inline void ostream_add_build_info_end(std::ostream& ostream) {
-    const auto project_name = MMASSERT_PROJECT_NAME;
-    const auto project_version = MMASSERT_PROJECT_VERSION;
-    const auto system = MMASSERT_SYSTEM;
-    const auto build_type = MMASSERT_BUILD_TYPE;
-    const auto build_date_time = MMASSERT_BUILD_DATE_TIME;
-    const auto git_branch = MMASSERT_GIT_BRANCH;
-    const auto git_commit_hash_long = MMASSERT_GIT_COMMIT_HASH_LONG;
-    const auto cmake_version = MMASSERT_CMAKE_VERSION;
-    const auto cmake_generator = MMASSERT_CMAKE_GENERATOR;
-    const auto cxx_compiler = MMASSERT_CXX_COMPILER;
-    const auto cxx_linker = MMASSERT_CXX_LINKER;
+    const auto* const project_name = MMASSERT_PROJECT_NAME;
+    const auto* const project_version = MMASSERT_PROJECT_VERSION;
+    const auto* const system = MMASSERT_SYSTEM;
+    const auto* const build_type = MMASSERT_BUILD_TYPE;
+    const auto* const build_date_time = MMASSERT_BUILD_DATE_TIME;
+    const auto* const git_branch = MMASSERT_GIT_BRANCH;
+    const auto* const git_commit_hash_long = MMASSERT_GIT_COMMIT_HASH_LONG;
+    const auto* const cmake_version = MMASSERT_CMAKE_VERSION;
+    const auto* const cmake_generator = MMASSERT_CMAKE_GENERATOR;
+    const auto* const cxx_compiler = MMASSERT_CXX_COMPILER;
+    const auto* const cxx_linker = MMASSERT_CXX_LINKER;
 
     ostream << "- Project: " << project_name << "\n"
             << "- Project Version: " << project_version << "\n"

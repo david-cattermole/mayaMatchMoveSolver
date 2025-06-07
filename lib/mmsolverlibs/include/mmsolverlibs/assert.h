@@ -32,6 +32,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <thread>
 
 // Define our own debug flag if not already defined.
 #ifndef MMSOLVER_DEBUG
@@ -226,6 +227,13 @@ inline void print_todo(std::ostream& ostream, const char* file, const int line,
     ostream << std::flush;
 }
 
+inline void wait_abort() {
+    // Give the OS a moment to flush buffers.
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    std::abort();
+}
+
 }  // namespace assert
 }  // namespace mmsolverlibs
 
@@ -238,7 +246,7 @@ inline void print_todo(std::ostream& ostream, const char* file, const int line,
             ::mmsolverlibs::assert::print_assert(std::cerr, __FILE__,   \
                                                  __LINE__, __func__,    \
                                                  #condition, ss.str()); \
-            std::abort();                                               \
+            ::mmsolverlibs::assert::wait_abort();                       \
         }                                                               \
     } while (0)
 
@@ -252,7 +260,7 @@ inline void print_todo(std::ostream& ostream, const char* file, const int line,
             ::mmsolverlibs::assert::print_assert(std::cerr, __FILE__,   \
                                                  __LINE__, __func__,    \
                                                  #condition, ss.str()); \
-            std::abort();                                               \
+            ::mmsolverlibs::assert::wait_abort();                       \
         }                                                               \
     } while (0)
 #else
@@ -297,7 +305,7 @@ inline void print_todo(std::ostream& ostream, const char* file, const int line,
         ss << __VA_ARGS__;                                                 \
         ::mmsolverlibs::assert::print_panic(std::cerr, __FILE__, __LINE__, \
                                             __func__, ss.str());           \
-        std::abort();                                                      \
+        ::mmsolverlibs::assert::wait_abort();                              \
     } while (0)
 
 // Quit the program, showing a message why and where the failure happened.
@@ -307,7 +315,7 @@ inline void print_todo(std::ostream& ostream, const char* file, const int line,
         ss << __VA_ARGS__;                                                \
         ::mmsolverlibs::assert::print_todo(std::cerr, __FILE__, __LINE__, \
                                            __func__, ss.str());           \
-        std::abort();                                                     \
+        ::mmsolverlibs::assert::wait_abort();                             \
     } while (0)
 
 // Clean up the defines made in this file.

@@ -80,71 +80,63 @@ def main():
         save_sel = maya.cmds.ls(selection=True, long=True) or []
 
         # Get selection
-        nodes = (
+        objects = (
             maya.cmds.ls(
                 selection=True,
                 long=True,
-                type='transform',
             )
             or []
         )
 
         # Filter out selected imagePlanes.
-        nodes_tmp = list(nodes)
-        nodes = []
-        for node in nodes_tmp:
+        objects_tmp = list(objects)
+        objects = []
+        for obj in objects_tmp:
             shps = (
                 maya.cmds.listRelatives(
-                    node, shapes=True, fullPath=True, type='imagePlane'
+                    obj, shapes=True, fullPath=True, type='imagePlane'
                 )
                 or []
             )
             if len(shps) == 0:
-                nodes.append(node)
+                objects.append(obj)
 
         # Create centering node network.
-        if len(nodes) == 0:
+        if len(objects) == 0:
             msg = 'No objects selected, removing 2D centering.'
             LOG.warning(msg)
             mmapi.load_plugin()
             reproject_utils.remove_reprojection_from_camera(cam_tfm, cam_shp)
             reproject_utils.reset_pan_zoom(cam_tfm, cam_shp)
-        elif len(nodes) == 1:
-            LOG.warning('Applying 2D centering to %r', nodes)
+        else:
+            LOG.warning('Applying 2D centering to %r', objects)
             mmapi.load_plugin()
-            reproj_nodes = reproject_utils.find_reprojection_nodes(cam_tfm, cam_shp)
-            if len(reproj_nodes) > 0:
-                maya.cmds.delete(reproj_nodes)
+            reproject_utils.remove_reprojection_from_camera(cam_tfm, cam_shp)
 
             reproj_node = reproject_utils.create_reprojection_on_camera(
                 cam_tfm, cam_shp
             )
-            reproject_utils.connect_transform_to_reprojection(nodes[0], reproj_node)
+            reproject_utils.connect_objects_to_reprojection(objects, reproj_node)
 
             # create 2d offset setup
             offset_plus_minus_node = maya.cmds.createNode(
                 'plusMinusAverage', name='offset_plusMinusAverage1'
             )
-            maya.cmds.connectAttr(
-                reproj_node + '.outPan', offset_plus_minus_node + '.input2D[0]'
-            )
-            maya.cmds.setAttr(
-                offset_plus_minus_node + '.input2D[1]', 0.0, 0.0, type='float2'
-            )
-            maya.cmds.connectAttr(
-                offset_plus_minus_node + '.output2D.output2Dx',
-                cam_shp + '.pan.horizontalPan',
-                force=True,
-            )
-            maya.cmds.connectAttr(
-                offset_plus_minus_node + '.output2D.output2Dy',
-                cam_shp + '.pan.verticalPan',
-                force=True,
-            )
 
-        elif len(nodes) > 1:
-            msg = 'Please select only 1 node to center on.'
-            LOG.error(msg)
+            src = reproj_node + '.outPan'
+            dst = offset_plus_minus_node + '.input2D[0]'
+            maya.cmds.connectAttr(src, dst)
+
+            plug = offset_plus_minus_node + '.input2D[1]'
+            maya.cmds.setAttr(plug, 0.0, 0.0, type='float2')
+
+            src = offset_plus_minus_node + '.output2D.output2Dx'
+            dst = cam_shp + '.pan.horizontalPan'
+            maya.cmds.connectAttr(src, dst, force=True)
+
+            src = offset_plus_minus_node + '.output2D.output2Dy'
+            dst = cam_shp + '.pan.verticalPan'
+            maya.cmds.connectAttr(src, dst, force=True)
 
         if len(save_sel) > 0:
             maya.cmds.select(save_sel, replace=True)

@@ -133,6 +133,120 @@ def create_reprojection_on_camera(cam_tfm, cam_shp):
     return node
 
 
+def _find_auxiliary_set_nodes(point_from_set_node):
+    """
+    Find all the reprojection nodes on the camera.
+    """
+    nodes = []
+
+    object_set_nodes = (
+        maya.cmds.listConnections(
+            point_from_set_node + '.set',
+            source=True,
+            destination=False,
+            type='objectSet',
+            exactType=True,
+            skipConversionNodes=True,
+        )
+        or []
+    )
+    nodes += object_set_nodes
+
+    # transform_plugs = (
+    #     maya.cmds.listConnections(
+    #         point_from_set_node + '.matrix',
+    #         source=True,
+    #         destination=False,
+    #         plugs=True,
+    #         type='transform',
+    #         exactType=False,
+    #         skipConversionNodes=True,
+    #     )
+    #     or []
+    # )
+    # # nodes += transform_nodes
+
+    # mesh_plugs = (
+    #     maya.cmds.listConnections(
+    #         point_from_set_node + '.mesh',
+    #         source=True,
+    #         destination=False,
+    #         plugs=True,
+    #         type='mesh',
+    #         exactType=True,
+    #         skipConversionNodes=True,
+    #     )
+    #     or []
+    # )
+    # # nodes += mesh_nodes
+
+    return nodes
+
+
+def _find_auxiliary_reprojection_nodes(reprojection_node):
+    """
+    Find all the reprojection nodes on the camera.
+    """
+    nodes = []
+
+    # Get connected MultiplyDivide nodes connected.
+    mult_nodes = (
+        maya.cmds.listConnections(
+            reprojection_node + '.imageWidth',
+            reprojection_node + '.imageHeight',
+            source=True,
+            destination=False,
+            type='multiplyDivide',
+            exactType=True,
+            skipConversionNodes=True,
+        )
+        or []
+    )
+    nodes += mult_nodes
+
+    # Get connected offset PlusMinusAverage nodes.
+    offset_plusminus_nodes = (
+        maya.cmds.listConnections(
+            reprojection_node + '.outPan',
+            source=False,
+            destination=True,
+            type='plusMinusAverage',
+            exactType=True,
+            skipConversionNodes=True,
+        )
+        or []
+    )
+    nodes += offset_plusminus_nodes
+
+    # Get connected mmPointFromObjectSet nodes.
+    point_from_set_nodes = (
+        maya.cmds.listConnections(
+            reprojection_node + '.transformWorldMatrix',
+            source=True,
+            destination=False,
+            type='mmPointFromObjectSet',
+            exactType=True,
+            skipConversionNodes=True,
+        )
+        or []
+    )
+    nodes += point_from_set_nodes
+
+    return nodes
+
+
+def _find_object_set_nodes(reproj_node):
+    reproj_aux_nodes = _find_auxiliary_reprojection_nodes(reproj_node)
+    point_from_set_nodes = [
+        x for x in reproj_aux_nodes if maya.cmds.nodeType(x) == 'mmPointFromObjectSet'
+    ]
+    set_nodes = []
+    for point_from_set_node in point_from_set_nodes:
+        set_nodes += _find_auxiliary_set_nodes(point_from_set_node)
+
+    return list(sorted(set(set_nodes + point_from_set_nodes)))
+
+
 def find_reprojection_nodes(cam_tfm, cam_shp):
     """
     Find all the reprojection nodes on the camera.
@@ -151,33 +265,10 @@ def find_reprojection_nodes(cam_tfm, cam_shp):
     if not nodes:
         return nodes
     reprojection_node = nodes[0]
-    # Get connected MultiplyDivide nodes connected.
-    mult_nodes = (
-        maya.cmds.listConnections(
-            reprojection_node + '.imageWidth',
-            reprojection_node + '.imageHeight',
-            source=True,
-            destination=False,
-            type='multiplyDivide',
-            exactType=True,
-            skipConversionNodes=True,
-        )
-        or []
-    )
-    nodes += mult_nodes
-    # Get connected offset PlusMinusAverage nodes.
-    offset_plusminus_nodes = (
-        maya.cmds.listConnections(
-            reprojection_node + '.outPan',
-            source=False,
-            destination=True,
-            type='plusMinusAverage',
-            exactType=True,
-            skipConversionNodes=True,
-        )
-        or []
-    )
-    nodes += offset_plusminus_nodes
+
+    # Get the other nodes.
+    nodes += _find_auxiliary_reprojection_nodes(reprojection_node)
+    nodes += _find_object_set_nodes(reprojection_node)
     return nodes
 
 
@@ -215,17 +306,70 @@ def reset_pan_zoom(cam_tfm, cam_shp):
     return
 
 
-def connect_transform_to_reprojection(tfm, reproj):
+def _cleanup_object_set_nodes(reproj_node):
+    old_nodes = _find_object_set_nodes(reproj_node)
+    if len(old_nodes) > 0:
+        maya.cmds.delete(old_nodes)
+    return len(old_nodes)
+
+
+def connect_transform_to_reprojection(tfm, reproj_node):
     """
-    Connect 'tfm' to the reprojection node, 'reproj'.
+    Connect 'tfm' to the reprojection node, 'reproj_node'.
 
     :param tfm: Transform node name to be connected.
     :type tfm: str
 
-    :param reproj: The re-projection node.
-    :type reproj: str
+    :param reproj_node: The re-projection node.
+    :type reproj_node: str
     """
+    _cleanup_object_set_nodes(reproj_node)
+
     src = tfm + '.worldMatrix'
-    dst = reproj + '.transformWorldMatrix'
-    maya.cmds.connectAttr(src, dst)
+    dst = reproj_node + '.transformWorldMatrix'
+    maya.cmds.connectAttr(src, dst, force=True)
+    return
+
+
+def connect_objects_to_reprojection(objects, reproj_node):
+    """
+    Connect all the objects and components in 'objects' to the
+    reprojection node, 'reproj_node'.
+
+    :param objects:
+    :type objects: str
+
+    :param reproj_node: The re-projection node.
+    :type reproj_node: str
+
+    """
+    _cleanup_object_set_nodes(reproj_node)
+
+    point_from_set_node = maya.cmds.createNode('mmPointFromObjectSet')
+    set_node = maya.cmds.sets(objects, name=reproj_node + '_center_objectSet')
+    maya.cmds.connectAttr(
+        set_node + '.message', point_from_set_node + '.set', force=True
+    )
+
+    nodes = maya.cmds.ls(objects, objectsOnly=True, long=True)
+    for i, node in enumerate(nodes):
+        if not node.startswith('|'):
+            # Only DAG objects can be connected.
+            continue
+
+        # Both shapes and transforms should always contain a
+        # worldMatrix attribute.
+        src = node + '.worldMatrix[0]'
+        dst = point_from_set_node + '.matrix[{}]'.format(i)
+        maya.cmds.connectAttr(src, dst, force=True)
+
+        node_type = maya.cmds.nodeType(node)
+        if node_type == 'mesh':
+            src = node + '.worldMesh[0]'
+            dst = point_from_set_node + '.mesh[{}]'.format(i)
+            maya.cmds.connectAttr(src, dst, force=True)
+
+    src = point_from_set_node + '.outMatrix'
+    dst = reproj_node + '.transformWorldMatrix'
+    maya.cmds.connectAttr(src, dst, force=True)
     return

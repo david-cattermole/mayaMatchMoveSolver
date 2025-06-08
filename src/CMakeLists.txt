@@ -119,6 +119,7 @@ set(SOURCE_FILES
   mmSolver/node/MMMarkerScaleNode.cpp
   mmSolver/node/MMMarkerTransformMatrix.cpp
   mmSolver/node/MMMarkerTransformNode.cpp
+  mmSolver/node/MMPointFromObjectSetNode.cpp
   mmSolver/node/MMReprojectionNode.cpp
   mmSolver/node/node_line_utils.cpp
   mmSolver/pluginMain.cpp

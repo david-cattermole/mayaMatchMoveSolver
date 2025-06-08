@@ -70,6 +70,7 @@
 #include "mmSolver/node/MMMarkerScaleNode.h"
 #include "mmSolver/node/MMMarkerTransformNode.h"
 #include "mmSolver/node/MMReprojectionNode.h"
+#include "mmSolver/node/MMPointFromObjectSetNode.h"
 
 // Shape nodes.
 #include "mmSolver/shape/BundleDrawOverride.h"
@@ -310,6 +311,11 @@ MStatus initializePlugin(MObject obj) {
                   mmsolver::MMReprojectionNode::m_id,
                   mmsolver::MMReprojectionNode::creator,
                   mmsolver::MMReprojectionNode::initialize, status);
+
+    REGISTER_NODE(plugin, mmsolver::MMPointFromObjectSetNode::nodeName(),
+                  mmsolver::MMPointFromObjectSetNode::m_id,
+                  mmsolver::MMPointFromObjectSetNode::creator,
+                  mmsolver::MMPointFromObjectSetNode::initialize, status);
 
     REGISTER_NODE(plugin, mmsolver::MMCameraCalibrateNode::nodeName(),
                   mmsolver::MMCameraCalibrateNode::m_id,
@@ -722,6 +728,9 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, mmsolver::MMReprojectionNode::nodeName(),
                     mmsolver::MMReprojectionNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, mmsolver::MMPointFromObjectSetNode::nodeName(),
+                    mmsolver::MMPointFromObjectSetNode::m_id, status);
 
     DEREGISTER_NODE(plugin, mmsolver::MMCameraCalibrateNode::nodeName(),
                     mmsolver::MMCameraCalibrateNode::m_id, status);

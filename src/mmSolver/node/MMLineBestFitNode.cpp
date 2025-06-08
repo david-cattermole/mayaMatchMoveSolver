@@ -33,7 +33,6 @@
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MFnMatrixAttribute.h>
 #include <maya/MFnMatrixData.h>
-#include <maya/MFnMessageAttribute.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnNumericData.h>
 #include <maya/MMatrix.h>
@@ -187,7 +186,6 @@ MStatus MMLineBestFitNode::initialize() {
     MFnNumericAttribute numericAttr;
     MFnCompoundAttribute compoundAttr;
     MFnMatrixAttribute matrixAttr;
-    MFnMessageAttribute msgAttr;
 
     //////////////////////////////////////////////////////////////////////////
 

@@ -39,6 +39,9 @@ public:
 
     virtual ~MMPointFromObjectSetNode();
 
+    virtual MStatus setDependentsDirty(const MPlug &plug,
+                                       MPlugArray &plugArray);
+
     virtual MStatus compute(const MPlug &plug, MDataBlock &data);
 
     static void *creator();

@@ -277,6 +277,37 @@ MString MMPointFromObjectSetNode::nodeName() {
     return MString(MM_POINT_FROM_OBJECT_SET_TYPE_NAME);
 }
 
+MStatus MMPointFromObjectSetNode::setDependentsDirty(const MPlug &plug,
+                                                     MPlugArray &plugArray) {
+    MStatus status = MS::kSuccess;
+
+    // Check if any matrix array element changed.
+    if (plug.isElement() && plug.array() == a_matrixArray) {
+        MPlug outMatrixPlug(thisMObject(), a_outMatrix);
+        plugArray.append(outMatrixPlug);
+        MPlug outPointPlug(thisMObject(), a_outPoint);
+        plugArray.append(outPointPlug);
+    }
+
+    // Check if any mesh array element changed.
+    if (plug.isElement() && plug.array() == a_meshArray) {
+        MPlug outMatrixPlug(thisMObject(), a_outMatrix);
+        plugArray.append(outMatrixPlug);
+        MPlug outPointPlug(thisMObject(), a_outPoint);
+        plugArray.append(outPointPlug);
+    }
+
+    // Check if the set node connection changed.
+    if (plug == a_setNode) {
+        MPlug outMatrixPlug(thisMObject(), a_outMatrix);
+        plugArray.append(outMatrixPlug);
+        MPlug outPointPlug(thisMObject(), a_outPoint);
+        plugArray.append(outPointPlug);
+    }
+
+    return MS::kSuccess;
+}
+
 MStatus MMPointFromObjectSetNode::compute(const MPlug &plug, MDataBlock &data) {
     // When 'true', verbose will print out additional details for
     // debugging.
@@ -288,6 +319,43 @@ MStatus MMPointFromObjectSetNode::compute(const MPlug &plug, MDataBlock &data) {
         (plug == a_outPoint) || (plug == a_outPointX) ||
         (plug == a_outPointY) || (plug == a_outPointZ) ||
         (plug == a_outMatrix)) {
+        // Query the set node to ensure dirty propagation.
+        MDataHandle setNodeHandle = data.inputValue(a_setNode, &status);
+
+        // Query the matrix array to ensure dirty propagation.
+        MArrayDataHandle matrixArrayHandle =
+            data.inputArrayValue(a_matrixArray, &status);
+        if (status == MS::kSuccess) {
+            unsigned int matrixCount = matrixArrayHandle.elementCount();
+            for (unsigned int i = 0; i < matrixCount; ++i) {
+                status = matrixArrayHandle.jumpToArrayElement(i);
+                if (status == MS::kSuccess) {
+                    MDataHandle matrixHandle =
+                        matrixArrayHandle.inputValue(&status);
+                    if (status == MS::kSuccess) {
+                        MMatrix mat = matrixHandle.asMatrix();
+                    }
+                }
+            }
+        }
+
+        // Query the mesh array to ensure dirty propagation.
+        MArrayDataHandle meshArrayHandle =
+            data.inputArrayValue(a_meshArray, &status);
+        if (status == MS::kSuccess) {
+            unsigned int meshCount = meshArrayHandle.elementCount();
+            for (unsigned int i = 0; i < meshCount; ++i) {
+                status = meshArrayHandle.jumpToArrayElement(i);
+                if (status == MS::kSuccess) {
+                    MDataHandle meshHandle =
+                        meshArrayHandle.inputValue(&status);
+                    if (status == MS::kSuccess) {
+                        MObject meshObj = meshHandle.asMesh();
+                    }
+                }
+            }
+        }
+
         // Outputs
         double outPointX = 0.0;
         double outPointY = 0.0;
@@ -382,11 +450,9 @@ MStatus MMPointFromObjectSetNode::initialize() {
         a_matrixArray = matrixAttr.create("matrix", "mat",
                                           MFnMatrixAttribute::kDouble, &status);
         CHECK_MSTATUS(status);
-        // CHECK_MSTATUS(matrixAttr.setStorable(true));
         CHECK_MSTATUS(matrixAttr.setReadable(true));
         CHECK_MSTATUS(matrixAttr.setConnectable(true));
         CHECK_MSTATUS(matrixAttr.setArray(true));
-        // CHECK_MSTATUS(matrixAttr.setUsesArrayDataBuilder(true));
         CHECK_MSTATUS(addAttribute(a_matrixArray));
 
         // Meshes.
@@ -396,11 +462,9 @@ MStatus MMPointFromObjectSetNode::initialize() {
         a_meshArray = typedAttr.create("mesh", "msh", MFnData::kMesh,
                                        MObject::kNullObj, &status);
         CHECK_MSTATUS(status);
-        // CHECK_MSTATUS(typedAttr.setStorable(true));
         CHECK_MSTATUS(typedAttr.setReadable(true));
         CHECK_MSTATUS(typedAttr.setConnectable(true));
         CHECK_MSTATUS(typedAttr.setArray(true));
-        // CHECK_MSTATUS(typedAttr.setUsesArrayDataBuilder(true));
         CHECK_MSTATUS(addAttribute(a_meshArray));
     }
 

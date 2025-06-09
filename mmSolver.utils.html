@@ -356,7 +356,7 @@ all end in tears.</p>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='140158578391248'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='140158578391312'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='140158578391568'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='139742954857040'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='139742954857104'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='139742954857296'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3170,13 +3170,28 @@ point and normal, or (None, None), if no point was found.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.reproject.connect_transform_to_reprojection">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.reproject.</span></span><span class="sig-name descname"><span class="pre">connect_transform_to_reprojection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tfm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reproj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.reproject.connect_transform_to_reprojection" title="Permalink to this definition">#</a></dt>
-<dd><p>Connect ‘tfm’ to the reprojection node, ‘reproj’.</p>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.reproject.</span></span><span class="sig-name descname"><span class="pre">connect_transform_to_reprojection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tfm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reproj_node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.reproject.connect_transform_to_reprojection" title="Permalink to this definition">#</a></dt>
+<dd><p>Connect ‘tfm’ to the reprojection node, ‘reproj_node’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tfm</strong> (<em>str</em>) – Transform node name to be connected.</p></li>
-<li><p><strong>reproj</strong> (<em>str</em>) – The re-projection node.</p></li>
+<li><p><strong>reproj_node</strong> (<em>str</em>) – The re-projection node.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.reproject.connect_objects_to_reprojection">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.reproject.</span></span><span class="sig-name descname"><span class="pre">connect_objects_to_reprojection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reproj_node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.reproject.connect_objects_to_reprojection" title="Permalink to this definition">#</a></dt>
+<dd><p>Connect all the objects and components in ‘objects’ to the
+reprojection node, ‘reproj_node’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>objects</strong> (<em>str</em>) – </p></li>
+<li><p><strong>reproj_node</strong> (<em>str</em>) – The re-projection node.</p></li>
 </ul>
 </dd>
 </dl>
@@ -5237,6 +5252,7 @@ panel/editor.</p>
 <li><a class="reference internal" href="#mmSolver.utils.reproject.remove_reprojection_from_camera"><code class="docutils literal notranslate"><span class="pre">remove_reprojection_from_camera()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.reproject.reset_pan_zoom"><code class="docutils literal notranslate"><span class="pre">reset_pan_zoom()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.reproject.connect_transform_to_reprojection"><code class="docutils literal notranslate"><span class="pre">connect_transform_to_reprojection()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.reproject.connect_objects_to_reprojection"><code class="docutils literal notranslate"><span class="pre">connect_objects_to_reprojection()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-mmSolver.utils.rivet.meshtwoedge">Rivet</a><ul>

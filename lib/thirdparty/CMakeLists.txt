@@ -16,5 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
+# Building third-party projects.
+#
 
 add_subdirectory(openMVG)

@@ -73,7 +73,8 @@ target_link_libraries(openMVG PRIVATE
   ceres
 )
 
-target_include_directories(openMVG PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../)
+set(include_dir "${CMAKE_CURRENT_SOURCE_DIR}/../")
+target_include_directories(openMVG PUBLIC "${include_dir}")
 
 if (openMVG_USE_AVX2)
   target_compile_options(openMVG PUBLIC "-DOPENMVG_USE_AVX2")

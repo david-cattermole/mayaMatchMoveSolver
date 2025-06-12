@@ -131,7 +131,7 @@ add_subdirectory(share)
 if (MMSOLVER_BUILD_PLUGIN)
   # Finds and builds external (third-party) dependencies.
   include(FindAndBuildExternalPackages)
-  add_subdirectory(external)
+  add_subdirectory(lib/thirdparty)
 
   add_subdirectory(src)
 endif ()

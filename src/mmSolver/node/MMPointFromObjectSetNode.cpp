@@ -52,6 +52,7 @@
 #include <maya/MItMeshVertex.h>
 #include <maya/MItSelectionList.h>
 #include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
 #include <maya/MSelectionList.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>

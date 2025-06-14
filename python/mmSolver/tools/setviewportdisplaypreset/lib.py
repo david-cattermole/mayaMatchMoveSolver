@@ -26,6 +26,7 @@ from __future__ import print_function
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
 import mmSolver.tools.setviewportdisplaypreset.constant as const
 
@@ -42,9 +43,8 @@ def _get_viewport_renderer(model_panel):
     :returns: The current renderer name.
     :rtype: str or None
     """
-    assert isinstance(model_panel, str)
-
-    if not model_panel or not maya.cmds.modelPanel(model_panel, exists=True):
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    if not maya.cmds.modelPanel(model_panel, exists=True):
         return None
 
     renderer_name = maya.cmds.modelEditor(model_panel, query=True, rendererName=True)
@@ -64,10 +64,10 @@ def _set_viewport_renderer(model_panel, renderer_name):
     :returns: True if successful, False otherwise.
     :rtype: bool
     """
-    assert isinstance(model_panel, str)
-    assert isinstance(renderer_name, str)
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    assert isinstance(renderer_name, pycompat.TEXT_TYPE)
 
-    if not model_panel or not maya.cmds.modelPanel(model_panel, exists=True):
+    if not maya.cmds.modelPanel(model_panel, exists=True):
         return False
 
     available_renderers = (
@@ -98,9 +98,9 @@ def _get_viewport_renderer_override(model_panel):
     :returns: The current renderer override name, or None if not set.
     :rtype: str or None
     """
-    assert isinstance(model_panel, str)
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
 
-    if not model_panel or not maya.cmds.modelPanel(model_panel, exists=True):
+    if not maya.cmds.modelPanel(model_panel, exists=True):
         return None
 
     renderer_override_name = maya.cmds.modelEditor(
@@ -126,10 +126,10 @@ def _set_viewport_renderer_override(model_panel, renderer_override):
     :returns: True if successful, False otherwise.
     :rtype: bool
     """
-    assert isinstance(model_panel, str)
-    assert isinstance(renderer_override, str)
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    assert isinstance(renderer_override, pycompat.TEXT_TYPE)
 
-    if not model_panel or not maya.cmds.modelPanel(model_panel, exists=True):
+    if not maya.cmds.modelPanel(model_panel, exists=True):
         return False
 
     if len(renderer_override) == 0:
@@ -185,9 +185,9 @@ def _get_viewport_display_mode(model_panel):
               'wireframeOnShaded'), or None if invalid.
     :rtype: str or None
     """
-    assert isinstance(model_panel, str)
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
 
-    if not model_panel or not maya.cmds.modelPanel(model_panel, exists=True):
+    if not maya.cmds.modelPanel(model_panel, exists=True):
         return None
 
     wireframe_on_shaded = maya.cmds.modelEditor(
@@ -222,11 +222,11 @@ def _set_viewport_display_mode(model_panel, display_mode):
     :returns: True if successful, False otherwise.
     :rtype: bool
     """
-    assert isinstance(model_panel, str)
-    assert isinstance(display_mode, str)
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    assert isinstance(display_mode, pycompat.TEXT_TYPE)
     assert display_mode in const.DISPLAY_MODES
 
-    if not model_panel or not maya.cmds.modelPanel(model_panel, exists=True):
+    if not maya.cmds.modelPanel(model_panel, exists=True):
         return False
 
     wireframe = const.DISPLAY_MODE_WIREFRAME
@@ -252,9 +252,9 @@ def _get_viewport_hold_outs(model_panel):
     :returns: The current hold-outs state (True/False), or None if invalid.
     :rtype: bool or None
     """
-    assert isinstance(model_panel, str)
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
 
-    if not model_panel or not maya.cmds.modelPanel(model_panel, exists=True):
+    if not maya.cmds.modelPanel(model_panel, exists=True):
         return None
 
     value = maya.cmds.modelEditor(model_panel, query=True, holdOuts=True)
@@ -274,10 +274,10 @@ def _set_viewport_hold_outs(model_panel, value):
     :returns: True if successful, False otherwise.
     :rtype: bool
     """
-    assert isinstance(model_panel, str)
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
     assert isinstance(value, bool)
 
-    if not model_panel or not maya.cmds.modelPanel(model_panel, exists=True):
+    if not maya.cmds.modelPanel(model_panel, exists=True):
         return False
 
     maya.cmds.modelEditor(model_panel, edit=True, holdOuts=value)
@@ -302,7 +302,8 @@ def set_viewport_display_preset(model_panel, preset):
     :returns: True if all settings were successfully applied, False otherwise.
     :rtype: bool
     """
-    if not model_panel or not preset:
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    if len(model_panel) == 0 or len(preset) == 0:
         return False
 
     preset_name = preset.get('name')
@@ -440,6 +441,7 @@ def cycle_viewport_presets(model_panel, presets, direction=1):
               is the preset dictionary that was attempted.
     :rtype: tuple of (bool, dict)
     """
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
     assert len(presets) > 0
 
     current_index = _get_current_preset_index(model_panel, presets)
@@ -469,7 +471,7 @@ def show_viewport_message(message, fade_time=None, position=None, warning=None):
         position = const.MESSAGE_POSITION
     assert isinstance(fade_time, float)
     assert fade_time > 0.0
-    assert isinstance(position, str)
+    assert isinstance(position, pycompat.TEXT_TYPE)
     assert warning is None or isinstance(warning, bool)
 
     display_message = message

@@ -34,8 +34,9 @@ Usage to *apply* the centering effect:
    to zoom in and out. Play the Maya timeline and use the centered view as
    needed.
 
-   - With the ``mmSolver`` Hotkey Set enabled, press the ``z`` key to
-     use the Maya-native Pan/Zoom tool.
+   - With the ``mmSolver`` :ref:`Hotkey Set<default-hotkeys-heading>`
+     enabled, press the ``z`` key to use the Maya-native Pan/Zoom
+     tool.
 
 5) Click on the 'Apply 2D Center' menu option box to display the
    'Center 2D Offset' window.
@@ -67,8 +68,9 @@ Usage to *remove* centering effect:
      turn off Pan/Zoom on the viewport camera (default hotkey is
      backslash (``\``) key).
 
-   - With the ``mmSolver`` Hotkey Set enabled, press the ``z`` key to
-     use the Maya-native Pan/Zoom tool.
+   - With the ``mmSolver`` :ref:`Hotkey Set<default-hotkeys-heading>`
+     enabled, press the ``z`` key to use the Maya-native Pan/Zoom
+     tool.
 
 To run the tool, use this Python command:
 
@@ -106,9 +108,9 @@ Usage:
    - Use the `Display Tools` shelf button pop-up menu, or mmSolver
      menu, or the hotkey to run the tool.
 
-   - With the ``mmSolver`` Hotkey Set enabled, press the ` (backtick)
-     key or ALT + ` (backtick) key to cycle forwards or backward
-     through the presets.
+   - With the ``mmSolver`` :ref:`Hotkey Set<default-hotkeys-heading>`
+     enabled, press the ` (backtick) key or ALT + ` (backtick) key to
+     cycle forwards or backward through the presets.
 
    - The ` (backtick) key is next to the ``1`` key on US,
      US-international and UK keyboards.
@@ -174,9 +176,10 @@ Usage:
    - The node type visibility will be shown/hidden based on the
      current visibility.
 
-   - With the ``mmSolver`` Hotkey Set enabled, press the ``ALT + 1``
-     (`Geometry`), ``ALT + 2`` (`Curves and Controls`), ``ALT + 3``
-     (`Image Planes`) to toggle the respective node types.
+   - With the ``mmSolver`` :ref:`Hotkey Set<default-hotkeys-heading>`
+     enabled, press the ``ALT + 1`` (`Geometry`), ``ALT + 2`` (`Curves
+     and Controls`), ``ALT + 3`` (`Image Planes`) to toggle the
+     respective node types.
 
 Each different group can be activated with a slightly different Python
 command.

@@ -59,7 +59,7 @@ def _cycle_viewport_presets(model_panel, presets, direction):
         return False
 
 
-def cycle_active_viewport_display_preset_forward():
+def active_viewport_cycle_forward():
     """
     Cycle forward through viewport display presets.
 
@@ -76,7 +76,7 @@ def cycle_active_viewport_display_preset_forward():
     return _cycle_viewport_presets(model_panel, presets, direction)
 
 
-def cycle_active_viewport_display_preset_backward():
+def active_viewport_cycle_backward():
     """
     Cycle backward through viewport display presets.
 

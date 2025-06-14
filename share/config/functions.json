@@ -919,6 +919,24 @@
                 "mmSolver.tools.toggleobjectmotiontrail.tool.main();"
             ]
         },
+        "cycle_active_viewport_display_preset_forward": {
+            "name": "Cycle Display Preset Forward",
+            "name_shelf": "fCycPS",
+            "tooltip": "Cycle the active viewport's display preset forward.",
+            "command": [
+                "import mmSolver.tools.setviewportdisplaypreset.tool;",
+                "mmSolver.tools.setviewportdisplaypreset.tool.active_viewport_cycle_forward();"
+            ]
+        },
+        "cycle_active_viewport_display_preset_backward": {
+            "name": "Cycle Display Preset Backward",
+            "name_shelf": "bCycPS",
+            "tooltip": "Cycle the active viewport's display preset backward.",
+            "command": [
+                "import mmSolver.tools.setviewportdisplaypreset.tool;",
+                "mmSolver.tools.setviewportdisplaypreset.tool.active_viewport_cycle_backward();"
+            ]
+        },
         "enable_holdout_all_meshes": {
             "name": "Enable Hold-Out For All Meshes",
             "name_shelf": "EnHOAll",

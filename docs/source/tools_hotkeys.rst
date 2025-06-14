@@ -97,6 +97,15 @@ viewport.
      - Show/Hide Image Planes in the current viewport.
      - :ref:`Link <toggle-viewport-node-types-ref>`
 
+   * - Press **` (backtick)** key
+     - Cycle Viewport Display Preset *forward*.
+     - :ref:`Link <cycle-viewport-display-preset-tool-ref>`
+
+   * - Press **ATL + ` (backtick)** key
+     - Cycle Viewport Display Preset *forward*.
+     - :ref:`Link <cycle-viewport-display-preset-tool-ref>`
+
+
 .. _marking-menu-heading:
 
 Marking Menu

@@ -148,7 +148,7 @@ To run the tool, use this Python command:
 Toggle Viewport Node Types
 --------------------------
 
-There are a range of `Toggle Viewport *` tools that are used to
+There are a range of `Toggle Viewport` tools that are used to
 hide/show groups of node types.
 
 Node type groups include:
@@ -168,39 +168,29 @@ Usage:
    - The node type visibility will be shown/hidden based on the
      current visibility.
 
+   - With the ``mmSolver`` Hotkey Set enabled, press the ``ALT + 1``
+     (`Geometry`), ``ALT + 2`` (`Curves and Controls`), ``ALT + 3``
+     (`Image Planes`) to toggle the respective node types.
+
 Each different group can be activated with a slightly different Python
 command.
 
-
-Toggle Viewport Geometry (Mesh, NURBS, etc):
-
 .. code:: python
 
+    # Toggle Viewport Geometry (Mesh, NURBS, etc):
     import mmSolver.tools.toggleviewportgeom.tool as tool
     tool.main()
 
-
-Toggle Viewport Controls: (Locators, Curves, etc)
-
-.. code:: python
-
+    # Toggle Viewport Controls: (Locators, Curves, etc)
     import mmSolver.tools.toggleviewportctrls.tool as tool
     tool.main()
 
-
-Toggle Viewport Image Planes (Maya native and MM solver image planes):
-
-.. code:: python
-
+    # Toggle Viewport Image Planes (Maya native and MM solver image planes):
     import mmSolver.tools.toggleviewportimgplns.tool as tool
     tool.main()
 
-
-Alternatively, a user can construct their own custom scripts to
-control visibility like so:
-
-.. code:: python
-
+    # Alternatively, a user can construct their own custom scripts to
+    # control visibility like so:
     import mmSolver.utils.viewport as viewport_utils
     model_panel = viewport_utils.get_active_model_panel()
     if model_panel:

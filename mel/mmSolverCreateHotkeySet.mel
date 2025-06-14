@@ -72,6 +72,12 @@ if (`runTimeCommand -exists mmSolver_toggleScreenZManipulator`) {
 if (`runTimeCommand -exists mmSolver_projectMarkersOnMeshes`) {
     runTimeCommand -e -delete mmSolver_projectMarkersOnMeshes;
 }
+if (`runTimeCommand -exists mmSolver_cycleActiveViewportDisplayPresetForward`) {
+    runTimeCommand -e -delete mmSolver_cycleActiveViewportDisplayPresetForward;
+}
+if (`runTimeCommand -exists mmSolver_cycleActiveViewportDisplayPresetBackward`) {
+    runTimeCommand -e -delete mmSolver_cycleActiveViewportDisplayPresetBackward;
+}
 
 
 
@@ -182,6 +188,23 @@ runTimeCommand
         -command ("import mmSolver.tools.raycastmarker.tool as tool;\ntool.main();")
         mmSolver_projectMarkersOnMeshes;
 
+runTimeCommand
+        -annotation "Cycle Display Preset Forward"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.setviewportdisplaypreset.tool;\nmmSolver.tools.setviewportdisplaypreset.tool.active_viewport_cycle_forward();")
+        mmSolver_cycleActiveViewportDisplayPresetForward;
+
+runTimeCommand
+        -annotation "Cycle Display Preset Backward"
+        -category "Custom Scripts"
+        -hotkeyCtx ""
+        -commandLanguage "python"
+        -command ("import mmSolver.tools.setviewportdisplaypreset.tool;\nmmSolver.tools.setviewportdisplaypreset.tool.active_viewport_cycle_backward();")
+        mmSolver_cycleActiveViewportDisplayPresetBackward;
+
+
 
 //
 // The name commands referenced by the hotkeys
@@ -264,6 +287,18 @@ nameCommand
         -command ("mmSolver_projectMarkersOnMeshes")
         mmSolver_projectMarkersOnMeshesNameCommand;
 
+nameCommand
+        -annotation "mmSolver_cycleActiveViewportDisplayPresetForwardNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_cycleActiveViewportDisplayPresetForward")
+        mmSolver_cycleActiveViewportDisplayPresetForwardNameCommand;
+
+nameCommand
+        -annotation "mmSolver_cycleActiveViewportDisplayPresetBackwardNameCommand"
+        -sourceType "mel"
+        -command ("mmSolver_cycleActiveViewportDisplayPresetBackward")
+        mmSolver_cycleActiveViewportDisplayPresetBackwardNameCommand;
+
 
 
 //
@@ -319,6 +354,13 @@ hotkey -keyShortcut "3" -releaseName ("");
 
 hotkey -keyShortcut "d" -name ("mmSolver_toggleScreenZManipulatorNameCommand");
 hotkey -keyShortcut "d" -releaseName ("");
+
+hotkey -keyShortcut "`" -name ("mmSolver_cycleActiveViewportDisplayPresetForwardNameCommand");
+hotkey -keyShortcut "`" -releaseName ("");
+
+hotkey -keyShortcut "`" -alt -name ("mmSolver_cycleActiveViewportDisplayPresetBackwardNameCommand");
+hotkey -keyShortcut "`" -releaseName ("");
+
 
 hotkeyCtx -type "Editor" -addClient "hyperShadePanel";
 hotkeyCtx -type "Editor" -addClient "polyTexturePlacementPanel";

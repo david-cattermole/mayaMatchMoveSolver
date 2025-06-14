@@ -64,8 +64,9 @@ UNKNOWN_DISPLAY_PRESET_NAME = '<Unknown>'
 
 
 # Displays only the silhouette of objects.
+SILHOUETTE_DISPLAY_PRESET_NAME = 'Silhouette (with Hold-Outs)'
 SILHOUETTE_DISPLAY_PRESET = {
-    'name': 'Silhouette (with Hold-Outs)',
+    'name': SILHOUETTE_DISPLAY_PRESET_NAME,
     'renderer': RENDERER_VIEWPORT_TWO,
     'renderer_override': RENDERER_OVERRIDE_MM_SILHOUETTE,
     'display_mode': DISPLAY_MODE_SMOOTH_SHADED,
@@ -73,8 +74,9 @@ SILHOUETTE_DISPLAY_PRESET = {
 }
 
 # Displays only the hidden-line of objects.
-WIREFRAME_DISPLAY_PRESET = {
-    'name': 'Hidden-Line (with Hold-Outs)',
+HIDDEN_LINE_DISPLAY_PRESET_NAME = 'Hidden-Line (with Hold-Outs)'
+HIDDEN_LINE_DISPLAY_PRESET = {
+    'name': HIDDEN_LINE_DISPLAY_PRESET_NAME,
     'renderer': RENDERER_VIEWPORT_TWO,
     'renderer_override': RENDERER_OVERRIDE_MM_STANDARD,
     'display_mode': DISPLAY_MODE_SMOOTH_SHADED_WIREFRAME,
@@ -82,8 +84,9 @@ WIREFRAME_DISPLAY_PRESET = {
 }
 
 # Displays the full shaded of objects.
-SHADED_DISPLAY_PRESET = {
-    'name': 'All Shaded',
+ALL_SHADED_DISPLAY_PRESET_NAME = 'All Shaded'
+ALL_SHADED_DISPLAY_PRESET = {
+    'name': ALL_SHADED_DISPLAY_PRESET_NAME,
     'renderer': RENDERER_VIEWPORT_TWO,
     'renderer_override': RENDERER_OVERRIDE_MM_STANDARD,
     'display_mode': DISPLAY_MODE_SMOOTH_SHADED,
@@ -93,8 +96,8 @@ SHADED_DISPLAY_PRESET = {
 # Viewport cycle modes
 DEFAULT_CYCLE_DISPLAY_PRESETS = [
     SILHOUETTE_DISPLAY_PRESET,
-    WIREFRAME_DISPLAY_PRESET,
-    SHADED_DISPLAY_PRESET,
+    HIDDEN_LINE_DISPLAY_PRESET,
+    ALL_SHADED_DISPLAY_PRESET,
 ]
 
 # Message display settings

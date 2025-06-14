@@ -68,7 +68,7 @@ def cycle_active_viewport_display_preset_forward():
     """
     model_panel = viewport_utils.get_active_model_panel()
     if not model_panel:
-        lib.show_viewport_message("No active viewport found!", warning=True)
+        lib.show_viewport_message("Viewport Display Preset: No active viewport found!", warning=True)
         return False
 
     direction = 1
@@ -85,7 +85,7 @@ def cycle_active_viewport_display_preset_backward():
     """
     model_panel = viewport_utils.get_active_model_panel()
     if not model_panel:
-        lib.show_viewport_message("No active viewport found!", warning=True)
+        lib.show_viewport_message("Viewport Display Preset: No active viewport found!", warning=True)
         return False
 
     direction = -1
@@ -105,7 +105,7 @@ def set_active_viewport_display_preset(display_preset_name):
     """
     model_panel = viewport_utils.get_active_model_panel()
     if not model_panel:
-        lib.show_viewport_message("No active viewport found!", warning=True)
+        lib.show_viewport_message("Viewport Display Preset: No active viewport found!", warning=True)
         return False
 
     presets = const.DEFAULT_CYCLE_DISPLAY_PRESETS

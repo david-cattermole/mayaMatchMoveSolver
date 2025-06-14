@@ -51,7 +51,7 @@ class ChannelSenWindow(BaseWindow):
         self.addSubForm(channelsen_layout.ChannelSenLayout)
 
         self.setWindowTitle('Channel Box Sensitivity')
-        self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
 
         # Standard Buttons
         self.baseHideStandardButtons()

@@ -70,6 +70,7 @@ class SolverWindow(BaseWindow):
         s = time.time()
         s1 = time.time()
         super(SolverWindow, self).__init__(parent, name=name)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
         self.setupUi(self)
         self.addSubForm(solver_layout.SolverLayout)
         self.setStatusLine(const.STATUS_READY)

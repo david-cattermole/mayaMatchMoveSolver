@@ -283,7 +283,7 @@ class RemoveSolverNodesWindow(BaseWindow):
         self.addSubForm(removesolvernodes_layout.RemoveSolverNodesLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
 
         # Standard Buttons
         self.baseHideStandardButtons()

@@ -61,7 +61,7 @@ class SmoothKeysWindow(BaseWindow):
         self.addSubForm(smoothkeys_layout.SmoothKeysLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
 
         # Standard Buttons
         self.baseHideStandardButtons()

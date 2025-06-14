@@ -64,7 +64,7 @@ class AttributeCurveFilterWindowPops(BaseWindow):
         self.addSubForm(layout_.AttributeCurveFilterPopsLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
 
         # Standard Buttons
         self.baseHideStandardButtons()

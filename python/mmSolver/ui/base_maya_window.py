@@ -151,6 +151,29 @@ class BaseMayaWindow(
         """
         return self.subForm
 
+    def setWindowType(self, value):
+        assert value in qtpyutils.WINDOW_TYPES
+
+        flags = self.windowFlags()
+        if value == qtpyutils.WINDOW_TYPE_TOOL:
+            flags |= QtCore.Qt.Tool
+        elif value == qtpyutils.WINDOW_TYPE_DIALOG:
+            flags |= QtCore.Qt.Dialog
+
+        stay_on_top_types = [qtpyutils.WINDOW_TYPE_TOOL, qtpyutils.WINDOW_TYPE_DIALOG]
+        if value in stay_on_top_types:
+            # NOTE: Qt 6.x (released in Maya 2025) seems to have
+            # changed behaviour, where windows with the
+            # 'QtCore.Qt.Tool' flag do not "stay on top" by default,
+            # but in Qt 4.x and 5.x it did. Therefore we must
+            # hack-around this issue to keep the same behaviour.
+            stay_on_top = maya.cmds.about(qtVersion=True).startswith('6.')
+            if stay_on_top:
+                flags |= QtCore.Qt.WindowStaysOnTopHint
+
+        self.setWindowFlags(flags)
+        return
+
     def showEvent(self, event):
         super(BaseMayaWindow, self).showEvent(event)
         path = self._settings_path

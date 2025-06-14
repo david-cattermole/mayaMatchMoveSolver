@@ -61,7 +61,7 @@ class SurfaceClusterWindow(BaseWindow):
         self.addSubForm(surfacecluster_layout.SurfaceClusterLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
 
         # Standard Buttons
         self.baseHideStandardButtons()

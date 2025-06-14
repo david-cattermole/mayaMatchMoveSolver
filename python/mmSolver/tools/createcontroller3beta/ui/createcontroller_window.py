@@ -116,7 +116,7 @@ class CreateControllerWindow(BaseWindow):
         self.form = self.getSubForm()
 
         self.setWindowTitle(WINDOW_TITLE)
-        self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
 
         # Hide irrelevant stuff
         self.baseHideStandardButtons()

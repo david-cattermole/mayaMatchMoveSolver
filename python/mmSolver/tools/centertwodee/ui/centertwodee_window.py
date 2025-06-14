@@ -87,7 +87,7 @@ class CenterTwoDeeWindow(BaseWindow):
         self.form.zoom_signal.connect(self.zoom_camera_shape_update)
 
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
 
         # Standard Buttons
         self.baseHideStandardButtons()

@@ -32,6 +32,30 @@ PREFERRED_BINDING = 'QT_PREFERRED_BINDING'
 BINDING_ORDER = ['PySide6', 'PySide2', 'PyQt5', 'PySide', 'PyQt4']
 
 
+# "Window types" are a value used to group multiple windows together
+# and apply a group of settings which are set by the mmSolver base
+# window class ('mmSolver.ui.base_maya_window.BaseMayaWindow').
+#
+# Tool windows are "often a small window with a smaller than usual
+# title bar and decoration, typically used for collections of tool
+# buttons."
+WINDOW_TYPE_TOOL = 'tool_window'
+#
+# Dialog windows are "a window that should be decorated as a dialog
+# (i.e., typically no maximize or minimize buttons in the title
+# bar). This is the default type for QDialog."
+WINDOW_TYPE_DIALOG = 'dialog_window'
+#
+# Main windows are windows "usually with a window system frame and a
+# title bar, irrespective of whether the widget has a parent or not."
+WINDOW_TYPE_MAIN = 'main_window'
+WINDOW_TYPES = [
+    WINDOW_TYPE_TOOL,
+    WINDOW_TYPE_DIALOG,
+    WINDOW_TYPE_MAIN,
+]
+
+
 def override_binding_order(binding_order=None):
     """
     Change the expected order of Qt bindings used by Qt.py.

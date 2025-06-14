@@ -65,7 +65,7 @@ class ImageCachePrefsWindow(BaseWindow):
         self.addSubForm(imagecacheprefs_layout.ImageCachePrefsLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
 
         # Standard Buttons
         self.baseHideStandardButtons()

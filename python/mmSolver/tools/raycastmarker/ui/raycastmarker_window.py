@@ -61,7 +61,7 @@ class RayCastMarkerWindow(BaseWindow):
         self.addSubForm(layout.RayCastMarkerLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
 
         # Standard Buttons
         self.baseHideStandardButtons()

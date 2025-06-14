@@ -62,7 +62,7 @@ class CameraObjectScaleAdjustWindow(BaseWindow):
         self.addSubForm(ui_layout.CameraObjectScaleAdjustLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
-        self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
 
         # Standard Buttons
         form = self.getSubForm()

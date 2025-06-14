@@ -58,7 +58,7 @@ class PrefWindow(BaseWindow):
         self.setupUi(self)
         self.addSubForm(pref_layout.PrefLayout)
         self.setWindowTitle(const.WINDOW_TITLE_BAR)
-        self.setWindowFlags(QtCore.Qt.Tool)
+        self.setWindowType(qtpyutils.WINDOW_TYPE_DIALOG)
 
         # Hide default stuff
         self.baseHideStandardButtons()

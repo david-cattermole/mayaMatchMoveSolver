@@ -242,19 +242,61 @@ def _set_viewport_display_mode(model_panel, display_mode):
     return True
 
 
+def _get_viewport_hold_outs(model_panel):
+    """
+    Get the current hold-outs state for the specified model_panel.
+
+    :param model_panel: The model panel name.
+    :type model_panel: str
+
+    :returns: The current hold-outs state (True/False), or None if invalid.
+    :rtype: bool or None
+    """
+    assert isinstance(model_panel, str)
+
+    if not model_panel or not maya.cmds.modelPanel(model_panel, exists=True):
+        return None
+
+    value = maya.cmds.modelEditor(model_panel, query=True, holdOuts=True)
+    return value
+
+
+def _set_viewport_hold_outs(model_panel, value):
+    """
+    Set the hold-outs state for the specified model_panel.
+
+    :param model_panel: The model panel name.
+    :type model_panel: str
+
+    :param value: The hold-outs state to set.
+    :type value: bool
+
+    :returns: True if successful, False otherwise.
+    :rtype: bool
+    """
+    assert isinstance(model_panel, str)
+    assert isinstance(value, bool)
+
+    if not model_panel or not maya.cmds.modelPanel(model_panel, exists=True):
+        return False
+
+    maya.cmds.modelEditor(model_panel, edit=True, holdOuts=value)
+    return True
+
+
 def set_viewport_display_preset(model_panel, preset):
     """
     Apply a specific viewport preset to the model_panel.
 
-    Sets the renderer, renderer override, and display mode. If any
-    setting fails, reverts all changes to maintain consistency.
+    Sets the renderer, renderer override, display mode, and hold-outs state.
+    If any setting fails, reverts all changes to maintain consistency.
 
     :param model_panel: The model panel name.
     :type model_panel: str
 
     :param preset: Preset dictionary containing 'name', 'renderer',
-                   and 'display_mode' keys, and optionally the
-                   'renderer_override' key.
+                   'display_mode', and 'hold_outs' keys, and optionally
+                   the 'renderer_override' key.
     :type preset: dict
 
     :returns: True if all settings were successfully applied, False otherwise.
@@ -267,6 +309,7 @@ def set_viewport_display_preset(model_panel, preset):
     renderer = preset.get('renderer')
     override = preset.get('renderer_override')
     display_mode = preset.get('display_mode')
+    hold_outs = preset.get('hold_outs')
 
     if preset_name is None:
         LOG.warn(
@@ -295,10 +338,18 @@ def set_viewport_display_preset(model_panel, preset):
             display_mode,
         )
         return False
+    if hold_outs is None:
+        LOG.warn(
+            'Could not set viewport to %r preset, hold-outs state is invalid; hold_outs=%r',
+            preset_name,
+            hold_outs,
+        )
+        return False
 
     previous_renderer = _get_viewport_renderer(model_panel)
     previous_override = _get_viewport_renderer_override(model_panel)
     previous_display_mode = _get_viewport_display_mode(model_panel)
+    previous_hold_outs = _get_viewport_hold_outs(model_panel)
 
     success = True
     try:
@@ -307,8 +358,15 @@ def set_viewport_display_preset(model_panel, preset):
         if override is not None:
             override_success = _set_viewport_renderer_override(model_panel, override)
         display_success = _set_viewport_display_mode(model_panel, display_mode)
-        success = renderer_success and override_success and display_success
+        hold_outs_success = _set_viewport_hold_outs(model_panel, hold_outs)
+        success = (
+            renderer_success
+            and override_success
+            and display_success
+            and hold_outs_success
+        )
     except RuntimeError:
+        LOG.exception('Failed to set the preset; %r', preset)
         success = False
 
     if success is False:
@@ -317,6 +375,8 @@ def set_viewport_display_preset(model_panel, preset):
             _set_viewport_renderer_override(model_panel, previous_override)
         if previous_display_mode in const.DISPLAY_MODES:
             _set_viewport_display_mode(model_panel, previous_display_mode)
+        if previous_hold_outs is not None:
+            _set_viewport_hold_outs(model_panel, previous_hold_outs)
 
     return success
 
@@ -341,6 +401,7 @@ def _get_current_preset_index(model_panel, presets):
     current_renderer = _get_viewport_renderer(model_panel)
     current_override = _get_viewport_renderer_override(model_panel)
     current_display_mode = _get_viewport_display_mode(model_panel)
+    current_hold_outs = _get_viewport_hold_outs(model_panel)
     if current_renderer is None or current_display_mode is None:
         return result_preset_index
 
@@ -348,10 +409,12 @@ def _get_current_preset_index(model_panel, presets):
         preset_renderer = preset.get('renderer')
         preset_override = preset.get('renderer_override')
         preset_display = preset.get('display_mode')
+        preset_hold_outs = preset.get('hold_outs')
         if (
             current_renderer == preset_renderer
             and current_override == preset_override
             and current_display_mode == preset_display
+            and current_hold_outs == preset_hold_outs
         ):
             result_preset_index = i
             break

@@ -63,25 +63,31 @@ MMSOLVER_RENDERER_OVERRIDES = [
 UNKNOWN_DISPLAY_PRESET_NAME = '<Unknown>'
 
 
+# Displays only the silhouette of objects.
 SILHOUETTE_DISPLAY_PRESET = {
-    'name': 'Silhouette',
+    'name': 'Silhouette (with Hold-Outs)',
     'renderer': RENDERER_VIEWPORT_TWO,
     'renderer_override': RENDERER_OVERRIDE_MM_SILHOUETTE,
     'display_mode': DISPLAY_MODE_SMOOTH_SHADED,
+    'hold_outs': True,
 }
 
+# Displays only the hidden-line of objects.
 WIREFRAME_DISPLAY_PRESET = {
-    'name': 'Shaded Wireframe',
+    'name': 'Hidden-Line (with Hold-Outs)',
     'renderer': RENDERER_VIEWPORT_TWO,
     'renderer_override': RENDERER_OVERRIDE_MM_STANDARD,
     'display_mode': DISPLAY_MODE_SMOOTH_SHADED_WIREFRAME,
+    'hold_outs': True,
 }
 
+# Displays the full shaded of objects.
 SHADED_DISPLAY_PRESET = {
-    'name': 'Shaded',
+    'name': 'All Shaded',
     'renderer': RENDERER_VIEWPORT_TWO,
     'renderer_override': RENDERER_OVERRIDE_MM_STANDARD,
     'display_mode': DISPLAY_MODE_SMOOTH_SHADED,
+    'hold_outs': False,
 }
 
 # Viewport cycle modes

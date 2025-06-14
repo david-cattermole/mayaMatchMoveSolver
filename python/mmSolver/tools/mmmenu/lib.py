@@ -153,7 +153,10 @@ def create_items(items_to_create, main_parent):
     created_items = {}
     for key, parent_key, func_def, is_sub_menu in items_to_create:
         menu_item = created_items.get(key)
-        if menu_item is not None:
+        # We are able to have the same key multiple times if it is a
+        # divider without a name.
+        divider = key.endswith('---')
+        if menu_item is not None and divider is not True:
             continue
         parent = created_items.get(parent_key)
         if parent is None:

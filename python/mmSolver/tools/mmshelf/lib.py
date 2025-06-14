@@ -206,7 +206,10 @@ def create_items(items_to_create, main_parent):
     created_items = {}
     for key, parent_key, func_def, is_first_item, is_last_item in items_to_create:
         items = created_items.get(key)
-        if items is not None:
+        # We are able to have the same key multiple times if it is a
+        # divider without a name.
+        divider = key.endswith('---')
+        if items is not None and divider is not True:
             continue
 
         parents = created_items.get(parent_key)

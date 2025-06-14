@@ -34,6 +34,9 @@ Usage to *apply* the centering effect:
    to zoom in and out. Play the Maya timeline and use the centered view as
    needed.
 
+   - With the ``mmSolver`` Hotkey Set enabled, press the ``z`` key to
+     use the Maya-native Pan/Zoom tool.
+
 5) Click on the 'Apply 2D Center' menu option box to display the
    'Center 2D Offset' window.
 
@@ -63,6 +66,9 @@ Usage to *remove* centering effect:
    - The pan/zoom will still be active. To reset the viewport camera,
      turn off Pan/Zoom on the viewport camera (default hotkey is
      backslash (``\``) key).
+
+   - With the ``mmSolver`` Hotkey Set enabled, press the ``z`` key to
+     use the Maya-native Pan/Zoom tool.
 
 To run the tool, use this Python command:
 

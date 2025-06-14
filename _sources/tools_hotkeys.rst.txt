@@ -97,6 +97,15 @@ viewport.
      - Show/Hide Image Planes in the current viewport.
      - :ref:`Link <toggle-viewport-node-types-ref>`
 
+   * - Press **` (backtick)** key
+     - Cycle Viewport Display Preset *forward*.
+     - :ref:`Link <cycle-viewport-display-preset-tool-ref>`
+
+   * - Press **ATL + ` (backtick)** key
+     - Cycle Viewport Display Preset *forward*.
+     - :ref:`Link <cycle-viewport-display-preset-tool-ref>`
+
+
 .. _marking-menu-heading:
 
 Marking Menu
@@ -133,8 +142,8 @@ the default Maya hotkeys.
 
 #. Edit the hotkeys using the Hotkey Editor.
 #. Press *Save and Close* button.
-#. Use the change-hotkey-set-heading_ button on the `mmSolver` shelf
-   to change the active Hotkey Set.
+#. Use the :ref:`Change Hotkey Set <change-hotkey-set-heading>` button
+   on the `mmSolver` shelf to change the active Hotkey Set.
 
 .. _Maya Zoom Pan tool:
    https://knowledge.autodesk.com/support/maya-lt/learn-explore/caas/CloudHelp/cloudhelp/2019/ENU/MayaLT-TextureBaking/files/GUID-A7CAE8D4-B3B0-4FF8-8405-4DF3427A8DB8-htm.html

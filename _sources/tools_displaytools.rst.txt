@@ -11,33 +11,38 @@ Center 2D On Selection
 ----------------------
 
 Forces the active viewport camera to lock it’s center to the currently
-selected transform node. The Center 2D window can be used to offset
-the 2D offset horizontally/vertically.
+selected transform nodes, or mesh node components (face, edge,
+vertex). The Center 2D Offset window can be used to offset the 2D
+offset horizontally/vertically.
 
 While centering is turned on, it overrides Maya's normal 2D Pan/Zoom
 settings.
 
-.. note:: A viewport camera can only center on one node at a time.
-
 Usage to *apply* the centering effect:
 
-1) Select transform node.
+1) Select transform nodes, or mesh node components (face, edge,
+   vertex).
 
 2) Activate a 3D viewport.
 
-3) Run 'Apply 2D Center' tool.
+3) Run `Apply 2D Center` tool.
 
    - The active viewport camera will be centered on the selected
-     transform node.
+     objects and components.
 
-4) Use the Pan/Zoom tool (default hotkey is backslash (' \\ ') key),
+4) Use the Pan/Zoom tool (default hotkey is backslash (``\``) key),
    to zoom in and out. Play the Maya timeline and use the centered view as
    needed.
+
+   - With the ``mmSolver`` :ref:`Hotkey Set<default-hotkeys-heading>`
+     enabled, press the ``z`` key to use the Maya-native Pan/Zoom
+     tool.
 
 5) Click on the 'Apply 2D Center' menu option box to display the
    'Center 2D Offset' window.
 
-   - Drag the Horizontal, Vertical and Zoom sliders to offset the 2D centering.
+   - Drag the Horizontal, Vertical and Zoom sliders to offset the 2D
+     centering.
 
    - Click 'Apply' button to apply the Center 2D.
 
@@ -50,18 +55,22 @@ Usage to *apply* the centering effect:
 .. figure:: images/tools_center_2d_offset_ui.png
     :alt: Center 2D Offset UI
     :align: center
-    :width: 60%
+    :width: 40%
 
 Usage to *remove* centering effect:
 
-1) Run 'Remove 2D Center' tool.
+1) Run `Remove 2D Center` tool.
 
    - The active viewport will no longer center on an object, but will
      not reset the view.
 
    - The pan/zoom will still be active. To reset the viewport camera,
      turn off Pan/Zoom on the viewport camera (default hotkey is
-     backslash (' \\ ') key).
+     backslash (``\``) key).
+
+   - With the ``mmSolver`` :ref:`Hotkey Set<default-hotkeys-heading>`
+     enabled, press the ``z`` key to use the Maya-native Pan/Zoom
+     tool.
 
 To run the tool, use this Python command:
 
@@ -75,13 +84,79 @@ To run the tool, use this Python command:
     # Remove Centering from active camera
     tool.remove()
 
+.. _cycle-viewport-display-preset-tool-ref:
+
+Cycle Viewport Display Preset
+-----------------------------
+
+The `Cycle Viewport Display Preset` tool will change between a list of
+three display presets; `Silhouette (with Hold-Outs)`, `Hidden-Line
+(with Hold-Outs)` and `All Shaded`. The goal of the tool is to quickly
+swap between different ways of visualizing your Maya scene.
+
+.. note:: The `Cycle Viewport Display Preset` tool is intended to be
+          used with the :ref:`Set Mesh Hold-Outs
+          <set-mesh-hold-outs-ref>` tool, to set your objects for
+          hold-out rendering.
+
+Usage:
+
+1) Select a Maya Viewport panel.
+
+2) Run the `Cycle Forwards/Backwards` tool.
+
+   - Use the `Display Tools` shelf button pop-up menu, or mmSolver
+     menu, or the hotkey to run the tool.
+
+   - With the ``mmSolver`` :ref:`Hotkey Set<default-hotkeys-heading>`
+     enabled, press the ` (backtick) key or ALT + ` (backtick) key to
+     cycle forwards or backward through the presets.
+
+   - The ` (backtick) key is next to the ``1`` key on US,
+     US-international and UK keyboards.
+
+The display presets are:
+
+.. list-table:: Viewport Display Presets
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+
+   * - `Silhouette (with Hold-Outs)`
+     - Displays :ref:`Silhouette edges <renderer-silhouette-ref>` with
+       hold-out geometry.
+
+   * - `Hidden-Line (with Hold-Outs)`
+     - Displays Hidden-Line (wireframe) edges with hold-out geometry.
+
+   * - `All Shaded`
+     - Displays all geometry as shaded, and disables hold-out
+       rendering.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    # Run the cycle tool; forwards or backwards.
+    import mmSolver.tools.setviewportdisplaypreset.tool as tool
+    tool.active_viewport_cycle_forward()
+    tool.active_viewport_cycle_backward()
+
+    # Alternatively, you can set a preset by name.
+    import mmSolver.tools.setviewportdisplaypreset.constant as const
+    tool.set_active_viewport_display_preset(const.SILHOUETTE_DISPLAY_PRESET_NAME)
+    tool.set_active_viewport_display_preset(const.HIDDEN_LINE_DISPLAY_PRESET_NAME)
+    tool.set_active_viewport_display_preset(const.ALL_SHADED_DISPLAY_PRESET_NAME)
+
 
 .. _toggle-viewport-node-types-ref:
 
 Toggle Viewport Node Types
 --------------------------
 
-There are a range of `Toggle Viewport *` tools that are used to
+There are a range of `Toggle Viewport` tools that are used to
 hide/show groups of node types.
 
 Node type groups include:
@@ -101,39 +176,30 @@ Usage:
    - The node type visibility will be shown/hidden based on the
      current visibility.
 
+   - With the ``mmSolver`` :ref:`Hotkey Set<default-hotkeys-heading>`
+     enabled, press the ``ALT + 1`` (`Geometry`), ``ALT + 2`` (`Curves
+     and Controls`), ``ALT + 3`` (`Image Planes`) to toggle the
+     respective node types.
+
 Each different group can be activated with a slightly different Python
 command.
 
-
-Toggle Viewport Geometry (Mesh, NURBS, etc):
-
 .. code:: python
 
+    # Toggle Viewport Geometry (Mesh, NURBS, etc):
     import mmSolver.tools.toggleviewportgeom.tool as tool
     tool.main()
 
-
-Toggle Viewport Controls: (Locators, Curves, etc)
-
-.. code:: python
-
+    # Toggle Viewport Controls: (Locators, Curves, etc)
     import mmSolver.tools.toggleviewportctrls.tool as tool
     tool.main()
 
-
-Toggle Viewport Image Planes (Maya native and MM solver image planes):
-
-.. code:: python
-
+    # Toggle Viewport Image Planes (Maya native and MM solver image planes):
     import mmSolver.tools.toggleviewportimgplns.tool as tool
     tool.main()
 
-
-Alternatively, a user can construct their own custom scripts to
-control visibility like so:
-
-.. code:: python
-
+    # Alternatively, a user can construct their own custom scripts to
+    # control visibility like so:
     import mmSolver.utils.viewport as viewport_utils
     model_panel = viewport_utils.get_active_model_panel()
     if model_panel:
@@ -176,34 +242,21 @@ Usage:
 Each different feature can be activated with a slightly different Python
 command.
 
-Enable Hold-outs on Selected Meshes:
-
 .. code:: python
 
+    # Enable Hold-outs on Selected Meshes:
     import mmSolver.tools.setmesholdouts.tool as tool
     tool.enable_selected_meshes()
 
-
-Disable Hold-outs on Selected Meshes:
-
-.. code:: python
-
+    # Disable Hold-outs on Selected Meshes:
     import mmSolver.tools.setmesholdouts.tool as tool
     tool.disable_selected_meshes()
 
-
-Enable Hold-outs on All Meshes:
-
-.. code:: python
-
+    # Enable Hold-outs on All Meshes:
     import mmSolver.tools.setmesholdouts.tool as tool
     tool.enable_all_meshes()
 
-
-Disable Hold-outs on All Meshes:
-
-.. code:: python
-
+    # Disable Hold-outs on All Meshes:
     import mmSolver.tools.setmesholdouts.tool as tool
     tool.disable_all_meshes()
 

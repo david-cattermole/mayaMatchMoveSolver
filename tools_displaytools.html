@@ -349,31 +349,36 @@ tasks.</p>
 <section id="center-2d-on-selection">
 <span id="center-2d-on-selection-tool-ref"></span><h2>Center 2D On Selection<a class="headerlink" href="#center-2d-on-selection" title="Permalink to this heading">#</a></h2>
 <p>Forces the active viewport camera to lock it’s center to the currently
-selected transform node. The Center 2D window can be used to offset
-the 2D offset horizontally/vertically.</p>
+selected transform nodes, or mesh node components (face, edge,
+vertex). The Center 2D Offset window can be used to offset the 2D
+offset horizontally/vertically.</p>
 <p>While centering is turned on, it overrides Maya’s normal 2D Pan/Zoom
 settings.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>A viewport camera can only center on one node at a time.</p>
-</div>
 <p>Usage to <em>apply</em> the centering effect:</p>
 <ol class="arabic simple">
-<li><p>Select transform node.</p></li>
+<li><p>Select transform nodes, or mesh node components (face, edge,
+vertex).</p></li>
 <li><p>Activate a 3D viewport.</p></li>
-<li><p>Run ‘Apply 2D Center’ tool.</p>
+<li><p>Run <cite>Apply 2D Center</cite> tool.</p>
 <ul class="simple">
 <li><p>The active viewport camera will be centered on the selected
-transform node.</p></li>
+objects and components.</p></li>
 </ul>
 </li>
-<li><p>Use the Pan/Zoom tool (default hotkey is backslash (’ \ ‘) key),
+<li><p>Use the Pan/Zoom tool (default hotkey is backslash (<code class="docutils literal notranslate"><span class="pre">\</span></code>) key),
 to zoom in and out. Play the Maya timeline and use the centered view as
-needed.</p></li>
+needed.</p>
+<ul class="simple">
+<li><p>With the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> <a class="reference internal" href="tools_hotkeys.html#default-hotkeys-heading"><span class="std std-ref">Hotkey Set</span></a>
+enabled, press the <code class="docutils literal notranslate"><span class="pre">z</span></code> key to use the Maya-native Pan/Zoom
+tool.</p></li>
+</ul>
+</li>
 <li><p>Click on the ‘Apply 2D Center’ menu option box to display the
 ‘Center 2D Offset’ window.</p>
 <ul class="simple">
-<li><p>Drag the Horizontal, Vertical and Zoom sliders to offset the 2D centering.</p></li>
+<li><p>Drag the Horizontal, Vertical and Zoom sliders to offset the 2D
+centering.</p></li>
 <li><p>Click ‘Apply’ button to apply the Center 2D.</p></li>
 <li><p>Click ‘Remove’ button to remove the Center 2D.</p></li>
 <li><p>Click ‘Reset Offset’ button to reset all the 2D offsets.</p></li>
@@ -382,17 +387,20 @@ needed.</p></li>
 </li>
 </ol>
 <figure class="align-center">
-<a class="reference internal image-reference" href="_images/tools_center_2d_offset_ui.png"><img alt="Center 2D Offset UI" src="_images/tools_center_2d_offset_ui.png" style="width: 60%;" /></a>
+<a class="reference internal image-reference" href="_images/tools_center_2d_offset_ui.png"><img alt="Center 2D Offset UI" src="_images/tools_center_2d_offset_ui.png" style="width: 40%;" /></a>
 </figure>
 <p>Usage to <em>remove</em> centering effect:</p>
 <ol class="arabic simple">
-<li><p>Run ‘Remove 2D Center’ tool.</p>
+<li><p>Run <cite>Remove 2D Center</cite> tool.</p>
 <ul class="simple">
 <li><p>The active viewport will no longer center on an object, but will
 not reset the view.</p></li>
 <li><p>The pan/zoom will still be active. To reset the viewport camera,
 turn off Pan/Zoom on the viewport camera (default hotkey is
-backslash (’ \ ‘) key).</p></li>
+backslash (<code class="docutils literal notranslate"><span class="pre">\</span></code>) key).</p></li>
+<li><p>With the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> <a class="reference internal" href="tools_hotkeys.html#default-hotkeys-heading"><span class="std std-ref">Hotkey Set</span></a>
+enabled, press the <code class="docutils literal notranslate"><span class="pre">z</span></code> key to use the Maya-native Pan/Zoom
+tool.</p></li>
 </ul>
 </li>
 </ol>
@@ -407,9 +415,74 @@ backslash (’ \ ‘) key).</p></li>
 </pre></div>
 </div>
 </section>
+<section id="cycle-viewport-display-preset">
+<span id="cycle-viewport-display-preset-tool-ref"></span><h2>Cycle Viewport Display Preset<a class="headerlink" href="#cycle-viewport-display-preset" title="Permalink to this heading">#</a></h2>
+<p>The <cite>Cycle Viewport Display Preset</cite> tool will change between a list of
+three display presets; <cite>Silhouette (with Hold-Outs)</cite>, <cite>Hidden-Line
+(with Hold-Outs)</cite> and <cite>All Shaded</cite>. The goal of the tool is to quickly
+swap between different ways of visualizing your Maya scene.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <cite>Cycle Viewport Display Preset</cite> tool is intended to be
+used with the <a class="reference internal" href="#set-mesh-hold-outs-ref"><span class="std std-ref">Set Mesh Hold-Outs</span></a> tool, to set your objects for
+hold-out rendering.</p>
+</div>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select a Maya Viewport panel.</p></li>
+<li><p>Run the <cite>Cycle Forwards/Backwards</cite> tool.</p>
+<ul class="simple">
+<li><p>Use the <cite>Display Tools</cite> shelf button pop-up menu, or mmSolver
+menu, or the hotkey to run the tool.</p></li>
+<li><p>With the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> <a class="reference internal" href="tools_hotkeys.html#default-hotkeys-heading"><span class="std std-ref">Hotkey Set</span></a>
+enabled, press the ` (backtick) key or ALT + ` (backtick) key to
+cycle forwards or backward through the presets.</p></li>
+<li><p>The ` (backtick) key is next to the <code class="docutils literal notranslate"><span class="pre">1</span></code> key on US,
+US-international and UK keyboards.</p></li>
+</ul>
+</li>
+</ol>
+<p>The display presets are:</p>
+<div class="table-wrapper colwidths-auto docutils container" id="id1">
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Viewport Display Presets</span><a class="headerlink" href="#id1" title="Permalink to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>Silhouette (with Hold-Outs)</cite></p></td>
+<td><p>Displays <a class="reference internal" href="tools_renderer.html#renderer-silhouette-ref"><span class="std std-ref">Silhouette edges</span></a> with
+hold-out geometry.</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>Hidden-Line (with Hold-Outs)</cite></p></td>
+<td><p>Displays Hidden-Line (wireframe) edges with hold-out geometry.</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>All Shaded</cite></p></td>
+<td><p>Displays all geometry as shaded, and disables hold-out
+rendering.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the cycle tool; forwards or backwards.</span>
+<span class="kn">import</span> <span class="nn">mmSolver.tools.setviewportdisplaypreset.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">active_viewport_cycle_forward</span><span class="p">()</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">active_viewport_cycle_backward</span><span class="p">()</span>
+
+<span class="c1"># Alternatively, you can set a preset by name.</span>
+<span class="kn">import</span> <span class="nn">mmSolver.tools.setviewportdisplaypreset.constant</span> <span class="k">as</span> <span class="nn">const</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">set_active_viewport_display_preset</span><span class="p">(</span><span class="n">const</span><span class="o">.</span><span class="n">SILHOUETTE_DISPLAY_PRESET_NAME</span><span class="p">)</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">set_active_viewport_display_preset</span><span class="p">(</span><span class="n">const</span><span class="o">.</span><span class="n">HIDDEN_LINE_DISPLAY_PRESET_NAME</span><span class="p">)</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">set_active_viewport_display_preset</span><span class="p">(</span><span class="n">const</span><span class="o">.</span><span class="n">ALL_SHADED_DISPLAY_PRESET_NAME</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="toggle-viewport-node-types">
 <span id="toggle-viewport-node-types-ref"></span><h2>Toggle Viewport Node Types<a class="headerlink" href="#toggle-viewport-node-types" title="Permalink to this heading">#</a></h2>
-<p>There are a range of <cite>Toggle Viewport *</cite> tools that are used to
+<p>There are a range of <cite>Toggle Viewport</cite> tools that are used to
 hide/show groups of node types.</p>
 <p>Node type groups include:</p>
 <ul class="simple">
@@ -424,29 +497,30 @@ hide/show groups of node types.</p>
 <ul class="simple">
 <li><p>The node type visibility will be shown/hidden based on the
 current visibility.</p></li>
+<li><p>With the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> <a class="reference internal" href="tools_hotkeys.html#default-hotkeys-heading"><span class="std std-ref">Hotkey Set</span></a>
+enabled, press the <code class="docutils literal notranslate"><span class="pre">ALT</span> <span class="pre">+</span> <span class="pre">1</span></code> (<cite>Geometry</cite>), <code class="docutils literal notranslate"><span class="pre">ALT</span> <span class="pre">+</span> <span class="pre">2</span></code> (<cite>Curves
+and Controls</cite>), <code class="docutils literal notranslate"><span class="pre">ALT</span> <span class="pre">+</span> <span class="pre">3</span></code> (<cite>Image Planes</cite>) to toggle the
+respective node types.</p></li>
 </ul>
 </li>
 </ol>
 <p>Each different group can be activated with a slightly different Python
 command.</p>
-<p>Toggle Viewport Geometry (Mesh, NURBS, etc):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.toggleviewportgeom.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Toggle Viewport Geometry (Mesh, NURBS, etc):</span>
+<span class="kn">import</span> <span class="nn">mmSolver.tools.toggleviewportgeom.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Toggle Viewport Controls: (Locators, Curves, etc)</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.toggleviewportctrls.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+
+<span class="c1"># Toggle Viewport Controls: (Locators, Curves, etc)</span>
+<span class="kn">import</span> <span class="nn">mmSolver.tools.toggleviewportctrls.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Toggle Viewport Image Planes (Maya native and MM solver image planes):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.toggleviewportimgplns.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+
+<span class="c1"># Toggle Viewport Image Planes (Maya native and MM solver image planes):</span>
+<span class="kn">import</span> <span class="nn">mmSolver.tools.toggleviewportimgplns.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Alternatively, a user can construct their own custom scripts to
-control visibility like so:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.utils.viewport</span> <span class="k">as</span> <span class="nn">viewport_utils</span>
+
+<span class="c1"># Alternatively, a user can construct their own custom scripts to</span>
+<span class="c1"># control visibility like so:</span>
+<span class="kn">import</span> <span class="nn">mmSolver.utils.viewport</span> <span class="k">as</span> <span class="nn">viewport_utils</span>
 <span class="n">model_panel</span> <span class="o">=</span> <span class="n">viewport_utils</span><span class="o">.</span><span class="n">get_active_model_panel</span><span class="p">()</span>
 <span class="k">if</span> <span class="n">model_panel</span><span class="p">:</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">viewport_utils</span><span class="o">.</span><span class="n">get_locator_visibility</span><span class="p">(</span><span class="n">model_panel</span><span class="p">)</span>
@@ -481,23 +555,20 @@ self-explanatory:</p>
 </ol>
 <p>Each different feature can be activated with a slightly different Python
 command.</p>
-<p>Enable Hold-outs on Selected Meshes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.setmesholdouts.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enable Hold-outs on Selected Meshes:</span>
+<span class="kn">import</span> <span class="nn">mmSolver.tools.setmesholdouts.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">enable_selected_meshes</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Disable Hold-outs on Selected Meshes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.setmesholdouts.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+
+<span class="c1"># Disable Hold-outs on Selected Meshes:</span>
+<span class="kn">import</span> <span class="nn">mmSolver.tools.setmesholdouts.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">disable_selected_meshes</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Enable Hold-outs on All Meshes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.setmesholdouts.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+
+<span class="c1"># Enable Hold-outs on All Meshes:</span>
+<span class="kn">import</span> <span class="nn">mmSolver.tools.setmesholdouts.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">enable_all_meshes</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Disable Hold-outs on All Meshes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.setmesholdouts.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+
+<span class="c1"># Disable Hold-outs on All Meshes:</span>
+<span class="kn">import</span> <span class="nn">mmSolver.tools.setmesholdouts.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">disable_all_meshes</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -620,9 +691,9 @@ created by selecting the Motion Trail node under the camera and
 editing the attributes in the Channel Box.</p>
 <p>Beware of small <em>increment</em> values, and large frame ranges. These will
 cause slow-downs in the playback of the Maya scene.</p>
-<div class="table-wrapper colwidths-auto docutils container" id="id1">
-<table class="docutils align-default" id="id1">
-<caption><span class="caption-text">Motion Trail Attributes</span><a class="headerlink" href="#id1" title="Permalink to this table">#</a></caption>
+<div class="table-wrapper colwidths-auto docutils container" id="id2">
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Motion Trail Attributes</span><a class="headerlink" href="#id2" title="Permalink to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Attribute</p></th>
 <th class="head"><p>Type</p></th>
@@ -730,6 +801,7 @@ motion trail parented under the camera is created.</p></li>
             <ul>
 <li><a class="reference internal" href="#">Display Tools</a><ul>
 <li><a class="reference internal" href="#center-2d-on-selection">Center 2D On Selection</a></li>
+<li><a class="reference internal" href="#cycle-viewport-display-preset">Cycle Viewport Display Preset</a></li>
 <li><a class="reference internal" href="#toggle-viewport-node-types">Toggle Viewport Node Types</a></li>
 <li><a class="reference internal" href="#set-mesh-hold-outs">Set Mesh Hold-Outs</a></li>
 <li><a class="reference internal" href="#create-horizon-axis-dome-sky-dome">Create Horizon / Axis Dome / Sky Dome</a></li>

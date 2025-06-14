@@ -11,33 +11,34 @@ Center 2D On Selection
 ----------------------
 
 Forces the active viewport camera to lock it’s center to the currently
-selected transform node. The Center 2D window can be used to offset
-the 2D offset horizontally/vertically.
+selected transform nodes, or mesh node components (face, edge,
+vertex). The Center 2D Offset window can be used to offset the 2D
+offset horizontally/vertically.
 
 While centering is turned on, it overrides Maya's normal 2D Pan/Zoom
 settings.
 
-.. note:: A viewport camera can only center on one node at a time.
-
 Usage to *apply* the centering effect:
 
-1) Select transform node.
+1) Select transform nodes, or mesh node components (face, edge,
+   vertex).
 
 2) Activate a 3D viewport.
 
-3) Run 'Apply 2D Center' tool.
+3) Run `Apply 2D Center` tool.
 
    - The active viewport camera will be centered on the selected
-     transform node.
+     objects and components.
 
-4) Use the Pan/Zoom tool (default hotkey is backslash (' \\ ') key),
+4) Use the Pan/Zoom tool (default hotkey is backslash (``\``) key),
    to zoom in and out. Play the Maya timeline and use the centered view as
    needed.
 
 5) Click on the 'Apply 2D Center' menu option box to display the
    'Center 2D Offset' window.
 
-   - Drag the Horizontal, Vertical and Zoom sliders to offset the 2D centering.
+   - Drag the Horizontal, Vertical and Zoom sliders to offset the 2D
+     centering.
 
    - Click 'Apply' button to apply the Center 2D.
 
@@ -50,18 +51,18 @@ Usage to *apply* the centering effect:
 .. figure:: images/tools_center_2d_offset_ui.png
     :alt: Center 2D Offset UI
     :align: center
-    :width: 60%
+    :width: 40%
 
 Usage to *remove* centering effect:
 
-1) Run 'Remove 2D Center' tool.
+1) Run `Remove 2D Center` tool.
 
    - The active viewport will no longer center on an object, but will
      not reset the view.
 
    - The pan/zoom will still be active. To reset the viewport camera,
      turn off Pan/Zoom on the viewport camera (default hotkey is
-     backslash (' \\ ') key).
+     backslash (``\``) key).
 
 To run the tool, use this Python command:
 

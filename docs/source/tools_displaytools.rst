@@ -75,6 +75,72 @@ To run the tool, use this Python command:
     # Remove Centering from active camera
     tool.remove()
 
+.. _cycle-viewport-display-preset-tool-ref:
+
+Cycle Viewport Display Preset
+-----------------------------
+
+The `Cycle Viewport Display Preset` tool will change between a list of
+three display presets; `Silhouette (with Hold-Outs)`, `Hidden-Line
+(with Hold-Outs)` and `All Shaded`. The goal of the tool is to quickly
+swap between different ways of visualizing your Maya scene.
+
+.. note:: The `Cycle Viewport Display Preset` tool is intended to be
+          used with the :ref:`Set Mesh Hold-Outs
+          <set-mesh-hold-outs-ref>` tool, to set your objects for
+          hold-out rendering.
+
+Usage:
+
+1) Select a Maya Viewport panel.
+
+2) Run the `Cycle Forwards/Backwards` tool.
+
+   - Use the `Display Tools` shelf button pop-up menu, or mmSolver
+     menu, or the hotkey to run the tool.
+
+   - With the ``mmSolver`` Hotkey Set enabled, press the ` (backtick)
+     key or ALT + ` (backtick) key to cycle forwards or backward
+     through the presets.
+
+   - The ` (backtick) key is next to the ``1`` key on US,
+     US-international and UK keyboards.
+
+The display presets are:
+
+.. list-table:: Viewport Display Presets
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+
+   * - `Silhouette (with Hold-Outs)`
+     - Displays :ref:`Silhouette edges <renderer-silhouette-ref>` with
+       hold-out geometry.
+
+   * - `Hidden-Line (with Hold-Outs)`
+     - Displays Hidden-Line (wireframe) edges with hold-out geometry.
+
+   * - `All Shaded`
+     - Displays all geometry as shaded, and disables hold-out
+       rendering.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    # Run the cycle tool; forwards or backwards.
+    import mmSolver.tools.setviewportdisplaypreset.tool as tool
+    tool.active_viewport_cycle_forward()
+    tool.active_viewport_cycle_backward()
+
+    # Alternatively, you can set a preset by name.
+    import mmSolver.tools.setviewportdisplaypreset.constant as const
+    tool.set_active_viewport_display_preset(const.SILHOUETTE_DISPLAY_PRESET_NAME)
+    tool.set_active_viewport_display_preset(const.HIDDEN_LINE_DISPLAY_PRESET_NAME)
+    tool.set_active_viewport_display_preset(const.ALL_SHADED_DISPLAY_PRESET_NAME)
+
 
 .. _toggle-viewport-node-types-ref:
 

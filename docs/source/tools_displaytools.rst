@@ -233,34 +233,21 @@ Usage:
 Each different feature can be activated with a slightly different Python
 command.
 
-Enable Hold-outs on Selected Meshes:
-
 .. code:: python
 
+    # Enable Hold-outs on Selected Meshes:
     import mmSolver.tools.setmesholdouts.tool as tool
     tool.enable_selected_meshes()
 
-
-Disable Hold-outs on Selected Meshes:
-
-.. code:: python
-
+    # Disable Hold-outs on Selected Meshes:
     import mmSolver.tools.setmesholdouts.tool as tool
     tool.disable_selected_meshes()
 
-
-Enable Hold-outs on All Meshes:
-
-.. code:: python
-
+    # Enable Hold-outs on All Meshes:
     import mmSolver.tools.setmesholdouts.tool as tool
     tool.enable_all_meshes()
 
-
-Disable Hold-outs on All Meshes:
-
-.. code:: python
-
+    # Disable Hold-outs on All Meshes:
     import mmSolver.tools.setmesholdouts.tool as tool
     tool.disable_all_meshes()
 

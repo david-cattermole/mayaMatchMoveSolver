@@ -450,7 +450,7 @@ def cycle_viewport_presets(model_panel, presets, direction=1):
     return success, next_preset
 
 
-def show_viewport_message(message, fade_time=None, position=None):
+def show_viewport_message(message, fade_time=None, position=None, warning=None):
     """
     Show a message in the viewport.
 
@@ -470,12 +470,26 @@ def show_viewport_message(message, fade_time=None, position=None):
     assert isinstance(fade_time, float)
     assert fade_time > 0.0
     assert isinstance(position, str)
+    assert warning is None or isinstance(warning, bool)
+
+    display_message = message
+    if warning:
+        pre_text = '<p style="color:#DCCE88";>'
+        post_text = '</p>'
+        display_message = pre_text + message + post_text
 
     try:
         maya.cmds.inViewMessage(
-            assistMessage=message, position=position, fade=True, fadeOutTime=fade_time
+            assistMessage=display_message,
+            position=position,
+            fade=True,
+            fadeOutTime=fade_time,
         )
     except RuntimeError:
         LOG.exception()
+
         # Fallback and print to the console.
-        LOG.info(message)
+        if not warning:
+            LOG.info(message)
+        else:
+            LOG.warn(message)

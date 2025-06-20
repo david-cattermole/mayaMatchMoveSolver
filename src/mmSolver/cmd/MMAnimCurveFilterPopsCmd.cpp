@@ -58,6 +58,8 @@
 #define THRESHOLD_FLAG_SHORT "-th"
 #define THRESHOLD_FLAG_LONG "-threshold"
 
+#define CMD_NAME "mmAnimCurveFilterPops"
+
 namespace mmsg = mmscenegraph;
 
 namespace mmsolver {
@@ -68,9 +70,7 @@ void *MMAnimCurveFilterPopsCmd::creator() {
     return new MMAnimCurveFilterPopsCmd();
 }
 
-MString MMAnimCurveFilterPopsCmd::cmdName() {
-    return MString("mmAnimCurveFilterPops");
-}
+MString MMAnimCurveFilterPopsCmd::cmdName() { return MString(CMD_NAME); }
 
 bool MMAnimCurveFilterPopsCmd::hasSyntax() const { return true; }
 
@@ -78,15 +78,16 @@ bool MMAnimCurveFilterPopsCmd::isUndoable() const { return true; }
 
 MSyntax MMAnimCurveFilterPopsCmd::newSyntax() {
     const bool verbose = false;
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::newSyntax");
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": newSyntax");
 
     MSyntax syntax;
     syntax.enableQuery(false);
     syntax.enableEdit(false);
 
     syntax.addFlag(START_FRAME_FLAG_SHORT, START_FRAME_FLAG_LONG,
-                   MSyntax::kDouble);
-    syntax.addFlag(END_FRAME_FLAG_SHORT, END_FRAME_FLAG_LONG, MSyntax::kDouble);
+                   MSyntax::kUnsigned);
+    syntax.addFlag(END_FRAME_FLAG_SHORT, END_FRAME_FLAG_LONG,
+                   MSyntax::kUnsigned);
     syntax.addFlag(THRESHOLD_FLAG_SHORT, THRESHOLD_FLAG_LONG, MSyntax::kDouble);
     // TODO: Add an option to 'infill' the pops.
 
@@ -100,7 +101,7 @@ MSyntax MMAnimCurveFilterPopsCmd::newSyntax() {
 
 MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
     const bool verbose = false;
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::parseArgs");
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": parseArgs");
 
     MStatus status = MStatus::kSuccess;
     MArgDatabase argData(syntax(), args, &status);
@@ -111,7 +112,8 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_selection.length() == 0) {
-        MGlobal::displayError("Please select at least one animation curve.");
+        MGlobal::displayError(CMD_NAME
+                              ": Please select at least one animation curve.");
         return MS::kFailure;
     }
 
@@ -145,36 +147,35 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
     }
 
     const double frame_range_duration = m_endFrame - m_startFrame;
-    MMSOLVER_MAYA_VRB(
-        "MMAnimCurveFilterPopsCmd::m_startFrame=" << m_startFrame);
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::m_endFrame=" << m_endFrame);
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::m_threshold=" << m_threshold);
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::frame_range_duration="
-                      << frame_range_duration);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_startFrame=" << m_startFrame);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_endFrame=" << m_endFrame);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_threshold=" << m_threshold);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": frame_range_duration="
+                               << frame_range_duration);
 
     if (m_startFrame > m_endFrame) {
-        MGlobal::displayError(
-            "Invalid frame range; "
-            "The start frame is larger than the end frame.");
+        MGlobal::displayError(CMD_NAME
+                              ": Invalid frame range; "
+                              "The start frame is larger than the end frame.");
         return MS::kFailure;
     }
 
     if (m_startFrame == m_endFrame) {
-        MGlobal::displayError(
-            "Invalid frame range; "
-            "The start frame is equal to the end frame.");
+        MGlobal::displayError(CMD_NAME
+                              ": Invalid frame range; "
+                              "The start frame is equal to the end frame.");
         return MS::kFailure;
     }
 
     if (frame_range_duration <= 2.0) {
-        MGlobal::displayError(
-            "Invalid frame range; "
-            "The frame range length is less than 2 frames.");
+        MGlobal::displayError(CMD_NAME
+                              ": Invalid frame range; "
+                              "The frame range length is less than 2 frames.");
         return MS::kFailure;
     }
 
     if (m_threshold < 0.0) {
-        MGlobal::displayError("Threshold value is less than 0.0.");
+        MGlobal::displayError(CMD_NAME ": Threshold value is less than 0.0.");
         return MS::kFailure;
     }
 
@@ -190,8 +191,8 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
     // Don't store each individual edit, just store the combination.
     m_curveChange.setInteractive(true);
 
-    auto count = static_cast<size_t>((m_endFrame - m_startFrame) / 1.0);
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::count=" << count);
+    auto count = static_cast<size_t>(m_endFrame - m_startFrame) + 1;
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": count=" << count);
 
     rust::Vec<mmsg::Real> x_values;
     rust::Vec<mmsg::Real> y_values;
@@ -207,7 +208,8 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
 
         status = m_animCurveFn.setObject(m_animCurveObj);
         if (status != MS::kSuccess) {
-            MGlobal::displayError("Selected object is not an animation curve.");
+            MGlobal::displayError(
+                CMD_NAME ": Selected object is not an animation curve.");
             return status;
         }
 
@@ -219,18 +221,17 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
             auto time = MTime(frame, time_unit);
             auto value = m_animCurveFn.evaluate(time, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MMSOLVER_MAYA_VRB("f=" << frame << " v=" << value);
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": f=" << frame << " v=" << value);
 
             x_values.push_back(frame);
             y_values.push_back(value);
         }
 
-        MMSOLVER_MAYA_VRB("In curve: " << x_values.size() << " | "
-                                       << y_values.size());
+        MMSOLVER_MAYA_VRB(CMD_NAME << ": In curve: " << x_values.size() << " | "
+                                   << y_values.size());
 
         auto actual_count = x_values.size();
-        MMSOLVER_MAYA_VRB(
-            "MMAnimCurveFilterPopsCmd::actual_count=" << actual_count);
+        MMSOLVER_MAYA_VRB(CMD_NAME << ": actual_count=" << actual_count);
         filtered_x_values.reserve(actual_count);
         filtered_y_values.reserve(actual_count);
         filtered_x_values.clear();
@@ -239,7 +240,7 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
         // TODO: Can we 'calc_signal_to_noise_ratio', so we can determine
         // if a pop-detection is actually needed?
 
-        MMSOLVER_MAYA_VRB("m_threshold: " << m_threshold);
+        MMSOLVER_MAYA_VRB(CMD_NAME << ": m_threshold=" << m_threshold);
         rust::Slice<const mmsg::Real> x_values_slice{x_values.data(),
                                                      x_values.size()};
         rust::Slice<const mmsg::Real> y_values_slice{y_values.data(),
@@ -252,20 +253,20 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
         // TODO: Only keyframes between (and including) the start frame
         // and end frame should be removed.
         auto num_keys = m_animCurveFn.numKeys();
-        MMSOLVER_MAYA_VRB("num_keys=" << num_keys);
+        MMSOLVER_MAYA_VRB(CMD_NAME << ": num_keys=" << num_keys);
         for (auto i = 0; i < num_keys; i++) {
             m_animCurveFn.remove(0, &m_curveChange);
         }
 
-        MMSOLVER_MAYA_VRB("Filtered curve: " << filtered_x_values.size()
-                                             << " | "
-                                             << filtered_y_values.size());
+        MMSOLVER_MAYA_VRB(CMD_NAME
+                          << ": Filtered curve: " << filtered_x_values.size()
+                          << " | " << filtered_y_values.size());
         const auto tangent_in_type = MFnAnimCurve::TangentType::kTangentGlobal;
         const auto tangent_out_type = MFnAnimCurve::TangentType::kTangentGlobal;
         for (auto i = 0; i < filtered_x_values.size(); i++) {
             auto frame = filtered_x_values[i];
             auto value = filtered_y_values[i];
-            MMSOLVER_MAYA_VRB("f=" << frame << " v=" << value);
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": f=" << frame << " v=" << value);
 
             auto time = MTime(frame, time_unit);
 
@@ -277,6 +278,8 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
                     m_animCurveFn.setValue(key_index, value, &m_curveChange);
                 CHECK_MSTATUS_AND_RETURN_IT(status);
             } else {
+                // TODO: This should use the 'MFnAnimCurve::addKeys()'
+                // method, for performance.
                 key_index = m_animCurveFn.addKey(time, value, tangent_in_type,
                                                  tangent_out_type,
                                                  &m_curveChange, &status);

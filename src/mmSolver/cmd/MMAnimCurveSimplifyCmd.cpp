@@ -328,7 +328,6 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
 
         status = m_selection.getDependNode(i, m_animCurveObj);
         if (status != MS::kSuccess) {
-            CHECK_MSTATUS(status);
             MGlobal::displayError(
                 CMD_NAME ": Selected object is not an animation curve.");
             return status;
@@ -336,7 +335,6 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
 
         status = m_animCurveFn.setObject(m_animCurveObj);
         if (status != MS::kSuccess) {
-            CHECK_MSTATUS(status);
             MGlobal::displayError(
                 CMD_NAME ": Selected object is not an animation curve.");
             return status;

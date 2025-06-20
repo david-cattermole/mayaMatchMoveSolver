@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2024 David Cattermole.
+// Copyright (C) 2024, 2025 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -18,11 +18,26 @@
 // ====================================================================
 //
 
-pub mod curvature;
-pub mod derivatives;
-pub mod detect;
-pub mod infill;
-pub mod pyramid;
-pub mod resample;
-pub mod simplify;
-pub mod smooth;
+use mmscenegraph_rust::constant::Real as CoreReal;
+
+pub fn copy_vec_xy_to_x_y(
+    values_xy: &[(CoreReal, CoreReal)],
+    out_values_x: &mut Vec<CoreReal>,
+    out_values_y: &mut Vec<CoreReal>,
+) {
+    let new_capacity_x =
+        values_xy.len().saturating_sub(out_values_x.capacity());
+    let new_capacity_y =
+        values_xy.len().saturating_sub(out_values_y.capacity());
+    out_values_x.reserve_exact(new_capacity_x);
+    out_values_y.reserve_exact(new_capacity_y);
+    out_values_x.clear();
+    out_values_y.clear();
+
+    for value in values_xy.iter() {
+        let x = value.0;
+        let y = value.1;
+        out_values_x.push(x);
+        out_values_y.push(y);
+    }
+}

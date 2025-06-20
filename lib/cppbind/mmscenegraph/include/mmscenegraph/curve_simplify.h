@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020, 2021 David Cattermole.
+ * Copyright (C) 2025 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -19,19 +19,25 @@
  *
  */
 
-#ifndef MM_SOLVER_MM_SCENE_GRAPH_MM_SCENE_GRAPH_H
-#define MM_SOLVER_MM_SCENE_GRAPH_MM_SCENE_GRAPH_H
+#ifndef MM_SOLVER_MM_SCENE_GRAPH_CURVE_SIMPLIFY_H
+#define MM_SOLVER_MM_SCENE_GRAPH_CURVE_SIMPLIFY_H
 
 #include "_cxx.h"
 #include "_cxxbridge.h"
+#include "_symbol_export.h"
 #include "_types.h"
-#include "attrdatablock.h"
-#include "curve_detect_pops.h"
-#include "curve_simplify.h"
-#include "fit_plane.h"
-#include "flatscene.h"
-#include "line.h"
-#include "scenebake.h"
-#include "scenegraph.h"
 
-#endif  // MM_SOLVER_MM_SCENE_GRAPH_MM_SCENE_GRAPH_H
+namespace mmscenegraph {
+
+MMSCENEGRAPH_API_EXPORT
+bool curve_simplify(rust::Slice<const Real> &values_x,
+                    rust::Slice<const Real> &values_y,
+                    const size_t control_point_count,
+                    const ControlPointDistribution distribution,
+                    const InterpolationMethod interpolation_method,
+                    rust::Vec<Real> &out_values_x,
+                    rust::Vec<Real> &out_values_y) noexcept;
+
+}  // namespace mmscenegraph
+
+#endif  // MM_SOLVER_MM_SCENE_GRAPH_CURVE_SIMPLIFY_H

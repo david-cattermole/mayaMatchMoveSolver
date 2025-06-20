@@ -56,7 +56,7 @@ pub fn bind_to_core_film_fit(value: BindFilmFit) -> CoreFilmFit {
         BindFilmFit::Horizontal => CoreFilmFit::Horizontal,
         BindFilmFit::Vertical => CoreFilmFit::Vertical,
         BindFilmFit::Overscan => CoreFilmFit::Overscan,
-        _ => panic!("Invalid rotate order: {:?}", value),
+        _ => panic!("Invalid film fit: {:?}", value),
     }
 }
 

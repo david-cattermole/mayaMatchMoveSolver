@@ -96,9 +96,8 @@ fn calculate_per_frame_pop_score(
     let median = scores_slice.median();
     debug!("calculate_per_frame_pop_score: scores median={median}");
 
-    for i in 0..out_scores.len() {
-        let score = calc_z_score(median, std_dev, out_scores[i]).abs();
-        out_scores[i] = score;
+    for score in out_scores.iter_mut() {
+        *score = calc_z_score(median, std_dev, *score).abs();
     }
 
     Ok(())
@@ -138,16 +137,14 @@ pub fn detect_curve_pops(
     let mut scores = vec![0.0; n];
 
     calculate_per_frame_pop_score(
-        &times,
+        times,
         &diff_values,
         &mut velocity,
         &mut acceleration,
         &mut scores,
     )?;
 
-    let mut out_values = Vec::new();
-    out_values.reserve(n);
-
+    let mut out_values = Vec::with_capacity(n);
     let include_neighbours = false;
     if include_neighbours {
         for i in 0..n {
@@ -200,16 +197,14 @@ pub fn filter_curve_pops(
     let mut scores = vec![0.0; n];
 
     calculate_per_frame_pop_score(
-        &times,
+        times,
         &diff_values,
         &mut velocity,
         &mut acceleration,
         &mut scores,
     )?;
 
-    let mut out_values_xy = Vec::new();
-    out_values_xy.reserve(n);
-
+    let mut out_values_xy = Vec::with_capacity(n);
     let include_neighbours = false;
     if include_neighbours {
         for i in 0..n {
@@ -263,7 +258,7 @@ pub fn detect_curve_pop_scores(
     let (mut velocity, mut acceleration) = allocate_derivatives_order_2(n)?;
 
     calculate_per_frame_pop_score(
-        &times,
+        times,
         &diff_values,
         &mut velocity,
         &mut acceleration,

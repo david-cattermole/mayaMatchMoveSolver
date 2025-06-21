@@ -83,8 +83,8 @@ class TestAnimCurveSimplify(test_tools_utils.ToolsTestCase):
         maya.cmds.mmAnimCurveSimplify(
             animCurves,
             controlPointCount=2,
-            controlPointDistribution=distribution,
-            interpolationMethod=interpolation,
+            distribution=distribution,
+            interpolation=interpolation,
             startFrame=1,
             endFrame=200,
         )
@@ -100,8 +100,8 @@ class TestAnimCurveSimplify(test_tools_utils.ToolsTestCase):
                 maya.cmds.mmAnimCurveSimplify(
                     animCurves,
                     controlPointCount=3,
-                    controlPointDistribution=distribution,
-                    interpolationMethod=interpolation,
+                    distribution=distribution,
+                    interpolation=interpolation,
                     startFrame=1,
                     endFrame=200,
                 )
@@ -117,8 +117,8 @@ class TestAnimCurveSimplify(test_tools_utils.ToolsTestCase):
                 maya.cmds.mmAnimCurveSimplify(
                     animCurves,
                     controlPointCount=4,
-                    controlPointDistribution=distribution,
-                    interpolationMethod=interpolation,
+                    distribution=distribution,
+                    interpolation=interpolation,
                     startFrame=1,
                     endFrame=200,
                 )
@@ -134,8 +134,8 @@ class TestAnimCurveSimplify(test_tools_utils.ToolsTestCase):
                 maya.cmds.mmAnimCurveSimplify(
                     animCurves,
                     controlPointCount=5,
-                    controlPointDistribution=distribution,
-                    interpolationMethod=interpolation,
+                    distribution=distribution,
+                    interpolation=interpolation,
                     startFrame=1,
                     endFrame=200,
                 )
@@ -151,8 +151,8 @@ class TestAnimCurveSimplify(test_tools_utils.ToolsTestCase):
                 maya.cmds.mmAnimCurveSimplify(
                     animCurves,
                     controlPointCount=16,
-                    controlPointDistribution=distribution,
-                    interpolationMethod=interpolation,
+                    distribution=distribution,
+                    interpolation=interpolation,
                     startFrame=1,
                     endFrame=200,
                 )

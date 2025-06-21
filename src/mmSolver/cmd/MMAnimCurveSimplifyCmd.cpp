@@ -60,24 +60,13 @@
 #include <maya/MTransformationMatrix.h>
 #include <maya/MTypes.h>
 
-// MM Solver
+// MM Solver Libs
 #include <mmcore/mmdata.h>
 #include <mmcore/mmmath.h>
 
-#include "mmSolver/adjust/adjust_defines.h"
+// MM Solver
 #include "mmSolver/cmd/anim_curve_cmd_utils.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_lens_model_utils.h"
-#include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/node/node_line_utils.h"
-#include "mmSolver/nodeTypeIds.h"
-#include "mmSolver/sfm/camera_relative_pose.h"
-#include "mmSolver/sfm/sfm_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/number_utils.h"
 
 #define START_FRAME_FLAG_SHORT "-sf"
 #define START_FRAME_FLAG_LONG "-startFrame"
@@ -85,26 +74,27 @@
 #define END_FRAME_FLAG_SHORT "-ef"
 #define END_FRAME_FLAG_LONG "-endFrame"
 
-// How many points to use for 'methods' that use such a value.
+// How many points to use for the simplified animation curve?
 #define CONTROL_POINT_COUNT_SHORT_FLAG "-cpc"
 #define CONTROL_POINT_COUNT_LONG_FLAG "-controlPointCount"
 
-// The type of distribution that is used for the simplification.
-#define CONTROL_POINT_DISTRIBUTION_SHORT_FLAG "-cpd"
-#define CONTROL_POINT_DISTRIBUTION_LONG_FLAG "-controlPointDistribution"
+// The type of distribution of control points that is used for the
+// simplification.
+#define DISTRIBUTION_SHORT_FLAG "-dtr"
+#define DISTRIBUTION_LONG_FLAG "-distribution"
 
 // Possible values for the 'distribution' flag.
 #define CONTROL_POINT_DISTRIBUTION_VALUE_UNIFORM "uniform"
 #define CONTROL_POINT_DISTRIBUTION_VALUE_AUTO_KEYPOINTS "auto_keypoints"
 
-// The type of method that is used for the simplification.
-#define INTERPOLATION_METHOD_SHORT_FLAG "-itm"
-#define INTERPOLATION_METHOD_LONG_FLAG "-interpolationMethod"
+// The type of interpolation that is used for the simplification.
+#define INTERPOLATION_SHORT_FLAG "-int"
+#define INTERPOLATION_LONG_FLAG "-interpolation"
 
-// Possible values for the 'method' flag.
-#define INTERPOLATION_METHOD_VALUE_LINEAR "linear"
-#define INTERPOLATION_METHOD_VALUE_CUBIC_NUBS "cubic_nubs"
-#define INTERPOLATION_METHOD_VALUE_CUBIC_SPLINE "cubic_spline"
+// Possible values for the 'interpolation' flag.
+#define INTERPOLATION_VALUE_LINEAR "linear"
+#define INTERPOLATION_VALUE_CUBIC_NUBS "cubic_nubs"
+#define INTERPOLATION_VALUE_CUBIC_SPLINE "cubic_spline"
 
 #define CMD_NAME "mmAnimCurveSimplify"
 
@@ -147,13 +137,11 @@ MSyntax MMAnimCurveSimplifyCmd::newSyntax() {
                                  CONTROL_POINT_COUNT_LONG_FLAG,
                                  MSyntax::kUnsigned));
 
-    CHECK_MSTATUS(syntax.addFlag(CONTROL_POINT_DISTRIBUTION_SHORT_FLAG,
-                                 CONTROL_POINT_DISTRIBUTION_LONG_FLAG,
-                                 MSyntax::kString));
+    CHECK_MSTATUS(syntax.addFlag(DISTRIBUTION_SHORT_FLAG,
+                                 DISTRIBUTION_LONG_FLAG, MSyntax::kString));
 
-    CHECK_MSTATUS(syntax.addFlag(INTERPOLATION_METHOD_SHORT_FLAG,
-                                 INTERPOLATION_METHOD_LONG_FLAG,
-                                 MSyntax::kString));
+    CHECK_MSTATUS(syntax.addFlag(INTERPOLATION_SHORT_FLAG,
+                                 INTERPOLATION_LONG_FLAG, MSyntax::kString));
 
     return syntax;
 }
@@ -224,16 +212,15 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
     }
 
     m_interpolation = mmsg::InterpolationMethod::kUnknown;
-    if (argData.isFlagSet(INTERPOLATION_METHOD_SHORT_FLAG)) {
+    if (argData.isFlagSet(INTERPOLATION_SHORT_FLAG)) {
         MString value = "";
-        status =
-            argData.getFlagArgument(INTERPOLATION_METHOD_SHORT_FLAG, 0, value);
+        status = argData.getFlagArgument(INTERPOLATION_SHORT_FLAG, 0, value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        if (value == INTERPOLATION_METHOD_VALUE_LINEAR) {
+        if (value == INTERPOLATION_VALUE_LINEAR) {
             m_interpolation = mmsg::InterpolationMethod::kLinear;
-        } else if (value == INTERPOLATION_METHOD_VALUE_CUBIC_NUBS) {
+        } else if (value == INTERPOLATION_VALUE_CUBIC_NUBS) {
             m_interpolation = mmsg::InterpolationMethod::kCubicNUBS;
-        } else if (value == INTERPOLATION_METHOD_VALUE_CUBIC_SPLINE) {
+        } else if (value == INTERPOLATION_VALUE_CUBIC_SPLINE) {
             m_interpolation = mmsg::InterpolationMethod::kCubicSpline;
         } else {
             MMSOLVER_MAYA_ERR(CMD_NAME << ": Method value is invalid: "
@@ -241,8 +228,8 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
             status = MS::kFailure;
         }
     } else {
-        MMSOLVER_MAYA_ERR(CMD_NAME << ": " << INTERPOLATION_METHOD_LONG_FLAG
-                                   << "(" << INTERPOLATION_METHOD_SHORT_FLAG
+        MMSOLVER_MAYA_ERR(CMD_NAME << ": " << INTERPOLATION_LONG_FLAG << "("
+                                   << INTERPOLATION_SHORT_FLAG
                                    << ") flag must be given.");
         return MS::kFailure;
     }
@@ -271,10 +258,9 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
     }
 
     m_distribution = mmsg::ControlPointDistribution::kUniform;
-    if (argData.isFlagSet(CONTROL_POINT_DISTRIBUTION_SHORT_FLAG)) {
+    if (argData.isFlagSet(DISTRIBUTION_SHORT_FLAG)) {
         MString value = "";
-        status = argData.getFlagArgument(CONTROL_POINT_DISTRIBUTION_SHORT_FLAG,
-                                         0, value);
+        status = argData.getFlagArgument(DISTRIBUTION_SHORT_FLAG, 0, value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         if (value == CONTROL_POINT_DISTRIBUTION_VALUE_UNIFORM) {
             m_distribution = mmsg::ControlPointDistribution::kUniform;
@@ -319,8 +305,8 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
     values_x.reserve(frame_count);
     values_y.reserve(frame_count);
 
-    rust::Vec<mmsg::Real> eval_values_x;
-    rust::Vec<mmsg::Real> eval_values_y;
+    rust::Vec<mmsg::Real> out_values_x;
+    rust::Vec<mmsg::Real> out_values_y;
 
     const auto time_unit = MTime::uiUnit();
     uint32_t success_count = 0;
@@ -351,15 +337,17 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
             continue;
         }
 
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": In curve: " << values_x.size() << " | "
-                                   << values_y.size());
+        MMSOLVER_MAYA_VRB(CMD_NAME << ": Input curve size:"
+                                      " x="
+                                   << values_x.size()
+                                   << " y=" << values_y.size());
 
         auto actual_count = values_x.size();
         MMSOLVER_MAYA_VRB(CMD_NAME << ": actual_count=" << actual_count);
-        eval_values_x.reserve(actual_count);
-        eval_values_y.reserve(actual_count);
-        eval_values_x.clear();
-        eval_values_y.clear();
+        out_values_x.reserve(actual_count);
+        out_values_y.reserve(actual_count);
+        out_values_x.clear();
+        out_values_y.clear();
 
         MMSOLVER_MAYA_VRB(CMD_NAME
                           << ": m_controlPointCount="
@@ -371,7 +359,7 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
                                                      values_y.size()};
         const bool success = mmsg::curve_simplify(
             values_slice_x, values_slice_y, m_controlPointCount, m_distribution,
-            m_interpolation, eval_values_x, eval_values_y);
+            m_interpolation, out_values_x, out_values_y);
         if (!success) {
             MGlobal::displayWarning(CMD_NAME
                                     ": curve simplification failed to solve.");
@@ -379,11 +367,11 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
             continue;
         }
 
-        rust::Slice<const mmsg::Real> eval_values_slice_x{eval_values_x.data(),
-                                                          eval_values_x.size()};
-        rust::Slice<const mmsg::Real> eval_values_slice_y{eval_values_y.data(),
-                                                          eval_values_y.size()};
-        status = set_anim_curve_keys(eval_values_slice_x, eval_values_slice_y,
+        rust::Slice<const mmsg::Real> out_values_slice_x{out_values_x.data(),
+                                                         out_values_x.size()};
+        rust::Slice<const mmsg::Real> out_values_slice_y{out_values_y.data(),
+                                                         out_values_y.size()};
+        status = set_anim_curve_keys(out_values_slice_x, out_values_slice_y,
                                      time_unit, m_animCurveFn, m_curveChange);
         if (status != MS::kSuccess) {
             MGlobal::displayWarning(
@@ -394,6 +382,11 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
 
         success_count++;
     }
+
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": failure_count="
+                               << static_cast<int32_t>(failure_count));
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": success_count="
+                               << static_cast<int32_t>(success_count));
 
     m_dgmod.doIt();
     return status;

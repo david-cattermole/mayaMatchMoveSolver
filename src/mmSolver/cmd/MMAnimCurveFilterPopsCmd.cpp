@@ -43,6 +43,7 @@
 #include <mmcore/mmmath.h>
 
 // MM Solver
+#include "mmSolver/cmd/anim_curve_cmd_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 // MM Scene Graph
@@ -194,17 +195,25 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
     auto count = static_cast<size_t>(m_endFrame - m_startFrame) + 1;
     MMSOLVER_MAYA_VRB(CMD_NAME << ": count=" << count);
 
-    rust::Vec<mmsg::Real> x_values;
-    rust::Vec<mmsg::Real> y_values;
-    x_values.reserve(count);
-    y_values.reserve(count);
+    auto time_unit = MTime::uiUnit();
 
-    rust::Vec<mmsg::Real> filtered_x_values;
-    rust::Vec<mmsg::Real> filtered_y_values;
+    rust::Vec<mmsg::Real> values_x;
+    rust::Vec<mmsg::Real> values_y;
+    values_x.reserve(count);
+    values_y.reserve(count);
 
+    rust::Vec<mmsg::Real> out_values_x;
+    rust::Vec<mmsg::Real> out_values_y;
+
+    uint32_t success_count = 0;
+    uint32_t failure_count = 0;
     for (auto i = 0; i < m_selection.length(); i++) {
         status = m_selection.getDependNode(i, m_animCurveObj);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        if (status != MS::kSuccess) {
+            MGlobal::displayError(
+                CMD_NAME ": Selected object is not an animation curve.");
+            return status;
+        }
 
         status = m_animCurveFn.setObject(m_animCurveObj);
         if (status != MS::kSuccess) {
@@ -213,80 +222,64 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
             return status;
         }
 
-        x_values.clear();
-        y_values.clear();
-
-        auto time_unit = MTime::uiUnit();
-        for (auto frame = m_startFrame; frame <= m_endFrame; frame += 1.0) {
-            auto time = MTime(frame, time_unit);
-            auto value = m_animCurveFn.evaluate(time, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            MMSOLVER_MAYA_VRB(CMD_NAME << ": f=" << frame << " v=" << value);
-
-            x_values.push_back(frame);
-            y_values.push_back(value);
+        status = evaluate_curve(m_startFrame, m_endFrame, time_unit,
+                                m_animCurveFn, values_x, values_y);
+        if (status != MS::kSuccess) {
+            MGlobal::displayWarning(
+                CMD_NAME ": failed to set animation curve keyframes.");
+            failure_count++;
+            continue;
         }
 
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": In curve: " << x_values.size() << " | "
-                                   << y_values.size());
+        MMSOLVER_MAYA_VRB(CMD_NAME << ": Input curve size:"
+                                      " x="
+                                   << values_x.size()
+                                   << " y=" << values_y.size());
 
-        auto actual_count = x_values.size();
+        auto actual_count = values_x.size();
         MMSOLVER_MAYA_VRB(CMD_NAME << ": actual_count=" << actual_count);
-        filtered_x_values.reserve(actual_count);
-        filtered_y_values.reserve(actual_count);
-        filtered_x_values.clear();
-        filtered_y_values.clear();
+        out_values_x.reserve(actual_count);
+        out_values_y.reserve(actual_count);
+        out_values_x.clear();
+        out_values_y.clear();
 
         // TODO: Can we 'calc_signal_to_noise_ratio', so we can determine
         // if a pop-detection is actually needed?
 
         MMSOLVER_MAYA_VRB(CMD_NAME << ": m_threshold=" << m_threshold);
-        rust::Slice<const mmsg::Real> x_values_slice{x_values.data(),
-                                                     x_values.size()};
-        rust::Slice<const mmsg::Real> y_values_slice{y_values.data(),
-                                                     y_values.size()};
-        mmsg::filter_curve_pops(x_values_slice, y_values_slice, m_threshold,
-                                filtered_x_values, filtered_y_values);
-
-        // Clear all keys from the anim curve.
-        //
-        // TODO: Only keyframes between (and including) the start frame
-        // and end frame should be removed.
-        auto num_keys = m_animCurveFn.numKeys();
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": num_keys=" << num_keys);
-        for (auto i = 0; i < num_keys; i++) {
-            m_animCurveFn.remove(0, &m_curveChange);
+        rust::Slice<const mmsg::Real> values_slice_x{values_x.data(),
+                                                     values_x.size()};
+        rust::Slice<const mmsg::Real> values_slice_y{values_y.data(),
+                                                     values_y.size()};
+        const bool success =
+            mmsg::filter_curve_pops(values_slice_x, values_slice_y, m_threshold,
+                                    out_values_x, out_values_y);
+        if (!success) {
+            MGlobal::displayWarning(CMD_NAME ": failed to detect curve pops.");
+            failure_count++;
+            continue;
         }
 
-        MMSOLVER_MAYA_VRB(CMD_NAME
-                          << ": Filtered curve: " << filtered_x_values.size()
-                          << " | " << filtered_y_values.size());
-        const auto tangent_in_type = MFnAnimCurve::TangentType::kTangentGlobal;
-        const auto tangent_out_type = MFnAnimCurve::TangentType::kTangentGlobal;
-        for (auto i = 0; i < filtered_x_values.size(); i++) {
-            auto frame = filtered_x_values[i];
-            auto value = filtered_y_values[i];
-            MMSOLVER_MAYA_VRB(CMD_NAME << ": f=" << frame << " v=" << value);
-
-            auto time = MTime(frame, time_unit);
-
-            uint32_t key_index = 0;
-            const bool found = m_animCurveFn.find(time, key_index, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            if (found) {
-                status =
-                    m_animCurveFn.setValue(key_index, value, &m_curveChange);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-            } else {
-                // TODO: This should use the 'MFnAnimCurve::addKeys()'
-                // method, for performance.
-                key_index = m_animCurveFn.addKey(time, value, tangent_in_type,
-                                                 tangent_out_type,
-                                                 &m_curveChange, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-            }
+        rust::Slice<const mmsg::Real> out_values_slice_x{out_values_x.data(),
+                                                         out_values_x.size()};
+        rust::Slice<const mmsg::Real> out_values_slice_y{out_values_y.data(),
+                                                         out_values_y.size()};
+        status = set_anim_curve_keys(out_values_slice_x, out_values_slice_y,
+                                     time_unit, m_animCurveFn, m_curveChange);
+        if (status != MS::kSuccess) {
+            MGlobal::displayWarning(
+                CMD_NAME ": failed to set animation curve keyframes.");
+            failure_count++;
+            continue;
         }
+
+        success_count++;
     }
+
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": failure_count="
+                               << static_cast<int32_t>(failure_count));
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": success_count="
+                               << static_cast<int32_t>(success_count));
 
     m_dgmod.doIt();
     return status;

@@ -17,7 +17,7 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Header for 'mmBestFitPlane' Maya command.
+ * Header for 'mmAnimCurveFilterPops' Maya command.
  */
 
 #ifndef MM_SOLVER_MM_ANIM_CURVE_FILTER_POPS_CMD_H

@@ -18,6 +18,32 @@
  * ====================================================================
  *
  * Command for simplifying animation curves.
+ *
+ * TODO: Add a "return result" flag, that will not modify the actual
+ *       animation curves, but will instead output the computed result
+ *       in the command's return value. This allows us to analyse the
+ *       anim curve but process the output in Python.
+ *
+ *       Example usage (Python):
+ *       result = maya.cmds.mmAnimCurveSimplify(
+ *           "outputAnimCurve",
+ *           returnResult=True,
+ *           controlPointCount=5,
+ *           distribution="uniform",
+ *           interpolation="linear",
+ *       ) or []
+ *       keyframe_count = len(result) / 2
+ *
+ *       # Get X axis values from result.
+ *       values_x = []
+ *       for i in range(keyframe_count + 1):
+ *           values_x.append(result[i])
+ *
+ *       # Get Y axis values from result.
+ *       values_y = []
+ *       for i in range(keyframe_count + 1):
+ *           index = keyframe_count + i
+ *           values_y.append(result[index])
  */
 
 #include "MMAnimCurveSimplifyCmd.h"

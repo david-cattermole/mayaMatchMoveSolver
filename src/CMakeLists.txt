@@ -72,6 +72,7 @@ set(SOURCE_FILES
   mmSolver/cmd/MMSolverSceneGraphCmd.cpp
   mmSolver/cmd/MMSolverTypeCmd.cpp
   mmSolver/cmd/MMTestCameraMatrixCmd.cpp
+  mmSolver/cmd/anim_curve_cmd_utils.cpp
   mmSolver/cmd/arg_flags_attr_details.cpp
   mmSolver/cmd/arg_flags_attr_details.h
   mmSolver/cmd/arg_flags_solve_frames.cpp

@@ -43,6 +43,7 @@
 #include <maya/MTimeArray.h>
 
 // Maya helpers
+#include "anim_curve_cmd_utils.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -61,7 +62,7 @@ public:
         , m_endFrame(std::numeric_limits<uint32_t>::max())
         , m_controlPointCount(0)
         , m_distribution(mmscenegraph::ControlPointDistribution::kUnknown)
-        , m_method(mmscenegraph::InterpolationMethod::kUnknown){};
+        , m_interpolation(mmscenegraph::InterpolationMethod::kUnknown){};
     virtual ~MMAnimCurveSimplifyCmd();
 
     virtual bool hasSyntax() const;
@@ -87,7 +88,7 @@ private:
     // Other settings.
     uint8_t m_controlPointCount;
     mmscenegraph::ControlPointDistribution m_distribution;
-    mmscenegraph::InterpolationMethod m_method;
+    mmscenegraph::InterpolationMethod m_interpolation;
 
     // The animation curves to process.
     MSelectionList m_selection;

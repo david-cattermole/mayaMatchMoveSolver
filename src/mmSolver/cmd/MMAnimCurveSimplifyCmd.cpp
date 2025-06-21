@@ -65,6 +65,7 @@
 #include <mmcore/mmmath.h>
 
 #include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/cmd/anim_curve_cmd_utils.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -222,18 +223,18 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
         status = MS::kFailure;
     }
 
-    m_method = mmsg::InterpolationMethod::kUnknown;
+    m_interpolation = mmsg::InterpolationMethod::kUnknown;
     if (argData.isFlagSet(INTERPOLATION_METHOD_SHORT_FLAG)) {
         MString value = "";
         status =
             argData.getFlagArgument(INTERPOLATION_METHOD_SHORT_FLAG, 0, value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         if (value == INTERPOLATION_METHOD_VALUE_LINEAR) {
-            m_method = mmsg::InterpolationMethod::kLinear;
+            m_interpolation = mmsg::InterpolationMethod::kLinear;
         } else if (value == INTERPOLATION_METHOD_VALUE_CUBIC_NUBS) {
-            m_method = mmsg::InterpolationMethod::kCubicNUBS;
+            m_interpolation = mmsg::InterpolationMethod::kCubicNUBS;
         } else if (value == INTERPOLATION_METHOD_VALUE_CUBIC_SPLINE) {
-            m_method = mmsg::InterpolationMethod::kCubicSpline;
+            m_interpolation = mmsg::InterpolationMethod::kCubicSpline;
         } else {
             MMSOLVER_MAYA_ERR(CMD_NAME << ": Method value is invalid: "
                                        << "method=" << value.asChar());
@@ -246,25 +247,25 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
         return MS::kFailure;
     }
 
-    if (m_method == mmsg::InterpolationMethod::kLinear) {
+    if (m_interpolation == mmsg::InterpolationMethod::kLinear) {
         if (m_controlPointCount < 2) {
             MMSOLVER_MAYA_ERR(CMD_NAME
                               << ": keypoint count is below minimum (2)"
-                                 " for linear interpolation method.");
+                                 " for Linear interpolation method.");
             return MS::kFailure;
         }
-    } else if (m_method == mmsg::InterpolationMethod::kCubicNUBS) {
+    } else if (m_interpolation == mmsg::InterpolationMethod::kCubicNUBS) {
         if (m_controlPointCount < 3) {
             MMSOLVER_MAYA_ERR(CMD_NAME
                               << ": keypoint count is below minimum (3)"
-                                 " for cubic NURB interpolation method.");
+                                 " for Cubic NURB interpolation method.");
             return MS::kFailure;
         }
-    } else if (m_method == mmsg::InterpolationMethod::kCubicSpline) {
+    } else if (m_interpolation == mmsg::InterpolationMethod::kCubicSpline) {
         if (m_controlPointCount < 3) {
             MMSOLVER_MAYA_ERR(CMD_NAME
                               << ": keypoint count is below minimum (3)"
-                                 " for cubic spline interpolation method.");
+                                 " for Cubic Spline interpolation method.");
             return MS::kFailure;
         }
     }
@@ -321,6 +322,7 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
     rust::Vec<mmsg::Real> eval_values_x;
     rust::Vec<mmsg::Real> eval_values_y;
 
+    const auto time_unit = MTime::uiUnit();
     uint32_t success_count = 0;
     uint32_t failure_count = 0;
     for (auto i = 0; i < m_selection.length(); i++) {
@@ -340,18 +342,13 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
             return status;
         }
 
-        values_x.clear();
-        values_y.clear();
-
-        auto time_unit = MTime::uiUnit();
-        for (auto frame = m_startFrame; frame <= m_endFrame; frame += 1.0) {
-            auto time = MTime(frame, time_unit);
-            auto value = m_animCurveFn.evaluate(time, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            // MMSOLVER_MAYA_VRB(CMD_NAME << ": f=" << frame << " v=" << value);
-
-            values_x.push_back(frame);
-            values_y.push_back(value);
+        status = evaluate_curve(m_startFrame, m_endFrame, time_unit,
+                                m_animCurveFn, values_x, values_y);
+        if (status != MS::kSuccess) {
+            MGlobal::displayWarning(
+                CMD_NAME ": failed to set animation curve keyframes.");
+            failure_count++;
+            continue;
         }
 
         MMSOLVER_MAYA_VRB(CMD_NAME << ": In curve: " << values_x.size() << " | "
@@ -374,7 +371,7 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
                                                      values_y.size()};
         const bool success = mmsg::curve_simplify(
             values_slice_x, values_slice_y, m_controlPointCount, m_distribution,
-            m_method, eval_values_x, eval_values_y);
+            m_interpolation, eval_values_x, eval_values_y);
         if (!success) {
             MGlobal::displayWarning(CMD_NAME
                                     ": curve simplification failed to solve.");
@@ -382,43 +379,17 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
             continue;
         }
 
-        // Clear all keys from the anim curve.
-        //
-        // TODO: Only keyframes between (and including) the start frame
-        // and end frame should be removed.
-        auto num_keys = m_animCurveFn.numKeys();
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": num_keys=" << num_keys);
-        for (auto i = 0; i < num_keys; i++) {
-            m_animCurveFn.remove(0, &m_curveChange);
-        }
-
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": Evaluated curve: x.size()="
-                                   << eval_values_x.size()
-                                   << " | y.size()=" << eval_values_y.size());
-        const auto tangent_in_type = MFnAnimCurve::TangentType::kTangentGlobal;
-        const auto tangent_out_type = MFnAnimCurve::TangentType::kTangentGlobal;
-        for (auto i = 0; i < eval_values_x.size(); i++) {
-            auto frame = eval_values_x[i];
-            auto value = eval_values_y[i];
-            // MMSOLVER_MAYA_VRB(CMD_NAME << ": f=" << frame << " v=" << value);
-
-            auto time = MTime(frame, time_unit);
-
-            uint32_t key_index = 0;
-            const bool found = m_animCurveFn.find(time, key_index, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            if (found) {
-                status =
-                    m_animCurveFn.setValue(key_index, value, &m_curveChange);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-            } else {
-                // TODO: This should use the 'MFnAnimCurve::addKeys()'
-                // method, for performance.
-                key_index = m_animCurveFn.addKey(time, value, tangent_in_type,
-                                                 tangent_out_type,
-                                                 &m_curveChange, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-            }
+        rust::Slice<const mmsg::Real> eval_values_slice_x{eval_values_x.data(),
+                                                          eval_values_x.size()};
+        rust::Slice<const mmsg::Real> eval_values_slice_y{eval_values_y.data(),
+                                                          eval_values_y.size()};
+        status = set_anim_curve_keys(eval_values_slice_x, eval_values_slice_y,
+                                     time_unit, m_animCurveFn, m_curveChange);
+        if (status != MS::kSuccess) {
+            MGlobal::displayWarning(
+                CMD_NAME ": failed to set animation curve keyframes.");
+            failure_count++;
+            continue;
         }
 
         success_count++;

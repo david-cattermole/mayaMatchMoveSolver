@@ -69,6 +69,7 @@
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MDagPath.h>
+#include <maya/MDoubleArray.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MObject.h>
 #include <maya/MString.h>
@@ -91,26 +92,30 @@
 #define END_FRAME_FLAG_LONG "-endFrame"
 
 // How many points to use for the simplified animation curve?
-#define CONTROL_POINT_COUNT_SHORT_FLAG "-cpc"
-#define CONTROL_POINT_COUNT_LONG_FLAG "-controlPointCount"
+#define CONTROL_POINT_COUNT_FLAG_SHORT "-cpc"
+#define CONTROL_POINT_COUNT_FLAG_LONG "-controlPointCount"
 
 // The type of distribution of control points that is used for the
 // simplification.
-#define DISTRIBUTION_SHORT_FLAG "-dtr"
-#define DISTRIBUTION_LONG_FLAG "-distribution"
+#define DISTRIBUTION_FLAG_SHORT "-dtr"
+#define DISTRIBUTION_FLAG_LONG "-distribution"
 
 // Possible values for the 'distribution' flag.
 #define CONTROL_POINT_DISTRIBUTION_VALUE_UNIFORM "uniform"
 #define CONTROL_POINT_DISTRIBUTION_VALUE_AUTO_KEYPOINTS "auto_keypoints"
 
 // The type of interpolation that is used for the simplification.
-#define INTERPOLATION_SHORT_FLAG "-int"
-#define INTERPOLATION_LONG_FLAG "-interpolation"
+#define INTERPOLATION_FLAG_SHORT "-int"
+#define INTERPOLATION_FLAG_LONG "-interpolation"
 
 // Possible values for the 'interpolation' flag.
 #define INTERPOLATION_VALUE_LINEAR "linear"
 #define INTERPOLATION_VALUE_CUBIC_NUBS "cubic_nubs"
 #define INTERPOLATION_VALUE_CUBIC_SPLINE "cubic_spline"
+
+// When true, don't modify the animCurve, just return the results.
+#define RETURN_RESULT_ONLY_FLAG_SHORT "-rro"
+#define RETURN_RESULT_ONLY_FLAG_LONG "-returnResultOnly"
 
 #define CMD_NAME "mmAnimCurveSimplify"
 
@@ -149,15 +154,19 @@ MSyntax MMAnimCurveSimplifyCmd::newSyntax() {
     CHECK_MSTATUS(syntax.addFlag(END_FRAME_FLAG_SHORT, END_FRAME_FLAG_LONG,
                                  MSyntax::kUnsigned));
 
-    CHECK_MSTATUS(syntax.addFlag(CONTROL_POINT_COUNT_SHORT_FLAG,
-                                 CONTROL_POINT_COUNT_LONG_FLAG,
+    CHECK_MSTATUS(syntax.addFlag(CONTROL_POINT_COUNT_FLAG_SHORT,
+                                 CONTROL_POINT_COUNT_FLAG_LONG,
                                  MSyntax::kUnsigned));
 
-    CHECK_MSTATUS(syntax.addFlag(DISTRIBUTION_SHORT_FLAG,
-                                 DISTRIBUTION_LONG_FLAG, MSyntax::kString));
+    CHECK_MSTATUS(syntax.addFlag(DISTRIBUTION_FLAG_SHORT,
+                                 DISTRIBUTION_FLAG_LONG, MSyntax::kString));
 
-    CHECK_MSTATUS(syntax.addFlag(INTERPOLATION_SHORT_FLAG,
-                                 INTERPOLATION_LONG_FLAG, MSyntax::kString));
+    CHECK_MSTATUS(syntax.addFlag(INTERPOLATION_FLAG_SHORT,
+                                 INTERPOLATION_FLAG_LONG, MSyntax::kString));
+
+    CHECK_MSTATUS(syntax.addFlag(RETURN_RESULT_ONLY_FLAG_SHORT,
+                                 RETURN_RESULT_ONLY_FLAG_LONG,
+                                 MSyntax::kBoolean));
 
     return syntax;
 }
@@ -202,10 +211,10 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    if (argData.isFlagSet(CONTROL_POINT_COUNT_SHORT_FLAG)) {
+    if (argData.isFlagSet(CONTROL_POINT_COUNT_FLAG_SHORT)) {
         uint32_t value = 0;
         status =
-            argData.getFlagArgument(CONTROL_POINT_COUNT_SHORT_FLAG, 0, value);
+            argData.getFlagArgument(CONTROL_POINT_COUNT_FLAG_SHORT, 0, value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Largest number of keypoints that can be used.
@@ -213,24 +222,32 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
 
         if (value > keypoint_count_max) {
             MMSOLVER_MAYA_WRN(CMD_NAME
-                              << ": " << CONTROL_POINT_COUNT_LONG_FLAG << "("
-                              << CONTROL_POINT_COUNT_SHORT_FLAG
+                              << ": " << CONTROL_POINT_COUNT_FLAG_LONG << "("
+                              << CONTROL_POINT_COUNT_FLAG_SHORT
                               << ") flag value is too high, clamping value to "
                               << keypoint_count_max << "; value=" << value);
             value = keypoint_count_max;
         }
         m_controlPointCount = static_cast<uint8_t>(value);
     } else {
-        MMSOLVER_MAYA_ERR(CMD_NAME << ": " << CONTROL_POINT_COUNT_LONG_FLAG
-                                   << "(" << CONTROL_POINT_COUNT_SHORT_FLAG
+        MMSOLVER_MAYA_ERR(CMD_NAME << ": " << CONTROL_POINT_COUNT_FLAG_LONG
+                                   << "(" << CONTROL_POINT_COUNT_FLAG_SHORT
                                    << ") flag must be given.");
         status = MS::kFailure;
     }
 
+    if (argData.isFlagSet(RETURN_RESULT_ONLY_FLAG_SHORT)) {
+        bool value = false;
+        status =
+            argData.getFlagArgument(RETURN_RESULT_ONLY_FLAG_SHORT, 0, value);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        m_returnResultOnly = value;
+    }
+
     m_interpolation = mmsg::InterpolationMethod::kUnknown;
-    if (argData.isFlagSet(INTERPOLATION_SHORT_FLAG)) {
+    if (argData.isFlagSet(INTERPOLATION_FLAG_SHORT)) {
         MString value = "";
-        status = argData.getFlagArgument(INTERPOLATION_SHORT_FLAG, 0, value);
+        status = argData.getFlagArgument(INTERPOLATION_FLAG_SHORT, 0, value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         if (value == INTERPOLATION_VALUE_LINEAR) {
             m_interpolation = mmsg::InterpolationMethod::kLinear;
@@ -244,8 +261,8 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
             status = MS::kFailure;
         }
     } else {
-        MMSOLVER_MAYA_ERR(CMD_NAME << ": " << INTERPOLATION_LONG_FLAG << "("
-                                   << INTERPOLATION_SHORT_FLAG
+        MMSOLVER_MAYA_ERR(CMD_NAME << ": " << INTERPOLATION_FLAG_LONG << "("
+                                   << INTERPOLATION_FLAG_SHORT
                                    << ") flag must be given.");
         return MS::kFailure;
     }
@@ -274,9 +291,9 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
     }
 
     m_distribution = mmsg::ControlPointDistribution::kUniform;
-    if (argData.isFlagSet(DISTRIBUTION_SHORT_FLAG)) {
+    if (argData.isFlagSet(DISTRIBUTION_FLAG_SHORT)) {
         MString value = "";
-        status = argData.getFlagArgument(DISTRIBUTION_SHORT_FLAG, 0, value);
+        status = argData.getFlagArgument(DISTRIBUTION_FLAG_SHORT, 0, value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         if (value == CONTROL_POINT_DISTRIBUTION_VALUE_UNIFORM) {
             m_distribution = mmsg::ControlPointDistribution::kUniform;
@@ -316,6 +333,7 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
 
     rust::Vec<mmsg::Real> out_values_x;
     rust::Vec<mmsg::Real> out_values_y;
+    MDoubleArray result;
 
     const auto time_unit = MTime::uiUnit();
     uint32_t success_count = 0;
@@ -395,13 +413,20 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
                                                          out_values_x.size()};
         rust::Slice<const mmsg::Real> out_values_slice_y{out_values_y.data(),
                                                          out_values_y.size()};
-        status = set_anim_curve_keys(out_values_slice_x, out_values_slice_y,
-                                     time_unit, m_animCurveFn, m_curveChange);
-        if (status != MS::kSuccess) {
-            MGlobal::displayWarning(
-                CMD_NAME ": failed to set animation curve keyframes.");
-            failure_count++;
-            continue;
+        if (m_returnResultOnly) {
+            append_curve_values_to_command_result(out_values_slice_x,
+                                                  out_values_slice_y, result);
+        } else {
+            // Modify the animation curve.
+            status =
+                set_anim_curve_keys(out_values_slice_x, out_values_slice_y,
+                                    time_unit, m_animCurveFn, m_curveChange);
+            if (status != MS::kSuccess) {
+                MGlobal::displayWarning(
+                    CMD_NAME ": failed to set animation curve keyframes.");
+                failure_count++;
+                continue;
+            }
         }
 
         success_count++;
@@ -420,21 +445,35 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
         return status;
     }
 
-    m_dgmod.doIt();
+    if (m_returnResultOnly) {
+        // Return calculated values from the command.
+        MPxCommand::setResult(result);
+    } else {
+        // Modify the animation curve.
+        m_dgmod.doIt();
+    }
     return status;
 }
 
 MStatus MMAnimCurveSimplifyCmd::redoIt() {
-    MStatus status;
-    m_dgmod.doIt();
-    m_curveChange.redoIt();
+    MStatus status = MS::kSuccess;
+    if (!m_returnResultOnly) {
+        status = m_dgmod.doIt();
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = m_curveChange.redoIt();
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
     return status;
 }
 
 MStatus MMAnimCurveSimplifyCmd::undoIt() {
-    MStatus status;
-    m_curveChange.undoIt();
-    m_dgmod.undoIt();
+    MStatus status = MS::kSuccess;
+    if (!m_returnResultOnly) {
+        status = m_curveChange.undoIt();
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = m_dgmod.undoIt();
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
     return status;
 }
 

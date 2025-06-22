@@ -60,6 +60,10 @@
 #define THRESHOLD_FLAG_SHORT "-th"
 #define THRESHOLD_FLAG_LONG "-threshold"
 
+// When true, don't modify the animCurve, just return the results.
+#define RETURN_RESULT_ONLY_FLAG_SHORT "-rro"
+#define RETURN_RESULT_ONLY_FLAG_LONG "-returnResultOnly"
+
 #define CMD_NAME "mmAnimCurveFilterPops"
 
 namespace mmsg = mmscenegraph;
@@ -93,6 +97,10 @@ MSyntax MMAnimCurveFilterPopsCmd::newSyntax() {
     syntax.addFlag(THRESHOLD_FLAG_SHORT, THRESHOLD_FLAG_LONG, MSyntax::kDouble);
     // TODO: Add an option to 'infill' the pops.
 
+    CHECK_MSTATUS(syntax.addFlag(RETURN_RESULT_ONLY_FLAG_SHORT,
+                                 RETURN_RESULT_ONLY_FLAG_LONG,
+                                 MSyntax::kBoolean));
+
     // Add object argument for animation curve
     const unsigned int min_curves = 1;
     syntax.setObjectType(MSyntax::kSelectionList, min_curves);
@@ -124,6 +132,14 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
     for (auto i = 0; i < m_selection.length(); i++) {
         status = m_selection.getDependNode(i, m_animCurveObj);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    if (argData.isFlagSet(RETURN_RESULT_ONLY_FLAG_SHORT)) {
+        bool value = false;
+        status =
+            argData.getFlagArgument(RETURN_RESULT_ONLY_FLAG_SHORT, 0, value);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        m_returnResultOnly = value;
     }
 
     // Parse optional arguments
@@ -168,8 +184,6 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
     auto count = static_cast<size_t>(m_endFrame - m_startFrame) + 1;
     MMSOLVER_MAYA_VRB(CMD_NAME << ": count=" << count);
 
-    auto time_unit = MTime::uiUnit();
-
     rust::Vec<mmsg::Real> values_x;
     rust::Vec<mmsg::Real> values_y;
     values_x.reserve(count);
@@ -177,7 +191,9 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
 
     rust::Vec<mmsg::Real> out_values_x;
     rust::Vec<mmsg::Real> out_values_y;
+    MDoubleArray result;
 
+    auto time_unit = MTime::uiUnit();
     uint32_t success_count = 0;
     uint32_t failure_count = 0;
     for (auto i = 0; i < m_selection.length(); i++) {
@@ -252,13 +268,20 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
                                                          out_values_x.size()};
         rust::Slice<const mmsg::Real> out_values_slice_y{out_values_y.data(),
                                                          out_values_y.size()};
-        status = set_anim_curve_keys(out_values_slice_x, out_values_slice_y,
-                                     time_unit, m_animCurveFn, m_curveChange);
-        if (status != MS::kSuccess) {
-            MGlobal::displayWarning(
-                CMD_NAME ": failed to set animation curve keyframes.");
-            failure_count++;
-            continue;
+        if (m_returnResultOnly) {
+            append_curve_values_to_command_result(out_values_slice_x,
+                                                  out_values_slice_y, result);
+        } else {
+            // Modify the animation curve.
+            status =
+                set_anim_curve_keys(out_values_slice_x, out_values_slice_y,
+                                    time_unit, m_animCurveFn, m_curveChange);
+            if (status != MS::kSuccess) {
+                MGlobal::displayWarning(
+                    CMD_NAME ": failed to set animation curve keyframes.");
+                failure_count++;
+                continue;
+            }
         }
 
         success_count++;
@@ -277,23 +300,35 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
         return status;
     }
 
-    m_dgmod.doIt();
+    if (m_returnResultOnly) {
+        // Return calculated values from the command.
+        MPxCommand::setResult(result);
+    } else {
+        // Modify the animation curve.
+        m_dgmod.doIt();
+    }
     return status;
 }
 
 MStatus MMAnimCurveFilterPopsCmd::redoIt() {
-    MStatus status = m_dgmod.doIt();
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    status = m_curveChange.redoIt();
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MStatus status = MS::kSuccess;
+    if (!m_returnResultOnly) {
+        status = m_dgmod.doIt();
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = m_curveChange.redoIt();
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
     return status;
 }
 
 MStatus MMAnimCurveFilterPopsCmd::undoIt() {
-    MStatus status = m_curveChange.undoIt();
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    status = m_dgmod.undoIt();
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MStatus status = MS::kSuccess;
+    if (!m_returnResultOnly) {
+        status = m_curveChange.undoIt();
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = m_dgmod.undoIt();
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
     return status;
 }
 

@@ -51,6 +51,10 @@ MStatus evaluate_curve(const FrameNumber start_frame,
                        rust::Vec<mmscenegraph::Real> &out_values_x,
                        rust::Vec<mmscenegraph::Real> &out_values_y);
 
+void append_curve_values_to_command_result(
+    rust::Slice<const mmscenegraph::Real> &values_x,
+    rust::Slice<const mmscenegraph::Real> &values_y, MDoubleArray &out_array);
+
 MStatus set_anim_curve_keys(rust::Slice<const mmscenegraph::Real> &values_x,
                             rust::Slice<const mmscenegraph::Real> &values_y,
                             const MTime::Unit &time_unit,

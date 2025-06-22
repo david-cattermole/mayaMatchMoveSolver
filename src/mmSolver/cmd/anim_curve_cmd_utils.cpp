@@ -156,6 +156,19 @@ MStatus evaluate_curve(const FrameNumber start_frame,
     return status;
 }
 
+void append_curve_values_to_command_result(
+    rust::Slice<const mmsg::Real> &values_x,
+    rust::Slice<const mmsg::Real> &values_y, MDoubleArray &out_array) {
+    const double values_count = static_cast<double>(values_x.size());
+    out_array.append(values_count);
+    for (auto j = 0; j < values_x.size(); j++) {
+        const auto frame = values_x[j];
+        const auto value = values_y[j];
+        out_array.append(frame);
+        out_array.append(value);
+    }
+}
+
 MStatus set_anim_curve_keys(rust::Slice<const mmsg::Real> &values_x,
                             rust::Slice<const mmsg::Real> &values_y,
                             const MTime::Unit &time_unit,

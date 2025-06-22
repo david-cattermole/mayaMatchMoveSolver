@@ -48,7 +48,8 @@ public:
     MMAnimCurveFilterPopsCmd()
         : m_startFrame(std::numeric_limits<FrameNumber>::max())
         , m_endFrame(std::numeric_limits<FrameNumber>::max())
-        , m_threshold(1.0){};
+        , m_threshold(1.0)
+        , m_returnResultOnly(false){};
     virtual ~MMAnimCurveFilterPopsCmd();
 
     virtual bool hasSyntax() const;
@@ -71,6 +72,9 @@ private:
 
     // Pop-detection threshold.
     double m_threshold;
+
+    // When true, don't modify the curve, just return the result.
+    bool m_returnResultOnly;
 
     // The animation curves to process.
     MSelectionList m_selection;

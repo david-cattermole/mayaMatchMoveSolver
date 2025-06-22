@@ -55,11 +55,12 @@ void append_curve_values_to_command_result(
     rust::Slice<const mmscenegraph::Real> &values_x,
     rust::Slice<const mmscenegraph::Real> &values_y, MDoubleArray &out_array);
 
-MStatus set_anim_curve_keys(rust::Slice<const mmscenegraph::Real> &values_x,
-                            rust::Slice<const mmscenegraph::Real> &values_y,
-                            const MTime::Unit &time_unit,
-                            MFnAnimCurve &anim_curve_fn,
-                            MAnimCurveChange &curve_change);
+MStatus set_anim_curve_keys(
+    const char *cmd_name, rust::Slice<const mmscenegraph::Real> &values_x,
+    rust::Slice<const mmscenegraph::Real> &values_y,
+    const MTime::Unit &time_unit, MFnAnimCurve &anim_curve_fn,
+    MAnimCurveChange &curve_change, const FrameNumber start_frame,
+    const FrameNumber end_frame, const bool preserve_first_last_keys);
 
 }  // namespace mmsolver
 

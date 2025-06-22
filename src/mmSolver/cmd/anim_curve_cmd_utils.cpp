@@ -169,49 +169,73 @@ void append_curve_values_to_command_result(
     }
 }
 
-MStatus set_anim_curve_keys(rust::Slice<const mmsg::Real> &values_x,
-                            rust::Slice<const mmsg::Real> &values_y,
-                            const MTime::Unit &time_unit,
-                            MFnAnimCurve &anim_curve_fn,
-                            MAnimCurveChange &curve_change) {
+MStatus set_anim_curve_keys(
+    const char *cmd_name, rust::Slice<const mmsg::Real> &values_x,
+    rust::Slice<const mmsg::Real> &values_y, const MTime::Unit &time_unit,
+    MFnAnimCurve &anim_curve_fn, MAnimCurveChange &curve_change,
+    const FrameNumber start_frame, const FrameNumber end_frame,
+    const bool preserve_first_last_keys) {
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     MStatus status = MStatus::kSuccess;
 
-    // Clear all keys from the anim curve.
-    //
-    // TODO: Only keyframes between (and including) the start frame
-    // and end frame should be removed.
     auto num_keys = anim_curve_fn.numKeys();
-    MMSOLVER_MAYA_VRB(
-        "anim_curve_cmd_utils::set_anim_curve_keys: "
-        "num_keys="
-        << num_keys);
-    for (auto i = 0; i < num_keys; i++) {
-        anim_curve_fn.remove(0, &curve_change);
+    int first_key_index = -1;
+    int last_key_index = -1;
+    if (preserve_first_last_keys && num_keys > 0) {
+        first_key_index = 0;
+        last_key_index = num_keys - 1;
+    }
+    MMSOLVER_MAYA_VRB(cmd_name << "::set_anim_curve_keys: "
+                                  "num_keys="
+                               << num_keys << " start_frame=" << start_frame
+                               << " end_frame=" << end_frame);
+
+    // Remove keys within the specified range.
+    //
+    // We iterate backwards to avoid index shifting issues.
+    for (int32_t i = num_keys - 1; i >= 0; i--) {
+        const bool is_end = i == first_key_index || i == last_key_index;
+        if (preserve_first_last_keys && is_end) {
+            continue;
+        }
+
+        MTime key_time = anim_curve_fn.time(i, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        double frame = key_time.as(time_unit);
+
+        const bool within_range = frame >= static_cast<double>(start_frame) &&
+                                  frame <= static_cast<double>(end_frame);
+        if (within_range) {
+            status = anim_curve_fn.remove(i, &curve_change);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+        }
     }
 
-    MMSOLVER_MAYA_VRB(
-        "anim_curve_cmd_utils::set_anim_curve_keys: "
-        "curve data size: "
-        << values_x.size() << " | " << values_y.size());
+    MMSOLVER_MAYA_VRB(cmd_name << "::set_anim_curve_keys: "
+                                  "curve data size: "
+                               << values_x.size() << " | " << values_y.size());
     const auto tangent_in_type = MFnAnimCurve::TangentType::kTangentGlobal;
     const auto tangent_out_type = MFnAnimCurve::TangentType::kTangentGlobal;
+
+    // Add/update keys from the input data.
     for (auto i = 0; i < values_x.size(); i++) {
         const auto frame = values_x[i];
         const auto value = values_y[i];
-        MMSOLVER_MAYA_VRB(
-            "anim_curve_cmd_utils::set_anim_curve_keys:"
-            " f="
-            << frame << " v=" << value);
+        MMSOLVER_MAYA_VRB(cmd_name << "::set_anim_curve_keys:"
+                                      " f="
+                                   << frame << " v=" << value);
 
         const auto time = MTime(frame, time_unit);
 
         uint32_t key_index = 0;
         const bool found = anim_curve_fn.find(time, key_index, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+
         if (found) {
+            // If we're preserving first/last keys and this is one of
+            // them, we can still update its value.
             status = anim_curve_fn.setValue(key_index, value, &curve_change);
             CHECK_MSTATUS_AND_RETURN_IT(status);
         } else {

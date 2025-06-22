@@ -355,14 +355,14 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
             return status;
         }
 
-        FrameNumber startFrame = 0;
-        FrameNumber endFrame = 0;
+        FrameNumber start_frame = 0;
+        FrameNumber end_frame = 0;
         const FrameCount min_keyframe_count = 2;
         const FrameCount min_frame_count = 2;
         const char *cmd_name = CMD_NAME;
-        bool success = validate_anim_curve(cmd_name, m_startFrame, m_endFrame,
-                                           min_keyframe_count, min_frame_count,
-                                           m_animCurveFn, startFrame, endFrame);
+        bool success = validate_anim_curve(
+            cmd_name, m_startFrame, m_endFrame, min_keyframe_count,
+            min_frame_count, m_animCurveFn, start_frame, end_frame);
         if (!success) {
             MGlobal::displayWarning(CMD_NAME
                                     ": failed to validate animation curve.");
@@ -370,8 +370,8 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
             continue;
         }
 
-        status = evaluate_curve(startFrame, endFrame, time_unit, m_animCurveFn,
-                                values_x, values_y);
+        status = evaluate_curve(start_frame, end_frame, time_unit,
+                                m_animCurveFn, values_x, values_y);
         if (status != MS::kSuccess) {
             MGlobal::displayWarning(
                 CMD_NAME ": failed to set animation curve keyframes.");
@@ -418,9 +418,11 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
                                                   out_values_slice_y, result);
         } else {
             // Modify the animation curve.
-            status =
-                set_anim_curve_keys(out_values_slice_x, out_values_slice_y,
-                                    time_unit, m_animCurveFn, m_curveChange);
+            const bool preserve_first_last_keys = true;
+            status = set_anim_curve_keys(
+                cmd_name, out_values_slice_x, out_values_slice_y, time_unit,
+                m_animCurveFn, m_curveChange, start_frame, end_frame,
+                preserve_first_last_keys);
             if (status != MS::kSuccess) {
                 MGlobal::displayWarning(
                     CMD_NAME ": failed to set animation curve keyframes.");

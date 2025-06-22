@@ -33,7 +33,6 @@ import mmSolver.ui.qtpyutils as qtpyutils
 
 qtpyutils.override_binding_order()
 
-import mmSolver.ui.Qt.QtCore as QtCore
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
@@ -55,11 +54,11 @@ def _open_help():
     return
 
 
-class AttributeCurveFilterWindowPops(BaseWindow):
-    name = 'AttributeCurveFilterWindowPops'
+class AttributeCurveFilterPopsWindow(BaseWindow):
+    name = 'AttributeCurveFilterPopsWindow'
 
     def __init__(self, parent=None, name=None):
-        super(AttributeCurveFilterWindowPops, self).__init__(parent, name=name)
+        super(AttributeCurveFilterPopsWindow, self).__init__(parent, name=name)
         self.setupUi(self)
         self.addSubForm(layout_.AttributeCurveFilterPopsLayout)
 
@@ -98,7 +97,7 @@ class AttributeCurveFilterWindowPops(BaseWindow):
 
 
 def main(show=True, auto_raise=True, delete=False):
-    win = AttributeCurveFilterWindowPops.open_window(
+    win = AttributeCurveFilterPopsWindow.open_window(
         show=show, auto_raise=auto_raise, delete=delete
     )
     return win

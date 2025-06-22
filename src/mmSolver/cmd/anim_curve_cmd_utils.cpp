@@ -25,6 +25,8 @@
 // STL
 #include <cmath>
 #include <cstring>
+#include <sstream>  // stringstream
+#include <string>
 #include <vector>
 
 // Maya
@@ -47,6 +49,81 @@
 namespace mmsg = mmscenegraph;
 
 namespace mmsolver {
+
+bool validate_anim_curve(
+    const char *cmd_name, const FrameNumber input_start_frame,
+    const FrameNumber input_end_frame, const FrameCount min_keyframe_count,
+    const FrameCount min_frame_count, const MFnAnimCurve &anim_curve_fn,
+    FrameNumber &out_start_frame, FrameNumber &out_end_frame) {
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
+    const bool verbose = false;
+
+    auto keyframeCount = anim_curve_fn.numKeys();
+    if (keyframeCount < 2) {
+        std::stringstream ss;
+        ss << cmd_name
+           << ": animation curve must have at least 2 keyframes, skipping.";
+        std::string msg = ss.str();
+        MGlobal::displayWarning(msg.c_str());
+        return false;
+    }
+
+    MMSOLVER_MAYA_VRB(cmd_name << ": input_start_frame=" << input_start_frame);
+    MMSOLVER_MAYA_VRB(cmd_name << ": input_end_frame=" << input_end_frame);
+
+    FrameNumber start_frame = input_start_frame;
+    FrameNumber end_frame = input_end_frame;
+    if (input_start_frame != std::numeric_limits<FrameNumber>::max() &&
+        input_end_frame != std::numeric_limits<FrameNumber>::max()) {
+        start_frame = static_cast<FrameNumber>(anim_curve_fn.time(0).value());
+
+        auto last_key_index = keyframeCount - 1;
+        end_frame = static_cast<FrameNumber>(
+            anim_curve_fn.time(last_key_index).value());
+    }
+
+    const FrameNumber frame_range_duration = end_frame - start_frame;
+    MMSOLVER_MAYA_VRB(cmd_name << ": start_frame=" << start_frame);
+    MMSOLVER_MAYA_VRB(cmd_name << ": end_frame=" << end_frame);
+    MMSOLVER_MAYA_VRB(cmd_name << ": frame_range_duration="
+                               << frame_range_duration);
+
+    if (start_frame > end_frame) {
+        std::stringstream ss;
+        ss << cmd_name
+           << ": Invalid frame range; "
+              "The start frame is larger than the end frame.";
+        std::string msg = ss.str();
+        MGlobal::displayWarning(msg.c_str());
+        return false;
+    }
+
+    if (start_frame == end_frame) {
+        std::stringstream ss;
+        ss << cmd_name
+           << ": Invalid frame range; "
+              "The start frame is equal to the end frame.";
+        std::string msg = ss.str();
+        MGlobal::displayWarning(msg.c_str());
+        return false;
+    }
+
+    if (frame_range_duration <= min_frame_count) {
+        std::stringstream ss;
+        ss << cmd_name
+           << ": Invalid frame range; "
+              "The frame range length is less than 2 frames.";
+        std::string msg = ss.str();
+        MGlobal::displayWarning(msg.c_str());
+        return false;
+    }
+
+    // Only set the output variables once they have been validated.
+    out_start_frame = start_frame;
+    out_end_frame = end_frame;
+
+    return true;
+}
 
 MStatus evaluate_curve(const FrameNumber start_frame,
                        const FrameNumber end_frame,
@@ -79,11 +156,11 @@ MStatus evaluate_curve(const FrameNumber start_frame,
     return status;
 }
 
-const MStatus set_anim_curve_keys(rust::Slice<const mmsg::Real> &values_x,
-                                  rust::Slice<const mmsg::Real> &values_y,
-                                  const MTime::Unit &time_unit,
-                                  MFnAnimCurve &anim_curve_fn,
-                                  MAnimCurveChange &curve_change) {
+MStatus set_anim_curve_keys(rust::Slice<const mmsg::Real> &values_x,
+                            rust::Slice<const mmsg::Real> &values_y,
+                            const MTime::Unit &time_unit,
+                            MFnAnimCurve &anim_curve_fn,
+                            MAnimCurveChange &curve_change) {
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 

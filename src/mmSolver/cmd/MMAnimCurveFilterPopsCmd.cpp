@@ -33,6 +33,7 @@
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MDagPath.h>
+#include <maya/MFnAnimCurve.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MGlobal.h>
 #include <maya/MStreamUtils.h>
@@ -126,20 +127,16 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
     }
 
     // Parse optional arguments
+    m_startFrame = std::numeric_limits<uint32_t>::max();
+    m_endFrame = std::numeric_limits<uint32_t>::max();
     if (argData.isFlagSet(START_FRAME_FLAG_SHORT)) {
         status =
             argData.getFlagArgument(START_FRAME_FLAG_SHORT, 0, m_startFrame);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-    } else {
-        m_startFrame = m_animCurveFn.time(0).value();
     }
-
     if (argData.isFlagSet(END_FRAME_FLAG_SHORT)) {
         status = argData.getFlagArgument(END_FRAME_FLAG_SHORT, 0, m_endFrame);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-    } else {
-        auto last_key_index = m_animCurveFn.numKeys() - 1;
-        m_endFrame = m_animCurveFn.time(last_key_index).value();
     }
 
     if (argData.isFlagSet(THRESHOLD_FLAG_SHORT)) {
@@ -147,33 +144,9 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    const double frame_range_duration = m_endFrame - m_startFrame;
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_startFrame=" << m_startFrame);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_endFrame=" << m_endFrame);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_threshold=" << m_threshold);
-    MMSOLVER_MAYA_VRB(CMD_NAME << ": frame_range_duration="
-                               << frame_range_duration);
-
-    if (m_startFrame > m_endFrame) {
-        MGlobal::displayError(CMD_NAME
-                              ": Invalid frame range; "
-                              "The start frame is larger than the end frame.");
-        return MS::kFailure;
-    }
-
-    if (m_startFrame == m_endFrame) {
-        MGlobal::displayError(CMD_NAME
-                              ": Invalid frame range; "
-                              "The start frame is equal to the end frame.");
-        return MS::kFailure;
-    }
-
-    if (frame_range_duration <= 2.0) {
-        MGlobal::displayError(CMD_NAME
-                              ": Invalid frame range; "
-                              "The frame range length is less than 2 frames.");
-        return MS::kFailure;
-    }
 
     if (m_threshold < 0.0) {
         MGlobal::displayError(CMD_NAME ": Threshold value is less than 0.0.");
@@ -222,8 +195,23 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
             return status;
         }
 
-        status = evaluate_curve(m_startFrame, m_endFrame, time_unit,
-                                m_animCurveFn, values_x, values_y);
+        FrameNumber startFrame = 0;
+        FrameNumber endFrame = 0;
+        const FrameCount min_keyframe_count = 2;
+        const FrameCount min_frame_count = 2;
+        const char *cmd_name = CMD_NAME;
+        bool success = validate_anim_curve(cmd_name, m_startFrame, m_endFrame,
+                                           min_keyframe_count, min_frame_count,
+                                           m_animCurveFn, startFrame, endFrame);
+        if (!success) {
+            MGlobal::displayWarning(CMD_NAME
+                                    ": failed to validate animation curve.");
+            failure_count++;
+            continue;
+        }
+
+        status = evaluate_curve(startFrame, endFrame, time_unit, m_animCurveFn,
+                                values_x, values_y);
         if (status != MS::kSuccess) {
             MGlobal::displayWarning(
                 CMD_NAME ": failed to set animation curve keyframes.");
@@ -251,7 +239,7 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
                                                      values_x.size()};
         rust::Slice<const mmsg::Real> values_slice_y{values_y.data(),
                                                      values_y.size()};
-        const bool success =
+        success =
             mmsg::filter_curve_pops(values_slice_x, values_slice_y, m_threshold,
                                     out_values_x, out_values_y);
         if (!success) {
@@ -280,6 +268,14 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
                                << static_cast<int32_t>(failure_count));
     MMSOLVER_MAYA_VRB(CMD_NAME << ": success_count="
                                << static_cast<int32_t>(success_count));
+    if (failure_count > 0) {
+        MGlobal::displayError(CMD_NAME
+                              ": failed to filter pops on animation curves.");
+    }
+    if (success_count == 0) {
+        status = MS::kFailure;
+        return status;
+    }
 
     m_dgmod.doIt();
     return status;

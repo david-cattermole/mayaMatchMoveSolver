@@ -33,14 +33,16 @@
 // MM Solver
 #include "mmSolver/core/frame.h"
 
-// // MM Solver Libs
-// #include <mmcore/mmdata.h>
-// #include <mmcore/mmmath.h>
-
 // MM Scene Graph
 #include "mmscenegraph/mmscenegraph.h"
 
 namespace mmsolver {
+
+bool validate_anim_curve(
+    const char *cmd_name, const FrameNumber input_start_frame,
+    const FrameNumber input_end_frame, const FrameCount min_keyframe_count,
+    const FrameCount min_frame_count, const MFnAnimCurve &anim_curve_fn,
+    FrameNumber &out_start_frame, FrameNumber &out_end_frame);
 
 MStatus evaluate_curve(const FrameNumber start_frame,
                        const FrameNumber end_frame,
@@ -49,11 +51,11 @@ MStatus evaluate_curve(const FrameNumber start_frame,
                        rust::Vec<mmscenegraph::Real> &out_values_x,
                        rust::Vec<mmscenegraph::Real> &out_values_y);
 
-const MStatus set_anim_curve_keys(
-    rust::Slice<const mmscenegraph::Real> &values_x,
-    rust::Slice<const mmscenegraph::Real> &values_y,
-    const MTime::Unit &time_unit, MFnAnimCurve &anim_curve_fn,
-    MAnimCurveChange &curve_change);
+MStatus set_anim_curve_keys(rust::Slice<const mmscenegraph::Real> &values_x,
+                            rust::Slice<const mmscenegraph::Real> &values_y,
+                            const MTime::Unit &time_unit,
+                            MFnAnimCurve &anim_curve_fn,
+                            MAnimCurveChange &curve_change);
 
 }  // namespace mmsolver
 

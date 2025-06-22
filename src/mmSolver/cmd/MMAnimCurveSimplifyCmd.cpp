@@ -19,6 +19,20 @@
  *
  * Command for simplifying animation curves.
  *
+ * TODO: Add a "input curves" flag, that will allow the command to
+ *       operate on the given animCurve nodes, but output to the
+ *       "selection list" objects given. This will allows us to sample
+ *       one curve, and output to another.
+ *
+ *       Example usage (Python):
+ *       maya.cmds.mmAnimCurveSimplify(
+ *           "outputAnimCurve",
+ *           inputCurves="inputAnimCurve",
+ *           controlPointCount=5,
+ *           distribution="uniform",
+ *           interpolation="linear",
+ *       )
+ *
  * TODO: Add a "return result" flag, that will not modify the actual
  *       animation curves, but will instead output the computed result
  *       in the command's return value. This allows us to analyse the
@@ -49,41 +63,17 @@
 #include "MMAnimCurveSimplifyCmd.h"
 
 // STL
-#include <algorithm>
-#include <array>
-#include <cassert>
-#include <chrono>
-#include <cmath>
-#include <fstream>
-#include <iostream>
-#include <iterator>
 #include <limits>
-#include <list>
-#include <map>
-#include <memory>
-#include <string>
-#include <thread>
-#include <vector>
 
 // Maya
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MDagPath.h>
-#include <maya/MEulerRotation.h>
-#include <maya/MFnDagNode.h>
 #include <maya/MFnDependencyNode.h>
-#include <maya/MItSelectionList.h>
-#include <maya/MMatrix.h>
-#include <maya/MMatrixArray.h>
 #include <maya/MObject.h>
-#include <maya/MPlug.h>
-#include <maya/MPlugArray.h>
 #include <maya/MString.h>
-#include <maya/MStringArray.h>
 #include <maya/MSyntax.h>
 #include <maya/MTime.h>
-#include <maya/MTimeArray.h>
-#include <maya/MTransformationMatrix.h>
 #include <maya/MTypes.h>
 
 // MM Solver Libs
@@ -299,13 +289,6 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
         }
     }
 
-    if ((m_startFrame == std::numeric_limits<uint32_t>::max()) &&
-        (m_endFrame == std::numeric_limits<uint32_t>::max())) {
-        auto uiUnit = MTime::uiUnit();
-        m_startTime = MTime(static_cast<double>(m_startFrame), uiUnit);
-        m_endTime = MTime(static_cast<double>(m_endFrame), uiUnit);
-    }
-
     return status;
 }
 
@@ -354,8 +337,23 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
             return status;
         }
 
-        status = evaluate_curve(m_startFrame, m_endFrame, time_unit,
-                                m_animCurveFn, values_x, values_y);
+        FrameNumber startFrame = 0;
+        FrameNumber endFrame = 0;
+        const FrameCount min_keyframe_count = 2;
+        const FrameCount min_frame_count = 2;
+        const char *cmd_name = CMD_NAME;
+        bool success = validate_anim_curve(cmd_name, m_startFrame, m_endFrame,
+                                           min_keyframe_count, min_frame_count,
+                                           m_animCurveFn, startFrame, endFrame);
+        if (!success) {
+            MGlobal::displayWarning(CMD_NAME
+                                    ": failed to validate animation curve.");
+            failure_count++;
+            continue;
+        }
+
+        status = evaluate_curve(startFrame, endFrame, time_unit, m_animCurveFn,
+                                values_x, values_y);
         if (status != MS::kSuccess) {
             MGlobal::displayWarning(
                 CMD_NAME ": failed to set animation curve keyframes.");
@@ -383,7 +381,7 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
                                                      values_x.size()};
         rust::Slice<const mmsg::Real> values_slice_y{values_y.data(),
                                                      values_y.size()};
-        const bool success = mmsg::curve_simplify(
+        success = mmsg::curve_simplify(
             values_slice_x, values_slice_y, m_controlPointCount, m_distribution,
             m_interpolation, out_values_x, out_values_y);
         if (!success) {
@@ -413,6 +411,14 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
                                << static_cast<int32_t>(failure_count));
     MMSOLVER_MAYA_VRB(CMD_NAME << ": success_count="
                                << static_cast<int32_t>(success_count));
+    if (failure_count > 0) {
+        MGlobal::displayError(CMD_NAME
+                              ": failed to simplify on animation curves.");
+    }
+    if (success_count == 0) {
+        status = MS::kFailure;
+        return status;
+    }
 
     m_dgmod.doIt();
     return status;

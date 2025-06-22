@@ -24,31 +24,23 @@
 #define MM_SOLVER_MM_ANIM_CURVE_SIMPLIFY_CMD_H
 
 // STL
-#include <cmath>
 #include <limits>
-#include <vector>
 
 // Maya
 #include <maya/MAnimCurveChange.h>
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MDGModifier.h>
-#include <maya/MEulerRotation.h>
+#include <maya/MFnAnimCurve.h>
 #include <maya/MGlobal.h>
 #include <maya/MIOStream.h>
 #include <maya/MPxCommand.h>
 #include <maya/MSelectionList.h>
 #include <maya/MSyntax.h>
 #include <maya/MTime.h>
-#include <maya/MTimeArray.h>
 
-// Maya helpers
-#include "anim_curve_cmd_utils.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_utils.h"
+// MM Solver
+#include "mmSolver/core/frame.h"
 
 // MM Scene Graph
 #include "mmscenegraph/mmscenegraph.h"
@@ -58,8 +50,8 @@ namespace mmsolver {
 class MMAnimCurveSimplifyCmd : public MPxCommand {
 public:
     MMAnimCurveSimplifyCmd()
-        : m_startFrame(std::numeric_limits<uint32_t>::max())
-        , m_endFrame(std::numeric_limits<uint32_t>::max())
+        : m_startFrame(std::numeric_limits<FrameNumber>::max())
+        , m_endFrame(std::numeric_limits<FrameNumber>::max())
         , m_controlPointCount(0)
         , m_distribution(mmscenegraph::ControlPointDistribution::kUnknown)
         , m_interpolation(mmscenegraph::InterpolationMethod::kUnknown){};
@@ -79,13 +71,11 @@ public:
 private:
     MStatus parseArgs(const MArgList &args);
 
-    // Start/End Frames
-    uint32_t m_startFrame;
-    uint32_t m_endFrame;
-    MTime m_startTime;
-    MTime m_endTime;
+    // Start/End frames.
+    FrameNumber m_startFrame;
+    FrameNumber m_endFrame;
 
-    // Other settings.
+    // Simplify settings.
     uint8_t m_controlPointCount;
     mmscenegraph::ControlPointDistribution m_distribution;
     mmscenegraph::InterpolationMethod m_interpolation;

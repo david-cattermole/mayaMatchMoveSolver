@@ -23,6 +23,9 @@
 #ifndef MM_SOLVER_MM_ANIM_CURVE_FILTER_POPS_CMD_H
 #define MM_SOLVER_MM_ANIM_CURVE_FILTER_POPS_CMD_H
 
+// STL
+#include <limits>
+
 // Maya
 #include <maya/MAnimCurveChange.h>
 #include <maya/MArgDatabase.h>
@@ -35,12 +38,17 @@
 #include <maya/MSyntax.h>
 #include <maya/MTime.h>
 
+// MM Solver
+#include "mmSolver/core/frame.h"
+
 namespace mmsolver {
 
 class MMAnimCurveFilterPopsCmd : public MPxCommand {
 public:
     MMAnimCurveFilterPopsCmd()
-        : m_startFrame(1.0), m_endFrame(101.0), m_threshold(1.0){};
+        : m_startFrame(std::numeric_limits<FrameNumber>::max())
+        , m_endFrame(std::numeric_limits<FrameNumber>::max())
+        , m_threshold(1.0){};
     virtual ~MMAnimCurveFilterPopsCmd();
 
     virtual bool hasSyntax() const;
@@ -57,9 +65,11 @@ public:
 private:
     MStatus parseArgs(const MArgList &args);
 
-    // Command Options
-    double m_startFrame;
-    double m_endFrame;
+    // Start/End frames.
+    FrameNumber m_startFrame;
+    FrameNumber m_endFrame;
+
+    // Pop-detection threshold.
     double m_threshold;
 
     // The animation curves to process.

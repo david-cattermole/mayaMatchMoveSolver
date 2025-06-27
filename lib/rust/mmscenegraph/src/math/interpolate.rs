@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2024 David Cattermole.
+// Copyright (C) 2024, 2025 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -145,94 +145,330 @@ impl CurveInterpolator for LinearInterpolator {
     }
 }
 
+/// Cubic Non-Uniform B-Spline interpolator providing smooth curves
+/// with local control.
+///
+/// This implementation uses cubic (degree 3) B-splines because they
+/// provide C2 continuity (second-derivative smoothness) - the minimum
+/// level where the human eye cannot detect curvature
+/// discontinuities. Higher degrees offer diminishing visual returns
+/// while significantly increasing computational cost and potentially
+/// introducing oscillations similar to Runge's phenomenon.
+///
+/// NUBS solve the fundamental interpolation problem by providing:
+/// - **Local control**: Moving one control point affects only nearby
+///   curve segments.
+/// - **Numerical stability**: Avoids oscillations that plague
+///   high-degree polynomial interpolation.
+/// - **Smooth curves**: Generates visually seamless curves without
+///   angular artifacts.
+/// - **Predictable behavior**: Curves remain within the convex hull
+///   of control points.
+///
+/// The implementation uses the Cox-de Boor algorithm for basis
+/// function evaluation, which provides O(degree^2) complexity per
+/// point and maintains numerical stability through recursive
+/// computation that avoids division by zero.
+///
+/// # Academic References
+///
+/// - Cox, M.G. (1972): "The Numerical Evaluation of B-Splines", IMA Journal of Applied Mathematics
+/// - de Boor, C. (1978): "A Practical Guide to Splines", Springer-Verlag
+/// - Piegl, L. & Tiller, W. (1997): "The NURBS Book", Springer-Verlag
+///
 #[derive(Debug, Clone, Copy)]
 pub struct CubicNUBSInterpolator;
 
 impl CubicNUBSInterpolator {
+    /// Creates a new cubic B-spline interpolator.
+    ///
+    /// The interpolator is stateless and can be reused across
+    /// multiple curve evaluations.
     pub fn new() -> Self {
         Self
     }
 
-    fn cubic_basis_function(t: f64, i: usize) -> f64 {
-        let t = t.clamp(0.0, 1.0);
-        match i {
-            0 => (1.0 - t).powi(3) / 6.0,
-            1 => (3.0 * t.powi(3) - 6.0 * t.powi(2) + 4.0) / 6.0,
-            2 => (-3.0 * t.powi(3) + 3.0 * t.powi(2) + 3.0 * t + 1.0) / 6.0,
-            3 => t.powi(3) / 6.0,
-            _ => 0.0,
+    /// Generates a clamped uniform knot vector for cubic B-spline
+    /// evaluation.
+    ///
+    /// Clamped knot vectors solve the "endpoint problem" by forcing
+    /// B-spline curves to pass through their first and last control
+    /// points. This is achieved by repeating boundary knots (degree + 1)
+    /// times, which ensures the interpolation matrix remains
+    /// well-conditioned and the curve becomes tangent to the control
+    /// polygon at endpoints.
+    ///
+    /// Uniform spacing provides computational simplicity while
+    /// maintaining adequate flexibility. Unlike non-uniform
+    /// distributions that require complex parameterization
+    /// calculations, uniform knots enable efficient evaluation
+    /// algorithms and predictable memory access patterns.
+    ///
+    /// **Knot vector structure for cubic B-splines:**
+    /// - First 4 knots = 0.0 (clamping for degree 3)
+    /// - Interior knots uniformly spaced between 0.0 and 1.0
+    /// - Last 4 knots = 1.0 (clamping for degree 3)
+    ///
+    /// **Example**: For 6 control points, generates:
+    /// [0.0, 0.0, 0.0, 0.0, 0.25, 0.5, 0.75, 1.0, 1.0, 1.0, 1.0]
+    ///
+    /// # Arguments
+    ///
+    /// * `n_control_points` - Number of control points (must be >= 4 for cubic splines)
+    ///
+    /// # Returns
+    ///
+    /// Vector of knot values normalized to [0, 1] interval for
+    /// numerical stability
+    fn generate_knot_vector(n_control_points: usize) -> Vec<f64> {
+        let n = n_control_points;
+        let degree = 3;
+
+        // Mathematical requirement: For n control points and degree
+        // p, we need exactly n + p + 1 knots. For cubic (p=3), this
+        // gives n + 4 knots total.
+        let n_knots = n + degree + 1;
+        let mut knots = vec![0.0; n_knots];
+
+        debug_assert!(
+            n >= degree + 1,
+            "Need at least {} control points for cubic B-spline, got {}",
+            degree + 1,
+            n
+        );
+
+        // Clamp the first and last (degree+1) knots to ensure
+        // endpoint interpolation.
+        //
+        // This mathematical trick forces the curve to pass through
+        // the first and last control points by making the basis
+        // functions equal 1.0 at the boundaries.
+        for i in 0..=degree {
+            knots[i] = 0.0;
+            knots[n_knots - 1 - i] = 1.0;
         }
-    }
 
-    fn extrapolate_control_point_y_value(
-        p1_x: f64,
-        p1_y: f64,
-        p2_x: f64,
-        p2_y: f64,
-        target_x: f64,
-    ) -> f64 {
-        let dx = p2_x - p1_x;
-        if dx.abs() < f64::EPSILON {
-            return p1_y;
-        }
-        let slope = (p2_y - p1_y) / dx;
-        p1_y + slope * (target_x - p1_x)
-    }
-
-    // Get 4 control points for a segment, handling boundaries with
-    // extrapolation.
-    fn get_control_points(
-        segment_idx: usize,
-        control_points_x: &[f64],
-        control_points_y: &[f64],
-    ) -> [(f64, f64); 4] {
-        let n = control_points_x.len();
-        let mut points = [(0.0, 0.0); 4];
-
-        for i in 0..4 {
-            let idx = segment_idx as isize + (i as isize - 1);
-
-            if idx < 0 {
-                // Extrapolate before the start.
-                let x = control_points_x[0]
-                    + idx as f64 * (control_points_x[1] - control_points_x[0]);
-                let y = Self::extrapolate_control_point_y_value(
-                    control_points_x[0],
-                    control_points_y[0],
-                    control_points_x[1],
-                    control_points_y[1],
-                    x,
-                );
-                points[i] = (x, y);
-            } else if idx >= n as isize {
-                // Extrapolate after the end.
-                let last_idx = n - 1;
-                let x = control_points_x[last_idx]
-                    + (idx as f64 - last_idx as f64)
-                        * (control_points_x[last_idx]
-                            - control_points_x[last_idx - 1]);
-                let y = Self::extrapolate_control_point_y_value(
-                    control_points_x[last_idx - 1],
-                    control_points_y[last_idx - 1],
-                    control_points_x[last_idx],
-                    control_points_y[last_idx],
-                    x,
-                );
-                points[i] = (x, y);
-            } else {
-                // Within bounds.
-                points[i] = (
-                    control_points_x[idx as usize],
-                    control_points_y[idx as usize],
-                );
+        // Interior knots uniformly spaced to provide computational
+        // efficiency while maintaining curve quality. This creates
+        // the parameter intervals that define where each basis
+        // function has support.
+        let n_interior = n.saturating_sub(degree + 1);
+        if n_interior > 0 {
+            for i in 1..=n_interior {
+                knots[degree + i] = i as f64 / (n_interior + 1) as f64;
             }
         }
 
-        points
+        knots
+    }
+
+    /// Finds the knot span index containing the given parameter
+    /// value.
+    ///
+    /// Returns the index i such that u is in [knots[i], knots[i+1]).
+    /// For clamped B-splines, this will be in the range [degree,
+    /// n-1].
+    ///
+    /// # Arguments
+    ///
+    /// * `u_coord` - Parameter value in [0, 1]
+    /// * `knots` - Knot vector
+    /// * `degree` - Degree of the B-spline
+    /// * `n_control_points` - Number of control points
+    ///
+    /// # Returns
+    ///
+    /// Knot span index
+    fn find_knot_span(
+        u_coord: f64,
+        knots: &[f64],
+        degree: usize,
+        n_control_points: usize,
+    ) -> usize {
+        let n = n_control_points;
+
+        // Special case: if u_coord is at the end, return the last
+        // valid span.
+        if u_coord >= 1.0 - f64::EPSILON {
+            return n - 1;
+        }
+
+        // Binary search for the knot span.
+        //
+        // We search in the range [degree, n-1] for the valid spans.
+        let mut low = degree;
+        let mut high = n - 1;
+        while low < high {
+            let mid = (low + high) / 2;
+
+            if u_coord < knots[mid + 1] {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        // At this point, low == high, and u_coord is in [knots[low],
+        // knots[low+1]).
+        low
+    }
+
+    /// Evaluates B-spline basis functions using the Cox-de Boor
+    /// recursion algorithm.
+    ///
+    /// This is the core computational engine that makes B-splines
+    /// numerically stable.  The Cox-de Boor algorithm revolutionized
+    /// B-spline computation by providing the first numerically stable
+    /// evaluation method, replacing unstable divided difference
+    /// approaches that accumulated floating-point errors.
+    ///
+    /// **Local support property**: Each basis function N_{i,p}(u) is
+    /// non-zero only on the interval [t_i, t_{i+p+1}]. This means
+    /// only (degree + 1) basis functions contribute to any point on
+    /// the curve, enabling efficient evaluation.
+    ///
+    /// The recursive formulation automatically handles edge cases:
+    /// - Division by zero is avoided through careful denominator checking.
+    /// - Only non-zero basis functions should be computed (local support property).
+    /// - Numerical stability is maintained through the recursive structure.
+    ///
+    /// # Mathematical Foundation
+    ///
+    /// The Cox-de Boor recursion formula:
+    /// ```text
+    /// N[i,0](u) = 1 if t[i] <= u < t[i+1], 0 otherwise
+    /// N[i,p](u) = ((u - t[i]) / (t[i+p] - t[i])) * N[i,p-1](u)
+    ///           + ((t[i+p+1] - u) / (t[i+p+1] - t[i+1])) * N[i+1,p-1](u)
+    /// ```
+    ///
+    /// # Arguments
+    ///
+    /// * `control_point_index` - Index of the control point for this basis function.
+    /// * `degree` - Degree of the basis function (3 for cubic).
+    /// * `u_coord` - Parameter value in [0, 1] to evaluate.
+    /// * `knots` - Knot vector defining the parameter space.
+    ///
+    /// # Returns
+    ///
+    /// Basis function value at the given parameter, guaranteed to be in [0, 1].
+    fn basis_function(
+        control_point_index: usize,
+        degree: usize,
+        u_coord: f64,
+        knots: &[f64],
+    ) -> f64 {
+        let cp_index = control_point_index;
+        let current_knot = knots[cp_index];
+        let next_knot = knots[cp_index + 1];
+
+        // Base case: degree 0 basis functions are indicator
+        // functions.
+        if degree == 0 {
+            // For the last valid basis function when u_coord is at
+            // the end, we need to include the right endpoint to
+            // handle u_coord = 1.0.
+            let in_range = u_coord >= current_knot && u_coord < next_knot;
+
+            // Handle the special case where u_coord = 1.0 at the last
+            // knot.
+            let u_coord_at_one = next_knot >= 1.0 - f64::EPSILON
+                && u_coord >= 1.0 - f64::EPSILON;
+
+            if in_range || u_coord_at_one {
+                1.0
+            } else {
+                0.0
+            }
+        } else {
+            let mut left = 0.0;
+            let mut right = 0.0;
+
+            // Left side of the recursion:
+            // (u - t[i]) / (t[i+p] - t[i]) * N[i,p-1](u)
+            let degree_current_knot = knots[cp_index + degree];
+            let denominator1 = degree_current_knot - current_knot;
+            if denominator1 > f64::EPSILON {
+                left = (u_coord - current_knot) / denominator1
+                    * Self::basis_function(
+                        cp_index,
+                        degree - 1,
+                        u_coord,
+                        knots,
+                    );
+            }
+
+            // Right side of the recursion:
+            // (t[i+p+1] - u) / (t[i+p+1] - t[i+1]) * N[i+1,p-1](u)
+            let degree_next_knot = knots[cp_index + degree + 1];
+            let denominator2 = degree_next_knot - next_knot;
+            if denominator2 > f64::EPSILON {
+                right = (degree_next_knot - u_coord) / denominator2
+                    * Self::basis_function(
+                        cp_index + 1,
+                        degree - 1,
+                        u_coord,
+                        knots,
+                    );
+            }
+
+            left + right
+        }
+    }
+
+    /// Maps x-coordinate values to normalized parameter space using
+    /// chord length approximation.
+    ///
+    /// This function addresses the fundamental challenge of
+    /// parameterizing curves: how to map the irregular spacing of
+    /// control points in physical space to the uniform parameter
+    /// space [0, 1] required by B-spline evaluation.
+    ///
+    /// **Current implementation**: Uses simple linear mapping
+    /// (inverse lerp) as a rough approximation to chord length
+    /// parameterization. While not true chord length, this preserves
+    /// relative spacing better than uniform parameterization.
+    ///
+    /// # Arguments
+    ///
+    /// * `value_x` - X-coordinate to map to parameter space.
+    /// * `control_points_x` - Array of control point x-coordinates (must be sorted).
+    ///
+    /// # Returns
+    ///
+    /// Parameter value in [0, 1] corresponding to the input x-coordinate.
+    fn value_to_parameter(value_x: f64, control_points_x: &[f64]) -> f64 {
+        let first_x = control_points_x[0];
+        let last_x = control_points_x[control_points_x.len() - 1];
+
+        // Clamp to parameter bounds.
+        if value_x <= first_x {
+            0.0
+        } else if value_x >= last_x {
+            1.0
+        } else {
+            // Linear approximation to chord length parameterization.
+            //
+            // This provides a simple but effective mapping that
+            // preserves the relative spacing of control points in
+            // parameter space.
+            inverse_lerp_f64(first_x, last_x, value_x)
+        }
     }
 }
 
 impl CurveInterpolator for CubicNUBSInterpolator {
+    /// Interpolates a y-value for the given x-coordinate using cubic
+    /// B-spline curves.
+    ///
+    /// # Arguments
+    ///
+    /// * `value_x` - X-coordinate to interpolate
+    /// * `control_points_x` - X-coordinates of control points (must be sorted ascending)
+    /// * `control_points_y` - Y-coordinates of control points (same length as x array)
+    ///
+    /// # Returns
+    ///
+    /// Interpolated y-value at the specified x-coordinate
     fn interpolate(
         &self,
         value_x: f64,
@@ -241,39 +477,39 @@ impl CurveInterpolator for CubicNUBSInterpolator {
     ) -> f64 {
         debug_assert_eq!(control_points_x.len(), control_points_y.len());
         debug_assert!(
-            control_points_x.len() >= 2,
-            "Need at least 2 control points"
+            control_points_x.len() >= 4,
+            "Need at least 4 control points for cubic B-spline"
         );
 
-        // Find the appropriate segment.
-        let mut segment_idx = 0;
-        for i in 0..control_points_x.len() - 1 {
-            if value_x <= control_points_x[i + 1] {
-                segment_idx = i;
-                break;
-            }
-        }
+        let n = control_points_x.len();
+        let degree = 3;
 
-        // Get the 4 control points needed for this segment.
-        let control_points = Self::get_control_points(
-            segment_idx,
-            control_points_x,
-            control_points_y,
-        );
+        // Generate clamped uniform knot vector to ensure endpoint
+        // interpolation and provide computational stability.
+        let knots = Self::generate_knot_vector(n);
 
-        // Calculate local parameter t.
-        let t = if segment_idx + 1 < control_points_x.len() {
-            (value_x - control_points_x[segment_idx])
-                / (control_points_x[segment_idx + 1]
-                    - control_points_x[segment_idx])
-        } else {
-            1.0
-        };
+        // Map x value to parameter u_coord using chord length
+        // approximation.
+        //
+        // This preserves curve shape better than uniform
+        // parameterization.
+        let u_coord = Self::value_to_parameter(value_x, control_points_x);
 
-        // Calculate the interpolated value using the basis functions.
+        // Find the knot span containing u_coord This allows us to
+        // evaluate only the (degree + 1) non-zero basis functions
+        let span = Self::find_knot_span(u_coord, &knots, degree, n);
+
+        // Evaluate B-spline using only the non-zero basis functions.
+        //
+        // Due to local support, only basis functions [span-degree,
+        // span] are non-zero.
         let mut result = 0.0;
-        for i in 0..4 {
-            result += Self::cubic_basis_function(t, i) * control_points[i].1;
+        let start_idx = span.saturating_sub(degree);
+        let end_idx = span.min(n - 1);
+
+        for i in start_idx..=end_idx {
+            let basis = Self::basis_function(i, degree, u_coord, &knots);
+            result += basis * control_points_y[i];
         }
 
         result

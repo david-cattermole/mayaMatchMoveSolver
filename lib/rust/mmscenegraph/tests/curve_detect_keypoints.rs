@@ -52,7 +52,7 @@ use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points;
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points_with_initial;
 use mmscenegraph_rust::math::curve_fit::Point2;
 use mmscenegraph_rust::math::interpolate::evaluate_curve_points;
-use mmscenegraph_rust::math::interpolate::InterpolationMethod;
+use mmscenegraph_rust::math::interpolate::Interpolation;
 
 fn print_keypoints(keypoints: &[RankedKeypoint]) {
     println!("keypoints.len()={:?}", keypoints.len());
@@ -97,7 +97,7 @@ fn keypoints_common(
         .map(|x| (x.time as Real, x.value as Real))
         .collect();
 
-    let interpolation_method = InterpolationMethod::CubicNUBS;
+    let interpolation_method = Interpolation::CubicNUBS;
     let points = nonlinear_line_n_points_with_initial(
         &x_values,
         &y_values,

@@ -855,7 +855,7 @@ namespace mmscenegraph {
   struct ShimFlatScene;
   struct ShimEvaluationObjects;
   enum class ControlPointDistribution : ::std::uint8_t;
-  enum class InterpolationMethod : ::std::uint8_t;
+  enum class Interpolation : ::std::uint8_t;
 }
 
 namespace mmscenegraph {
@@ -1224,15 +1224,15 @@ enum class ControlPointDistribution : ::std::uint8_t {
 };
 #endif // CXXBRIDGE1_ENUM_mmscenegraph$ControlPointDistribution
 
-#ifndef CXXBRIDGE1_ENUM_mmscenegraph$InterpolationMethod
-#define CXXBRIDGE1_ENUM_mmscenegraph$InterpolationMethod
-enum class InterpolationMethod : ::std::uint8_t {
+#ifndef CXXBRIDGE1_ENUM_mmscenegraph$Interpolation
+#define CXXBRIDGE1_ENUM_mmscenegraph$Interpolation
+enum class Interpolation : ::std::uint8_t {
   kLinear = 1,
   kCubicNUBS = 2,
   kCubicSpline = 3,
   kUnknown = 255,
 };
-#endif // CXXBRIDGE1_ENUM_mmscenegraph$InterpolationMethod
+#endif // CXXBRIDGE1_ENUM_mmscenegraph$Interpolation
 
 extern "C" {
 bool mmscenegraph$cxxbridge1$Point3$operator$eq(const Point3 &, const Point3 &) noexcept;
@@ -1366,7 +1366,7 @@ bool mmscenegraph$cxxbridge1$shim_detect_curve_pops(::rust::Slice<const double> 
 
 bool mmscenegraph$cxxbridge1$shim_filter_curve_pops(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
 
-bool mmscenegraph$cxxbridge1$shim_curve_simplify(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, ::std::size_t control_point_count, ::mmscenegraph::ControlPointDistribution distribution, ::mmscenegraph::InterpolationMethod interpolation_method, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
+bool mmscenegraph$cxxbridge1$shim_curve_simplify(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, ::std::size_t control_point_count, ::mmscenegraph::ControlPointDistribution distribution, ::mmscenegraph::Interpolation interpolation_method, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
 } // extern "C"
 } // namespace mmscenegraph
 
@@ -1810,7 +1810,7 @@ MMSCENEGRAPH_API_EXPORT bool shim_filter_curve_pops(::rust::Slice<const double> 
   return mmscenegraph$cxxbridge1$shim_filter_curve_pops(x_values, y_values, threshold, out_x_values, out_y_values);
 }
 
-MMSCENEGRAPH_API_EXPORT bool shim_curve_simplify(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, ::std::size_t control_point_count, ::mmscenegraph::ControlPointDistribution distribution, ::mmscenegraph::InterpolationMethod interpolation_method, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept {
+MMSCENEGRAPH_API_EXPORT bool shim_curve_simplify(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, ::std::size_t control_point_count, ::mmscenegraph::ControlPointDistribution distribution, ::mmscenegraph::Interpolation interpolation_method, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept {
   return mmscenegraph$cxxbridge1$shim_curve_simplify(x_values, y_values, control_point_count, distribution, interpolation_method, out_x_values, out_y_values);
 }
 } // namespace mmscenegraph

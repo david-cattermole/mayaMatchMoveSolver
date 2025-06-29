@@ -54,7 +54,7 @@ public:
         , m_endFrame(std::numeric_limits<FrameNumber>::max())
         , m_controlPointCount(0)
         , m_distribution(mmscenegraph::ControlPointDistribution::kUnknown)
-        , m_interpolation(mmscenegraph::InterpolationMethod::kUnknown)
+        , m_interpolation(mmscenegraph::Interpolation::kUnknown)
         , m_returnResultOnly(false){};
     virtual ~MMAnimCurveSimplifyCmd();
 
@@ -79,7 +79,7 @@ private:
     // Simplify settings.
     uint8_t m_controlPointCount;
     mmscenegraph::ControlPointDistribution m_distribution;
-    mmscenegraph::InterpolationMethod m_interpolation;
+    mmscenegraph::Interpolation m_interpolation;
 
     // When true, don't modify the curve, just return the result.
     bool m_returnResultOnly;

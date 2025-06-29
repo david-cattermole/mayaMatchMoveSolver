@@ -20,11 +20,11 @@
 
 use crate::cxxbridge::ffi::ControlPointDistribution as BindControlPointDistribution;
 use crate::cxxbridge::ffi::FilmFit as BindFilmFit;
-use crate::cxxbridge::ffi::InterpolationMethod as BindInterpolationMethod;
+use crate::cxxbridge::ffi::Interpolation as BindInterpolation;
 use crate::cxxbridge::ffi::RotateOrder as BindRotateOrder;
 use mmscenegraph_rust::curve::simplify::ControlPointDistribution as CoreControlPointDistribution;
 use mmscenegraph_rust::math::camera::FilmFit as CoreFilmFit;
-use mmscenegraph_rust::math::interpolate::InterpolationMethod as CoreInterpolationMethod;
+use mmscenegraph_rust::math::interpolate::Interpolation as CoreInterpolation;
 use mmscenegraph_rust::math::rotate::euler::RotateOrder as CoreRotateOrder;
 
 pub fn bind_to_core_rotate_order(value: BindRotateOrder) -> CoreRotateOrder {
@@ -97,32 +97,32 @@ pub fn core_to_bind_control_point_distribution(
 }
 
 pub fn bind_to_core_interpolation_method(
-    value: BindInterpolationMethod,
-) -> CoreInterpolationMethod {
+    value: BindInterpolation,
+) -> CoreInterpolation {
     match value {
-        // BindInterpolationMethod::Nearest => CoreInterpolationMethod::Nearest,
-        BindInterpolationMethod::Linear => CoreInterpolationMethod::Linear,
-        BindInterpolationMethod::CubicNUBS => {
-            CoreInterpolationMethod::CubicNUBS
+        // BindInterpolation::Nearest => CoreInterpolation::Nearest,
+        BindInterpolation::Linear => CoreInterpolation::Linear,
+        BindInterpolation::CubicNUBS => {
+            CoreInterpolation::CubicNUBS
         }
-        BindInterpolationMethod::CubicSpline => {
-            CoreInterpolationMethod::CubicSpline
+        BindInterpolation::CubicSpline => {
+            CoreInterpolation::CubicSpline
         }
         _ => panic!("Invalid interpolation method: {:?}", value),
     }
 }
 
 pub fn core_to_bind_interpolation_method(
-    value: CoreInterpolationMethod,
-) -> BindInterpolationMethod {
+    value: CoreInterpolation,
+) -> BindInterpolation {
     match value {
-        // CoreInterpolationMethod::Nearest => BindInterpolationMethod::Nearest,
-        CoreInterpolationMethod::Linear => BindInterpolationMethod::Linear,
-        CoreInterpolationMethod::CubicNUBS => {
-            BindInterpolationMethod::CubicNUBS
+        // CoreInterpolation::Nearest => BindInterpolation::Nearest,
+        CoreInterpolation::Linear => BindInterpolation::Linear,
+        CoreInterpolation::CubicNUBS => {
+            BindInterpolation::CubicNUBS
         }
-        CoreInterpolationMethod::CubicSpline => {
-            BindInterpolationMethod::CubicSpline
+        CoreInterpolation::CubicSpline => {
+            BindInterpolation::CubicSpline
         }
     }
 }

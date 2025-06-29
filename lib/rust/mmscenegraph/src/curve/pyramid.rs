@@ -32,7 +32,7 @@ use crate::curve::detect::keypoints::filter_keypoints_by_type_and_level;
 use crate::curve::detect::keypoints::KeypointType;
 use crate::curve::smooth::gaussian::gaussian_smooth_2d;
 use crate::math::interpolate::evaluate_curve_points;
-use crate::math::interpolate::InterpolationMethod;
+use crate::math::interpolate::Interpolation;
 
 /// Represents a level in the animation curve pyramid.
 #[derive(Debug)]
@@ -164,7 +164,7 @@ fn downsample_curve_points(
 
     // Because cubic spline interpolation allows a smooth re-sampling between
     // points, and does not have tangent issues on the boundaries.
-    let interpolation_method = InterpolationMethod::CubicSpline;
+    let interpolation_method = Interpolation::CubicSpline;
 
     let downsampled_xy =
         evaluate_curve_points(&out_times, times, values, interpolation_method);

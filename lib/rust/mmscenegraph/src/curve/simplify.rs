@@ -29,7 +29,7 @@ use crate::math::curve_fit::nonlinear_line_n3;
 use crate::math::curve_fit::nonlinear_line_n_points;
 use crate::math::curve_fit::nonlinear_line_n_points_with_initial;
 use crate::math::interpolate::evaluate_curve_points;
-use crate::math::interpolate::InterpolationMethod;
+use crate::math::interpolate::Interpolation;
 
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -43,7 +43,7 @@ pub fn simplify(
     values_y: &[Real],
     control_point_count: usize,
     distribution: ControlPointDistribution,
-    interpolation_method: InterpolationMethod,
+    interpolation_method: Interpolation,
 ) -> Result<Vec<(Real, Real)>> {
     debug!("target_control_points={control_point_count:?}");
     debug!("interpolation_method={interpolation_method:?}");
@@ -51,7 +51,7 @@ pub fn simplify(
 
     let eval_values_xy = if control_point_count == 2 {
         assert!(
-            interpolation_method == InterpolationMethod::Linear,
+            interpolation_method == Interpolation::Linear,
             "It only makes sense to have a linear line with two keypoints."
         );
 
@@ -81,7 +81,7 @@ pub fn simplify(
             interpolation_method,
         )
     } else if control_point_count == 3
-        && interpolation_method == InterpolationMethod::Linear
+        && interpolation_method == Interpolation::Linear
     {
         // Linear - 3 points.
         let (control_point_a, control_point_b, control_point_c) =

@@ -827,7 +827,7 @@ namespace mmscenegraph {
   struct ShimFlatScene;
   struct ShimEvaluationObjects;
   enum class ControlPointDistribution : ::std::uint8_t;
-  enum class InterpolationMethod : ::std::uint8_t;
+  enum class Interpolation : ::std::uint8_t;
 }
 
 namespace mmscenegraph {
@@ -1196,15 +1196,15 @@ enum class ControlPointDistribution : ::std::uint8_t {
 };
 #endif // CXXBRIDGE1_ENUM_mmscenegraph$ControlPointDistribution
 
-#ifndef CXXBRIDGE1_ENUM_mmscenegraph$InterpolationMethod
-#define CXXBRIDGE1_ENUM_mmscenegraph$InterpolationMethod
-enum class InterpolationMethod : ::std::uint8_t {
+#ifndef CXXBRIDGE1_ENUM_mmscenegraph$Interpolation
+#define CXXBRIDGE1_ENUM_mmscenegraph$Interpolation
+enum class Interpolation : ::std::uint8_t {
   kLinear = 1,
   kCubicNUBS = 2,
   kCubicSpline = 3,
   kUnknown = 255,
 };
-#endif // CXXBRIDGE1_ENUM_mmscenegraph$InterpolationMethod
+#endif // CXXBRIDGE1_ENUM_mmscenegraph$Interpolation
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimAttrDataBlock> shim_create_attr_data_block_box() noexcept;
 
@@ -1228,5 +1228,5 @@ MMSCENEGRAPH_API_EXPORT bool shim_detect_curve_pops(::rust::Slice<const double> 
 
 MMSCENEGRAPH_API_EXPORT bool shim_filter_curve_pops(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_curve_simplify(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, ::std::size_t control_point_count, ::mmscenegraph::ControlPointDistribution distribution, ::mmscenegraph::InterpolationMethod interpolation_method, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_curve_simplify(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, ::std::size_t control_point_count, ::mmscenegraph::ControlPointDistribution distribution, ::mmscenegraph::Interpolation interpolation_method, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
 } // namespace mmscenegraph

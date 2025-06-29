@@ -92,7 +92,7 @@ pub fn linear_interpolate_y_value_at_value_x(
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum InterpolationMethod {
+pub enum Interpolation {
     // Nearest,
     Linear,
     CubicNUBS,
@@ -1010,15 +1010,15 @@ pub enum Interpolator {
 
 impl Interpolator {
     /// Creates an interpolator (without control points).
-    pub fn from_method(method: InterpolationMethod) -> Self {
+    pub fn from_method(method: Interpolation) -> Self {
         match method {
-            InterpolationMethod::Linear => {
+            Interpolation::Linear => {
                 Self::Linear(LinearInterpolator::new())
             }
-            InterpolationMethod::CubicNUBS => {
+            Interpolation::CubicNUBS => {
                 Self::CubicNUBS(CubicNUBSInterpolator::new())
             }
-            InterpolationMethod::CubicSpline => {
+            Interpolation::CubicSpline => {
                 Self::CubicSpline(CubicSplineInterpolator::new())
             }
         }
@@ -1029,7 +1029,7 @@ pub fn evaluate_curve_points(
     x_values: &[f64],
     control_points_x: &[f64],
     control_points_y: &[f64],
-    interpolation_method: InterpolationMethod,
+    interpolation_method: Interpolation,
 ) -> Vec<(f64, f64)> {
     let interpolator = Interpolator::from_method(interpolation_method);
     interpolator.set_control_points(control_points_x, control_points_y);

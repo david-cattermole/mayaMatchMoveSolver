@@ -48,7 +48,7 @@ use crate::common::CHART_RESOLUTION;
 use mmscenegraph_rust::constant::Real;
 use mmscenegraph_rust::curve::infill::infill_curve;
 use mmscenegraph_rust::curve::resample::resample_uniform_xy;
-use mmscenegraph_rust::math::interpolate::InterpolationMethod;
+use mmscenegraph_rust::math::interpolate::Interpolation;
 
 fn infill_resample_common(
     chart_title: &str,
@@ -73,7 +73,7 @@ fn infill_resample_common(
         resample_start,
         resample_end,
         resample_by,
-        InterpolationMethod::Linear,
+        Interpolation::Linear,
     )?;
     assert!(data_filtered.len() < data_raw.len());
     let x_values_filtered = chan_data_filter_only_x(&data_filtered);

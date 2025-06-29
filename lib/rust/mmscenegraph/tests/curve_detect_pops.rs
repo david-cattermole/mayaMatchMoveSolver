@@ -50,7 +50,7 @@ use mmscenegraph_rust::math::curve_fit::nonlinear_line_n3;
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points;
 use mmscenegraph_rust::math::curve_fit::AngleRadian;
 use mmscenegraph_rust::math::curve_fit::Point2;
-use mmscenegraph_rust::math::interpolate::InterpolationMethod;
+use mmscenegraph_rust::math::interpolate::Interpolation;
 
 fn compare_detected_vs_actual_pops(
     actual_pop_times: &[Real],
@@ -109,7 +109,7 @@ fn pops_common(
         println!("pop: {pop:?}");
     }
 
-    let interpolation = InterpolationMethod::Linear;
+    let interpolation = Interpolation::Linear;
     let data_filtered = filter_curve_pops(&x_values, &y_values, threshold)?;
     let data_filtered = resample_uniform_xy(
         &data_filtered,
@@ -231,7 +231,7 @@ fn pops_common_line_n_points(
     resample_end: Real,
     resample_by: Real,
     n_points: usize,
-    interpolation_method: InterpolationMethod,
+    interpolation_method: Interpolation,
 ) -> Result<(Vec<Real>, Vec<(Real, Real)>, Vec<Point2>)> {
     let (out_file_path, actual_pops, pops, data_raw, data_pop, data_filtered) =
         pops_common(
@@ -417,7 +417,7 @@ fn pops_bounce_5_up_down_pop3() -> Result<()> {
     let resample_end = 1101.0;
     let resample_by = 1.0;
     let n_points = 5;
-    let interpolation_method = InterpolationMethod::CubicNUBS;
+    let interpolation_method = Interpolation::CubicNUBS;
 
     let (actual_pops, pops, points) = pops_common_line_n_points(
         chart_title,
@@ -476,7 +476,7 @@ fn pops_down_up_raw() -> Result<()> {
     let resample_end = 1101.0;
     let resample_by = 1.0;
     let n_points = 5;
-    let interpolation_method = InterpolationMethod::CubicNUBS;
+    let interpolation_method = Interpolation::CubicNUBS;
 
     let (actual_pops, pops, points) = pops_common_line_n_points(
         chart_title,
@@ -535,7 +535,7 @@ fn pops_down_up_pop1() -> Result<()> {
     let resample_end = 1101.0;
     let resample_by = 1.0;
     let n_points = 5;
-    let interpolation_method = InterpolationMethod::CubicNUBS;
+    let interpolation_method = Interpolation::CubicNUBS;
 
     let (actual_pops, pops, points) = pops_common_line_n_points(
         chart_title,
@@ -594,7 +594,7 @@ fn pops_down_up_pop2() -> Result<()> {
     let resample_end = 1101.0;
     let resample_by = 1.0;
     let n_points = 5;
-    let interpolation_method = InterpolationMethod::CubicNUBS;
+    let interpolation_method = Interpolation::CubicNUBS;
 
     let (actual_pops, pops, points) = pops_common_line_n_points(
         chart_title,
@@ -653,7 +653,7 @@ fn pops_down_up_pop3() -> Result<()> {
     let resample_end = 1101.0;
     let resample_by = 1.0;
     let n_points = 5;
-    let interpolation_method = InterpolationMethod::CubicNUBS;
+    let interpolation_method = Interpolation::CubicNUBS;
 
     let (actual_pops, pops, points) = pops_common_line_n_points(
         chart_title,

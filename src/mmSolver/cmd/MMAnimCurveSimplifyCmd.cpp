@@ -244,17 +244,17 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
         m_returnResultOnly = value;
     }
 
-    m_interpolation = mmsg::InterpolationMethod::kUnknown;
+    m_interpolation = mmsg::Interpolation::kUnknown;
     if (argData.isFlagSet(INTERPOLATION_FLAG_SHORT)) {
         MString value = "";
         status = argData.getFlagArgument(INTERPOLATION_FLAG_SHORT, 0, value);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         if (value == INTERPOLATION_VALUE_LINEAR) {
-            m_interpolation = mmsg::InterpolationMethod::kLinear;
+            m_interpolation = mmsg::Interpolation::kLinear;
         } else if (value == INTERPOLATION_VALUE_CUBIC_NUBS) {
-            m_interpolation = mmsg::InterpolationMethod::kCubicNUBS;
+            m_interpolation = mmsg::Interpolation::kCubicNUBS;
         } else if (value == INTERPOLATION_VALUE_CUBIC_SPLINE) {
-            m_interpolation = mmsg::InterpolationMethod::kCubicSpline;
+            m_interpolation = mmsg::Interpolation::kCubicSpline;
         } else {
             MMSOLVER_MAYA_ERR(CMD_NAME << ": Method value is invalid: "
                                        << "method=" << value.asChar());
@@ -267,21 +267,21 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
         return MS::kFailure;
     }
 
-    if (m_interpolation == mmsg::InterpolationMethod::kLinear) {
+    if (m_interpolation == mmsg::Interpolation::kLinear) {
         if (m_controlPointCount < 2) {
             MMSOLVER_MAYA_ERR(CMD_NAME
                               << ": keypoint count is below minimum (2)"
                                  " for Linear interpolation method.");
             return MS::kFailure;
         }
-    } else if (m_interpolation == mmsg::InterpolationMethod::kCubicNUBS) {
+    } else if (m_interpolation == mmsg::Interpolation::kCubicNUBS) {
         if (m_controlPointCount < 4) {
             MMSOLVER_MAYA_ERR(CMD_NAME
                               << ": keypoint count is below minimum (4)"
                                  " for Cubic NURB interpolation method.");
             return MS::kFailure;
         }
-    } else if (m_interpolation == mmsg::InterpolationMethod::kCubicSpline) {
+    } else if (m_interpolation == mmsg::Interpolation::kCubicSpline) {
         if (m_controlPointCount < 3) {
             MMSOLVER_MAYA_ERR(CMD_NAME
                               << ": keypoint count is below minimum (3)"

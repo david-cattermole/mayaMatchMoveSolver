@@ -30,7 +30,7 @@ use ndarray::{Array1, Array2};
 use crate::constant::Real;
 use crate::math::interpolate::linear_interpolate_y_value_at_value_x;
 use crate::math::interpolate::CurveInterpolator;
-use crate::math::interpolate::InterpolationMethod;
+use crate::math::interpolate::Interpolation;
 use crate::math::interpolate::Interpolator;
 use crate::math::line::curve_fit_linear_regression_type1;
 
@@ -396,7 +396,7 @@ impl CurveFitLinearNPointsProblem {
     fn new(
         control_points_x: Vec<f64>,
         reference_curve: &[(f64, f64)],
-        interpolation_method: InterpolationMethod,
+        interpolation_method: Interpolation,
     ) -> Result<Self> {
         let reference_values: Vec<(f64, f64)> = reference_curve.to_vec();
         debug!("reference_values.len()={}", reference_values.len());
@@ -554,7 +554,7 @@ pub fn nonlinear_line_n_points_with_initial(
     y_values: &[f64],
     x_initial_control_points: &[f64],
     y_initial_control_points: &[f64],
-    interpolation_method: InterpolationMethod,
+    interpolation_method: Interpolation,
 ) -> Result<Vec<Point2>> {
     assert!(x_values.len() > 2);
     assert_eq!(
@@ -562,15 +562,15 @@ pub fn nonlinear_line_n_points_with_initial(
         y_values.len(),
         "X and Y values must match length."
     );
-    if interpolation_method == InterpolationMethod::CubicNUBS {
+    if interpolation_method == Interpolation::CubicNUBS {
         assert!(
             x_initial_control_points.len() >= 4,
-            "Must have at least 4 control points for InterpolationMethod::CubicNUBS."
+            "Must have at least 4 control points for Interpolation::CubicNUBS."
         );
     } else {
         assert!(
             x_initial_control_points.len() >= 3,
-            "Must have at least 3 control points for InterpolationMethod::Linear or InterpolationMethod::CubicSpline."
+            "Must have at least 3 control points for Interpolation::Linear or Interpolation::CubicSpline."
         );
     }
     assert_eq!(
@@ -638,21 +638,21 @@ pub fn nonlinear_line_n_points(
     x_values: &[f64],
     y_values: &[f64],
     control_point_count: usize,
-    interpolation: InterpolationMethod,
+    interpolation: Interpolation,
 ) -> Result<Vec<Point2>> {
     assert_eq!(x_values.len(), y_values.len());
     let value_count = x_values.len();
     assert!(value_count > 2);
 
-    if interpolation == InterpolationMethod::CubicNUBS {
+    if interpolation == Interpolation::CubicNUBS {
         assert!(
             control_point_count >= 4,
-            "Must have at least 4 control points for InterpolationMethod::CubicNUBS."
+            "Must have at least 4 control points for Interpolation::CubicNUBS."
         );
     } else {
         assert!(
             control_point_count >= 3,
-            "Must have at least 3 control points for InterpolationMethod::Linear or InterpolationMethod::CubicSpline."
+            "Must have at least 3 control points for Interpolation::Linear or Interpolation::CubicSpline."
         );
     }
 

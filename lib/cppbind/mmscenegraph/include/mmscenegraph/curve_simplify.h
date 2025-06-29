@@ -34,7 +34,7 @@ bool curve_simplify(rust::Slice<const Real> &values_x,
                     rust::Slice<const Real> &values_y,
                     const size_t control_point_count,
                     const ControlPointDistribution distribution,
-                    const InterpolationMethod interpolation_method,
+                    const Interpolation interpolation_method,
                     rust::Vec<Real> &out_values_x,
                     rust::Vec<Real> &out_values_y) noexcept;
 

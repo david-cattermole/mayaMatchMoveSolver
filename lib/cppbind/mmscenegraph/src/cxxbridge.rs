@@ -450,7 +450,7 @@ pub mod ffi {
 
     #[repr(u8)]
     #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
-    pub(crate) enum InterpolationMethod {
+    pub(crate) enum Interpolation {
         // #[cxx_name = "kNearest"]
         // Nearest = 0,
         #[cxx_name = "kLinear"]
@@ -492,7 +492,7 @@ pub mod ffi {
             y_values: &[f64],
             control_point_count: usize,
             distribution: ControlPointDistribution,
-            interpolation_method: InterpolationMethod,
+            interpolation_method: Interpolation,
             out_x_values: &mut Vec<f64>,
             out_y_values: &mut Vec<f64>,
         ) -> bool;

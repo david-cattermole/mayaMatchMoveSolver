@@ -19,7 +19,7 @@
 //
 
 use crate::cxxbridge::ffi::ControlPointDistribution as BindControlPointDistribution;
-use crate::cxxbridge::ffi::InterpolationMethod as BindInterpolationMethod;
+use crate::cxxbridge::ffi::Interpolation as BindInterpolation;
 use crate::math::bind_to_core_interpolation_method;
 use crate::math::bind_to_core_control_point_distribution;
 use crate::shim_utilities::copy_vec_xy_to_x_y;
@@ -32,7 +32,7 @@ pub fn shim_curve_simplify(
     values_y: &[CoreReal],
     control_point_count: usize,
     distribution: BindControlPointDistribution,
-    interpolation_method: BindInterpolationMethod,
+    interpolation_method: BindInterpolation,
     out_values_x: &mut Vec<CoreReal>,
     out_values_y: &mut Vec<CoreReal>,
 ) -> bool {

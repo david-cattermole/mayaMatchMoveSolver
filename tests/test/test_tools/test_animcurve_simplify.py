@@ -94,8 +94,9 @@ class TestAnimCurveSimplify(test_tools_utils.ToolsTestCase):
         return
 
     def test_simplify_control_points3(self):
+        interpolations = [INTERPOLATION_CUBIC_SPLINE, INTERPOLATION_LINEAR]
         for distribution in DISTRIBUTIONS:
-            for interpolation in INTERPOLATIONS:
+            for interpolation in interpolations:
                 animCurves = self._create_scene()
                 maya.cmds.mmAnimCurveSimplify(
                     animCurves,

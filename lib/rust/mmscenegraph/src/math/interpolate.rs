@@ -20,6 +20,7 @@
 /// Mathematical interpolation functions.
 use crate::constant::Real;
 use enum_dispatch::enum_dispatch;
+use std::cell::{Cell, RefCell};
 
 /// Return 'min_value' to 'max_value' linearly, for a 'mix' value
 /// between 0.0 and 1.0.
@@ -100,48 +101,89 @@ pub enum InterpolationMethod {
 
 #[enum_dispatch]
 pub trait CurveInterpolator {
-    fn interpolate(
+    /// Update control points.
+    fn set_control_points(
         &self,
-        value_x: f64,
         control_points_x: &[f64],
         control_points_y: &[f64],
-    ) -> f64;
+    );
+
+    /// Update control points X coordinates.
+    fn set_control_points_x(&self, control_points_x: &[f64]);
+
+    /// Update control points X coordinates.
+    fn set_control_points_y(&self, control_points_y: &[f64]);
+
+    /// Interpolate X coordinate value.
+    fn interpolate(&self, value_x: f64) -> f64;
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct LinearInterpolator;
+#[derive(Debug, Clone)]
+pub struct LinearInterpolator {
+    control_points_x: RefCell<Vec<f64>>,
+    control_points_y: RefCell<Vec<f64>>,
+}
 
 impl LinearInterpolator {
-    pub fn new() -> Self {
-        Self
+    fn new() -> Self {
+        Self {
+            control_points_x: RefCell::new(Vec::new()),
+            control_points_y: RefCell::new(Vec::new()),
+        }
     }
 }
 
 impl CurveInterpolator for LinearInterpolator {
-    fn interpolate(
+    fn set_control_points(
         &self,
-        value_x: f64,
         control_points_x: &[f64],
         control_points_y: &[f64],
-    ) -> f64 {
-        debug_assert_eq!(control_points_x.len(), control_points_y.len());
+    ) {
+        assert_eq!(control_points_x.len(), control_points_y.len());
 
-        for i in 0..control_points_x.len() - 1 {
-            if value_x <= control_points_x[i + 1] {
-                if value_x == control_points_x[i + 1] {
-                    return control_points_y[i + 1];
+        let mut x_points = self.control_points_x.borrow_mut();
+        let mut y_points = self.control_points_y.borrow_mut();
+
+        x_points.clear();
+        y_points.clear();
+        x_points.extend_from_slice(control_points_x);
+        y_points.extend_from_slice(control_points_y);
+    }
+
+    fn set_control_points_x(&self, control_points_x: &[f64]) {
+        let mut x_points = self.control_points_x.borrow_mut();
+        x_points.clear();
+        x_points.extend_from_slice(control_points_x);
+    }
+
+    fn set_control_points_y(&self, control_points_y: &[f64]) {
+        let mut y_points = self.control_points_y.borrow_mut();
+        y_points.clear();
+        y_points.extend_from_slice(control_points_y);
+    }
+
+    fn interpolate(&self, value_x: f64) -> f64 {
+        let x_points = self.control_points_x.borrow();
+        let y_points = self.control_points_y.borrow();
+
+        assert_eq!(x_points.len(), y_points.len());
+
+        for i in 0..x_points.len() - 1 {
+            if value_x <= x_points[i + 1] {
+                if value_x == x_points[i + 1] {
+                    return y_points[i + 1];
                 }
                 return linear_interpolate_point_y_value_at_value_x(
                     value_x,
-                    control_points_x[i],
-                    control_points_y[i],
-                    control_points_x[i + 1],
-                    control_points_y[i + 1],
+                    x_points[i],
+                    y_points[i],
+                    x_points[i + 1],
+                    y_points[i + 1],
                 );
             }
         }
 
-        *control_points_y.last().unwrap()
+        *y_points.last().unwrap()
     }
 }
 
@@ -176,16 +218,25 @@ impl CurveInterpolator for LinearInterpolator {
 /// - de Boor, C. (1978): "A Practical Guide to Splines", Springer-Verlag
 /// - Piegl, L. & Tiller, W. (1997): "The NURBS Book", Springer-Verlag
 ///
-#[derive(Debug, Clone, Copy)]
-pub struct CubicNUBSInterpolator;
+#[derive(Debug, Clone)]
+pub struct CubicNUBSInterpolator {
+    control_points_x: RefCell<Vec<f64>>,
+    control_points_y: RefCell<Vec<f64>>,
+    knots: RefCell<Vec<f64>>,
+    cache_dirty: Cell<bool>,
+}
+
+const CUBIC_NUBS_DEGREE: usize = 3;
 
 impl CubicNUBSInterpolator {
-    /// Creates a new cubic B-spline interpolator.
-    ///
-    /// The interpolator is stateless and can be reused across
-    /// multiple curve evaluations.
-    pub fn new() -> Self {
-        Self
+    /// Creates a new Cubic Non-Uniform B-Spline interpolator.
+    fn new() -> Self {
+        Self {
+            control_points_x: RefCell::new(Vec::new()),
+            control_points_y: RefCell::new(Vec::new()),
+            knots: RefCell::new(Vec::new()),
+            cache_dirty: Cell::new(true),
+        }
     }
 
     /// Generates a clamped uniform knot vector for cubic B-spline
@@ -222,7 +273,7 @@ impl CubicNUBSInterpolator {
     /// numerical stability
     fn generate_knot_vector(n_control_points: usize) -> Vec<f64> {
         let n = n_control_points;
-        let degree = 3;
+        let degree = CUBIC_NUBS_DEGREE;
 
         // Mathematical requirement: For n control points and degree
         // p, we need exactly n + p + 1 knots. For cubic (p=3), this
@@ -230,9 +281,9 @@ impl CubicNUBSInterpolator {
         let n_knots = n + degree + 1;
         let mut knots = vec![0.0; n_knots];
 
-        debug_assert!(
+        assert!(
             n >= degree + 1,
-            "Need at least {} control points for cubic B-spline, got {}",
+            "Need at least {} control points for Cubic Non-Uniform B-Spline, got {}.",
             degree + 1,
             n
         );
@@ -281,11 +332,11 @@ impl CubicNUBSInterpolator {
     /// Knot span index
     fn find_knot_span(
         u_coord: f64,
+        control_point_count: usize,
         knots: &[f64],
-        degree: usize,
-        n_control_points: usize,
     ) -> usize {
-        let n = n_control_points;
+        let degree = CUBIC_NUBS_DEGREE;
+        let n = control_point_count;
 
         // Special case: if u_coord is at the end, return the last
         // valid span.
@@ -436,7 +487,11 @@ impl CubicNUBSInterpolator {
     /// # Returns
     ///
     /// Parameter value in [0, 1] corresponding to the input x-coordinate.
-    fn value_to_parameter(value_x: f64, control_points_x: &[f64]) -> f64 {
+    fn value_to_u_coordinate(value_x: f64, control_points_x: &[f64]) -> f64 {
+        if control_points_x.is_empty() {
+            return 0.0;
+        }
+
         let first_x = control_points_x[0];
         let last_x = control_points_x[control_points_x.len() - 1];
 
@@ -454,9 +509,57 @@ impl CubicNUBSInterpolator {
             inverse_lerp_f64(first_x, last_x, value_x)
         }
     }
+
+    fn update_cache(&self) {
+        let x_points = self.control_points_x.borrow();
+
+        // Generate clamped uniform knot vector to ensure endpoint
+        // interpolation and provide computational stability.
+        let new_knots = Self::generate_knot_vector(x_points.len());
+        drop(x_points);
+
+        *self.knots.borrow_mut() = new_knots;
+        self.cache_dirty.set(false);
+    }
 }
 
 impl CurveInterpolator for CubicNUBSInterpolator {
+    fn set_control_points(
+        &self,
+        control_points_x: &[f64],
+        control_points_y: &[f64],
+    ) {
+        assert_eq!(control_points_x.len(), control_points_y.len());
+        assert!(
+            control_points_x.len() >= 4,
+            "Need at least 4 control points for Cubic Non-Uniform B-Spline."
+        );
+
+        let mut x_points = self.control_points_x.borrow_mut();
+        let mut y_points = self.control_points_y.borrow_mut();
+
+        x_points.clear();
+        y_points.clear();
+        x_points.extend_from_slice(control_points_x);
+        y_points.extend_from_slice(control_points_y);
+
+        self.cache_dirty.set(true);
+    }
+
+    fn set_control_points_x(&self, control_points_x: &[f64]) {
+        let mut x_points = self.control_points_x.borrow_mut();
+        x_points.clear();
+        x_points.extend_from_slice(control_points_x);
+        self.cache_dirty.set(true);
+    }
+
+    fn set_control_points_y(&self, control_points_y: &[f64]) {
+        let mut y_points = self.control_points_y.borrow_mut();
+        y_points.clear();
+        y_points.extend_from_slice(control_points_y);
+        self.cache_dirty.set(true);
+    }
+
     /// Interpolates a y-value for the given x-coordinate using cubic
     /// B-spline curves.
     ///
@@ -469,35 +572,28 @@ impl CurveInterpolator for CubicNUBSInterpolator {
     /// # Returns
     ///
     /// Interpolated y-value at the specified x-coordinate
-    fn interpolate(
-        &self,
-        value_x: f64,
-        control_points_x: &[f64],
-        control_points_y: &[f64],
-    ) -> f64 {
-        debug_assert_eq!(control_points_x.len(), control_points_y.len());
-        debug_assert!(
-            control_points_x.len() >= 4,
-            "Need at least 4 control points for cubic B-spline"
-        );
+    fn interpolate(&self, value_x: f64) -> f64 {
+        let degree = CUBIC_NUBS_DEGREE;
 
-        let n = control_points_x.len();
-        let degree = 3;
+        let x_points = self.control_points_x.borrow();
+        if x_points.is_empty() {
+            return 0.0;
+        }
+        drop(x_points); // Release borrow early.
 
-        // Generate clamped uniform knot vector to ensure endpoint
-        // interpolation and provide computational stability.
-        let knots = Self::generate_knot_vector(n);
+        if self.cache_dirty.get() {
+            self.update_cache();
+        }
 
-        // Map x value to parameter u_coord using chord length
-        // approximation.
-        //
-        // This preserves curve shape better than uniform
-        // parameterization.
-        let u_coord = Self::value_to_parameter(value_x, control_points_x);
+        let x_points = self.control_points_x.borrow();
+        let y_points = self.control_points_y.borrow();
+        let knots = self.knots.borrow();
 
         // Find the knot span containing u_coord This allows us to
         // evaluate only the (degree + 1) non-zero basis functions
-        let span = Self::find_knot_span(u_coord, &knots, degree, n);
+        let n = x_points.len();
+        let u_coord = Self::value_to_u_coordinate(value_x, &x_points);
+        let span = Self::find_knot_span(u_coord, x_points.len(), &knots);
 
         // Evaluate B-spline using only the non-zero basis functions.
         //
@@ -509,11 +605,20 @@ impl CurveInterpolator for CubicNUBSInterpolator {
 
         for i in start_idx..=end_idx {
             let basis = Self::basis_function(i, degree, u_coord, &knots);
-            result += basis * control_points_y[i];
+            result += basis * y_points[i];
         }
 
         result
     }
+}
+
+/// Cubic coefficients for a single spline segment.
+#[derive(Debug, Clone, Copy)]
+struct CubicCoefficients {
+    a: f64, // coefficient of (x-xi)^3
+    b: f64, // coefficient of (x-xi)^2
+    c: f64, // coefficient of (x-xi)
+    d: f64, // constant term
 }
 
 /// Natural cubic spline interpolator that provides smooth,
@@ -538,12 +643,22 @@ impl CurveInterpolator for CubicNUBSInterpolator {
 /// **References:**
 /// - Spline interpolation theory: https://en.wikipedia.org/wiki/Spline_interpolation
 /// - Numerical implementation: "Numerical Recipes" by Press et al.
-#[derive(Debug, Clone, Copy)]
-pub struct CubicSplineInterpolator;
+#[derive(Debug, Clone)]
+pub struct CubicSplineInterpolator {
+    control_points_x: RefCell<Vec<f64>>,
+    control_points_y: RefCell<Vec<f64>>,
+    coefficients: RefCell<Vec<CubicCoefficients>>,
+    cache_dirty: Cell<bool>,
+}
 
 impl CubicSplineInterpolator {
-    pub fn new() -> Self {
-        Self
+    fn new() -> Self {
+        Self {
+            control_points_x: RefCell::new(Vec::new()),
+            control_points_y: RefCell::new(Vec::new()),
+            coefficients: RefCell::new(Vec::new()),
+            cache_dirty: Cell::new(true),
+        }
     }
 
     /// Solves tridiagonal linear systems using the Thomas algorithm
@@ -653,7 +768,7 @@ impl CubicSplineInterpolator {
     fn calculate_coefficients(
         control_points_x: &[f64],
         control_points_y: &[f64],
-    ) -> Result<Vec<(f64, f64, f64, f64)>, &'static str> {
+    ) -> Result<Vec<CubicCoefficients>, &'static str> {
         Self::validate_input(control_points_x, control_points_y)?;
 
         let n = control_points_x.len() - 1;
@@ -661,7 +776,7 @@ impl CubicSplineInterpolator {
             return Ok(vec![]);
         }
 
-        let mut coefficients = vec![(0.0, 0.0, 0.0, 0.0); n];
+        let mut coefficients = Vec::with_capacity(n);
 
         // Calculate h (differences in x) and slopes.
         let mut h = vec![0.0; n];
@@ -669,13 +784,18 @@ impl CubicSplineInterpolator {
         for i in 0..n {
             h[i] = control_points_x[i + 1] - control_points_x[i];
             // Ensure we have positive intervals between points.
-            debug_assert!(h[i].abs() > f64::EPSILON);
+            assert!(h[i].abs() > f64::EPSILON);
             slopes[i] = (control_points_y[i + 1] - control_points_y[i]) / h[i];
         }
 
         if n == 1 {
             // Only two points - use linear interpolation (degenerate cubic).
-            coefficients[0] = (0.0, 0.0, slopes[0], control_points_y[0]);
+            coefficients.push(CubicCoefficients {
+                a: 0.0,
+                b: 0.0,
+                c: slopes[0],
+                d: control_points_y[0],
+            });
             return Ok(coefficients);
         }
 
@@ -755,58 +875,107 @@ impl CubicSplineInterpolator {
             let mi = m[i];
             let mi1 = m[i + 1];
 
-            // Coefficient of (x-xi)^3.
-            let a = (mi1 - mi) / (6.0 * hi);
-
-            // Coefficient of (x-xi)^2.
-            let b = mi / 2.0;
-
-            // Coefficient of (x-xi).
-            let c = (yi1 - yi) / hi - hi * (mi1 + 2.0 * mi) / 6.0;
-
-            // Constant term.
-            let d = yi;
-
-            coefficients[i] = (a, b, c, d);
+            coefficients.push(CubicCoefficients {
+                a: (mi1 - mi) / (6.0 * hi),
+                b: mi / 2.0,
+                c: (yi1 - yi) / hi - hi * (mi1 + 2.0 * mi) / 6.0,
+                d: yi,
+            });
         }
 
         Ok(coefficients)
     }
+
+    fn update_cache(&self) {
+        let x_points = self.control_points_x.borrow();
+        let y_points = self.control_points_y.borrow();
+
+        Self::validate_input(&x_points, &y_points).unwrap();
+
+        // Calculate coefficients for all segments.
+        let new_coefficients = Self::calculate_coefficients(
+            &x_points, &y_points,
+        )
+        .expect(
+            "Coefficients must compute; validation should prevent failures.",
+        );
+
+        drop(x_points);
+        drop(y_points);
+
+        *self.coefficients.borrow_mut() = new_coefficients;
+        self.cache_dirty.set(false);
+    }
 }
 
 impl CurveInterpolator for CubicSplineInterpolator {
-    /// Evaluates the cubic spline at a given x-coordinate using
-    /// pre-computed coefficients.
-    fn interpolate(
+    fn set_control_points(
         &self,
-        value_x: f64,
         control_points_x: &[f64],
         control_points_y: &[f64],
-    ) -> f64 {
-        debug_assert_eq!(control_points_x.len(), control_points_y.len());
-        debug_assert!(
+    ) {
+        assert_eq!(control_points_x.len(), control_points_y.len());
+        assert!(
             control_points_x.len() >= 2,
-            "Need at least 2 control points"
+            "Need at least 2 control points for Cubic Spline."
         );
 
-        let n = control_points_x.len();
+        let mut x_points = self.control_points_x.borrow_mut();
+        let mut y_points = self.control_points_y.borrow_mut();
+
+        x_points.clear();
+        y_points.clear();
+        x_points.extend_from_slice(control_points_x);
+        y_points.extend_from_slice(control_points_y);
+
+        self.cache_dirty.set(true);
+    }
+
+    fn set_control_points_x(&self, control_points_x: &[f64]) {
+        let mut x_points = self.control_points_x.borrow_mut();
+        x_points.clear();
+        x_points.extend_from_slice(control_points_x);
+        self.cache_dirty.set(true);
+    }
+
+    fn set_control_points_y(&self, control_points_y: &[f64]) {
+        let mut y_points = self.control_points_y.borrow_mut();
+        y_points.clear();
+        y_points.extend_from_slice(control_points_y);
+        self.cache_dirty.set(true);
+    }
+
+    /// Interpolates a y-value for the given x-coordinate using cubic
+    /// B-spline curves.
+    fn interpolate(&self, value_x: f64) -> f64 {
+        let x_points = self.control_points_x.borrow();
+        let n = x_points.len();
 
         // Handle edge cases.
         if n == 0 {
             return 0.0;
         }
         if n == 1 {
-            return control_points_y[0];
+            let y_points = self.control_points_y.borrow();
+            return y_points[0];
         }
 
-        // Clamp to data range - natural splines provide linear
-        // extrapolation but we simplify by returning endpoint values.
-        if value_x <= control_points_x[0] {
-            return control_points_y[0];
+        if value_x <= x_points[0] {
+            let y_points = self.control_points_y.borrow();
+            return y_points[0];
         }
-        if value_x >= control_points_x[n - 1] {
-            return control_points_y[n - 1];
+        if value_x >= x_points[n - 1] {
+            let y_points = self.control_points_y.borrow();
+            return y_points[n - 1];
         }
+        drop(x_points); // Release early.
+
+        if self.cache_dirty.get() {
+            self.update_cache();
+        }
+
+        let x_points = self.control_points_x.borrow();
+        let coefficients = self.coefficients.borrow();
 
         // Binary search to find the correct segment.
         //
@@ -816,7 +985,7 @@ impl CurveInterpolator for CubicSplineInterpolator {
         let mut right = n - 1;
         while left < right - 1 {
             let mid = (left + right) / 2;
-            if value_x < control_points_x[mid] {
+            if value_x < x_points[mid] {
                 right = mid;
             } else {
                 left = mid;
@@ -824,29 +993,10 @@ impl CurveInterpolator for CubicSplineInterpolator {
         }
         let segment_idx = left;
 
-        // Calculate coefficients for all segments.
-        //
-        // TODO: Recalculating coefficients on every evaluation! This
-        // should ideally be cached or computed once during setup.
-        let coefficients = Self::calculate_coefficients(
-            control_points_x,
-            control_points_y,
-        )
-        .expect(
-            "Coefficients must compute - validation should prevent failures.",
-        );
-
-        if coefficients.is_empty() {
-            return control_points_y[0];
-        }
-
         // Evaluate the cubic polynomial for this segment.
-        let dx = value_x - control_points_x[segment_idx];
-        let (a, b, c, d) = coefficients[segment_idx];
-
-        // Horner's method for efficient polynomial evaluation:
-        // S(x) = ((a*dx + b)*dx + c)*dx + d
-        ((a * dx + b) * dx + c) * dx + d
+        let dx = value_x - x_points[segment_idx];
+        let coef = &coefficients[segment_idx];
+        ((coef.a * dx + coef.b) * dx + coef.c) * dx + coef.d
     }
 }
 
@@ -859,6 +1009,7 @@ pub enum Interpolator {
 }
 
 impl Interpolator {
+    /// Creates an interpolator (without control points).
     pub fn from_method(method: InterpolationMethod) -> Self {
         match method {
             InterpolationMethod::Linear => {
@@ -881,11 +1032,12 @@ pub fn evaluate_curve_points(
     interpolation_method: InterpolationMethod,
 ) -> Vec<(f64, f64)> {
     let interpolator = Interpolator::from_method(interpolation_method);
+    interpolator.set_control_points(control_points_x, control_points_y);
+
     x_values
         .iter()
         .map(|&x| {
-            let y =
-                interpolator.interpolate(x, control_points_x, control_points_y);
+            let y = interpolator.interpolate(x);
             (x, y)
         })
         .collect()

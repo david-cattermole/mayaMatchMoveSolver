@@ -401,10 +401,13 @@ impl CurveFitLinearNPointsProblem {
         let reference_values: Vec<(f64, f64)> = reference_curve.to_vec();
         debug!("reference_values.len()={}", reference_values.len());
 
+        let interpolator = Interpolator::from_method(interpolation_method);
+        interpolator.set_control_points_x(&control_points_x);
+
         Ok(Self {
             reference_values,
             control_points_x,
-            interpolator: Interpolator::from_method(interpolation_method),
+            interpolator,
         })
     }
 
@@ -412,25 +415,13 @@ impl CurveFitLinearNPointsProblem {
         self.control_points_x.len()
     }
 
-    fn interpolate_y_value_at_x(
-        &self,
-        value_x: f64,
-        control_points_y: &[f64],
-    ) -> f64 {
-        self.interpolator.interpolate(
-            value_x,
-            &self.control_points_x,
-            control_points_y,
-        )
-    }
-
     fn residuals(&self, control_points_y: &[f64]) -> Vec<f64> {
+        self.interpolator.set_control_points_y(control_points_y);
         self.reference_values
             .iter()
             .map(|&(value_x, data_y)| {
-                let curve_y =
-                    self.interpolate_y_value_at_x(value_x, control_points_y);
-                (curve_y - data_y).abs()
+                let value_y = self.interpolator.interpolate(value_x);
+                (value_y - data_y).abs()
             })
             .collect()
     }
@@ -571,10 +562,17 @@ pub fn nonlinear_line_n_points_with_initial(
         y_values.len(),
         "X and Y values must match length."
     );
-    assert!(
-        x_initial_control_points.len() >= 3,
-        "Must have at least 3 control points."
-    );
+    if interpolation_method == InterpolationMethod::CubicNUBS {
+        assert!(
+            x_initial_control_points.len() >= 4,
+            "Must have at least 4 control points for InterpolationMethod::CubicNUBS."
+        );
+    } else {
+        assert!(
+            x_initial_control_points.len() >= 3,
+            "Must have at least 3 control points for InterpolationMethod::Linear or InterpolationMethod::CubicSpline."
+        );
+    }
     assert_eq!(
         x_initial_control_points.len(),
         y_initial_control_points.len(),
@@ -645,10 +643,18 @@ pub fn nonlinear_line_n_points(
     assert_eq!(x_values.len(), y_values.len());
     let value_count = x_values.len();
     assert!(value_count > 2);
-    assert!(
-        control_point_count >= 3,
-        "Must have at least 3 control points"
-    );
+
+    if interpolation == InterpolationMethod::CubicNUBS {
+        assert!(
+            control_point_count >= 4,
+            "Must have at least 4 control points for InterpolationMethod::CubicNUBS."
+        );
+    } else {
+        assert!(
+            control_point_count >= 3,
+            "Must have at least 3 control points for InterpolationMethod::Linear or InterpolationMethod::CubicSpline."
+        );
+    }
 
     let mut point_x = 0.0;
     let mut point_y = 0.0;

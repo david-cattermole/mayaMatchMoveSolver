@@ -275,9 +275,9 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
             return MS::kFailure;
         }
     } else if (m_interpolation == mmsg::InterpolationMethod::kCubicNUBS) {
-        if (m_controlPointCount < 3) {
+        if (m_controlPointCount < 4) {
             MMSOLVER_MAYA_ERR(CMD_NAME
-                              << ": keypoint count is below minimum (3)"
+                              << ": keypoint count is below minimum (4)"
                                  " for Cubic NURB interpolation method.");
             return MS::kFailure;
         }

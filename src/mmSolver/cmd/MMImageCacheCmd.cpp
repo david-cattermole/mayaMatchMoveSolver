@@ -40,6 +40,7 @@
 
 #include "mmSolver/image/ImageCache.h"
 #include "mmSolver/mayahelper/maya_string_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/path_utils.h"
 #include "mmSolver/utilities/string_utils.h"
@@ -120,50 +121,51 @@ MSyntax MMImageCacheCmd::newSyntax() {
 
     syntax.setObjectType(MSyntax::kStringObjects);
 
-    CHECK_MSTATUS(syntax.addFlag(GPU_CAPACITY_FLAG, GPU_CAPACITY_FLAG_LONG,
-                                 MSyntax::kString));
-    CHECK_MSTATUS(syntax.addFlag(CPU_CAPACITY_FLAG, CPU_CAPACITY_FLAG_LONG,
-                                 MSyntax::kString));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        GPU_CAPACITY_FLAG, GPU_CAPACITY_FLAG_LONG, MSyntax::kString));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        CPU_CAPACITY_FLAG, CPU_CAPACITY_FLAG_LONG, MSyntax::kString));
 
-    CHECK_MSTATUS(syntax.addFlag(GPU_USED_FLAG, GPU_USED_FLAG_LONG));
-    CHECK_MSTATUS(syntax.addFlag(CPU_USED_FLAG, CPU_USED_FLAG_LONG));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(GPU_USED_FLAG, GPU_USED_FLAG_LONG));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(CPU_USED_FLAG, CPU_USED_FLAG_LONG));
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(GPU_ITEM_COUNT_FLAG, GPU_ITEM_COUNT_FLAG_LONG));
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(CPU_ITEM_COUNT_FLAG, CPU_ITEM_COUNT_FLAG_LONG));
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(GPU_ERASE_ITEMS_FLAG, GPU_ERASE_ITEMS_FLAG_LONG));
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(CPU_ERASE_ITEMS_FLAG, CPU_ERASE_ITEMS_FLAG_LONG));
 
-    CHECK_MSTATUS(syntax.addFlag(GPU_ERASE_GROUP_ITEMS_FLAG,
-                                 GPU_ERASE_GROUP_ITEMS_FLAG_LONG));
-    CHECK_MSTATUS(syntax.addFlag(CPU_ERASE_GROUP_ITEMS_FLAG,
-                                 CPU_ERASE_GROUP_ITEMS_FLAG_LONG));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(GPU_ERASE_GROUP_ITEMS_FLAG,
+                                          GPU_ERASE_GROUP_ITEMS_FLAG_LONG));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(CPU_ERASE_GROUP_ITEMS_FLAG,
+                                          CPU_ERASE_GROUP_ITEMS_FLAG_LONG));
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(GPU_GROUP_COUNT_FLAG, GPU_GROUP_COUNT_FLAG_LONG));
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(CPU_GROUP_COUNT_FLAG, CPU_GROUP_COUNT_FLAG_LONG));
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(GPU_GROUP_NAMES_FLAG, GPU_GROUP_NAMES_FLAG_LONG));
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(CPU_GROUP_NAMES_FLAG, CPU_GROUP_NAMES_FLAG_LONG));
 
-    CHECK_MSTATUS(syntax.addFlag(GPU_GROUP_ITEM_COUNT_FLAG,
-                                 GPU_GROUP_ITEM_COUNT_FLAG_LONG));
-    CHECK_MSTATUS(syntax.addFlag(CPU_GROUP_ITEM_COUNT_FLAG,
-                                 CPU_GROUP_ITEM_COUNT_FLAG_LONG));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(GPU_GROUP_ITEM_COUNT_FLAG,
+                                          GPU_GROUP_ITEM_COUNT_FLAG_LONG));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(CPU_GROUP_ITEM_COUNT_FLAG,
+                                          CPU_GROUP_ITEM_COUNT_FLAG_LONG));
 
-    CHECK_MSTATUS(syntax.addFlag(GPU_GROUP_ITEM_NAMES_FLAG,
-                                 GPU_GROUP_ITEM_NAMES_FLAG_LONG));
-    CHECK_MSTATUS(syntax.addFlag(CPU_GROUP_ITEM_NAMES_FLAG,
-                                 CPU_GROUP_ITEM_NAMES_FLAG_LONG));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(GPU_GROUP_ITEM_NAMES_FLAG,
+                                          GPU_GROUP_ITEM_NAMES_FLAG_LONG));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(CPU_GROUP_ITEM_NAMES_FLAG,
+                                          CPU_GROUP_ITEM_NAMES_FLAG_LONG));
 
-    CHECK_MSTATUS(syntax.addFlag(BRIEF_TEXT_FLAG, BRIEF_TEXT_FLAG_LONG));
+    MMSOLVER_CHECK_MSTATUS(
+        syntax.addFlag(BRIEF_TEXT_FLAG, BRIEF_TEXT_FLAG_LONG));
 
     return syntax;
 }
@@ -176,7 +178,7 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
     const bool verbose = false;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_is_query = argData.isQuery();
     m_is_edit = argData.isEdit();
@@ -326,7 +328,7 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
             m_command_flag = ImageCacheFlagMode::kGpuCapacity;
             MString mstring;
             status = argData.getFlagArgument(GPU_CAPACITY_FLAG, 0, mstring);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             m_gpu_capacity_bytes =
                 mmmayastring::mstringToNumber<size_t>(mstring);
 
@@ -337,7 +339,7 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
             m_command_flag = ImageCacheFlagMode::kCpuCapacity;
             MString mstring;
             status = argData.getFlagArgument(CPU_CAPACITY_FLAG, 0, mstring);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             m_cpu_capacity_bytes =
                 mmmayastring::mstringToNumber<size_t>(mstring);
 
@@ -435,7 +437,7 @@ inline MStatus set_values(image::ImageCache &image_cache,
 
         MHWRender::MTextureManager *texture_manager = nullptr;
         status = get_texture_manager(texture_manager);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         image_cache.set_gpu_capacity_bytes(texture_manager, gpu_capacity_bytes);
     } else if (command_flag == ImageCacheFlagMode::kCpuCapacity) {
@@ -449,7 +451,7 @@ inline MStatus set_values(image::ImageCache &image_cache,
 
         MHWRender::MTextureManager *texture_manager = nullptr;
         status = get_texture_manager(texture_manager);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         for (auto it = item_names.begin(); it != item_names.end(); it++) {
             auto item_name = *it;
@@ -487,7 +489,7 @@ inline MStatus set_values(image::ImageCache &image_cache,
 
         MHWRender::MTextureManager *texture_manager = nullptr;
         status = get_texture_manager(texture_manager);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         for (auto it = item_names.begin(); it != item_names.end(); it++) {
             auto item_name = *it;
@@ -653,7 +655,7 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
 
     // Read all the flag arguments.
     MStatus status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_is_query) {
         image::ImageCache &image_cache = image::ImageCache::getInstance();
@@ -661,13 +663,13 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
         if (m_output_type == ImageCacheOutputType::kString) {
             MString result;
             status = get_value_string(image_cache, m_command_flag, result);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MMImageCacheCmd::setResult(result);
         } else if (m_output_type == ImageCacheOutputType::kSize) {
             size_t result = 0;
             status = get_value_size(image_cache, m_command_flag, m_group_name,
                                     result);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MString result_string(mmmayastring::numberToMString(result));
             MMImageCacheCmd::setResult(result_string);
@@ -675,7 +677,7 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
             MStringArray results;
             status = get_value_string_array(image_cache, m_command_flag,
                                             m_group_name, results);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MMImageCacheCmd::setResult(results);
         } else {
             MMSOLVER_MAYA_ERR(
@@ -693,7 +695,7 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
         status = set_values(image_cache, m_command_flag, m_gpu_capacity_bytes,
                             m_cpu_capacity_bytes, m_item_names, m_group_name,
                             item_count);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         if (m_output_type == ImageCacheOutputType::kSize) {
             MString result_string(mmmayastring::numberToMString(item_count));
@@ -719,7 +721,7 @@ MStatus MMImageCacheCmd::redoIt() {
         status = set_values(image_cache, m_command_flag, m_gpu_capacity_bytes,
                             m_cpu_capacity_bytes, m_item_names, m_group_name,
                             item_count);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         if (m_output_type == ImageCacheOutputType::kSize) {
             MString result_string(mmmayastring::numberToMString(item_count));
@@ -750,7 +752,7 @@ MStatus MMImageCacheCmd::undoIt() {
                                 m_previous_gpu_capacity_bytes,
                                 m_previous_cpu_capacity_bytes, m_item_names,
                                 m_group_name, item_count);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
     }
     return status;

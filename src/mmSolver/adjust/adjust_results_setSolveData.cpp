@@ -48,7 +48,7 @@ MStatus createResultAttr_boolean(const char *attr_name, MObject &node,
                                          MFnNumericData::kBoolean);
     numeric_attr.setKeyable(true);
     numeric_attr.setDefault(true);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -62,7 +62,7 @@ MStatus createResultAttr_reasonNum(const char *attr_name, MObject &node,
     MFnNumericAttribute numeric_attr;
     MStatus status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
                                          MFnNumericData::kLong);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     numeric_attr.setMin(0);
     numeric_attr.setDefault(0);
@@ -79,7 +79,7 @@ MStatus createResultAttr_reasonString(const char *attr_name, MObject &node,
 
     MStatus status =
         create_typed_attr(attr_name, node, dgmod, typedAttr, MFnData::kString);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     typedAttr.setReadable(true);
     typedAttr.setWritable(true);
@@ -100,7 +100,7 @@ MStatus createResultAttr_deviation(const char *attr_name, MObject &node,
     numeric_attr.setKeyable(true);
     numeric_attr.setMin(-1.0);
     numeric_attr.setDefault(-1.0);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -127,7 +127,7 @@ MStatus createResultAttr_maxDeviationFrame(const char *attr_name, MObject &node,
     numeric_attr.setKeyable(true);
     numeric_attr.setMin(-1);
     numeric_attr.setDefault(-1);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -138,7 +138,7 @@ MStatus createResultAttr_objectCount(const char *attr_name, MObject &node,
                                          MFnNumericData::kLong);
     numeric_attr.setMin(0);
     numeric_attr.setDefault(0);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -165,7 +165,7 @@ MStatus setSolverResultDataOnNode(SolverResult &results, MObject &node,
     MStatus status = MS::kSuccess;
 
     MFnDependencyNode dg_node_fn(node, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     const char *success_attr_name = "success";
     const char *reason_num_attr_name = "reason_num";
@@ -192,33 +192,33 @@ MStatus setSolverResultDataOnNode(SolverResult &results, MObject &node,
     MPlug user_interrupted_plug;
 
     status = find_plug(success_attr_name, dg_node_fn, success_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = find_plug(reason_num_attr_name, dg_node_fn, reason_num_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = find_plug(reason_string_attr_name, dg_node_fn, reason_string_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = find_plug(error_final_attr_name, dg_node_fn, error_final_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status =
         find_plug(error_final_avg_attr_name, dg_node_fn, error_final_avg_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status =
         find_plug(error_final_max_attr_name, dg_node_fn, error_final_max_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status =
         find_plug(error_final_min_attr_name, dg_node_fn, error_final_min_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = find_plug(iteration_num_attr_name, dg_node_fn, iteration_num_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = find_plug(iteration_function_num_attr_name, dg_node_fn,
                        iteration_function_num_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = find_plug(iteration_jacobian_num_attr_name, dg_node_fn,
                        iteration_jacobian_num_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = find_plug(user_interrupted_attr_name, dg_node_fn,
                        user_interrupted_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     bool success_exists = !success_plug.isNull();
     bool reason_num_exists = !reason_num_plug.isNull();
@@ -235,75 +235,75 @@ MStatus setSolverResultDataOnNode(SolverResult &results, MObject &node,
     int created_attrs_count = 0;
     if (!success_exists) {
         status = createResultAttr_success(success_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!reason_num_exists) {
         status = createResultAttr_reasonNum(reason_num_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!reason_string_exists) {
         status =
             createResultAttr_reasonString(reason_string_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!error_final_exists) {
         status = createResultAttr_deviation(error_final_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!error_final_avg_exists) {
         status = createResultAttr_averageDeviation(error_final_avg_attr_name,
                                                    node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!error_final_max_exists) {
         status = createResultAttr_maximumDeviation(error_final_max_attr_name,
                                                    node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!error_final_min_exists) {
         status = createResultAttr_minimumDeviation(error_final_min_attr_name,
                                                    node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!iteration_num_exists) {
         status =
             createResultAttr_iterationNum(iteration_num_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!iteration_function_num_exists) {
         status = createResultAttr_iterationFunctionNum(
             iteration_function_num_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!iteration_jacobian_num_exists) {
         status = createResultAttr_iterationJacobianNum(
             iteration_jacobian_num_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!user_interrupted_exists) {
         status = createResultAttr_userInterrupted(user_interrupted_attr_name,
                                                   node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
@@ -314,63 +314,63 @@ MStatus setSolverResultDataOnNode(SolverResult &results, MObject &node,
 
         if (!success_exists) {
             status = find_plug(success_attr_name, dg_node_fn, success_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             success_exists = !success_plug.isNull();
         }
 
         if (!reason_num_exists) {
             status =
                 find_plug(reason_num_attr_name, dg_node_fn, reason_num_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             reason_num_exists = !reason_num_plug.isNull();
         }
 
         if (!reason_string_exists) {
             status = find_plug(reason_string_attr_name, dg_node_fn,
                                reason_string_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             reason_string_exists = !reason_string_plug.isNull();
         }
 
         if (!error_final_exists) {
             status =
                 find_plug(error_final_attr_name, dg_node_fn, error_final_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             error_final_exists = !error_final_plug.isNull();
         }
 
         if (!error_final_avg_exists) {
             status = find_plug(error_final_avg_attr_name, dg_node_fn,
                                error_final_avg_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             error_final_avg_exists = !error_final_avg_plug.isNull();
         }
 
         if (!error_final_max_exists) {
             status = find_plug(error_final_max_attr_name, dg_node_fn,
                                error_final_max_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             error_final_max_exists = !error_final_max_plug.isNull();
         }
 
         if (!error_final_min_exists) {
             status = find_plug(error_final_min_attr_name, dg_node_fn,
                                error_final_min_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             error_final_min_exists = !error_final_min_plug.isNull();
         }
 
         if (!iteration_num_exists) {
             status = find_plug(iteration_num_attr_name, dg_node_fn,
                                iteration_num_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             iteration_num_exists = !iteration_num_plug.isNull();
         }
 
         if (!iteration_function_num_exists) {
             status = find_plug(iteration_function_num_attr_name, dg_node_fn,
                                iteration_function_num_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             iteration_function_num_exists =
                 !iteration_function_num_plug.isNull();
         }
@@ -378,7 +378,7 @@ MStatus setSolverResultDataOnNode(SolverResult &results, MObject &node,
         if (!iteration_jacobian_num_exists) {
             status = find_plug(iteration_jacobian_num_attr_name, dg_node_fn,
                                iteration_jacobian_num_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             iteration_jacobian_num_exists =
                 !iteration_jacobian_num_plug.isNull();
         }
@@ -386,7 +386,7 @@ MStatus setSolverResultDataOnNode(SolverResult &results, MObject &node,
         if (!user_interrupted_exists) {
             status = find_plug(user_interrupted_attr_name, dg_node_fn,
                                user_interrupted_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             user_interrupted_exists = !user_interrupted_plug.isNull();
         }
     }
@@ -468,7 +468,7 @@ MStatus setErrorMetricsResultDataOnNode(ErrorMetricsResult &results,
         node, results.error_per_frame, deviation_attr_name,
         deviation_avg_attr_name, deviation_max_attr_name,
         deviation_max_frame_attr_name, dgmod, curveChange);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Set deviation attributes for each for each marker, on the given
     // `node`.
@@ -506,7 +506,7 @@ MStatus setErrorMetricsResultDataOnNode(ErrorMetricsResult &results,
             marker_deviation_avg_attr_name.c_str(),
             marker_deviation_max_attr_name.c_str(),
             marker_deviation_max_frame_attr_name.c_str(), dgmod, curveChange);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     return status;
@@ -538,7 +538,7 @@ MStatus setSolverObjectCountResultDataOnNode(SolverObjectCountResult &results,
     MStatus status = MS::kSuccess;
 
     MFnDependencyNode dg_node_fn(node, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     const char *parameters_num_attr_name = "numberOfParameters";
     const char *errors_num_attr_name = "numberOfErrors";
@@ -554,18 +554,18 @@ MStatus setSolverObjectCountResultDataOnNode(SolverObjectCountResult &results,
 
     status =
         find_plug(parameters_num_attr_name, dg_node_fn, parameters_num_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = find_plug(errors_num_attr_name, dg_node_fn, errors_num_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = find_plug(marker_errors_num_attr_name, dg_node_fn,
                        marker_errors_num_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = find_plug(stiff_errors_num_attr_name, dg_node_fn,
                        stiff_errors_num_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = find_plug(smooth_errors_num_attr_name, dg_node_fn,
                        smooth_errors_num_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     bool parameters_num_exists = !parameters_num_plug.isNull();
     bool errors_num_exists = !errors_num_plug.isNull();
@@ -577,35 +577,35 @@ MStatus setSolverObjectCountResultDataOnNode(SolverObjectCountResult &results,
     if (!parameters_num_exists) {
         status =
             createResultAttr_objectCount(parameters_num_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!errors_num_exists) {
         status =
             createResultAttr_objectCount(errors_num_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!marker_errors_num_exists) {
         status = createResultAttr_objectCount(marker_errors_num_attr_name, node,
                                               dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!stiff_errors_num_exists) {
         status = createResultAttr_objectCount(stiff_errors_num_attr_name, node,
                                               dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!smooth_errors_num_exists) {
         status = createResultAttr_objectCount(smooth_errors_num_attr_name, node,
                                               dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
@@ -617,35 +617,35 @@ MStatus setSolverObjectCountResultDataOnNode(SolverObjectCountResult &results,
         if (!parameters_num_exists) {
             status = find_plug(parameters_num_attr_name, dg_node_fn,
                                parameters_num_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             parameters_num_exists = !parameters_num_plug.isNull();
         }
 
         if (!errors_num_exists) {
             status =
                 find_plug(errors_num_attr_name, dg_node_fn, errors_num_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             errors_num_exists = !errors_num_plug.isNull();
         }
 
         if (!marker_errors_num_exists) {
             status = find_plug(marker_errors_num_attr_name, dg_node_fn,
                                marker_errors_num_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             marker_errors_num_exists = !marker_errors_num_plug.isNull();
         }
 
         if (!stiff_errors_num_exists) {
             status = find_plug(stiff_errors_num_attr_name, dg_node_fn,
                                stiff_errors_num_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             stiff_errors_num_exists = !stiff_errors_num_plug.isNull();
         }
 
         if (!smooth_errors_num_exists) {
             status = find_plug(smooth_errors_num_attr_name, dg_node_fn,
                                smooth_errors_num_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             smooth_errors_num_exists = !smooth_errors_num_plug.isNull();
         }
     }
@@ -684,33 +684,33 @@ MStatus setCommandResultDataOnNode(CommandResult &results,
     if (printStats.input) {
         status = setSolverObjectCountResultDataOnNode(
             results.solverObjectCountResult, node, dgmod, curveChange);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (printStats.usedSolveObjects) {
         status = setSolverObjectUsageResultDataOnNode(
             results.solverObjectUsageResult, node, dgmod, curveChange);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (printStats.affects) {
         status = setAffectsResultDataOnNode(results.affectsResult, node, dgmod,
                                             curveChange);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     status = setSolverResultDataOnNode(results.solverResult, node, dgmod,
                                        curveChange);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status =
         setTimerResultDataOnNode(results.timerResult, node, dgmod, curveChange);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = setErrorMetricsResultDataOnNode(results.errorMetricsResult, node,
                                              dgmod, curveChange);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = setSolveValuesResultDataOnNode(results.solveValuesResult, node,
                                             dgmod, curveChange);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // TODO: Add "Solver Frames" attributes.
 

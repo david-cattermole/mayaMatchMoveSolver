@@ -118,38 +118,38 @@ MUserData *BundleDrawOverride::prepareForDraw(
     MStatus status;
 
     MDagPath transformPath(objPath);
-    CHECK_MSTATUS(transformPath.pop(1));
+    MMSOLVER_CHECK_MSTATUS(transformPath.pop(1));
     MObject transformObj = transformPath.node();
     MFnDependencyNode dependNodeFn(transformObj);
     data->m_name = dependNodeFn.name();
 
     MDoubleArray pixel_size_array =
         frameContext.getTuple(MFrameContext::kViewportPixelSize, &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     double pixel_size_x = 1.0 / pixel_size_array[0];
 
     double icon_size = 0.0;
     status = getNodeAttr(objPath, BundleShapeNode::m_icon_size, icon_size);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     data->m_icon_size = icon_size * pixel_size_x;
 
     MColor user_color(0.0f, 0.0f, 0.0f, 0.0f);
     status = getNodeAttr(objPath, BundleShapeNode::m_color, user_color);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = getNodeAttr(objPath, BundleShapeNode::m_alpha, user_color[3]);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status =
         getNodeAttr(objPath, BundleShapeNode::m_line_width, data->m_line_width);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status =
         getNodeAttr(objPath, BundleShapeNode::m_point_size, data->m_point_size);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status =
         getNodeAttr(objPath, BundleShapeNode::m_draw_name, data->m_draw_name);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = getNodeAttr(objPath, BundleShapeNode::m_draw_on_top,
                          data->m_draw_on_top);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // The cross icon
     data->m_cross_line_list.clear();
@@ -206,14 +206,14 @@ void BundleDrawOverride::addUIDrawables(
     // Get the camera position.
     MDoubleArray view_pos =
         frameContext.getTuple(MFrameContext::kViewPosition, &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     MPoint camera_pos(view_pos[0], view_pos[1], view_pos[2]);
 
     // The object's transform matrix
     MMatrix matrix = objPath.inclusiveMatrix(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     MMatrix matrix_inverse = objPath.inclusiveMatrixInverse(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Remove scale and shear from marker transform.
     MTransformationMatrix tfm_matrix(matrix);

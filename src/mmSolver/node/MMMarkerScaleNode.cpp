@@ -212,175 +212,176 @@ MStatus MMMarkerScaleNode::initialize() {
     // Focal Length (millimetres)
     a_focalLength =
         numericAttr.create("focalLength", "fl", MFnNumericData::kDouble, 35.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_focalLength));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_focalLength));
 
     // Horizontal Film Aperture (inches)
     a_horizontalFilmAperture = numericAttr.create(
         "horizontalFilmAperture", "hfa", MFnNumericData::kDouble, 1.41732);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     // Vertical Film Aperture (inches)
     a_verticalFilmAperture = numericAttr.create(
         "verticalFilmAperture", "vfa", MFnNumericData::kDouble, 0.94488);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     // Film Offset (parent of filmOffset* attributes)
     a_cameraAperture = compoundAttr.create("cameraAperture", "cap", &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     compoundAttr.addChild(a_horizontalFilmAperture);
     compoundAttr.addChild(a_verticalFilmAperture);
-    CHECK_MSTATUS(addAttribute(a_cameraAperture));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_cameraAperture));
 
     // Horizontal Film Offset (inches)
     a_horizontalFilmOffset = numericAttr.create("horizontalFilmOffset", "hfo",
                                                 MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     // Vertical Film Offset (inches)
     a_verticalFilmOffset = numericAttr.create("verticalFilmOffset", "vfo",
                                               MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     // Film Offset (parent of filmOffset* attributes)
     a_filmOffset = compoundAttr.create("filmOffset", "fio", &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     compoundAttr.addChild(a_horizontalFilmOffset);
     compoundAttr.addChild(a_verticalFilmOffset);
-    CHECK_MSTATUS(addAttribute(a_filmOffset));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_filmOffset));
 
     // Depth
     a_depth = numericAttr.create("depth", "dpt", MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_depth));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_depth));
 
     // Overscan Mode; 0='uniform', 1='overscan x and y'
     a_overscanMode = enumAttr.create("overscanMode", "ovrscnmd", 0, &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(enumAttr.addField("Uniform", 0));
-    CHECK_MSTATUS(enumAttr.addField("Overscan X and Y", 1));
-    CHECK_MSTATUS(enumAttr.setStorable(true));
-    CHECK_MSTATUS(enumAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_overscanMode));
+    MMSOLVER_CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(enumAttr.addField("Uniform", 0));
+    MMSOLVER_CHECK_MSTATUS(enumAttr.addField("Overscan X and Y", 1));
+    MMSOLVER_CHECK_MSTATUS(enumAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(enumAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_overscanMode));
 
     // Overscan
     a_overscan =
         numericAttr.create("overscan", "ovrscn", MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(numericAttr.setHidden(true));
-    CHECK_MSTATUS(numericAttr.setNiceNameOverride("Uniform Overscan"));
-    CHECK_MSTATUS(addAttribute(a_overscan));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setHidden(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("Uniform Overscan"));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_overscan));
 
     // Overscan X
     a_overscanX = numericAttr.create("overscanX", "ovrscnx",
                                      MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(numericAttr.setHidden(true));
-    CHECK_MSTATUS(addAttribute(a_overscanX));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setHidden(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_overscanX));
 
     // Overscan Y
     a_overscanY = numericAttr.create("overscanY", "ovrscny",
                                      MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(numericAttr.setHidden(true));
-    CHECK_MSTATUS(addAttribute(a_overscanY));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setHidden(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_overscanY));
 
     // Overscan Inverse
     a_overscanInverse = numericAttr.create("overscanInverse", "ovrscninv",
                                            MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(numericAttr.setNiceNameOverride("Uniform Overscan Inverse"));
-    CHECK_MSTATUS(addAttribute(a_overscanInverse));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(
+        numericAttr.setNiceNameOverride("Uniform Overscan Inverse"));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_overscanInverse));
 
     // Overscan Inverse X
     a_overscanInverseX = numericAttr.create("overscanInverseX", "ovrscninvx",
                                             MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_overscanInverseX));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_overscanInverseX));
 
     // Overscan Inverse Y
     a_overscanInverseY = numericAttr.create("overscanInverseY", "ovrscninvy",
                                             MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_overscanInverseY));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_overscanInverseY));
 
     // Out Translate X
     a_outTranslateX = numericAttr.create("outTranslateX", "otx",
                                          MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(false));
-    CHECK_MSTATUS(numericAttr.setKeyable(false));
-    CHECK_MSTATUS(numericAttr.setReadable(true));
-    CHECK_MSTATUS(numericAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
     // Out Translate Y
     a_outTranslateY = numericAttr.create("outTranslateY", "oty",
                                          MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(false));
-    CHECK_MSTATUS(numericAttr.setKeyable(false));
-    CHECK_MSTATUS(numericAttr.setReadable(true));
-    CHECK_MSTATUS(numericAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
     // Out Translate Z
     a_outTranslateZ = numericAttr.create("outTranslateZ", "otz",
                                          MFnNumericData::kDouble, 0.0, &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(numericAttr.setStorable(false));
-    CHECK_MSTATUS(numericAttr.setKeyable(false));
-    CHECK_MSTATUS(numericAttr.setReadable(true));
-    CHECK_MSTATUS(numericAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
     // Out Translate (parent of outTranslate* attributes)
     a_outTranslate = compoundAttr.create("outTranslate", "ot", &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     compoundAttr.addChild(a_outTranslateX);
     compoundAttr.addChild(a_outTranslateY);
     compoundAttr.addChild(a_outTranslateZ);
-    CHECK_MSTATUS(addAttribute(a_outTranslate));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_outTranslate));
 
     // Out Scale X
     a_outScaleX =
         numericAttr.create("outScaleX", "osx", MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(numericAttr.setStorable(false));
-    CHECK_MSTATUS(numericAttr.setKeyable(false));
-    CHECK_MSTATUS(numericAttr.setReadable(true));
-    CHECK_MSTATUS(numericAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
     // Out Scale Y
     a_outScaleY =
         numericAttr.create("outScaleY", "osy", MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(numericAttr.setStorable(false));
-    CHECK_MSTATUS(numericAttr.setKeyable(false));
-    CHECK_MSTATUS(numericAttr.setReadable(true));
-    CHECK_MSTATUS(numericAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
     // Out Scale Z
     a_outScaleZ = numericAttr.create("outScaleZ", "osz",
                                      MFnNumericData::kDouble, 1.0, &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(numericAttr.setStorable(false));
-    CHECK_MSTATUS(numericAttr.setKeyable(false));
-    CHECK_MSTATUS(numericAttr.setReadable(true));
-    CHECK_MSTATUS(numericAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
     // Out Scale (parent of outScale* attributes)
     a_outScale = compoundAttr.create("outScale", "os", &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     compoundAttr.addChild(a_outScaleX);
     compoundAttr.addChild(a_outScaleY);
     compoundAttr.addChild(a_outScaleZ);
-    CHECK_MSTATUS(addAttribute(a_outScale));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_outScale));
 
     // Attribute Affects
     MObjectArray inputAttrs;
@@ -410,7 +411,7 @@ MStatus MMMarkerScaleNode::initialize() {
     outputAttrs.append(a_outScaleY);
     outputAttrs.append(a_outScaleZ);
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return (MS::kSuccess);

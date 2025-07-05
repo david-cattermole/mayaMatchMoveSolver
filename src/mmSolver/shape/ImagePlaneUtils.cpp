@@ -67,7 +67,7 @@ bool getUpstreamNodeFromConnection(const MObject &this_node,
     MPlug plug =
         mfn_depend_node.findPlug(attr_name, wantNetworkedPlug, &status);
     if (status != MStatus::kSuccess) {
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         return false;
     }
     if (plug.isNull()) {
@@ -84,7 +84,7 @@ bool getUpstreamNodeFromConnection(const MObject &this_node,
     // attribute.
     plug.connectedTo(out_connections, as_destination, as_source, &status);
     if (status != MStatus::kSuccess) {
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         return false;
     }
     if (out_connections.length() == 0) {
@@ -108,16 +108,16 @@ void calculate_node_image_size_string(
 
     MStatus status =
         getNodeAttr(objPath, draw_image_size_attr, out_draw_image_size);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, image_width_attr, width);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, image_height_attr, height);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, image_pixel_aspect_attr, pixel_aspect);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     double aspect = (width * pixel_aspect) / height;
 
@@ -149,13 +149,13 @@ void calculate_node_camera_size_string(MDagPath &objPath,
 
     MStatus status =
         getNodeAttr(objPath, draw_camera_size_attr, out_draw_camera_size);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, camera_width_inch_attr, width);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, camera_height_inch_attr, height);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     double aspect = width / height;
 

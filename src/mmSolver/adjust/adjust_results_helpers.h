@@ -36,6 +36,9 @@
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
 
+// MM Solver
+#include "mmSolver/utilities/assert_utils.h"
+
 inline MStatus find_plug(const char *attr_name, MFnDependencyNode &dgNodeFn,
                          MPlug &outPlug) {
     const bool wantNetworkedPlug = true;
@@ -49,7 +52,7 @@ inline MStatus create_numeric_attr(const char *attr_name, MObject &node,
                                    const MFnNumericData::Type numeric_type) {
     MObject attr = numeric_attr.create(attr_name, attr_name, numeric_type);
     MStatus status = dgmod.addAttribute(node, attr);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -59,7 +62,7 @@ inline MStatus create_typed_attr(const char *attr_name, MObject &node,
                                  const MFnData::Type &data_type) {
     MObject attr = typed_attr.create(attr_name, attr_name, data_type);
     MStatus status = dgmod.addAttribute(node, attr);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 

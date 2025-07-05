@@ -119,7 +119,7 @@ MUserData *MarkerDrawOverride::prepareForDraw(
     MStatus status;
 
     MDagPath transformPath(objPath);
-    CHECK_MSTATUS(transformPath.pop(1));
+    MMSOLVER_CHECK_MSTATUS(transformPath.pop(1));
     MObject transformObj = transformPath.node();
     MFnDependencyNode dependNodeFn(transformObj);
     data->m_name = dependNodeFn.name();
@@ -127,13 +127,13 @@ MUserData *MarkerDrawOverride::prepareForDraw(
     bool showInCameraOnly = false;
     status = getNodeAttr(objPath, MarkerShapeNode::m_show_in_camera_only,
                          showInCameraOnly);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     data->m_visible = true;
     if (showInCameraOnly) {
         status =
             objectIsBelowCamera(transformPath, cameraPath, data->m_visible);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 
     // Get locked-status.
@@ -143,21 +143,21 @@ MUserData *MarkerDrawOverride::prepareForDraw(
     data->m_locked = false;
     MPlug plug_tx = dependNodeFn.findPlug("translateX",
                                           /*wantNetworkedPlug=*/true, &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     MPlug plug_ty = dependNodeFn.findPlug("translateY",
                                           /*wantNetworkedPlug=*/true, &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     if (!plug_tx.isNull() && !plug_ty.isNull()) {
         bool checkParents = false;
         bool checkChildren = false;
         bool tx_can_change =
             plug_tx.isFreeToChange(checkParents, checkChildren, &status) ==
             MPlug::kFreeToChange;
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         bool ty_can_change =
             plug_ty.isFreeToChange(checkParents, checkChildren, &status) ==
             MPlug::kFreeToChange;
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         if (!tx_can_change || !ty_can_change) {
             data->m_locked = true;
         }
@@ -165,29 +165,29 @@ MUserData *MarkerDrawOverride::prepareForDraw(
 
     MDoubleArray pixel_size_array =
         frameContext.getTuple(MFrameContext::kViewportPixelSize, &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     double pixel_size_x = 1.0 / pixel_size_array[0];
 
     double icon_size = 0.0;
     status = getNodeAttr(objPath, MarkerShapeNode::m_icon_size, icon_size);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     data->m_icon_size = icon_size * pixel_size_x;
 
     MColor user_color(0.0f, 0.0f, 0.0f, 0.0f);
     status = getNodeAttr(objPath, MarkerShapeNode::m_color, user_color);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = getNodeAttr(objPath, MarkerShapeNode::m_alpha, user_color[3]);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status =
         getNodeAttr(objPath, MarkerShapeNode::m_line_width, data->m_line_width);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status =
         getNodeAttr(objPath, MarkerShapeNode::m_point_size, data->m_point_size);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status =
         getNodeAttr(objPath, MarkerShapeNode::m_draw_name, data->m_draw_name);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // The cross icon
     data->m_cross_line_list.clear();
@@ -260,13 +260,13 @@ void MarkerDrawOverride::addUIDrawables(
 
     // The object's transform matrix
     MMatrix matrix = objPath.inclusiveMatrix(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     MMatrix matrix_inverse = objPath.inclusiveMatrixInverse(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     double scale = 1.0;
     status = getViewportScaleRatio(frameContext, scale);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     scale *= data->m_icon_size * 40.0;
 
     // Remove scale and shear from marker transform.

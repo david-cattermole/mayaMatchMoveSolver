@@ -193,7 +193,7 @@ MStatus SkyDomeDrawOverride::get_node_attr(const MDagPath &objPath,
         MPlug plug(node, attr);
         if (!plug.isNull()) {
             MDataHandle data_handle = plug.asMDataHandle(&status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             auto data = data_handle.asFloat3();
             value.r = data[0];
             value.g = data[1];
@@ -229,26 +229,26 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
 
     // Global settings
     status = get_node_attr(objPath, SkyDomeShapeNode::m_enable, data->m_enable);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_transform_mode,
                            data->m_transform_mode);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_line_width,
                            data->m_line_width);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_resolution,
                            data->m_resolution);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Depth and display settings.
     status = get_node_attr(objPath, SkyDomeShapeNode::m_draw_mode,
                            data->m_draw_mode);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     MDistance radius_distance(1.0);
     status =
         get_node_attr(objPath, SkyDomeShapeNode::m_radius, radius_distance);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     if (status) {
         data->m_radius = radius_distance.asCentimeters();
     }
@@ -256,85 +256,85 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
     // Enabled status
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_x_enable,
                            data->m_axis_x_enable);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_y_enable,
                            data->m_axis_y_enable);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_z_enable,
                            data->m_axis_z_enable);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_x_enable_top,
                            data->m_axis_x_enable_top);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_z_enable_top,
                            data->m_axis_z_enable_top);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_x_enable_bottom,
                            data->m_axis_x_enable_bottom);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_z_enable_bottom,
                            data->m_axis_z_enable_bottom);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_lat_enable,
                            data->m_grid_lat_enable);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_long_enable,
                            data->m_grid_long_enable);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_lat_enable_top,
                            data->m_grid_lat_enable_top);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_long_enable_top,
                            data->m_grid_long_enable_top);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_lat_enable_bottom,
                            data->m_grid_lat_enable_bottom);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_long_enable_bottom,
                            data->m_grid_long_enable_bottom);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Color
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_x_color,
                            data->m_axis_x_color);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_y_color,
                            data->m_axis_y_color);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_z_color,
                            data->m_axis_z_color);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_lat_color,
                            data->m_grid_lat_color);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_long_color,
                            data->m_grid_long_color);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Alpha
     status = get_node_attr(objPath, SkyDomeShapeNode::m_alpha, data->m_alpha);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_x_alpha,
                            data->m_axis_x_color[3]);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_y_alpha,
                            data->m_axis_y_color[3]);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_z_alpha,
                            data->m_axis_z_color[3]);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_lat_alpha,
                            data->m_grid_lat_color[3]);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_long_alpha,
                            data->m_grid_long_color[3]);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Apply global alpha as a multiplier.
     data->m_axis_x_color[3] *= static_cast<float>(data->m_alpha);
@@ -346,28 +346,28 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
     // Line width
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_x_line_width,
                            data->m_axis_x_line_width);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_y_line_width,
                            data->m_axis_y_line_width);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_z_line_width,
                            data->m_axis_z_line_width);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_lat_line_width,
                            data->m_grid_lat_line_width);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_long_line_width,
                            data->m_grid_long_line_width);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Lat-long divisions
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_lat_divisions,
                            data->m_grid_lat_divisions);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_grid_long_divisions,
                            data->m_grid_long_divisions);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Default depth priority.
     data->m_depth_priority =
@@ -396,12 +396,12 @@ void SkyDomeDrawOverride::addUIDrawables(
         // Use the camera position.
         MDoubleArray view_pos =
             frameContext.getTuple(MFrameContext::kViewPosition, &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         MPoint view_point(view_pos[0], view_pos[1], view_pos[2]);
 
         // Remove the sky dome's transform.
         MMatrix matrix_inverse = objPath.inclusiveMatrixInverse(&status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         view_point *= matrix_inverse;
 
         pos_x = static_cast<double>(view_point[0]);

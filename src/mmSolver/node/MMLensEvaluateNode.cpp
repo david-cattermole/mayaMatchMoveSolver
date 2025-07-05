@@ -41,6 +41,7 @@
 // MM Solver
 #include "MMLensData.h"
 #include "mmSolver/nodeTypeIds.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -70,11 +71,11 @@ MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
     if ((plug == a_outX) || (plug == a_outY) || (plug == a_outHash)) {
         // Get Input Positions
         MDataHandle inXHandle = data.inputValue(a_inX, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double x = inXHandle.asDouble();
 
         MDataHandle inYHandle = data.inputValue(a_inY, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double y = inYHandle.asDouble();
 
         double out_x = x;
@@ -83,7 +84,7 @@ MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
 
         // Get Input Lens
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         MMLensData *inputLensData = (MMLensData *)inLensHandle.asPluginData();
         if (inputLensData != nullptr) {
             // Evaluate the lens distortion, at (x, y)
@@ -130,61 +131,61 @@ MStatus MMLensEvaluateNode::initialize() {
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
     a_inLens = typedAttr.create("inLens", "ilns", data_type_id);
-    CHECK_MSTATUS(typedAttr.setStorable(false));
-    CHECK_MSTATUS(typedAttr.setKeyable(false));
-    CHECK_MSTATUS(typedAttr.setReadable(true));
-    CHECK_MSTATUS(typedAttr.setWritable(true));
-    CHECK_MSTATUS(addAttribute(a_inLens));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setWritable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_inLens));
 
     // In X
     a_inX = numericAttr.create("inX", "ix", MFnNumericData::kDouble, false);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_inX));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_inX));
 
     // In Y
     a_inY = numericAttr.create("inY", "iy", MFnNumericData::kDouble, false);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_inY));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_inY));
 
     // Out X
     a_outX = numericAttr.create("outX", "ox", MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(false));
-    CHECK_MSTATUS(numericAttr.setKeyable(false));
-    CHECK_MSTATUS(numericAttr.setReadable(true));
-    CHECK_MSTATUS(numericAttr.setWritable(false));
-    CHECK_MSTATUS(addAttribute(a_outX));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_outX));
 
     // Out Y
     a_outY = numericAttr.create("outY", "oy", MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(false));
-    CHECK_MSTATUS(numericAttr.setKeyable(false));
-    CHECK_MSTATUS(numericAttr.setReadable(true));
-    CHECK_MSTATUS(numericAttr.setWritable(false));
-    CHECK_MSTATUS(addAttribute(a_outY));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_outY));
 
     // Out Hash
     a_outHash =
         numericAttr.create("outHash", "outHash", MFnNumericData::kInt64, 0);
-    CHECK_MSTATUS(numericAttr.setStorable(false));
-    CHECK_MSTATUS(numericAttr.setKeyable(false));
-    CHECK_MSTATUS(numericAttr.setReadable(true));
-    CHECK_MSTATUS(numericAttr.setWritable(false));
-    CHECK_MSTATUS(addAttribute(a_outHash));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_outHash));
 
     // Attribute Affects
-    CHECK_MSTATUS(attributeAffects(a_inX, a_outX));
-    CHECK_MSTATUS(attributeAffects(a_inX, a_outY));
-    CHECK_MSTATUS(attributeAffects(a_inX, a_outHash));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_inX, a_outX));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_inX, a_outY));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_inX, a_outHash));
 
-    CHECK_MSTATUS(attributeAffects(a_inY, a_outX));
-    CHECK_MSTATUS(attributeAffects(a_inY, a_outY));
-    CHECK_MSTATUS(attributeAffects(a_inY, a_outHash));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_inY, a_outX));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_inY, a_outY));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_inY, a_outHash));
 
-    CHECK_MSTATUS(attributeAffects(a_inLens, a_outX));
-    CHECK_MSTATUS(attributeAffects(a_inLens, a_outY));
-    CHECK_MSTATUS(attributeAffects(a_inLens, a_outHash));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_inLens, a_outX));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_inLens, a_outY));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_inLens, a_outHash));
 
     return MS::kSuccess;
 }

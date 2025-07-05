@@ -58,6 +58,7 @@
 
 // MM Solver
 #include "mmSolver/cmd/anim_curve_cmd_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 #define START_FRAME_FLAG_SHORT "-sf"
@@ -126,24 +127,24 @@ MSyntax MMAnimCurveSimplifyCmd::newSyntax() {
     const uint32_t min_object_count = 1;
     syntax.setObjectType(MSyntax::kSelectionList, min_object_count);
 
-    CHECK_MSTATUS(syntax.addFlag(START_FRAME_FLAG_SHORT, START_FRAME_FLAG_LONG,
-                                 MSyntax::kUnsigned));
-    CHECK_MSTATUS(syntax.addFlag(END_FRAME_FLAG_SHORT, END_FRAME_FLAG_LONG,
-                                 MSyntax::kUnsigned));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        START_FRAME_FLAG_SHORT, START_FRAME_FLAG_LONG, MSyntax::kUnsigned));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        END_FRAME_FLAG_SHORT, END_FRAME_FLAG_LONG, MSyntax::kUnsigned));
 
-    CHECK_MSTATUS(syntax.addFlag(CONTROL_POINT_COUNT_FLAG_SHORT,
-                                 CONTROL_POINT_COUNT_FLAG_LONG,
-                                 MSyntax::kUnsigned));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(CONTROL_POINT_COUNT_FLAG_SHORT,
+                                          CONTROL_POINT_COUNT_FLAG_LONG,
+                                          MSyntax::kUnsigned));
 
-    CHECK_MSTATUS(syntax.addFlag(DISTRIBUTION_FLAG_SHORT,
-                                 DISTRIBUTION_FLAG_LONG, MSyntax::kString));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        DISTRIBUTION_FLAG_SHORT, DISTRIBUTION_FLAG_LONG, MSyntax::kString));
 
-    CHECK_MSTATUS(syntax.addFlag(INTERPOLATION_FLAG_SHORT,
-                                 INTERPOLATION_FLAG_LONG, MSyntax::kString));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        INTERPOLATION_FLAG_SHORT, INTERPOLATION_FLAG_LONG, MSyntax::kString));
 
-    CHECK_MSTATUS(syntax.addFlag(RETURN_RESULT_ONLY_FLAG_SHORT,
-                                 RETURN_RESULT_ONLY_FLAG_LONG,
-                                 MSyntax::kBoolean));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(RETURN_RESULT_ONLY_FLAG_SHORT,
+                                          RETURN_RESULT_ONLY_FLAG_LONG,
+                                          MSyntax::kBoolean));
 
     return syntax;
 }
@@ -157,11 +158,11 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
 
     MStatus status = MStatus::kSuccess;
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get animation curve from selection.
     status = argData.getObjects(m_selection);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_selection.length() == 0) {
         MGlobal::displayError(CMD_NAME
@@ -173,7 +174,7 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
     // not during 'doIt'.
     for (auto i = 0; i < m_selection.length(); i++) {
         status = m_selection.getDependNode(i, m_animCurveObj);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     m_startFrame = std::numeric_limits<uint32_t>::max();
@@ -181,18 +182,18 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
     if (argData.isFlagSet(START_FRAME_FLAG_SHORT)) {
         status =
             argData.getFlagArgument(START_FRAME_FLAG_SHORT, 0, m_startFrame);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     if (argData.isFlagSet(END_FRAME_FLAG_SHORT)) {
         status = argData.getFlagArgument(END_FRAME_FLAG_SHORT, 0, m_endFrame);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (argData.isFlagSet(CONTROL_POINT_COUNT_FLAG_SHORT)) {
         uint32_t value = 0;
         status =
             argData.getFlagArgument(CONTROL_POINT_COUNT_FLAG_SHORT, 0, value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Largest number of keypoints that can be used.
         const uint32_t keypoint_count_max = 255;
@@ -217,7 +218,7 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
         bool value = false;
         status =
             argData.getFlagArgument(RETURN_RESULT_ONLY_FLAG_SHORT, 0, value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         m_returnResultOnly = value;
     }
 
@@ -225,7 +226,7 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
     if (argData.isFlagSet(INTERPOLATION_FLAG_SHORT)) {
         MString value = "";
         status = argData.getFlagArgument(INTERPOLATION_FLAG_SHORT, 0, value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (value == INTERPOLATION_VALUE_LINEAR) {
             m_interpolation = mmsg::Interpolation::kLinear;
         } else if (value == INTERPOLATION_VALUE_CUBIC_NUBS) {
@@ -271,7 +272,7 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
     if (argData.isFlagSet(DISTRIBUTION_FLAG_SHORT)) {
         MString value = "";
         status = argData.getFlagArgument(DISTRIBUTION_FLAG_SHORT, 0, value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (value == CONTROL_POINT_DISTRIBUTION_VALUE_UNIFORM) {
             m_distribution = mmsg::ControlPointDistribution::kUniform;
         } else if (value == CONTROL_POINT_DISTRIBUTION_VALUE_AUTO_KEYPOINTS) {
@@ -438,9 +439,9 @@ MStatus MMAnimCurveSimplifyCmd::redoIt() {
     MStatus status = MS::kSuccess;
     if (!m_returnResultOnly) {
         status = m_dgmod.doIt();
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = m_curveChange.redoIt();
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
@@ -449,9 +450,9 @@ MStatus MMAnimCurveSimplifyCmd::undoIt() {
     MStatus status = MS::kSuccess;
     if (!m_returnResultOnly) {
         status = m_curveChange.undoIt();
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = m_dgmod.undoIt();
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }

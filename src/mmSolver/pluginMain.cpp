@@ -567,7 +567,7 @@ MStatus initializePlugin(MObject obj) {
 
     // Register selection types.
     status = MGlobal::executeCommand(mel_cmd);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Should we create a display filter for the 'mmImagePlaneShape'?
     // We have a newer 'mmImagePlaneShape2' and it would be good to
@@ -622,7 +622,7 @@ MStatus initializePlugin(MObject obj) {
     startup_cmd += "} ";
     startup_cmd += "evalDeferred(\"mmsolver_startup\");";
     status = MGlobal::executeCommand(startup_cmd, displayEnabled, undoEnabled);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     MMSOLVER_MAYA_INFO("Loaded " << ::mmsolver::build_info::module_full_name());
 

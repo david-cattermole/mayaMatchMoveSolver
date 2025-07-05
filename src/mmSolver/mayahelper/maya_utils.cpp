@@ -47,7 +47,7 @@ MStatus MMNodeInitUtils::attributeAffectsMulti(
                 MMSOLVER_MAYA_ERR(
                     "MMNodeInitUtils::attributeAffects: Failed at "
                     << "input_index=" << i << " output_index=" << j);
-                CHECK_MSTATUS(status);
+                MMSOLVER_CHECK_MSTATUS(status);
             }
         }
     }
@@ -60,7 +60,7 @@ MStatus getAsSelectionList(const MStringArray &nodeNames,
     for (unsigned int i = 0; i < nodeNames.length(); ++i) {
         status = selList.add(nodeNames[i]);
         if (!quiet) {
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
         }
         if (status != MS::kSuccess) {
             return status;
@@ -89,11 +89,11 @@ MStatus nodeExistsAndIsType(const MString &nodeName, const MFn::Type nodeType) {
     if (status != MS::kSuccess) {
         MMSOLVER_MAYA_ERR("Node does not exist; " << nodeName);
     }
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MObject nodeObj;
     status = selList.getDependNode(0, nodeObj);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (nodeObj.apiType() != nodeType) {
         MMSOLVER_MAYA_ERR("Node type is not correct;"
@@ -110,7 +110,7 @@ MStatus getAsObject(const MString &nodeName, MObject &object, bool quiet) {
     MSelectionList selList;
     status = getAsSelectionList(nodeName, selList, quiet);
     if (!quiet) {
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
     if (status != MS::kSuccess) {
         return status;
@@ -119,7 +119,7 @@ MStatus getAsObject(const MString &nodeName, MObject &object, bool quiet) {
     if (selList.length() == 1) {
         status = selList.getDependNode(0, object);
         if (!quiet) {
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
         }
     }
     return status;
@@ -129,10 +129,10 @@ MStatus getAsDagPath(const MString &nodeName, MDagPath &nodeDagPath) {
     MStatus status;
     MSelectionList selList;
     status = getAsSelectionList(nodeName, selList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (selList.length() == 1) {
         status = selList.getDagPath(0, nodeDagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
@@ -144,10 +144,10 @@ MStatus getUniqueNodeName(MObject &node, MString &out_uniqueNodeName) {
         out_uniqueNodeName = dagPath.fullPathName();
     } else {
         MFnDependencyNode fnDependNode(node, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         out_uniqueNodeName = fnDependNode.name(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     return status;
@@ -158,7 +158,7 @@ bool hasAttrName(MFnDependencyNode &dependFn, const MString &attrName) {
     auto network_plug = true;
     MPlug plug = dependFn.findPlug(attrName, network_plug, &status);
     // There is no need to check the 'status' because we check the
-    // plug status anyway. Calling 'CHECK_MSTATUS(status);' would only
+    // plug status anyway. Calling 'MMSOLVER_CHECK_MSTATUS(status);' would only
     // spam the terminal output, because this function is called a lot
     // and it is intended to return directly.
     return !plug.isNull();
@@ -169,7 +169,7 @@ ObjectType computeDgObjectType(const MObject &node_obj) {
 
     MStatus status = MStatus::kSuccess;
     MFnDependencyNode dependFn(node_obj, &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     if (status != MS::kSuccess) {
         return objectType;
     }
@@ -211,7 +211,7 @@ ObjectType computeDagObjectType(const MObject &node_obj,
     for (unsigned int i = 0; i < num_children; ++i) {
         MObject child_obj = nodeDagPath.child(i);
         status = MDagPath::getAPathTo(child_obj, childNodeDagPath);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         if (status != MS::kSuccess) {
             return objectType;
         }
@@ -228,7 +228,7 @@ ObjectType computeDagObjectType(const MObject &node_obj,
     }
 
     MFnDependencyNode dependFn(node_obj, &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     if (status != MS::kSuccess) {
         return objectType;
     }
@@ -331,12 +331,12 @@ MStatus constructAttrAffectsName(const MString &attrName,
 
     MString attrSubstitute(attrName);
     MStatus status = attrSubstitute.substitute(".", "_");
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     outAttrName =
         attrNamePrefix + attrUuidStr + attrNameSuffix + attrSubstitute;
     status = outAttrName.substitute("-", "_");
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -349,7 +349,7 @@ MStatus get_connected_node(const MPlug &plug, MObject &out_node) {
         bool as_src = false;
         bool as_dst = true;
         plug.connectedTo(connected_plugs, as_dst, as_src, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (connected_plugs.length() == 1) {
             MPlug connected_plug = connected_plugs[0];
             out_node = connected_plug.node();
@@ -362,14 +362,14 @@ MStatus get_position_from_connected_node(const MPlug &plug, double &x,
                                          double &y, double &z) {
     MObject connected_node;
     MStatus status = get_connected_node(plug, connected_node);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (!connected_node.isNull()) {
         MDagPath dag_path;
         MDagPath::getAPathTo(connected_node, dag_path);
 
         MMatrix matrix = dag_path.inclusiveMatrix(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         x = matrix[3][0];
         y = matrix[3][1];

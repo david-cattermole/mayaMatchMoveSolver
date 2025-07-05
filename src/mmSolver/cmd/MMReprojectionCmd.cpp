@@ -113,7 +113,7 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (!m_cameraPtr) {
         MMSOLVER_MAYA_ERR(
@@ -127,7 +127,7 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     bool cameraPointFlagIsSet = argData.isFlagSet(AS_CAM_POINT_FLAG, &status);
     if (cameraPointFlagIsSet == true) {
         status = argData.getFlagArgument(AS_CAM_POINT_FLAG, 0, m_asCameraPoint);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get World Point flag
@@ -136,7 +136,7 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     if (worldPointFlagIsSet == true) {
         status =
             argData.getFlagArgument(AS_WORLD_POINT_FLAG, 0, m_asWorldPoint);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get Coordinate flag
@@ -144,7 +144,7 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     bool coordFlagIsSet = argData.isFlagSet(AS_COORD_FLAG, &status);
     if (coordFlagIsSet == true) {
         status = argData.getFlagArgument(AS_COORD_FLAG, 0, m_asCoordinate);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get Normalized Coordinate flag
@@ -153,7 +153,7 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     if (normCoordFlagIsSet == true) {
         status = argData.getFlagArgument(AS_NORM_COORD_FLAG, 0,
                                          m_asNormalizedCoordinate);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get Marker Coordinate flag
@@ -163,7 +163,7 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     if (markerCoordFlagIsSet == true) {
         status = argData.getFlagArgument(AS_MARKER_COORD_FLAG, 0,
                                          m_asMarkerCoordinate);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get Pixel Coordinate flag
@@ -172,7 +172,7 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     if (pixelCoordFlagIsSet == true) {
         status = argData.getFlagArgument(AS_PIXEL_COORD_FLAG, 0,
                                          m_asPixelCoordinate);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get Image Resolution flag
@@ -181,9 +181,9 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     bool imageResFlagIsSet = argData.isFlagSet(IMAGE_RES_FLAG, &status);
     if (imageResFlagIsSet == true) {
         status = argData.getFlagArgument(IMAGE_RES_FLAG, 0, m_imageResX);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = argData.getFlagArgument(IMAGE_RES_FLAG, 1, m_imageResY);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'With Camera Direction Ratio' flag
@@ -193,7 +193,7 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     if (withCameraDirRatioFlagIsSet == true) {
         status = argData.getFlagArgument(WITH_CAMERA_DIR_RATIO_FLAG, 0,
                                          m_withCameraDirRatio);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Distort Mode' flag
@@ -202,7 +202,7 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     if (distortModeFlagIsSet == true) {
         uint32_t value = 0;
         status = argData.getFlagArgument(DISTORT_MODE_FLAG, 0, value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         m_distort_mode = static_cast<ReprojectionDistortMode>(value);
     }
 
@@ -215,18 +215,18 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
         double worldPointY = 0.0;
         double worldPointZ = 0.0;
         status = argData.getFlagArgument(WORLD_POINT_FLAG, 0, worldPointX);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = argData.getFlagArgument(WORLD_POINT_FLAG, 1, worldPointY);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = argData.getFlagArgument(WORLD_POINT_FLAG, 2, worldPointZ);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         m_worldPoint.x = worldPointX;
         m_worldPoint.y = worldPointY;
         m_worldPoint.z = worldPointZ;
     } else {
         status = argData.getObjects(m_nodeList);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (m_nodeList.length() == 0) {
             status = MStatus::kFailure;
             status.perror("No objects given!");
@@ -246,10 +246,10 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     MArgList argList;
     for (unsigned int i = 0; i < timeNum; ++i) {
         status = argData.getFlagArgumentList(TIME_FLAG, i, argList);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double tmp = argList.asDouble(i, &status);
         MTime time(tmp, unit);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         m_timeList.append(time);
     }
     if (m_timeList.length() == 0) {
@@ -269,7 +269,7 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     MString cameraShape = "";
     MArgList cameraArgs;
     status = argData.getFlagArgumentList(CAMERA_FLAG, 0, cameraArgs);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (cameraArgs.length() != 2) {
         status = MStatus::kFailure;
         status.perror(
@@ -279,15 +279,15 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     }
 
     cameraTransform = cameraArgs.asString(0, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     nodeExistsAndIsType(cameraTransform, MFn::Type::kTransform);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     m_cameraPtr->setTransformNodeName(cameraTransform);
 
     cameraShape = cameraArgs.asString(1, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     nodeExistsAndIsType(cameraShape, MFn::Type::kCamera);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     m_cameraPtr->setShapeNodeName(cameraShape);
 
     return status;
@@ -406,7 +406,7 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     std::shared_ptr<mmlens::LensModel> lensModel;
     if (needLensModels) {
         status = mmsolver::getLensModelFromCamera(m_cameraPtr, lensModel);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 
     // Query all the input data at once.
@@ -447,9 +447,9 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
         for (unsigned int i = 0; i < m_nodeList.length(); ++i) {
             MDagPath dagPath;
             status = m_nodeList.getDagPath(i, dagPath);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MString nodeNamePath = dagPath.fullPathName(&status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             Attr tfmMatrixAttr;
             tfmMatrixAttr.setNodeName(nodeNamePath);
@@ -462,9 +462,9 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
                 MMatrix tfmMatrix;
                 status =
                     cameraMatrixAttr.getValue(camMatrix, time, timeEvalMode);
-                CHECK_MSTATUS(status);
+                MMSOLVER_CHECK_MSTATUS(status);
                 status = tfmMatrixAttr.getValue(tfmMatrix, time, timeEvalMode);
-                CHECK_MSTATUS(status);
+                MMSOLVER_CHECK_MSTATUS(status);
                 camMatrixList.append(camMatrix);
                 tfmMatrixList.append(tfmMatrix);
 
@@ -532,7 +532,7 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
             outWorldCameraProjectionMatrix,
             outWorldInverseCameraProjectionMatrix, outHorizontalPan,
             outVerticalPan);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         if (m_asCameraPoint == true) {
             outResult.append(outPointX);
@@ -569,7 +569,7 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
             double outCameraDirectionRatio = 0.0;
             status = calculateCameraFacingRatio(tfmMatrix, camMatrix,
                                                 outCameraDirectionRatio);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             outResult.append(outCameraDirectionRatio);
         }
     }

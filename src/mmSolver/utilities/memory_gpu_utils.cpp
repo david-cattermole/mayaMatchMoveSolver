@@ -36,6 +36,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
+#include "assert_utils.h"
 #include "debug_utils.h"
 
 namespace mmmemorygpu {
@@ -128,7 +129,7 @@ MStatus gpu_memory_usage(size_t &total_memory, size_t &free_memory,
         // the device, so we must call our function.
         size_t ati_total_memory_as_bytes = 0;
         status = memory_total_size_in_bytes(ati_total_memory_as_bytes);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         total_memory = ati_total_memory_as_bytes;
         free_memory = static_cast<size_t>(ati_free_memory_as_kilobytes) *
@@ -166,7 +167,7 @@ MStatus memory_used_size_in_bytes(size_t &out_size_in_bytes) {
     size_t used_memory = 0;
 
     MStatus status = gpu_memory_usage(total_memory, free_memory, used_memory);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     out_size_in_bytes = used_memory;
 
@@ -181,7 +182,7 @@ MStatus memory_free_size_in_bytes(size_t &out_size_in_bytes) {
     size_t used_memory = 0;
 
     MStatus status = gpu_memory_usage(total_memory, free_memory, used_memory);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     out_size_in_bytes = free_memory;
 

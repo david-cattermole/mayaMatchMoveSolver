@@ -59,7 +59,7 @@ MStatus parseSolveLogArguments_logLevel(const MArgDatabase &argData,
     if (argData.isFlagSet(LOG_LEVEL_FLAG)) {
         int logLevelNum = static_cast<int>(LOG_LEVEL_DEFAULT_VALUE);
         status = argData.getFlagArgument(LOG_LEVEL_FLAG, 0, logLevelNum);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         out_logLevel = static_cast<LogLevel>(logLevelNum);
     }
     return status;
@@ -78,7 +78,7 @@ MStatus parseSolveLogArguments_printStats(const MArgDatabase &argData,
             MString printStatsArg = "";
             for (auto j = 0; j < printStatsArgs.length(); ++j) {
                 printStatsArg = printStatsArgs.asString(j, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+                MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
                 out_printStatsList.append(printStatsArg);
             }
         }
@@ -99,7 +99,7 @@ MStatus parseSolveLogArguments_v1(const MArgDatabase &argData,
     if (argData.isFlagSet(VERBOSE_FLAG)) {
         bool verbose = VERBOSE_DEFAULT_VALUE;
         status = argData.getFlagArgument(VERBOSE_FLAG, 0, verbose);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (verbose) {
             out_logLevel = LogLevel::kVerbose;
         } else {
@@ -109,11 +109,11 @@ MStatus parseSolveLogArguments_v1(const MArgDatabase &argData,
 
     // Get 'Log Level'
     status = parseSolveLogArguments_logLevel(argData, out_logLevel);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get 'Print Statistics'
     status = parseSolveLogArguments_printStats(argData, out_printStatsList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -128,9 +128,9 @@ MStatus parseSolveLogArguments_v2(const MArgDatabase &argData,
     if (argData.isFlagSet(RESULTS_NODE_FLAG)) {
         MString node_name;
         status = argData.getFlagArgument(RESULTS_NODE_FLAG, 0, node_name);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsObject(node_name, out_resultsNodeObject);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Set Marker Deviation Attrs' flag.
@@ -138,17 +138,17 @@ MStatus parseSolveLogArguments_v2(const MArgDatabase &argData,
     if (argData.isFlagSet(SET_MARKER_DEVIATION_ATTRS_FLAG)) {
         status = argData.getFlagArgument(SET_MARKER_DEVIATION_ATTRS_FLAG, 0,
                                          out_setMarkerDeviationAttrs);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Log Level'
     out_logLevel = LOG_LEVEL_DEFAULT_VALUE;
     status = parseSolveLogArguments_logLevel(argData, out_logLevel);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get 'Print Statistics'
     status = parseSolveLogArguments_printStats(argData, out_printStatsList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }

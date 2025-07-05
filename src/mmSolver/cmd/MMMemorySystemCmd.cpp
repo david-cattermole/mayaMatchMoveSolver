@@ -44,6 +44,7 @@
 #include <mmcolorio/lib.h>
 
 #include "mmSolver/mayahelper/maya_string_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/memory_system_utils.h"
 #include "mmSolver/utilities/memory_utils.h"
@@ -118,7 +119,7 @@ MStatus MMMemorySystemCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (!argData.isQuery()) {
         status = MStatus::kFailure;
@@ -130,31 +131,31 @@ MStatus MMMemorySystemCmd::parseArgs(const MArgList &args) {
 
     m_system_physical_memory_total =
         argData.isFlagSet(SYSTEM_PHYSICAL_MEMORY_TOTAL_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_system_physical_memory_free =
         argData.isFlagSet(SYSTEM_PHYSICAL_MEMORY_FREE_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_system_physical_memory_used =
         argData.isFlagSet(SYSTEM_PHYSICAL_MEMORY_USED_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_process_memory_used =
         argData.isFlagSet(PROCESS_MEMORY_USED_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     const bool as_kilobytes =
         argData.isFlagSet(MEMORY_AS_KILOBYTES_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     const bool as_megabytes =
         argData.isFlagSet(MEMORY_AS_MEGABYTES_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     const bool as_gigabytes =
         argData.isFlagSet(MEMORY_AS_GIGABYTES_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_memory_unit = mmmemory::MemoryUnit::kBytes;
     if (as_kilobytes) {
@@ -173,7 +174,7 @@ MStatus MMMemorySystemCmd::doIt(const MArgList &args) {
 
     // Read all the flag arguments.
     MStatus status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     size_t bytes_value = 0;
     if (m_system_physical_memory_total) {

@@ -35,6 +35,7 @@
 // MM Solver
 #include "MMLensData.h"
 #include "mmSolver/nodeTypeIds.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -64,58 +65,61 @@ MStatus MMLensDeformerNode::initialize() {
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
     a_inLens = typedAttr.create("inLens", "ilns", data_type_id);
-    CHECK_MSTATUS(typedAttr.setStorable(false));
-    CHECK_MSTATUS(typedAttr.setKeyable(false));
-    CHECK_MSTATUS(typedAttr.setReadable(true));
-    CHECK_MSTATUS(typedAttr.setWritable(true));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setWritable(true));
 
     a_focalLength = numericAttr.create("focalLength", "fl",
                                        MFnNumericData::kDouble, 35.0, &status);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     a_horizontalFilmAperture =
         numericAttr.create("horizontalFilmAperture", "fbkw",
                            MFnNumericData::kDouble, 36.0 * MM_TO_INCH, &status);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     a_verticalFilmAperture =
         numericAttr.create("verticalFilmAperture", "fbkh",
                            MFnNumericData::kDouble, 24.0 * MM_TO_INCH, &status);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     a_pixelAspect = numericAttr.create("pixelAspect", "pxasp",
                                        MFnNumericData::kDouble, 1.0, &status);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     a_horizontalFilmOffset = numericAttr.create(
         "horizontalFilmOffset", "lcox", MFnNumericData::kDouble, 0.0, &status);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     a_verticalFilmOffset = numericAttr.create(
         "verticalFilmOffset", "lcoy", MFnNumericData::kDouble, 0.0, &status);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-    CHECK_MSTATUS(addAttribute(a_inLens));
-    CHECK_MSTATUS(addAttribute(a_focalLength));
-    CHECK_MSTATUS(addAttribute(a_horizontalFilmAperture));
-    CHECK_MSTATUS(addAttribute(a_verticalFilmAperture));
-    CHECK_MSTATUS(addAttribute(a_pixelAspect));
-    CHECK_MSTATUS(addAttribute(a_horizontalFilmOffset));
-    CHECK_MSTATUS(addAttribute(a_verticalFilmOffset));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_inLens));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_focalLength));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_horizontalFilmAperture));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_verticalFilmAperture));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_pixelAspect));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_horizontalFilmOffset));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_verticalFilmOffset));
 
-    CHECK_MSTATUS(attributeAffects(a_inLens, outputGeom));
-    CHECK_MSTATUS(attributeAffects(a_focalLength, outputGeom));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmAperture, outputGeom));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmAperture, outputGeom));
-    CHECK_MSTATUS(attributeAffects(a_pixelAspect, outputGeom));
-    CHECK_MSTATUS(attributeAffects(a_horizontalFilmOffset, outputGeom));
-    CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, outputGeom));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_inLens, outputGeom));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_focalLength, outputGeom));
+    MMSOLVER_CHECK_MSTATUS(
+        attributeAffects(a_horizontalFilmAperture, outputGeom));
+    MMSOLVER_CHECK_MSTATUS(
+        attributeAffects(a_verticalFilmAperture, outputGeom));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_pixelAspect, outputGeom));
+    MMSOLVER_CHECK_MSTATUS(
+        attributeAffects(a_horizontalFilmOffset, outputGeom));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_verticalFilmOffset, outputGeom));
 
     return MS::kSuccess;
 }
@@ -144,7 +148,7 @@ MStatus MMLensDeformerNode::deform(MDataBlock& data, MItGeometry& iter,
     // Query the envelope (the global multiplier factor for the
     // deformer)
     MDataHandle envData = data.inputValue(envelope, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     float env = envData.asFloat();
     if (env <= 0.0) {
         return status;
@@ -152,7 +156,7 @@ MStatus MMLensDeformerNode::deform(MDataBlock& data, MItGeometry& iter,
 
     // Get Input Lens
     MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MMLensData* inputLensData = (MMLensData*)inLensHandle.asPluginData();
     if (inputLensData == nullptr) {
         return status;
@@ -165,21 +169,21 @@ MStatus MMLensDeformerNode::deform(MDataBlock& data, MItGeometry& iter,
     }
 
     MDataHandle focalLengthHandle = data.inputValue(a_focalLength, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MDataHandle horizontalFilmApertureHandle =
         data.inputValue(a_horizontalFilmAperture, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MDataHandle verticalFilmApertureHandle =
         data.inputValue(a_verticalFilmAperture, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MDataHandle pixelAspectHandle = data.inputValue(a_pixelAspect, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MDataHandle horizontalFilmOffsetHandle =
         data.inputValue(a_horizontalFilmOffset, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MDataHandle verticalFilmOffsetHandle =
         data.inputValue(a_verticalFilmOffset, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     double focalLength = focalLengthHandle.asDouble();
     double filmBackWidth = horizontalFilmApertureHandle.asDouble();

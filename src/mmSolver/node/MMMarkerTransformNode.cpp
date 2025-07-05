@@ -35,6 +35,7 @@
 
 #include "MMLensData.h"
 #include "mmSolver/nodeTypeIds.h"
+#include "mmSolver/utilities/assert_utils.h"
 
 namespace mmsolver {
 
@@ -77,11 +78,11 @@ MStatus MMMarkerTransformNode::initialize() {
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
     a_inLens = typedAttr.create("inLens", "ilns", data_type_id);
-    CHECK_MSTATUS(typedAttr.setStorable(false));
-    CHECK_MSTATUS(typedAttr.setKeyable(false));
-    CHECK_MSTATUS(typedAttr.setReadable(true));
-    CHECK_MSTATUS(typedAttr.setWritable(true));
-    CHECK_MSTATUS(addAttribute(a_inLens));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setWritable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_inLens));
 
     mustCallValidateAndSet(a_inLens);
 
@@ -121,14 +122,14 @@ MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug &plug,
         MDataBlock data = forceCache();
 #endif
         MDataHandle dataHandle = data.outputValue(plug, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Create initial plug-in data structure. We don't need to
         // 'new' the data type directly.
         MFnPluginData fnPluginData;
         MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
         fnPluginData.create(data_type_id, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Get Input Lens
         MMLensData *inputLensData = (MMLensData *)dataHandle.asPluginData();

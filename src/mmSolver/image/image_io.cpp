@@ -176,7 +176,7 @@ MStatus read_with_maya_mimage(MImage &maya_mimage, const MString &file_path,
     const bool verbose = false;
 
     MStatus status = maya_mimage.readFromFile(file_path, pixel_type);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     if (status != MS::kSuccess) {
         MMSOLVER_MAYA_WRN("mmsolver::image_io::read_with_maya_mimage:"
                           << " failed to read image \"" << file_path.asChar()
@@ -314,7 +314,7 @@ MStatus read_image_file(MImage &maya_mimage,
             pixel_buffer, meta_data, file_path, out_width, out_height,
             out_num_channels, out_bytes_per_channel, out_texture_format,
             out_pixel_data_type, out_pixel_data);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         MMSOLVER_MAYA_VRB("mmsolver::image_io::read_image_file:"
                           << "read_with_maya_mimage...");
@@ -330,7 +330,7 @@ MStatus read_image_file(MImage &maya_mimage,
             maya_mimage, file_path, pixel_type, out_width, out_height,
             out_num_channels, out_bytes_per_channel, out_texture_format,
             out_pixel_data_type, out_pixel_data);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     return status;

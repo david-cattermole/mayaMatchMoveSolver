@@ -51,13 +51,13 @@ MStatus MarkerGroup::setNodeName(MString value) {
         m_object = MObject();
 
         status = m_overscan_x.setNodeName(value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         status = m_overscan_y.setNodeName(value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         status = m_depth.setNodeName(value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         m_nodeName = value;
     }
@@ -69,7 +69,7 @@ MObject MarkerGroup::getObject() {
         MStatus status;
         MString name = MarkerGroup::getNodeName();
         status = getAsObject(name, m_object);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
     return m_object;
 }
@@ -89,7 +89,7 @@ MStatus MarkerGroup::getDepth(double &value, const MTime &time,
         status = MS::kSuccess;
     } else {
         status = m_depth.getValue(value, time, timeEvalMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
@@ -100,9 +100,9 @@ MStatus MarkerGroup::getOverscanXY(double &x, double &y, const MTime &time,
     auto attr_overscan_x = MarkerGroup::getOverscanXAttr();
     auto attr_overscan_y = MarkerGroup::getOverscanYAttr();
     status = attr_overscan_x.getValue(x, time, timeEvalMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = attr_overscan_y.getValue(y, time, timeEvalMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -120,10 +120,10 @@ MString MarkerGroup::getLongNodeName() {
     MObject nodeObj = MarkerGroup::getObject();
     MDagPath nodeDagPath;
     status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     MString nodeName = nodeDagPath.fullPathName(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     return nodeName;
 }

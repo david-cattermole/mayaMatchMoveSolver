@@ -45,7 +45,7 @@ MStatus create_attr_deviation(const char *attr_name, MObject &node,
     numeric_attr.setKeyable(true);
     numeric_attr.setMin(-1.0);
     numeric_attr.setDefault(-1.0);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -67,7 +67,7 @@ MStatus create_attr_maxDeviationFrame(const char *attr_name, MObject &node,
     numeric_attr.setKeyable(true);
     numeric_attr.setMin(-1);
     numeric_attr.setDefault(-1);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -90,7 +90,7 @@ MStatus create_deviation_attrs_on_node(
     MTime::Unit ui_unit = MTime::uiUnit();
 
     MFnDependencyNode dg_node_fn(node, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     int created_attrs_count = 0;
     bool deviation_has_anim_curve = false;
@@ -103,17 +103,17 @@ MStatus create_deviation_attrs_on_node(
     MObject deviation_anim_curve_obj;
 
     status = find_plug(deviation_attr_name, dg_node_fn, deviation_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = find_plug(deviation_avg_attr_name, dg_node_fn, deviation_avg_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = find_plug(deviation_max_attr_name, dg_node_fn, deviation_max_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = find_plug(deviation_max_frame_attr_name, dg_node_fn,
                        deviation_max_frame_plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     bool deviation_exists = !deviation_plug.isNull();
     bool deviation_avg_exists = !deviation_avg_plug.isNull();
@@ -122,28 +122,28 @@ MStatus create_deviation_attrs_on_node(
 
     if (!deviation_exists) {
         status = create_attr_deviation(deviation_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!deviation_avg_exists) {
         status =
             create_attr_averageDeviation(deviation_avg_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!deviation_max_exists) {
         status =
             create_attr_maximumDeviation(deviation_max_attr_name, node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
     if (!deviation_max_frame_exists) {
         status = create_attr_maxDeviationFrame(deviation_max_frame_attr_name,
                                                node, dgmod);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ++created_attrs_count;
     }
 
@@ -152,7 +152,7 @@ MStatus create_deviation_attrs_on_node(
 
         if (!deviation_exists) {
             status = find_plug(deviation_attr_name, dg_node_fn, deviation_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             deviation_exists = !deviation_plug.isNull();
             MFnAnimCurve anim_curve_fn;
             deviation_anim_curve_obj = anim_curve_fn.create(
@@ -164,21 +164,21 @@ MStatus create_deviation_attrs_on_node(
         if (!deviation_avg_exists) {
             status = find_plug(deviation_avg_attr_name, dg_node_fn,
                                deviation_avg_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             deviation_avg_exists = !deviation_avg_plug.isNull();
         }
 
         if (!deviation_max_exists) {
             status = find_plug(deviation_max_attr_name, dg_node_fn,
                                deviation_max_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             deviation_max_exists = !deviation_max_plug.isNull();
         }
 
         if (!deviation_max_frame_exists) {
             status = find_plug(deviation_max_frame_attr_name, dg_node_fn,
                                deviation_max_frame_plug);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             deviation_max_frame_exists = !deviation_max_frame_plug.isNull();
         }
     }
@@ -188,7 +188,7 @@ MStatus create_deviation_attrs_on_node(
         MObjectArray objects;
         const bool find =
             MAnimUtil::findAnimation(deviation_plug, objects, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         if (find && (objects.length() > 0)) {
             deviation_anim_curve_obj = objects[0];
@@ -196,7 +196,7 @@ MStatus create_deviation_attrs_on_node(
             MFnAnimCurve anim_curve_fn;
             deviation_anim_curve_obj = anim_curve_fn.create(
                 deviation_plug, anim_curve_type, &dgmod, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             dgmod.doIt();
         }
         deviation_has_anim_curve = true;
@@ -270,7 +270,7 @@ MStatus create_deviation_attrs_on_node(
     dgmod.doIt();
 
     MFnDependencyNode depend_fn(deviation_anim_curve_obj, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     const MString node_name = depend_fn.name();
     const MString node_type = depend_fn.typeName();
 
@@ -278,14 +278,14 @@ MStatus create_deviation_attrs_on_node(
     status = deviation_anim_curve_fn.addKeys(
         &times, &values, anim_curve_tangent_in_type,
         anim_curve_tangent_out_type, keep_existing_keys, &curveChange);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = deviation_anim_curve_fn.setPreInfinityType(
         anim_curve_infinity_type, &curveChange);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = deviation_anim_curve_fn.setPostInfinityType(
         anim_curve_infinity_type, &curveChange);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }

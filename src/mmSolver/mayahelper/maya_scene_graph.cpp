@@ -216,7 +216,7 @@ MStatus add_attribute(Attr &mayaAttr, const MString &attr_name,
         for (mmsg::FrameValue f = start_frame; f < (end_frame + 1); ++f) {
             auto frame_time = MTime(static_cast<double>(f), uiUnit);
             status = mayaAttr.getValue(value, frame_time, timeEvalMode);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             values.push_back(value * scaleFactor);
         }
         out_attrId =
@@ -251,7 +251,7 @@ MStatus add_attribute(Attr &mayaAttr, const MString &attr_name,
                     mayaAttrSource, source_attr_name, timeArray, start_frame,
                     end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                     out_attrId, out_attrNameToAttrIdMap);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+                MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             }
         }
     } else {
@@ -279,19 +279,19 @@ MStatus get_translate_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
         add_attribute(mayaAttr, MString("translateX"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.tx, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
         add_attribute(mayaAttr, MString("translateY"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.ty, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
         add_attribute(mayaAttr, MString("translateZ"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.tz, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -309,19 +309,19 @@ MStatus get_rotate_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
         add_attribute(mayaAttr, MString("rotateX"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.rx, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
         add_attribute(mayaAttr, MString("rotateY"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.ry, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
         add_attribute(mayaAttr, MString("rotateZ"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.rz, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -339,19 +339,19 @@ MStatus get_scale_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
         add_attribute(mayaAttr, MString("scaleX"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.sx, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
         add_attribute(mayaAttr, MString("scaleY"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.sy, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
         add_attribute(mayaAttr, MString("scaleZ"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.sz, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -377,49 +377,49 @@ MStatus get_camera_attrs(
         mayaAttr, MString("horizontalFilmAperture"), timeArray, start_frame,
         end_frame, timeEvalMode, inch_to_mm, out_attrDataBlock,
         out_attrIds.sensor_width, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = add_attribute(mayaAttr, MString("verticalFilmAperture"), timeArray,
                            start_frame, end_frame, timeEvalMode, inch_to_mm,
                            out_attrDataBlock, out_attrIds.sensor_height,
                            out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
         add_attribute(mayaAttr, MString("focalLength"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.focal_length, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = add_attribute(mayaAttr, MString("horizontalFilmOffset"), timeArray,
                            start_frame, end_frame, timeEvalMode, inch_to_mm,
                            out_attrDataBlock, out_attrIds.lens_offset_x,
                            out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = add_attribute(mayaAttr, MString("verticalFilmOffset"), timeArray,
                            start_frame, end_frame, timeEvalMode, inch_to_mm,
                            out_attrDataBlock, out_attrIds.lens_offset_y,
                            out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = add_attribute(mayaAttr, MString("nearClipPlane"), timeArray,
                            start_frame, end_frame, timeEvalMode, scaleFactor,
                            out_attrDataBlock, out_attrIds.near_clip_plane,
                            out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
         add_attribute(mayaAttr, MString("farClipPlane"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.far_clip_plane, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status =
         add_attribute(mayaAttr, MString("cameraScale"), timeArray, start_frame,
                       end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                       out_attrIds.camera_scale, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -427,7 +427,7 @@ MStatus get_camera_attrs(
 MStatus get_rotate_order_attr(Attr &mayaAttr, const int timeEvalMode,
                               mmsg::RotateOrder &out_rotateOrder) {
     MStatus status = mayaAttr.setAttrName(MString("rotateOrder"));
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     short value = 0;
     mayaAttr.getValue(value, timeEvalMode);
@@ -470,20 +470,20 @@ MStatus get_transform_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
     MStatus status = get_translate_attrs(
         mayaAttr, timeArray, start_frame, end_frame, timeEvalMode,
         out_attrDataBlock, out_translateAttrIds, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = get_rotate_attrs(mayaAttr, timeArray, start_frame, end_frame,
                               timeEvalMode, out_attrDataBlock,
                               out_rotateAttrIds, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = get_scale_attrs(mayaAttr, timeArray, start_frame, end_frame,
                              timeEvalMode, out_attrDataBlock, out_scaleAttrIds,
                              out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = get_rotate_order_attr(mayaAttr, timeEvalMode, out_rotateOrder);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -491,7 +491,7 @@ MStatus get_transform_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
 MStatus get_film_fit_attr(Attr &mayaAttr, const int timeEvalMode,
                           mmsg::FilmFit &out_filmFit) {
     MStatus status = mayaAttr.setAttrName(MString("filmFit"));
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     short value = 0;
     mayaAttr.getValue(value, timeEvalMode);
@@ -537,12 +537,12 @@ MStatus get_marker_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
     add_attribute(mayaAttr, MString("translateX"), timeArray, start_frame,
                   end_frame, timeEvalMode, scaleFactor_x, out_attrDataBlock,
                   out_attrIds.tx, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     add_attribute(mayaAttr, MString("translateY"), timeArray, start_frame,
                   end_frame, timeEvalMode, scaleFactor_y, out_attrDataBlock,
                   out_attrIds.ty, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // TODO: The marker weight is more complicated because the user
     // can also disable the marker using the 'enable' attribute.
@@ -552,7 +552,7 @@ MStatus get_marker_attrs(Attr &mayaAttr, const MTimeArray &timeArray,
     add_attribute(mayaAttr, MString("weight"), timeArray, start_frame,
                   end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
                   out_attrIds.weight, out_attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -579,75 +579,75 @@ MStatus check_transform_node(MDagPath &dag_path) {
     MStatus status = MS::kSuccess;
 
     auto path_valid = dag_path.isValid(&status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!path_valid) {
         status = MS::kFailure;
         const MString node_name = dag_path.fullPathName();
         MMSOLVER_MAYA_WRN("MM Scene Graph: Invalid DAG path: "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     auto is_instanced = dag_path.isInstanced(&status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (is_instanced) {
         status = MS::kFailure;
         const MString node_name = dag_path.fullPathName();
         MMSOLVER_MAYA_WRN("MM Scene Graph: No support for instanced nodes: "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     MObject node_mobject = dag_path.node(&status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (node_mobject.isNull()) {
         status = MS::kFailure;
         const MString node_name = dag_path.fullPathName();
         MMSOLVER_MAYA_WRN("MM Scene Graph: Invalid node MObject: "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     MFnTransform mfn_transform(node_mobject, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MPoint scale_pivot = mfn_transform.scalePivot(MSpace::kTransform, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!is_zero(scale_pivot)) {
         status = MS::kFailure;
         const MString node_name = dag_path.fullPathName();
         MMSOLVER_MAYA_WRN(
             "MM Scene Graph: No support for non-zero scale pivot: "
             << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     MVector scale_pivot_translation =
         mfn_transform.scalePivotTranslation(MSpace::kTransform, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!is_zero(scale_pivot_translation)) {
         status = MS::kFailure;
         const MString node_name = dag_path.fullPathName();
         MMSOLVER_MAYA_WRN(
             "MM Scene Graph: No support for non-zero scale pivot translation: "
             << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     MPoint rotate_pivot =
         mfn_transform.rotatePivot(MSpace::kTransform, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!is_zero(rotate_pivot)) {
         status = MS::kFailure;
         const MString node_name = dag_path.fullPathName();
         MMSOLVER_MAYA_WRN(
             "MM Scene Graph: No support for non-zero rotate pivot: "
             << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     MVector rotate_pivot_translation =
         mfn_transform.rotatePivotTranslation(MSpace::kTransform, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!is_zero(rotate_pivot_translation)) {
         status = MS::kFailure;
         const MString node_name = dag_path.fullPathName();
@@ -655,7 +655,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
             "MM Scene Graph: No support for non-zero rotate pivot "
             "translation\": "
             << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     MFnDependencyNode dg_node(node_mobject);
@@ -667,7 +667,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
         MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
                           << "\"" << tx_attr_name.asChar() << "\": "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     auto ty_attr_name = MString("translateY");
@@ -678,7 +678,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
         MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
                           << "\"" << ty_attr_name.asChar() << "\": "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     auto tz_attr_name = MString("translateZ");
@@ -689,7 +689,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
         MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
                           << "\"" << tz_attr_name.asChar() << "\": "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     auto rx_attr_name = MString("rotateX");
@@ -700,7 +700,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
         MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
                           << "\"" << rx_attr_name.asChar() << "\": "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     auto ry_attr_name = MString("rotateY");
@@ -711,7 +711,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
         MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
                           << "\"" << ry_attr_name.asChar() << "\": "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     auto rz_attr_name = MString("rotateZ");
@@ -722,7 +722,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
         MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
                           << "\"" << rz_attr_name.asChar() << "\": "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     auto sx_attr_name = MString("scaleX");
@@ -733,7 +733,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
         MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
                           << "\"" << sx_attr_name.asChar() << "\": "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     auto sy_attr_name = MString("scaleY");
@@ -744,7 +744,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
         MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
                           << "\"" << sy_attr_name.asChar() << "\": "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     auto sz_attr_name = MString("scaleZ");
@@ -755,7 +755,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
         MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
                           << "\"" << sz_attr_name.asChar() << "\": "
                           << "\"" << node_name.asChar() << "\"");
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     return status;
@@ -784,7 +784,7 @@ MStatus add_transforms(const mmsg::NodeId parent_node_id, MDagPath &dag_path,
     auto previous_node_id = parent_node_id;
     while (dag_path.length() > 0) {
         MString transform_name = dag_path.fullPathName(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         auto nodeNameStr = std::string(transform_name.asChar());
 
         auto tfm_node_id = mmsg::NodeId();
@@ -793,7 +793,7 @@ MStatus add_transforms(const mmsg::NodeId parent_node_id, MDagPath &dag_path,
         }
 
         status = check_transform_node(dag_path);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto search = out_nodeNameToNodeIdMap.find(nodeNameStr);
         if (search != out_nodeNameToNodeIdMap.end()) {
@@ -802,7 +802,7 @@ MStatus add_transforms(const mmsg::NodeId parent_node_id, MDagPath &dag_path,
         } else {
             // Create a new transform.
             status = mayaAttr.setNodeName(transform_name);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             get_transform_attrs(
                 mayaAttr, timeArray, start_frame, end_frame, timeEvalMode,
@@ -822,7 +822,7 @@ MStatus add_transforms(const mmsg::NodeId parent_node_id, MDagPath &dag_path,
         previous_node_id = tfm_node_id;
 
         status = dag_path.pop();
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     return status;
@@ -863,12 +863,12 @@ MStatus add_cameras(const CameraPtrList &cameraList,
         auto tfm_dag_path = MDagPath();
         auto shp_dag_path = MDagPath();
         status = MDagPath::getAPathTo(cam_tfm_obj, tfm_dag_path);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MString transform_name = tfm_dag_path.fullPathName(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = mayaAttr.setNodeName(transform_name);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         get_transform_attrs(mayaAttr, timeArray, start_frame, end_frame,
                             timeEvalMode, out_attrDataBlock, translate_attr_ids,
@@ -876,11 +876,11 @@ MStatus add_cameras(const CameraPtrList &cameraList,
                             out_attrNameToAttrIdMap);
 
         status = MDagPath::getAPathTo(cam_shp_obj, shp_dag_path);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         MString shape_name = shp_dag_path.fullPathName(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = mayaAttr.setNodeName(shape_name);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto film_fit = mmsg::FilmFit::kUnknown;
         auto render_image_width = 0;
@@ -901,13 +901,13 @@ MStatus add_cameras(const CameraPtrList &cameraList,
         out_nodeNameToNodeIdMap.insert({nodeNameStr, cam_node.id});
 
         status = tfm_dag_path.pop();
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         status = add_transforms(
             cam_node.id, tfm_dag_path, timeArray, start_frame, end_frame,
             timeEvalMode, out_sceneGraph, out_attrDataBlock,
             out_nodeNameToNodeIdMap, out_attrNameToAttrIdMap);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
@@ -944,12 +944,12 @@ MStatus add_bundles(const BundlePtrList &bundleList,
 
         auto dag_path = MDagPath();
         status = MDagPath::getAPathTo(bnd_tfm_obj, dag_path);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MString transform_name = dag_path.fullPathName(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = mayaAttr.setNodeName(transform_name);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         get_transform_attrs(mayaAttr, timeArray, start_frame, end_frame,
                             timeEvalMode, out_attrDataBlock, translate_attr_ids,
@@ -965,13 +965,13 @@ MStatus add_bundles(const BundlePtrList &bundleList,
         out_nodeNameToNodeIdMap.insert({nodeNameStr, bnd_node.id});
 
         status = dag_path.pop();
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         status = add_transforms(bnd_node.id, dag_path, timeArray, start_frame,
                                 end_frame, timeEvalMode, out_sceneGraph,
                                 out_attrDataBlock, out_nodeNameToNodeIdMap,
                                 out_attrNameToAttrIdMap);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
@@ -1034,12 +1034,12 @@ MStatus add_markers(
 
         auto dag_path = MDagPath();
         status = MDagPath::getAPathTo(mkr_tfm_obj, dag_path);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MString transform_name = dag_path.fullPathName(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = mayaAttr.setNodeName(transform_name);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // MarkerGroup's Overscan
         double overscan_x = 1.0;
@@ -1051,14 +1051,14 @@ MStatus add_markers(
             auto first_time = timeArray[0];
             status = mkr_grp_ptr->getOverscanXY(overscan_x, overscan_y,
                                                 first_time, timeEvalMode);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
 
         status = get_marker_attrs(mayaAttr, timeArray, start_frame, end_frame,
                                   timeEvalMode, overscan_x, overscan_y,
                                   out_attrDataBlock, mkr_attr_ids,
                                   out_attrNameToAttrIdMap);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto mkr_node = out_sceneGraph.create_marker_node(mkr_attr_ids);
         out_markerNodes.push_back(mkr_node);
@@ -1073,7 +1073,7 @@ MStatus add_markers(
                               << " cam=" << cam_node_id.index);
             status = MS::kFailure;
         }
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto link_bundle_ok =
             out_sceneGraph.link_marker_to_bundle(mkr_node.id, bnd_node_id);
@@ -1083,7 +1083,7 @@ MStatus add_markers(
                               << " bnd=" << bnd_node_id.index);
             status = MS::kFailure;
         }
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
@@ -1193,24 +1193,24 @@ MStatus construct_scene_graph(
                                  timeEvalMode, out_cameraNodes, evalObjects,
                                  out_sceneGraph, out_attrDataBlock,
                                  nodeNameToNodeIdMap, attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = add_bundles(bundleList, timeArray, start_frame, end_frame,
                          timeEvalMode, out_bundleNodes, evalObjects,
                          out_sceneGraph, out_attrDataBlock, nodeNameToNodeIdMap,
                          attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = add_markers(
         markerList, cameraList, bundleList, timeArray, start_frame, end_frame,
         timeEvalMode, out_cameraNodes, out_bundleNodes, out_markerNodes,
         evalObjects, out_sceneGraph, out_attrDataBlock, attrNameToAttrIdMap);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Create parameters to attributes
     status = convert_attributes_to_attr_ids(attrList, attrNameToAttrIdMap,
                                             out_attrIdList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Print number of nodes in the evaluation objects.
     MMSOLVER_MAYA_VRB(

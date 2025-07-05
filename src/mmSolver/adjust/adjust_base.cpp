@@ -311,7 +311,7 @@ bool get_initial_parameters(
 
         double value = 0.0;
         status = attr->getValue(value, frame, timeEvalMode);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         if (status != MS::kSuccess) {
             out_solverResult.success = false;
             return false;
@@ -365,7 +365,7 @@ bool set_maya_attribute_values(
         }
 
         status = attr->setValue(real_value, frame, dgmod, curveChange);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
 
         if (status != MS::kSuccess) {
             MString attr_name = attr->getName();
@@ -727,7 +727,7 @@ MStatus validateSolveFrames(
             "failed; out_numberOfErrors="
             << out_numberOfErrors);
         out_solve_is_valid = false;
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         return status;
     }
     MMSOLVER_ASSERT(out_numberOfErrors == (out_numberOfMarkerErrors +
@@ -754,7 +754,7 @@ MStatus validateSolveFrames(
             "out_numberOfParameters="
             << out_numberOfParameters);
         out_solve_is_valid = false;
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         return status;
     }
 
@@ -800,7 +800,7 @@ MStatus validateSolveFrames(
     if (status != MS::kSuccess) {
         MMSOLVER_MAYA_VRB("validateSolveFrames: mapErrorsToParameters failed.");
         out_solve_is_valid = false;
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         return status;
     }
 
@@ -817,7 +817,7 @@ MStatus validateSolveFrames(
             MMSOLVER_MAYA_VRB(
                 "validateSolveFrames: logResultsObjectCounts failed.");
             out_solve_is_valid = false;
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
             return status;
         }
     }
@@ -832,7 +832,7 @@ MStatus validateSolveFrames(
             MMSOLVER_MAYA_VRB(
                 "validateSolveFrames: logResultsSolveObjectUsage failed.");
             out_solve_is_valid = false;
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
             return status;
         }
     }
@@ -848,7 +848,7 @@ MStatus validateSolveFrames(
                 "validateSolveFrames: logResultsMarkerAffectsAttribute "
                 "failed.");
             out_solve_is_valid = false;
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
             return status;
         }
     }
@@ -884,7 +884,7 @@ MStatus validateSolveFrames(
     if (status != MS::kSuccess) {
         MMSOLVER_MAYA_VRB(
             "validateSolveFrames: calculateMarkerAndParameterCount failed.");
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         out_solve_is_valid = false;
         return status;
     }
@@ -898,7 +898,7 @@ MStatus validateSolveFrames(
         MMSOLVER_MAYA_VRB(
             "validateSolveFrames: logResultsSolverFrames failed.");
         out_solve_is_valid = false;
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         return status;
     }
 
@@ -1273,7 +1273,7 @@ MStatus solveFrames(
             // per-frame, it's not possible to easily fall back. See
             // the use of the 'FrameSolveMode' enum type for more
             // details.
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
             MMSOLVER_MAYA_ERR(
                 "Maya DAG is invalid for use with MM Scene Graph, "
                 << "please switch to Maya DAG and solve again.");
@@ -1299,7 +1299,7 @@ MStatus solveFrames(
     status = constructLensModelList(cameraList, markerList, attrList, frameList,
                                     markerFrameToLensModelList,
                                     attrFrameToLensModelList, lensModelList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 #endif
 
     // Solving Objects.
@@ -1385,7 +1385,7 @@ MStatus solveFrames(
                       solverOptions.imageWidth, &out_errorList[0], &userData,
                       initialErrorAvg, initialErrorMax, initialErrorMin,
                       status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         initialErrorAvg = 0;
         initialErrorMin = 0;
@@ -1595,7 +1595,7 @@ MStatus solveFrames(
                       numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
                       logLevel, out_paramList);
 
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     MMSOLVER_MAYA_VRB("solveFrames: Z");
 
@@ -1652,14 +1652,14 @@ MStatus generateMarkerAndBundleRelationships(
                                 // Outputs
                                 out_relationshipAttrsExistCount,
                                 out_markerToAttrToFrameMatrix, status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Create 'valid' lists.
         generateValidMarkerAttrFrameLists(
             markerList, attrList, frameList, out_markerToAttrToFrameMatrix,
 
             out_validMarkerList, out_validAttrList, out_validFrameList, status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Print warnings about unused solve objects.
         if ((out_validMarkerList.count_disabled() > 0) && removeUnusedMarkers) {
@@ -1816,7 +1816,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
         // Outputs
         relationshipAttrsExistCount, validMarkerList, validAttrList,
         validFrameList, markerToAttrToFrameMatrix);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     const Count32 validMarkerEnabledCount = validMarkerList.count_enabled();
     const Count32 validAttrEnabledCount = validAttrList.count_enabled();
@@ -1856,7 +1856,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
     auto jacobianList = std::vector<double>();
 
     MGlobal::MMayaState mayaSessionState = MGlobal::mayaState(&status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     auto frameSolveMode = solverOptions.frameSolveMode;
     MMSOLVER_MAYA_VRB(
@@ -1898,7 +1898,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
             paramWeightList,
             //
             logLevel, verbose, solve_is_valid, cmdResult);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
 
         if (solve_is_valid) {
             status = solveFrames(
@@ -2002,7 +2002,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
                 paramWeightList,
                 //
                 logLevel, verbose, solve_is_valid, perFrameCmdResult);
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
 
             if (solve_is_valid) {
                 status = solveFrames(
@@ -2112,7 +2112,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
         // Outputs
         relationshipAttrsExistCount, validMarkerList, validAttrList,
         validFrameList, markerToAttrToFrameMatrix);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     const Count32 markerEnabledCount = markerList.count_enabled();
     const Count32 frameEnabledCount = frameList.count_enabled();
@@ -2139,7 +2139,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
     auto jacobianList = std::vector<double>();
 
     MGlobal::MMayaState mayaSessionState = MGlobal::mayaState(&status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     auto frameSolveMode = solverOptions.frameSolveMode;
     MMSOLVER_MAYA_VRB(
@@ -2181,7 +2181,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
             paramWeightList,
             //
             logLevel, verbose, solve_is_valid, out_cmdResult);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
 
         if (solve_is_valid) {
             status = solveFrames(
@@ -2282,7 +2282,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
                 paramWeightList,
                 //
                 perFrameLogLevel, verbose, solve_is_valid, perFrameCmdResult);
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
 
             if (solve_is_valid) {
                 status = solveFrames(

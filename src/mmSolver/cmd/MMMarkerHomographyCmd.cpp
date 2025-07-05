@@ -165,19 +165,20 @@ MSyntax MMMarkerHomographyCmd::newSyntax() {
     syntax.enableQuery(false);
     syntax.enableEdit(false);
 
-    CHECK_MSTATUS(syntax.addFlag(CAMERA_A_SHORT_FLAG, CAMERA_A_LONG_FLAG,
-                                 MSyntax::kSelectionItem));
-    CHECK_MSTATUS(syntax.addFlag(CAMERA_B_SHORT_FLAG, CAMERA_B_LONG_FLAG,
-                                 MSyntax::kSelectionItem));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        CAMERA_A_SHORT_FLAG, CAMERA_A_LONG_FLAG, MSyntax::kSelectionItem));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        CAMERA_B_SHORT_FLAG, CAMERA_B_LONG_FLAG, MSyntax::kSelectionItem));
 
-    CHECK_MSTATUS(syntax.addFlag(FRAME_A_SHORT_FLAG, FRAME_A_LONG_FLAG,
-                                 MSyntax::kUnsigned));
-    CHECK_MSTATUS(syntax.addFlag(FRAME_B_SHORT_FLAG, FRAME_B_LONG_FLAG,
-                                 MSyntax::kUnsigned));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(FRAME_A_SHORT_FLAG, FRAME_A_LONG_FLAG,
+                                          MSyntax::kUnsigned));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(FRAME_B_SHORT_FLAG, FRAME_B_LONG_FLAG,
+                                          MSyntax::kUnsigned));
 
-    CHECK_MSTATUS(syntax.addFlag(MARKER_PAIR_SHORT_FLAG, MARKER_PAIR_LONG_FLAG,
-                                 MSyntax::kString, MSyntax::kString));
-    CHECK_MSTATUS(syntax.makeFlagMultiUse(MARKER_PAIR_SHORT_FLAG));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(MARKER_PAIR_SHORT_FLAG,
+                                          MARKER_PAIR_LONG_FLAG,
+                                          MSyntax::kString, MSyntax::kString));
+    MMSOLVER_CHECK_MSTATUS(syntax.makeFlagMultiUse(MARKER_PAIR_SHORT_FLAG));
 
     return syntax;
 }
@@ -192,7 +193,7 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
     const bool verbose = false;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Reset saved data structures.
     m_marker_coords_a.clear();
@@ -205,13 +206,13 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
     m_frame_a = 1;
     if (argData.isFlagSet(FRAME_A_SHORT_FLAG)) {
         status = argData.getFlagArgument(FRAME_A_SHORT_FLAG, 0, m_frame_a);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     m_frame_b = 1;
     if (argData.isFlagSet(FRAME_B_SHORT_FLAG)) {
         status = argData.getFlagArgument(FRAME_B_SHORT_FLAG, 0, m_frame_b);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     auto uiUnit = MTime::uiUnit();
@@ -226,7 +227,7 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         camera_selection_list_a, m_camera_a, m_camera_tx_attr_a,
         m_camera_ty_attr_a, m_camera_tz_attr_a, m_camera_rx_attr_a,
         m_camera_ry_attr_a, m_camera_rz_attr_a);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MSelectionList camera_selection_list_b;
     argData.getFlagArgument(CAMERA_B_SHORT_FLAG, 0, camera_selection_list_b);
@@ -234,7 +235,7 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         camera_selection_list_b, m_camera_b, m_camera_tx_attr_b,
         m_camera_ty_attr_b, m_camera_tz_attr_b, m_camera_rx_attr_b,
         m_camera_ry_attr_b, m_camera_rz_attr_b);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     auto image_res_a_ok = ::mmsolver::sfm::get_camera_image_res(
         m_frame_a, uiUnit, *m_camera_a, m_image_width_a, m_image_height_a);
@@ -267,7 +268,7 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         MObject markerObject;
         status =
             argData.getFlagArgumentList(MARKER_PAIR_SHORT_FLAG, i, markerArgs);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         if (markerArgs.length() != 2) {
             MMSOLVER_MAYA_ERR("Marker argument list must have 2 arguments; "
@@ -276,11 +277,11 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         }
 
         markerNameA = markerArgs.asString(0, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsObject(markerNameA, markerObject);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsDagPath(markerNameA, dagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
             MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
@@ -290,11 +291,11 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         MMSOLVER_MAYA_VRB("Got markerNameA: " << markerNameA.asChar());
 
         markerNameB = markerArgs.asString(1, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsObject(markerNameB, markerObject);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsDagPath(markerNameB, dagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
             MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
@@ -339,7 +340,7 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
                 cameraList, markerList, attrList, frameList,
                 markerFrameToLensModelList, attrFrameToLensModelList,
                 lensModelList);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             lensModel_a = markerFrameToLensModelList[0];
             lensModel_b = markerFrameToLensModelList[1];

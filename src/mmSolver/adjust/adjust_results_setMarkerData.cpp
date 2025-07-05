@@ -65,7 +65,7 @@ MStatus setErrorMetricsResultDataOnMarkers(ErrorMetricsResult &results,
                 marker_obj, map, deviation_attr_name, deviation_avg_attr_name,
                 deviation_max_attr_name, deviation_max_frame_attr_name, dgmod,
                 curveChange);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
     }
 

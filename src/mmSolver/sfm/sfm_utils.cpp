@@ -224,17 +224,18 @@ MStatus parseCameraSelectionList(
         MMSOLVER_MAYA_ERR(
             "sfm_utils parseCameraSelectionList: "
             "No camera given.");
-        CHECK_MSTATUS(MS::kFailure);
-        return MS::kFailure;
+        MStatus status = MS::kFailure;
+        MMSOLVER_CHECK_MSTATUS(status);
+        return status;
     }
 
     MDagPath nodeDagPath;
     MObject node_obj;
 
     MStatus status = selection_list.getDagPath(0, nodeDagPath);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = selection_list.getDependNode(0, node_obj);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MString transform_node_name = nodeDagPath.fullPathName();
     MMSOLVER_MAYA_VRB(
@@ -245,7 +246,7 @@ MStatus parseCameraSelectionList(
     auto object_type = computeObjectType(node_obj, nodeDagPath);
     if (object_type == ObjectType::kCamera) {
         status = nodeDagPath.extendToShapeDirectlyBelow(0);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         MString shape_node_name = nodeDagPath.fullPathName();
 
         camera = CameraPtr(new Camera());
@@ -269,7 +270,7 @@ MStatus parseCameraSelectionList(
         status = get_camera_values(time, camera, image_width, image_height,
                                    focal_length_mm, sensor_width_mm,
                                    sensor_height_mm);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         MMSOLVER_MAYA_ERR(
             "sfm_utils parseCameraSelectionList: "
@@ -297,9 +298,9 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
 
     if (selection_list.length() > 0) {
         status = selection_list.getDagPath(0, nodeDagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = selection_list.getDependNode(0, node_obj);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MString transform_node_name = nodeDagPath.fullPathName();
         MMSOLVER_MAYA_VRB(
@@ -310,7 +311,7 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kCamera) {
             status = nodeDagPath.extendToShapeDirectlyBelow(0);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MString shape_node_name = nodeDagPath.fullPathName();
 
             camera = CameraPtr(new Camera());

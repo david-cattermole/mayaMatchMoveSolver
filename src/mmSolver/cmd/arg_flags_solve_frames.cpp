@@ -61,7 +61,7 @@ MStatus parseSolveFramesArguments(const MArgDatabase &argData,
                 continue;
             }
             const FrameNumber value = frameArgs.asInt(0, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             out_frameList.push_back(value, /*enabled=*/true);
         }

@@ -80,7 +80,7 @@ void RenderOverrideSilhouette::renderer_change_func(const MString &panel_name,
 
     if (new_renderer == MM_RENDERER_SILHOUETTE_NAME) {
         MStatus status = create_render_globals_silhouette_node();
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 }
 
@@ -96,7 +96,7 @@ void RenderOverrideSilhouette::render_override_change_func(
 
     if (new_renderer == MM_RENDERER_SILHOUETTE_NAME) {
         MStatus status = create_render_globals_silhouette_node();
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 }
 
@@ -343,7 +343,7 @@ MStatus update_parameters_silhouette(
                 << MM_RENDER_GLOBALS_SILHOUETTE_TYPE_NAME
                 << "\" node, creating node.");
             status = create_render_globals_silhouette_node();
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
 
             if (status == MS::kSuccess) {
                 status = getAsObject(kRenderGlobalsSilhouetteNodeName, node_obj,
@@ -371,7 +371,7 @@ MStatus update_parameters_silhouette(
         return MS::kSuccess;
     }
     MFnDependencyNode depends_node(globals_node_obj, &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     const bool want_networked_plug = true;
 
@@ -521,7 +521,7 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
         uint32_t target_height = 0;
         MStatus status =
             renderer->outputTargetSize(target_width, target_height);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         const auto color_target_width =
             m_target_descriptions[SilhouetteTargetId::kColorTarget]->width();
@@ -575,7 +575,7 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
         m_globals_node, m_enable, m_override_color, m_depth_offset, m_width,
         m_color[0], m_color[1], m_color[2], m_alpha, m_cull_face,
         m_operation_num);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     MMSOLVER_MAYA_VRB(
         "RenderOverrideSilhouette::setup: m_backgroundOp=" << m_backgroundOp);
@@ -584,7 +584,7 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
     MMSOLVER_MAYA_VRB(
         "RenderOverrideSilhouette::setup: m_image_plane_nodes.length()="
         << m_image_plane_nodes.length());
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_backgroundOp->setObjectSetOverride(&m_image_plane_nodes);
 

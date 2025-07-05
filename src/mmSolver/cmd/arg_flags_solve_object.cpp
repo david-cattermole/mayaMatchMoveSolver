@@ -65,20 +65,20 @@ MStatus createMarkerGroupFromMarkerNodeName(const MString &markerName,
 
     MDagPath node_path;
     MStatus status = getAsDagPath(markerName, node_path);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MObject node_obj;
     while (node_path.length() > 1) {
         status = node_path.pop(1);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         node_obj = node_path.node(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         ObjectType obj_type = computeObjectType(node_obj, node_path);
         if (obj_type == ObjectType::kMarkerGroup) {
             MString markerGroupNodeName = node_path.fullPathName(&status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             out_markerGroup = MarkerGroupPtr(new MarkerGroup());
             out_markerGroup->setNodeName(markerGroupNodeName);
         }
@@ -118,14 +118,14 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             }
 
             cameraTransform = cameraArgs.asString(0, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             nodeExistsAndIsType(cameraTransform, MFn::Type::kTransform);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             cameraShape = cameraArgs.asString(1, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             nodeExistsAndIsType(cameraShape, MFn::Type::kCamera);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             CameraPtr camera = CameraPtr(new Camera());
             camera->setTransformNodeName(cameraTransform);
@@ -156,11 +156,11 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             }
 
             markerName = markerArgs.asString(0, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             status = getAsObject(markerName, markerObject);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             status = getAsDagPath(markerName, dagPath);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             objectType = computeObjectType(markerObject, dagPath);
             if (objectType != ObjectType::kMarker) {
                 MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
@@ -169,11 +169,11 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             }
 
             cameraName = markerArgs.asString(1, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             status = getAsObject(cameraName, cameraObject);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             status = getAsDagPath(cameraName, dagPath);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             objectType = computeObjectType(cameraObject, dagPath);
             if (objectType != ObjectType::kCamera) {
                 MMSOLVER_MAYA_ERR("Given camera node is not a Camera; "
@@ -182,11 +182,11 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             }
 
             bundleName = markerArgs.asString(2, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             status = getAsObject(bundleName, bundleObject);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             status = getAsDagPath(bundleName, dagPath);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             objectType = computeObjectType(bundleObject, dagPath);
             if (objectType != ObjectType::kBundle) {
                 MMSOLVER_MAYA_ERR("Given bundle node is not a Bundle; "
@@ -250,7 +250,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             MarkerGroupPtr markerGroup;
             status =
                 createMarkerGroupFromMarkerNodeName(markerName, markerGroup);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             marker->setMarkerGroup(markerGroup);
 
             out_markerList.push_back(marker, /*enabled=*/true);

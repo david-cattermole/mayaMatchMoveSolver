@@ -45,7 +45,7 @@ MStatus Bundle::setNodeName(MString value) {
     if (value != m_nodeName) {
         m_object = MObject();
         status = m_matrix.setNodeName(value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         m_nodeName = value;
     }
     return status;
@@ -56,7 +56,7 @@ MObject Bundle::getObject() {
         MStatus status;
         MString name = Bundle::getNodeName();
         status = getAsObject(name, m_object);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
     return m_object;
 }
@@ -84,7 +84,7 @@ MStatus Bundle::getPos(double &x, double &y, double &z, const MTime &time,
     MStatus status;
     MMatrix matrix;
     status = Bundle::getMatrix(matrix, time, timeEvalMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     x = matrix(3, 0);
     y = matrix(3, 1);
     z = matrix(3, 2);
@@ -96,7 +96,7 @@ MStatus Bundle::getPos(MPoint &point, const MTime &time,
     MStatus status;
     MMatrix matrix;
     status = Bundle::getMatrix(matrix, time, timeEvalMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     point.x = matrix(3, 0);
     point.y = matrix(3, 1);
     point.z = matrix(3, 2);

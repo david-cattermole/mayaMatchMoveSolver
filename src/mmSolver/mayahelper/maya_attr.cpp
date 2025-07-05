@@ -66,7 +66,7 @@
 bool useDgContext(const int timeEvalMode) {
     MStatus status;
     MGlobal::MMayaState state = MGlobal::mayaState(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     const bool is_interactive = state == MGlobal::MMayaState::kInteractive;
     bool use_dg_ctx = USE_DG_CONTEXT_IN_GUI && is_interactive;
     if (timeEvalMode == TIME_EVAL_MODE_SET_TIME) {
@@ -164,7 +164,7 @@ MObject Attr::getObject() {
         // Get the MObject for the underlying node.
         MString name = Attr::getNodeName();
         status = getAsObject(name, m_object);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
     return m_object;
 }
@@ -190,9 +190,9 @@ MPlug Attr::getPlug() {
             // already computed how many elements the array plug is
             // expected to have.
             plug.evaluateNumElements(&status);
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
             const unsigned int num = plug.numElements(&status);
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
             if (num > 0) {
                 plug = plug.elementByPhysicalIndex(0, &status);
                 if (status != MStatus::kSuccess) {
@@ -263,24 +263,24 @@ bool Attr::isAnimated() {
 
         bool animated = false;
         const bool isDest = plug.isDestination(&status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         if (isDest) {
             MPlugArray connPlugs;
             bool asDest = true;  // get the source plugs on the other
                                  // end of 'plug'.
             bool asSrc = false;
             plug.connectedTo(connPlugs, asDest, asSrc, &status);
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
             for (unsigned int i = 0; i < connPlugs.length(); ++i) {
                 MPlug connPlug = connPlugs[i];
                 MObject connObj = connPlug.node(&status);
-                CHECK_MSTATUS(status);
+                MMSOLVER_CHECK_MSTATUS(status);
                 if (connObj.hasFn(MFn::Type::kAnimCurve)) {
                     animated = true;
                     MFnDependencyNode dependsNode(connObj, &status);
-                    CHECK_MSTATUS(status);
+                    MMSOLVER_CHECK_MSTATUS(status);
                     m_animCurveName = dependsNode.name(&status);
-                    CHECK_MSTATUS(status);
+                    MMSOLVER_CHECK_MSTATUS(status);
                     break;
                 }
             }
@@ -308,7 +308,7 @@ bool Attr::isConnected() {
 
     if (m_connected < 0) {
         const bool isDest = plug.isDestination(&status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         m_connected = (int)isDest;
     }
     return m_connected != 0;
@@ -342,10 +342,10 @@ MStatus Attr::getValue(bool &value, const MTime &time, const int timeEvalMode) {
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double curveValue = 0;
         status = curveFn.evaluate(time, curveValue);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         value = my_trunc(curveValue) != 0;
     } else if (connected) {
         if (use_dg_ctx) {
@@ -367,7 +367,7 @@ MStatus Attr::getValue(bool &value, const MTime &time, const int timeEvalMode) {
             value = plug.asBool(MDGContext::fsNormal, &status);
 #endif
         }
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         value = plug.asBool();
     }
@@ -384,10 +384,10 @@ MStatus Attr::getValue(int &value, const MTime &time, const int timeEvalMode) {
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double curveValue = 0;
         status = curveFn.evaluate(time, curveValue);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         value = (int)curveValue;
     } else if (connected) {
         if (use_dg_ctx) {
@@ -409,7 +409,7 @@ MStatus Attr::getValue(int &value, const MTime &time, const int timeEvalMode) {
             value = plug.asInt(MDGContext::fsNormal, &status);
 #endif
         }
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         value = plug.asInt();
     }
@@ -427,10 +427,10 @@ MStatus Attr::getValue(short &value, const MTime &time,
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double curveValue = 0;
         status = curveFn.evaluate(time, curveValue);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         value = (short)curveValue;
     } else if (connected) {
         if (use_dg_ctx) {
@@ -452,7 +452,7 @@ MStatus Attr::getValue(short &value, const MTime &time,
             value = plug.asShort(MDGContext::fsNormal, &status);
 #endif
         }
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         value = plug.asShort();
     }
@@ -529,13 +529,13 @@ MStatus Attr::getValue(MMatrix &value, const MTime &time,
         matrixObj = plug.asMObject(MDGContext::fsNormal, &status);
 #endif
     }
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MFnMatrixData matrixData(matrixObj, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     value = matrixData.matrix(&status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -589,7 +589,7 @@ MStatus Attr::setValue(double value, const MTime &time, MDGModifier &dgmod,
 
     if (animated) {
         MFnAnimCurve curveFn(plug, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         unsigned int keyIndex = 0;
         // TODO: The keyframe index may be possible to cache, as long
         //  as we can control that when a new keyframe is inserted, we
@@ -610,7 +610,7 @@ MStatus Attr::setValue(double value, const MTime &time, MDGModifier &dgmod,
             "Dynamic attributes that aren't animated cannot be set; "
             << "name=" << name << " "
             << "plug=" << plugName);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         dgmod.newPlugValueDouble(plug, value);
     }
@@ -658,13 +658,13 @@ MString Attr::getLongNodeName() {
     if (nodeObj.hasFn(MFn::kDagNode)) {
         MDagPath nodeDagPath;
         status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
 
         nodeName = nodeDagPath.fullPathName(&status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     } else if (nodeObj.hasFn(MFn::kDependencyNode)) {
         MFnDependencyNode dependFn(nodeObj, &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         nodeName = dependFn.name();
     } else {
         nodeName = Attr::getNodeName();
@@ -679,7 +679,7 @@ MString Attr::getLongAttributeName() {
     MStatus status;
     MObject attrObj = Attr::getAttribute();
     MFnAttribute attrMFn(attrObj, &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     return attrMFn.name();
 }
 

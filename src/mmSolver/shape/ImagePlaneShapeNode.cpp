@@ -159,103 +159,105 @@ MStatus ImagePlaneShapeNode::initialize() {
 
     m_visible_to_camera_only = nAttr.create("visibleToCameraOnly", "viscamony",
                                             MFnNumericData::kBoolean, 0);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_visible_to_camera_only));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_visible_to_camera_only));
 
     m_draw_hud = nAttr.create("drawHud", "enbhud", MFnNumericData::kBoolean, 1);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_draw_hud));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_draw_hud));
 
     m_draw_image_size =
         nAttr.create("drawImageSize", "enbimgsz", MFnNumericData::kBoolean, 1);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_draw_image_size));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_draw_image_size));
 
     m_draw_camera_size =
         nAttr.create("drawCameraSize", "enbcamsz", MFnNumericData::kBoolean, 1);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_draw_camera_size));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_draw_camera_size));
 
     m_image_width =
         nAttr.create("imageWidth", "imgwdth", MFnNumericData::kInt, 1920);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setMin(1));
-    CHECK_MSTATUS(addAttribute(m_image_width));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setMin(1));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_image_width));
 
     m_image_height =
         nAttr.create("imageHeight", "imghght", MFnNumericData::kInt, 1080);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setMin(1));
-    CHECK_MSTATUS(addAttribute(m_image_height));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setMin(1));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_image_height));
 
     m_image_pixel_aspect = nAttr.create("imagePixelAspect", "imgpxasp",
                                         MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setMin(0.1));
-    CHECK_MSTATUS(nAttr.setMax(4.0));
-    CHECK_MSTATUS(addAttribute(m_image_pixel_aspect));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setMin(0.1));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setMax(4.0));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_image_pixel_aspect));
 
     m_camera_width_inch = nAttr.create("cameraWidthInch", "camwdthin",
                                        MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setConnectable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(false));
-    CHECK_MSTATUS(nAttr.setMin(0));
-    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Camera Width (inches)")));
-    CHECK_MSTATUS(addAttribute(m_camera_width_inch));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setConnectable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setMin(0));
+    MMSOLVER_CHECK_MSTATUS(
+        nAttr.setNiceNameOverride(MString("Camera Width (inches)")));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_camera_width_inch));
 
     m_camera_height_inch = nAttr.create("cameraHeightInch", "camhghtin",
                                         MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setConnectable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(false));
-    CHECK_MSTATUS(nAttr.setMin(0));
-    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Camera Height (inches)")));
-    CHECK_MSTATUS(addAttribute(m_camera_height_inch));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setConnectable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setMin(0));
+    MMSOLVER_CHECK_MSTATUS(
+        nAttr.setNiceNameOverride(MString("Camera Height (inches)")));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_camera_height_inch));
 
     m_lens_hash_current =
         nAttr.create("lensHashCurrent", "lnshshcur", MFnNumericData::kInt64, 0);
-    CHECK_MSTATUS(nAttr.setStorable(false));
-    CHECK_MSTATUS(nAttr.setConnectable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(false));
-    CHECK_MSTATUS(nAttr.setHidden(true));
-    CHECK_MSTATUS(addAttribute(m_lens_hash_current));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setConnectable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setHidden(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_lens_hash_current));
 
     m_lens_hash_previous = nAttr.create("lensHashPrevious", "lnshshprv",
                                         MFnNumericData::kInt64, 0);
-    CHECK_MSTATUS(nAttr.setStorable(false));
-    CHECK_MSTATUS(nAttr.setConnectable(false));
-    CHECK_MSTATUS(nAttr.setKeyable(false));
-    CHECK_MSTATUS(nAttr.setHidden(true));
-    CHECK_MSTATUS(addAttribute(m_lens_hash_previous));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setConnectable(false));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setHidden(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_lens_hash_previous));
 
     m_geometry_node = msgAttr.create("geometryNode", "geond", &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(msgAttr.setStorable(true));
-    CHECK_MSTATUS(msgAttr.setConnectable(true));
-    CHECK_MSTATUS(msgAttr.setKeyable(false));
-    CHECK_MSTATUS(addAttribute(m_geometry_node));
+    MMSOLVER_CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(msgAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(msgAttr.setConnectable(true));
+    MMSOLVER_CHECK_MSTATUS(msgAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_geometry_node));
 
     m_shader_node = msgAttr.create("shaderNode", "shdnd", &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(msgAttr.setStorable(true));
-    CHECK_MSTATUS(msgAttr.setConnectable(true));
-    CHECK_MSTATUS(msgAttr.setKeyable(false));
-    CHECK_MSTATUS(addAttribute(m_shader_node));
+    MMSOLVER_CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(msgAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(msgAttr.setConnectable(true));
+    MMSOLVER_CHECK_MSTATUS(msgAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_shader_node));
 
     m_camera_node = msgAttr.create("cameraNode", "camnd", &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(msgAttr.setStorable(true));
-    CHECK_MSTATUS(msgAttr.setConnectable(true));
-    CHECK_MSTATUS(msgAttr.setKeyable(false));
-    CHECK_MSTATUS(addAttribute(m_camera_node));
+    MMSOLVER_CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(msgAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(msgAttr.setConnectable(true));
+    MMSOLVER_CHECK_MSTATUS(msgAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_camera_node));
 
     return MS::kSuccess;
 }

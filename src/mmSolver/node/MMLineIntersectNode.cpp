@@ -60,20 +60,20 @@ MStatus getLineAttributeValues(MDataBlock &data, MObject &attr_pointAX,
 
     ///////////////////////////////
     MDataHandle pointAXHandle = data.inputValue(attr_pointAX, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     double ax = pointAXHandle.asDouble();
 
     MDataHandle pointAYHandle = data.inputValue(attr_pointAY, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     double ay = pointAYHandle.asDouble();
 
     ///////////////////////////////
     MDataHandle pointBXHandle = data.inputValue(attr_pointBX, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     double bx = pointBXHandle.asDouble();
 
     MDataHandle pointBYHandle = data.inputValue(attr_pointBY, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     double by = pointBYHandle.asDouble();
 
     auto a = mmdata::Point2D(ax, ay);
@@ -123,11 +123,11 @@ MStatus MMLineIntersectNode::compute(const MPlug &plug, MDataBlock &data) {
         (plug == a_outVanishingPointY)) {
         // Get Data Handles
         auto lineA = mmdata::Line2D();
-        CHECK_MSTATUS_AND_RETURN_IT(getLineAttributeValues(
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(getLineAttributeValues(
             data, a_pointAX, a_pointAY, a_pointBX, a_pointBY, lineA));
 
         auto lineB = mmdata::Line2D();
-        CHECK_MSTATUS_AND_RETURN_IT(getLineAttributeValues(
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(getLineAttributeValues(
             data, a_pointCX, a_pointCY, a_pointDX, a_pointDY, lineB));
 
         auto linePair = mmdata::LinePair2D(lineA, lineB);
@@ -185,73 +185,73 @@ MStatus MMLineIntersectNode::initialize() {
     {
         a_pointAX = numericAttr.create("pointAX", "pntax",
                                        MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_pointAY = numericAttr.create("pointAY", "pntay",
                                        MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_pointA = compoundAttr.create("pointA", "pnta", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_pointAX);
         compoundAttr.addChild(a_pointAY);
-        CHECK_MSTATUS(addAttribute(a_pointA));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_pointA));
     }
 
     {
         a_pointBX = numericAttr.create("pointBX", "pntbx",
                                        MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_pointBY = numericAttr.create("pointBY", "pntby",
                                        MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_pointB = compoundAttr.create("pointB", "pntb", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_pointBX);
         compoundAttr.addChild(a_pointBY);
-        CHECK_MSTATUS(addAttribute(a_pointB));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_pointB));
     }
 
     {
         a_pointCX = numericAttr.create("pointCX", "pntcx",
                                        MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_pointCY = numericAttr.create("pointCY", "pntcy",
                                        MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_pointC = compoundAttr.create("pointC", "pntc", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_pointCX);
         compoundAttr.addChild(a_pointCY);
-        CHECK_MSTATUS(addAttribute(a_pointC));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_pointC));
     }
 
     {
         a_pointDX = numericAttr.create("pointDX", "pntdx",
                                        MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_pointDY = numericAttr.create("pointDY", "pntdy",
                                        MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_pointD = compoundAttr.create("pointD", "pntd", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_pointDX);
         compoundAttr.addChild(a_pointDY);
-        CHECK_MSTATUS(addAttribute(a_pointD));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_pointD));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -260,29 +260,29 @@ MStatus MMLineIntersectNode::initialize() {
     {
         a_outVanishingPointX = numericAttr.create("outVanishingPointX", "ovpax",
                                                   MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         a_outVanishingPointY = numericAttr.create("outVanishingPointY", "ovpay",
                                                   MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         a_outVanishingPoint =
             compoundAttr.create("outVanishingPoint", "ovpa", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_outVanishingPointX);
         compoundAttr.addChild(a_outVanishingPointY);
-        CHECK_MSTATUS(addAttribute(a_outVanishingPoint));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outVanishingPoint));
     }
 
     // Out Cosine Angle.
     {
         a_outCosineAngle = numericAttr.create("outCosineAngle", "ocsang",
                                               MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(addAttribute(a_outCosineAngle));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outCosineAngle));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -312,7 +312,7 @@ MStatus MMLineIntersectNode::initialize() {
 
     outputAttrs.append(a_outCosineAngle);
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return MS::kSuccess;

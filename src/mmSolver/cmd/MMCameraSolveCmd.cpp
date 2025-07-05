@@ -162,20 +162,20 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
     const bool verbose = false;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     auto uiUnit = MTime::uiUnit();
 
     m_startFrame = 1;
     if (argData.isFlagSet("-sf")) {
         status = argData.getFlagArgument("-sf", 0, m_startFrame);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     m_endFrame = 120;
     if (argData.isFlagSet("-ef")) {
         status = argData.getFlagArgument("-ef", 0, m_endFrame);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     m_startTime = MTime(static_cast<double>(m_startFrame), uiUnit);
@@ -183,7 +183,7 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
 
     auto objects = MSelectionList();
     status = argData.getObjects(objects);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Reset saved data structures.
     m_marker_coords_a.clear();
@@ -199,9 +199,9 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         MObject node_obj;
 
         status = iter1.getDagPath(nodeDagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = iter1.getDependNode(node_obj);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto node_name = nodeDagPath.fullPathName();
         // MMSOLVER_MAYA_VRB("Node name: " << node_name.asChar());
@@ -213,7 +213,7 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
             MString transform_node_name = nodeDagPath.fullPathName();
 
             status = nodeDagPath.extendToShapeDirectlyBelow(0);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MString shape_node_name = nodeDagPath.fullPathName();
 
             auto cam = MMCamera();
@@ -238,9 +238,9 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         MObject node_obj;
 
         status = iter2.getDagPath(nodeDagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = iter2.getDependNode(node_obj);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto node_name = nodeDagPath.fullPathName();
         MMSOLVER_MAYA_VRB("Node name: " << node_name.asChar());

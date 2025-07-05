@@ -45,6 +45,7 @@
 
 // MM Solver
 #include "mmSolver/cmd/anim_curve_cmd_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 // MM Scene Graph
@@ -97,9 +98,9 @@ MSyntax MMAnimCurveFilterPopsCmd::newSyntax() {
     syntax.addFlag(THRESHOLD_FLAG_SHORT, THRESHOLD_FLAG_LONG, MSyntax::kDouble);
     // TODO: Add an option to 'infill' the pops.
 
-    CHECK_MSTATUS(syntax.addFlag(RETURN_RESULT_ONLY_FLAG_SHORT,
-                                 RETURN_RESULT_ONLY_FLAG_LONG,
-                                 MSyntax::kBoolean));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(RETURN_RESULT_ONLY_FLAG_SHORT,
+                                          RETURN_RESULT_ONLY_FLAG_LONG,
+                                          MSyntax::kBoolean));
 
     // Add object argument for animation curve
     const unsigned int min_curves = 1;
@@ -115,11 +116,11 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
 
     MStatus status = MStatus::kSuccess;
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get animation curve from selection.
     status = argData.getObjects(m_selection);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_selection.length() == 0) {
         MGlobal::displayError(CMD_NAME
@@ -131,14 +132,14 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
     // not during 'doIt'.
     for (auto i = 0; i < m_selection.length(); i++) {
         status = m_selection.getDependNode(i, m_animCurveObj);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (argData.isFlagSet(RETURN_RESULT_ONLY_FLAG_SHORT)) {
         bool value = false;
         status =
             argData.getFlagArgument(RETURN_RESULT_ONLY_FLAG_SHORT, 0, value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         m_returnResultOnly = value;
     }
 
@@ -148,16 +149,16 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
     if (argData.isFlagSet(START_FRAME_FLAG_SHORT)) {
         status =
             argData.getFlagArgument(START_FRAME_FLAG_SHORT, 0, m_startFrame);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     if (argData.isFlagSet(END_FRAME_FLAG_SHORT)) {
         status = argData.getFlagArgument(END_FRAME_FLAG_SHORT, 0, m_endFrame);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (argData.isFlagSet(THRESHOLD_FLAG_SHORT)) {
         status = argData.getFlagArgument(THRESHOLD_FLAG_SHORT, 0, m_threshold);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_startFrame=" << m_startFrame);
@@ -176,7 +177,7 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
     const bool verbose = false;
 
     MStatus status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Don't store each individual edit, just store the combination.
     m_curveChange.setInteractive(true);
@@ -316,9 +317,9 @@ MStatus MMAnimCurveFilterPopsCmd::redoIt() {
     MStatus status = MS::kSuccess;
     if (!m_returnResultOnly) {
         status = m_dgmod.doIt();
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = m_curveChange.redoIt();
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
@@ -327,9 +328,9 @@ MStatus MMAnimCurveFilterPopsCmd::undoIt() {
     MStatus status = MS::kSuccess;
     if (!m_returnResultOnly) {
         status = m_curveChange.undoIt();
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = m_dgmod.undoIt();
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }

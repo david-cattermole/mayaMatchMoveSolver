@@ -141,7 +141,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         MarkerPtr marker = ud->markerList[markerPair.first];
         MTime frame = ud->frameList[markerPair.second];
         status = marker->getPos(pos, frame + 1, TIME_EVAL_MODE_DG_CONTEXT);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 #endif
 
@@ -190,7 +190,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         CameraPtr camera = marker->getCamera();
         status = camera->getWorldProjMatrix(cameraWorldProjectionMatrix, frame,
                                             timeEvalMode);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
 
         MVector cam_dir;
         MPoint cam_pos;
@@ -209,7 +209,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         bool applyOverscan = true;
         status =
             marker->getPosXY(mkr_x, mkr_y, frame, timeEvalMode, applyOverscan);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
 #endif
 
         const int16_t filmFit = camera->getFilmFitValue();
@@ -243,7 +243,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         // Re-project Bundle into screen-space.
         MVector bnd_dir;
         status = bnd->getPos(bnd_mpos, frame, timeEvalMode);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         MPoint bnd_mpos_tmp(bnd_mpos);
         bnd_dir = bnd_mpos_tmp - cam_pos;
         bnd_dir.normalize();

@@ -60,6 +60,9 @@
 #define MMASSERT_CXX_COMPILER ::mmsolver::build_info::cxx_compiler()
 #define MMASSERT_CXX_LINKER ::mmsolver::build_info::cxx_linker()
 
+// Maya
+#include <maya/MStreamUtils.h>
+
 // MM Solver Libs
 #include <mmsolverlibs/assert.h>
 
@@ -78,6 +81,44 @@
 // Debug-only check that will continue.
 #define MMSOLVER_CHECK_DEBUG(condition, ...) \
     MMSOLVER_CORE_CHECK_DEBUG(condition, ##__VA_ARGS__)
+
+// Always enabled check MStatus that will continue.
+#define MMSOLVER_CHECK_MSTATUS(_status)                                       \
+    do {                                                                      \
+        if (MStatus::kSuccess != (_status)) {                                 \
+            const MString _status_error_message = (_status).errorString();    \
+            ::mmsolverlibs::assert::print_check(                              \
+                MStreamUtils::stdErrorStream(), __FILE__, __LINE__, __func__, \
+                "status != MStatus::kSuccess",                                \
+                _status_error_message.asChar());                              \
+        }                                                                     \
+    } while (0)
+
+// Always enabled check MStatus that will continue or return a value.
+#define MMSOLVER_CHECK_MSTATUS_AND_RETURN(_status, _return_value)             \
+    do {                                                                      \
+        if (MStatus::kSuccess != (_status)) {                                 \
+            const MString _status_error_message = (_status).errorString();    \
+            ::mmsolverlibs::assert::print_check(                              \
+                MStreamUtils::stdErrorStream(), __FILE__, __LINE__, __func__, \
+                "status != MStatus::kSuccess",                                \
+                _status_error_message.asChar());                              \
+            return (_return_value);                                           \
+        }                                                                     \
+    } while (0)
+
+// Always enabled check MStatus that will continue or return the MStatus.
+#define MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(_status)                         \
+    do {                                                                      \
+        if (MStatus::kSuccess != (_status)) {                                 \
+            const MString _status_error_message = (_status).errorString();    \
+            ::mmsolverlibs::assert::print_check(                              \
+                MStreamUtils::stdErrorStream(), __FILE__, __LINE__, __func__, \
+                "status != MStatus::kSuccess",                                \
+                _status_error_message.asChar());                              \
+            return (_status);                                                 \
+        }                                                                     \
+    } while (0)
 
 // Quit the program, showing a message why and where the failure
 // happened.

@@ -555,7 +555,7 @@ static void update_texture(MTexture *texture,
     void *pixel_data = image_pixel_data.pixel_data();
     MStatus status =
         texture->update(pixel_data, generate_mip_maps, rowPitch, region);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 }
 
 ImageCache::GPUCacheValue ImageCache::gpu_insert_item(

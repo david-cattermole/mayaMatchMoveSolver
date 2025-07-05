@@ -154,7 +154,7 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
     if (plug == a_outLens) {
         // Enable Attribute toggle
         MDataHandle enableHandle = data.inputValue(a_enable, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         const bool enable = enableHandle.asBool();
 
         MDataHandle lensModelHandle = data.inputValue(a_lensModel, &status);
@@ -167,11 +167,11 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
         MFnPluginData fnPluginData;
         MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
         fnPluginData.create(data_type_id, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Get Input Lens
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         MMLensData *inputLensData = (MMLensData *)inLensHandle.asPluginData();
         std::shared_ptr<mmlens::LensModel> inputLensModel;
         if (inputLensData != nullptr) {
@@ -197,19 +197,19 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
         } else if (lensModelType == mmlens::LensModelType::k3deClassic) {
             MDataHandle k1Handle =
                 data.inputValue(a_tdeClassic_distortion, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle squeezeHandle =
                 data.inputValue(a_tdeClassic_anamorphicSqueeze, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle cxHandle =
                 data.inputValue(a_tdeClassic_curvatureX, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle cyHandle =
                 data.inputValue(a_tdeClassic_curvatureY, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle k2Handle =
                 data.inputValue(a_tdeClassic_quarticDistortion, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             double distortion = k1Handle.asDouble();
             double anamorphicSqueeze = squeezeHandle.asDouble();
@@ -238,30 +238,30 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
         } else if (lensModelType == mmlens::LensModelType::k3deRadialStdDeg4) {
             MDataHandle deg2DistortionHandle =
                 data.inputValue(a_tdeRadialStdDeg4_degree2_distortion, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg2UHandle =
                 data.inputValue(a_tdeRadialStdDeg4_degree2_u, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg2VHandle =
                 data.inputValue(a_tdeRadialStdDeg4_degree2_v, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg4DistortionHandle =
                 data.inputValue(a_tdeRadialStdDeg4_degree4_distortion, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg4UHandle =
                 data.inputValue(a_tdeRadialStdDeg4_degree4_u, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg4VHandle =
                 data.inputValue(a_tdeRadialStdDeg4_degree4_v, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle cylindricDirHandle =
                 data.inputValue(a_tdeRadialStdDeg4_cylindricDirection, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle cylindricBendHandle =
                 data.inputValue(a_tdeRadialStdDeg4_cylindricBending, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             double deg2Distortion = deg2DistortionHandle.asDouble();
             double deg2U = deg2UHandle.asDouble();
@@ -300,52 +300,52 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
                        mmlens::LensModelType::k3deAnamorphicStdDeg4Rescaled) {
             MDataHandle deg2Cx02Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_degree2_cx02, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg2Cy02Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_degree2_cy02, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg2Cx22Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_degree2_cx22, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg2Cy22Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_degree2_cy22, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg4Cx04Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_degree4_cx04, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg4Cy04Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_degree4_cy04, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg4Cx24Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_degree4_cx24, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg4Cy24Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_degree4_cy24, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg4Cx44Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_degree4_cx44, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg4Cy44Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_degree4_cy44, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle lensRotationHandle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_lensRotation, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle squeezeXHandle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_squeeze_x, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle squeezeYHandle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_squeeze_y, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle rescaleHandle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_rescale, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             double deg2Cx02 = deg2Cx02Handle.asDouble();
             double deg2Cy02 = deg2Cy02Handle.asDouble();
@@ -445,80 +445,80 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
                      mmlens::LensModelType::k3deAnamorphicStdDeg6Rescaled) {
             MDataHandle deg2Cx02Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree2_cx02, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg2Cy02Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree2_cy02, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg2Cx22Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree2_cx22, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg2Cy22Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree2_cy22, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg6Cx04Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree4_cx04, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg6Cy04Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree4_cy04, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg6Cx24Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree4_cx24, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg6Cy24Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree4_cy24, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg6Cx44Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree4_cx44, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg6Cy44Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree4_cy44, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg6Cx06Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree6_cx06, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg6Cy06Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree6_cy06, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg6Cx26Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree6_cx26, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg6Cy26Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree6_cy26, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg6Cx46Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree6_cx46, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg6Cy46Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree6_cy46, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle deg6Cx66Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree6_cx66, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle deg6Cy66Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_degree6_cy66, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle lensRotationHandle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_lensRotation, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle squeezeXHandle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_squeeze_x, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MDataHandle squeezeYHandle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_squeeze_y, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MDataHandle rescaleHandle =
                 data.inputValue(a_tdeAnamorphicStdDeg6_rescale, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             double deg2Cx02 = deg2Cx02Handle.asDouble();
             double deg2Cy02 = deg2Cy02Handle.asDouble();
@@ -679,51 +679,51 @@ MStatus MMLensModel3deNode::initialize() {
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
     a_inLens = typedAttr.create("inLens", "ilns", data_type_id);
-    CHECK_MSTATUS(typedAttr.setStorable(false));
-    CHECK_MSTATUS(typedAttr.setKeyable(false));
-    CHECK_MSTATUS(typedAttr.setReadable(true));
-    CHECK_MSTATUS(typedAttr.setWritable(true));
-    CHECK_MSTATUS(addAttribute(a_inLens));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setWritable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_inLens));
 
     // Enable
     a_enable =
         numericAttr.create("enable", "enb", MFnNumericData::kBoolean, true);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_enable));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_enable));
 
     // Lens Model
     auto defaultLensModels =
         static_cast<short>(mmlens::LensModelType::k3deRadialStdDeg4);
     a_lensModel =
         enumAttr.create("lensModel", "lnsmdl", defaultLensModels, &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(enumAttr.addField(
+    MMSOLVER_CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(enumAttr.addField(
         "3DE Classic LD Model",
         static_cast<short>(mmlens::LensModelType::k3deClassic)));
-    CHECK_MSTATUS(enumAttr.addField(
+    MMSOLVER_CHECK_MSTATUS(enumAttr.addField(
         "3DE4 Radial - Standard, Degree 4",
         static_cast<short>(mmlens::LensModelType::k3deRadialStdDeg4)));
-    CHECK_MSTATUS(enumAttr.addField(
+    MMSOLVER_CHECK_MSTATUS(enumAttr.addField(
         "3DE4 Anamorphic - Standard, Degree 4",
         static_cast<short>(mmlens::LensModelType::k3deAnamorphicStdDeg4)));
-    CHECK_MSTATUS(enumAttr.addField(
+    MMSOLVER_CHECK_MSTATUS(enumAttr.addField(
         "3DE4 Anamorphic - Rescaled, Degree 4",
         static_cast<short>(
             mmlens::LensModelType::k3deAnamorphicStdDeg4Rescaled)));
-    CHECK_MSTATUS(enumAttr.addField(
+    MMSOLVER_CHECK_MSTATUS(enumAttr.addField(
         "3DE4 Anamorphic - Standard, Degree 6",
         static_cast<short>(mmlens::LensModelType::k3deAnamorphicStdDeg6)));
-    CHECK_MSTATUS(enumAttr.addField(
+    MMSOLVER_CHECK_MSTATUS(enumAttr.addField(
         "3DE4 Anamorphic - Rescaled, Degree 6",
         static_cast<short>(
             mmlens::LensModelType::k3deAnamorphicStdDeg6Rescaled)));
-    // CHECK_MSTATUS(enumAttr.addField(
+    // MMSOLVER_CHECK_MSTATUS(enumAttr.addField(
     //         "3DE4 Anamorphic, Degree 6",
     //         static_cast<short>(mmlens::LensModelType::k3deAnamorphicDeg6)));
-    CHECK_MSTATUS(enumAttr.setStorable(true));
-    CHECK_MSTATUS(enumAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_lensModel));
+    MMSOLVER_CHECK_MSTATUS(enumAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(enumAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_lensModel));
 
     // 3DE Classic LD Model
     {
@@ -731,69 +731,72 @@ MStatus MMLensModel3deNode::initialize() {
         // nothing to the output of the node.
         a_tdeClassic_heading = enumAttr.create(
             "tdeClassic_heading", "tdeClassic_heading", 0, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(enumAttr.addField("--------", 0));
-        CHECK_MSTATUS(enumAttr.setStorable(false));
-        CHECK_MSTATUS(enumAttr.setKeyable(false));
-        CHECK_MSTATUS(enumAttr.setChannelBox(true));
-        CHECK_MSTATUS(enumAttr.setNiceNameOverride("3DE Classic LD Model"));
-        CHECK_MSTATUS(addAttribute(a_tdeClassic_heading));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("--------", 0));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setChannelBox(true));
+        MMSOLVER_CHECK_MSTATUS(
+            enumAttr.setNiceNameOverride("3DE Classic LD Model"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeClassic_heading));
 
         a_tdeClassic_distortion =
             numericAttr.create("tdeClassic_distortion", "tdeClassic_distortion",
                                MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Distortion"));
-        CHECK_MSTATUS(addAttribute(a_tdeClassic_distortion));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("Distortion"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeClassic_distortion));
 
         // Anamorphic Squeeze
         a_tdeClassic_anamorphicSqueeze = numericAttr.create(
             "tdeClassic_anamorphicSqueeze", "tdeClassic_anamorphicSqueeze",
             MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setMin(0.1));
-        CHECK_MSTATUS(numericAttr.setSoftMin(0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(2.0));
-        CHECK_MSTATUS(numericAttr.setMax(4.0));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Anamorphic Squeeze"));
-        CHECK_MSTATUS(addAttribute(a_tdeClassic_anamorphicSqueeze));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setMin(0.1));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(2.0));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setMax(4.0));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Anamorphic Squeeze"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeClassic_anamorphicSqueeze));
 
         // Curvature X
         a_tdeClassic_curvatureX =
             numericAttr.create("tdeClassic_curvatureX", "tdeClassic_curvatureX",
                                MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Curvature X"));
-        CHECK_MSTATUS(addAttribute(a_tdeClassic_curvatureX));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("Curvature X"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeClassic_curvatureX));
 
         // Curvature Y
         a_tdeClassic_curvatureY =
             numericAttr.create("tdeClassic_curvatureY", "tdeClassic_curvatureY",
                                MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Curvature Y"));
-        CHECK_MSTATUS(addAttribute(a_tdeClassic_curvatureY));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("Curvature Y"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeClassic_curvatureY));
 
         // Quartic Distortion
         a_tdeClassic_quarticDistortion = numericAttr.create(
             "tdeClassic_quarticDistortion", "tdeClassic_quarticDistortion",
             MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Quartic Distortion"));
-        CHECK_MSTATUS(addAttribute(a_tdeClassic_quarticDistortion));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Quartic Distortion"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeClassic_quarticDistortion));
     }
 
     // 3DE Radial Decentered Degree 4 Cylindric
@@ -802,107 +805,113 @@ MStatus MMLensModel3deNode::initialize() {
         // nothing to the output of the node.
         a_tdeRadialStdDeg4_heading = enumAttr.create(
             "tdeRadialStdDeg4_heading", "tdeRadialStdDeg4_heading", 0, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(enumAttr.addField("--------", 0));
-        CHECK_MSTATUS(enumAttr.setStorable(false));
-        CHECK_MSTATUS(enumAttr.setKeyable(false));
-        CHECK_MSTATUS(enumAttr.setChannelBox(true));
-        CHECK_MSTATUS(
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("--------", 0));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setChannelBox(true));
+        MMSOLVER_CHECK_MSTATUS(
             enumAttr.setNiceNameOverride("3DE4 Radial - Standard, Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_heading));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_heading));
 
         // Distortion - Degree 2
         a_tdeRadialStdDeg4_degree2_distortion =
             numericAttr.create("tdeRadialStdDeg4_degree2_distortion",
                                "tdeRadialStdDeg4_degree2_distortion",
                                MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Distortion - Degree 2"));
-        CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_degree2_distortion));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Distortion - Degree 2"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeRadialStdDeg4_degree2_distortion));
 
         // U - Degree 2
         a_tdeRadialStdDeg4_degree2_u = numericAttr.create(
             "tdeRadialStdDeg4_degree2_u", "tdeRadialStdDeg4_degree2_u",
             MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("U - Degree 2"));
-        CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_degree2_u));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("U - Degree 2"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_degree2_u));
 
         // V - Degree 2
         a_tdeRadialStdDeg4_degree2_v = numericAttr.create(
             "tdeRadialStdDeg4_degree2_v", "tdeRadialStdDeg4_degree2_v",
             MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("V - Degree 2"));
-        CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_degree2_v));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("V - Degree 2"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_degree2_v));
 
         // Quartic Distortion - Degree 4
         a_tdeRadialStdDeg4_degree4_distortion =
             numericAttr.create("tdeRadialStdDeg4_degree4_distortion",
                                "tdeRadialStdDeg4_degree4_distortion",
                                MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
             numericAttr.setNiceNameOverride("Quartic Distortion - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_degree4_distortion));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeRadialStdDeg4_degree4_distortion));
 
         // U - Degree 4
         a_tdeRadialStdDeg4_degree4_u = numericAttr.create(
             "tdeRadialStdDeg4_degree4_u", "tdeRadialStdDeg4_degree4_u",
             MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("U - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_degree4_u));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("U - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_degree4_u));
 
         // V - Degree 4
         a_tdeRadialStdDeg4_degree4_v = numericAttr.create(
             "tdeRadialStdDeg4_degree4_v", "tdeRadialStdDeg4_degree4_v",
             MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("V - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_degree4_v));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("V - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_degree4_v));
 
         // Phi - Cylindric Direction
         a_tdeRadialStdDeg4_cylindricDirection =
             numericAttr.create("tdeRadialStdDeg4_cylindricDirection",
                                "tdeRadialStdDeg4_cylindricDirection",
                                MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-90.0));
-        CHECK_MSTATUS(numericAttr.setSoftMax(90.0));
-        CHECK_MSTATUS(
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-90.0));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(90.0));
+        MMSOLVER_CHECK_MSTATUS(
             numericAttr.setNiceNameOverride("Phi - Cylindric Direction"));
-        CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_cylindricDirection));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeRadialStdDeg4_cylindricDirection));
 
         // B - Cylindric Bending
         a_tdeRadialStdDeg4_cylindricBending = numericAttr.create(
             "tdeRadialStdDeg4_cylindricBending",
             "tdeRadialStdDeg4_cylindricBending", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.1));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.1));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("B - Cylindric Bending"));
-        CHECK_MSTATUS(addAttribute(a_tdeRadialStdDeg4_cylindricBending));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.1));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.1));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("B - Cylindric Bending"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeRadialStdDeg4_cylindricBending));
     }
 
     // 3DE Anamorphic - Standard, Degree 4 (and 'Rescaled' version)
@@ -912,168 +921,190 @@ MStatus MMLensModel3deNode::initialize() {
         a_tdeAnamorphicStdDeg4_heading =
             enumAttr.create("tdeAnamorphicStdDeg4_heading",
                             "tdeAnamorphicStdDeg4_heading", 0, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(enumAttr.addField("--------", 0));
-        CHECK_MSTATUS(enumAttr.setStorable(false));
-        CHECK_MSTATUS(enumAttr.setKeyable(false));
-        CHECK_MSTATUS(enumAttr.setChannelBox(true));
-        CHECK_MSTATUS(enumAttr.setNiceNameOverride(
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("--------", 0));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setChannelBox(true));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setNiceNameOverride(
             "3DE4 Anamorphic - Standard, Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_heading));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_heading));
 
         // Cx02 - Degree 2
         a_tdeAnamorphicStdDeg4_degree2_cx02 = numericAttr.create(
             "tdeAnamorphicStdDeg4_degree2_cx02",
             "tdeAnamorphicStdDeg4_degree2_cx02", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx02 - Degree 2"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_degree2_cx02));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx02 - Degree 2"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg4_degree2_cx02));
 
         // Cy02 - Degree 2
         a_tdeAnamorphicStdDeg4_degree2_cy02 = numericAttr.create(
             "tdeAnamorphicStdDeg4_degree2_cy02",
             "tdeAnamorphicStdDeg4_degree2_cy02", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy02 - Degree 2"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_degree2_cy02));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy02 - Degree 2"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg4_degree2_cy02));
 
         // Cx22 - Degree 2
         a_tdeAnamorphicStdDeg4_degree2_cx22 = numericAttr.create(
             "tdeAnamorphicStdDeg4_degree2_cx22",
             "tdeAnamorphicStdDeg4_degree2_cx22", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx22 - Degree 2"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_degree2_cx22));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx22 - Degree 2"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg4_degree2_cx22));
 
         // Cy22 - Degree 2
         a_tdeAnamorphicStdDeg4_degree2_cy22 = numericAttr.create(
             "tdeAnamorphicStdDeg4_degree2_cy22",
             "tdeAnamorphicStdDeg4_degree2_cy22", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy22 - Degree 2"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_degree2_cy22));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy22 - Degree 2"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg4_degree2_cy22));
 
         // Cx04 - Degree 4
         a_tdeAnamorphicStdDeg4_degree4_cx04 = numericAttr.create(
             "tdeAnamorphicStdDeg4_degree4_cx04",
             "tdeAnamorphicStdDeg4_degree4_cx04", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx04 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_degree4_cx04));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx04 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg4_degree4_cx04));
 
         // Cy04 - Degree 4
         a_tdeAnamorphicStdDeg4_degree4_cy04 = numericAttr.create(
             "tdeAnamorphicStdDeg4_degree4_cy04",
             "tdeAnamorphicStdDeg4_degree4_cy04", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy04 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_degree4_cy04));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy04 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg4_degree4_cy04));
 
         // Cx24 - Degree 4
         a_tdeAnamorphicStdDeg4_degree4_cx24 = numericAttr.create(
             "tdeAnamorphicStdDeg4_degree4_cx24",
             "tdeAnamorphicStdDeg4_degree4_cx24", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx24 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_degree4_cx24));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx24 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg4_degree4_cx24));
 
         // Cy24 - Degree 4
         a_tdeAnamorphicStdDeg4_degree4_cy24 = numericAttr.create(
             "tdeAnamorphicStdDeg4_degree4_cy24",
             "tdeAnamorphicStdDeg4_degree4_cy24", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy24 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_degree4_cy24));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy24 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg4_degree4_cy24));
 
         // Cx44 - Degree 4
         a_tdeAnamorphicStdDeg4_degree4_cx44 = numericAttr.create(
             "tdeAnamorphicStdDeg4_degree4_cx44",
             "tdeAnamorphicStdDeg4_degree4_cx44", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx44 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_degree4_cx44));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx44 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg4_degree4_cx44));
 
         // Cy44 - Degree 4
         a_tdeAnamorphicStdDeg4_degree4_cy44 = numericAttr.create(
             "tdeAnamorphicStdDeg4_degree4_cy44",
             "tdeAnamorphicStdDeg4_degree4_cy44", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy44 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_degree4_cy44));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy44 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg4_degree4_cy44));
 
         // Lens Rotation
         a_tdeAnamorphicStdDeg4_lensRotation = numericAttr.create(
             "tdeAnamorphicStdDeg4_lensRotation",
             "tdeAnamorphicStdDeg4_lensRotation", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-2.0));
-        CHECK_MSTATUS(numericAttr.setSoftMax(2.0));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Lens Rotation"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_lensRotation));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-2.0));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(2.0));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Lens Rotation"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg4_lensRotation));
 
         // Squeeze X
         a_tdeAnamorphicStdDeg4_squeeze_x = numericAttr.create(
             "tdeAnamorphicStdDeg4_squeeze_x", "tdeAnamorphicStdDeg4_squeeze_x",
             MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(0.9));
-        CHECK_MSTATUS(numericAttr.setSoftMax(1.1));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Squeeze-X"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_squeeze_x));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(0.9));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(1.1));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("Squeeze-X"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_squeeze_x));
 
         // Squeeze Y
         a_tdeAnamorphicStdDeg4_squeeze_y = numericAttr.create(
             "tdeAnamorphicStdDeg4_squeeze_y", "tdeAnamorphicStdDeg4_squeeze_y",
             MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(0.9));
-        CHECK_MSTATUS(numericAttr.setSoftMax(1.1));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Squeeze-Y"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_squeeze_y));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(0.9));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(1.1));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("Squeeze-Y"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_squeeze_y));
 
         // Rescale
         a_tdeAnamorphicStdDeg4_rescale = numericAttr.create(
             "tdeAnamorphicStdDeg4_rescale", "tdeAnamorphicStdDeg4_rescale",
             MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(0.25));
-        CHECK_MSTATUS(numericAttr.setSoftMax(4.0));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Rescale"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_rescale));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(0.25));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(4.0));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("Rescale"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg4_rescale));
     }
 
     // 3DE Anamorphic - Standard, Degree 6 (and 'Rescaled' version)
@@ -1083,265 +1114,303 @@ MStatus MMLensModel3deNode::initialize() {
         a_tdeAnamorphicStdDeg6_heading =
             enumAttr.create("tdeAnamorphicStdDeg6_heading",
                             "tdeAnamorphicStdDeg6_heading", 0, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(enumAttr.addField("--------", 0));
-        CHECK_MSTATUS(enumAttr.setStorable(false));
-        CHECK_MSTATUS(enumAttr.setKeyable(false));
-        CHECK_MSTATUS(enumAttr.setChannelBox(true));
-        CHECK_MSTATUS(enumAttr.setNiceNameOverride(
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("--------", 0));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setChannelBox(true));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setNiceNameOverride(
             "3DE4 Anamorphic - Standard, Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_heading));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_heading));
 
         // Cx02 - Degree 2
         a_tdeAnamorphicStdDeg6_degree2_cx02 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree2_cx02",
             "tdeAnamorphicStdDeg6_degree2_cx02", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx02 - Degree 2"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree2_cx02));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx02 - Degree 2"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree2_cx02));
 
         // Cy02 - Degree 2
         a_tdeAnamorphicStdDeg6_degree2_cy02 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree2_cy02",
             "tdeAnamorphicStdDeg6_degree2_cy02", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy02 - Degree 2"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree2_cy02));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy02 - Degree 2"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree2_cy02));
 
         // Cx22 - Degree 2
         a_tdeAnamorphicStdDeg6_degree2_cx22 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree2_cx22",
             "tdeAnamorphicStdDeg6_degree2_cx22", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx22 - Degree 2"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree2_cx22));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx22 - Degree 2"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree2_cx22));
 
         // Cy22 - Degree 2
         a_tdeAnamorphicStdDeg6_degree2_cy22 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree2_cy22",
             "tdeAnamorphicStdDeg6_degree2_cy22", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy22 - Degree 2"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree2_cy22));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy22 - Degree 2"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree2_cy22));
 
         // Cx04 - Degree 4
         a_tdeAnamorphicStdDeg6_degree4_cx04 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree4_cx04",
             "tdeAnamorphicStdDeg6_degree4_cx04", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx04 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree4_cx04));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx04 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree4_cx04));
 
         // Cy04 - Degree 4
         a_tdeAnamorphicStdDeg6_degree4_cy04 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree4_cy04",
             "tdeAnamorphicStdDeg6_degree4_cy04", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy04 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree4_cy04));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy04 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree4_cy04));
 
         // Cx24 - Degree 4
         a_tdeAnamorphicStdDeg6_degree4_cx24 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree4_cx24",
             "tdeAnamorphicStdDeg6_degree4_cx24", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx24 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree4_cx24));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx24 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree4_cx24));
 
         // Cy24 - Degree 4
         a_tdeAnamorphicStdDeg6_degree4_cy24 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree4_cy24",
             "tdeAnamorphicStdDeg6_degree4_cy24", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy24 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree4_cy24));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy24 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree4_cy24));
 
         // Cx44 - Degree 4
         a_tdeAnamorphicStdDeg6_degree4_cx44 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree4_cx44",
             "tdeAnamorphicStdDeg6_degree4_cx44", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx44 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree4_cx44));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx44 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree4_cx44));
 
         // Cy44 - Degree 4
         a_tdeAnamorphicStdDeg6_degree4_cy44 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree4_cy44",
             "tdeAnamorphicStdDeg6_degree4_cy44", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy44 - Degree 4"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree4_cy44));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy44 - Degree 4"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree4_cy44));
 
         // Cx06 - degree 6
         a_tdeAnamorphicStdDeg6_degree6_cx06 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree6_cx06",
             "tdeAnamorphicStdDeg6_degree6_cx06", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx06 - Degree 6"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree6_cx06));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx06 - Degree 6"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree6_cx06));
 
         // Cy06 - degree 6
         a_tdeAnamorphicStdDeg6_degree6_cy06 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree6_cy06",
             "tdeAnamorphicStdDeg6_degree6_cy06", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy06 - Degree 6"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree6_cy06));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy06 - Degree 6"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree6_cy06));
 
         // Cx26 - degree 6
         a_tdeAnamorphicStdDeg6_degree6_cx26 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree6_cx26",
             "tdeAnamorphicStdDeg6_degree6_cx26", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx26 - Degree 6"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree6_cx26));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx26 - Degree 6"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree6_cx26));
 
         // Cy26 - degree 6
         a_tdeAnamorphicStdDeg6_degree6_cy26 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree6_cy26",
             "tdeAnamorphicStdDeg6_degree6_cy26", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy26 - Degree 6"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree6_cy26));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy26 - Degree 6"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree6_cy26));
 
         // Cx46 - degree 6
         a_tdeAnamorphicStdDeg6_degree6_cx46 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree6_cx46",
             "tdeAnamorphicStdDeg6_degree6_cx46", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx46 - Degree 6"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree6_cx46));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx46 - Degree 6"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree6_cx46));
 
         // Cy46 - degree 6
         a_tdeAnamorphicStdDeg6_degree6_cy46 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree6_cy46",
             "tdeAnamorphicStdDeg6_degree6_cy46", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy46 - Degree 6"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree6_cy46));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy46 - Degree 6"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree6_cy46));
 
         // Cx66 - degree 6
         a_tdeAnamorphicStdDeg6_degree6_cx66 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree6_cx66",
             "tdeAnamorphicStdDeg6_degree6_cx66", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cx66 - Degree 6"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree6_cx66));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cx66 - Degree 6"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree6_cx66));
 
         // Cy66 - degree 6
         a_tdeAnamorphicStdDeg6_degree6_cy66 = numericAttr.create(
             "tdeAnamorphicStdDeg6_degree6_cy66",
             "tdeAnamorphicStdDeg6_degree6_cy66", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
-        CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Cy66 - Degree 6"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_degree6_cy66));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Cy66 - Degree 6"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_degree6_cy66));
 
         // Lens Rotation
         a_tdeAnamorphicStdDeg6_lensRotation = numericAttr.create(
             "tdeAnamorphicStdDeg6_lensRotation",
             "tdeAnamorphicStdDeg6_lensRotation", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(-2.0));
-        CHECK_MSTATUS(numericAttr.setSoftMax(2.0));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Lens Rotation"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_lensRotation));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(-2.0));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(2.0));
+        MMSOLVER_CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Lens Rotation"));
+        MMSOLVER_CHECK_MSTATUS(
+            addAttribute(a_tdeAnamorphicStdDeg6_lensRotation));
 
         // Squeeze X
         a_tdeAnamorphicStdDeg6_squeeze_x = numericAttr.create(
             "tdeAnamorphicStdDeg6_squeeze_x", "tdeAnamorphicStdDeg6_squeeze_x",
             MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(0.9));
-        CHECK_MSTATUS(numericAttr.setSoftMax(1.1));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Squeeze-X"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_squeeze_x));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(0.9));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(1.1));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("Squeeze-X"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_squeeze_x));
 
         // Squeeze Y
         a_tdeAnamorphicStdDeg6_squeeze_y = numericAttr.create(
             "tdeAnamorphicStdDeg6_squeeze_y", "tdeAnamorphicStdDeg6_squeeze_y",
             MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(0.9));
-        CHECK_MSTATUS(numericAttr.setSoftMax(1.1));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Squeeze-Y"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_squeeze_y));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(0.9));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(1.1));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("Squeeze-Y"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_squeeze_y));
 
         // Rescale
         a_tdeAnamorphicStdDeg6_rescale = numericAttr.create(
             "tdeAnamorphicStdDeg6_rescale", "tdeAnamorphicStdDeg6_rescale",
             MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(numericAttr.setSoftMin(0.25));
-        CHECK_MSTATUS(numericAttr.setSoftMax(4.0));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Rescale"));
-        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_rescale));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMin(0.25));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setSoftMax(4.0));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setNiceNameOverride("Rescale"));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_tdeAnamorphicStdDeg6_rescale));
     }
 
     // Out Lens
     a_outLens = typedAttr.create("outLens", "olns", data_type_id);
-    CHECK_MSTATUS(typedAttr.setStorable(false));
-    CHECK_MSTATUS(typedAttr.setKeyable(false));
-    CHECK_MSTATUS(typedAttr.setReadable(true));
-    CHECK_MSTATUS(typedAttr.setWritable(false));
-    CHECK_MSTATUS(addAttribute(a_outLens));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_outLens));
 
     // Attribute Affects
     MObjectArray inputAttrs;
@@ -1405,7 +1474,7 @@ MStatus MMLensModel3deNode::initialize() {
     MObjectArray outputAttrs;
     outputAttrs.append(a_outLens);
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return MS::kSuccess;

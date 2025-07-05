@@ -41,6 +41,7 @@
 #include <mmcore/mmmath.h>
 
 // MM Solver
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 // MM Scene Graph
@@ -145,7 +146,7 @@ MStatus evaluate_curve(const FrameNumber start_frame,
     for (auto frame = start_frame; frame <= end_frame; frame += 1.0) {
         auto time = MTime(frame, time_unit);
         auto value = anim_curve_fn.evaluate(time, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         MMSOLVER_MAYA_VRB("anim_curve_cmd_utils::evaluate_curve: f="
                           << frame << " v=" << value);
 
@@ -202,14 +203,14 @@ MStatus set_anim_curve_keys(
         }
 
         MTime key_time = anim_curve_fn.time(i, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double frame = key_time.as(time_unit);
 
         const bool within_range = frame >= static_cast<double>(start_frame) &&
                                   frame <= static_cast<double>(end_frame);
         if (within_range) {
             status = anim_curve_fn.remove(i, &curve_change);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
     }
 
@@ -231,20 +232,20 @@ MStatus set_anim_curve_keys(
 
         uint32_t key_index = 0;
         const bool found = anim_curve_fn.find(time, key_index, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         if (found) {
             // If we're preserving first/last keys and this is one of
             // them, we can still update its value.
             status = anim_curve_fn.setValue(key_index, value, &curve_change);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         } else {
             // TODO: This should use the 'MFnAnimCurve::addKeys()'
             // method, for performance.
             key_index =
                 anim_curve_fn.addKey(time, value, tangent_in_type,
                                      tangent_out_type, &curve_change, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
     }
 

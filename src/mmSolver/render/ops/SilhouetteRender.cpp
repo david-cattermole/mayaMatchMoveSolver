@@ -167,11 +167,11 @@ MStatus calculate_model_view_projection_matrix(
     // The camera and geometry matrices must be updated each frame,
     // when playblasting. This is not obvious when viewing in the
     MStatus status = view.updateViewingParameters();
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MMatrix model_view_matrix;
     status = view.modelViewMatrix(model_view_matrix);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     out_model_view_projection =
         inclusive_matrix * model_view_matrix * projection_matrix;
@@ -212,7 +212,7 @@ MStatus draw_buffers(
         {0.0f, 0.0f, 0.0f, 1.0f},
     };
     MStatus status = mvp_matrix.get(mvp_values);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     gGLFT->glUniformMatrix4fvARB(mvp_location, 1, MGL_FALSE, &mvp_values[0][0]);
 
     // Pass color and alpha as uniforms to the shader
@@ -386,7 +386,7 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
 
         const MMatrix projection_matrix = drawContext.getMatrix(
             MHWRender::MFrameContext::kProjectionMtx, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MMatrix model_view_projection;
         status = calculate_model_view_projection_matrix(

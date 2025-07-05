@@ -130,7 +130,7 @@ MStatus setParameters_mayaDag(const int numberOfParameters,
                     ud->attrFrameToLensModelList[attrIndex + frameIndex];
                 status = mmsolver::setLensModelAttributeValue(
                     lensModel, solverAttrType, real_value);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+                MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             } else {
                 // Static attribute.
                 for (int j = 0; j < num_frames; ++j) {
@@ -138,7 +138,7 @@ MStatus setParameters_mayaDag(const int numberOfParameters,
                         ud->attrFrameToLensModelList[attrIndex + j];
                     status = mmsolver::setLensModelAttributeValue(
                         lensModel, solverAttrType, real_value);
-                    CHECK_MSTATUS_AND_RETURN_IT(status);
+                    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
                 }
             }
             lensModelAttrsSet += 1;
@@ -239,7 +239,7 @@ MStatus setParameters_mmSceneGraph(const int numberOfParameters,
                     ud->attrFrameToLensModelList[attrIndex + frameIndex];
                 status = mmsolver::setLensModelAttributeValue(
                     lensModel, solverAttrType, real_value);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+                MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             } else {
                 // Static attribute.
                 for (int j = 0; j < num_frames; ++j) {
@@ -247,7 +247,7 @@ MStatus setParameters_mmSceneGraph(const int numberOfParameters,
                         ud->attrFrameToLensModelList[attrIndex + j];
                     status = mmsolver::setLensModelAttributeValue(
                         lensModel, solverAttrType, real_value);
-                    CHECK_MSTATUS_AND_RETURN_IT(status);
+                    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
                 }
             }
             lensModelAttrsSet += 1;

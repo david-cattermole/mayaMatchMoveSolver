@@ -359,7 +359,7 @@ MStatus getNodePlug(const MObject &node, const MString &attrName,
     MStatus status = MS::kSuccess;
 
     MFnDependencyNode mfnDependNode(node, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     out_plug = mfnDependNode.findPlug(attrName, wantNetworkedPlug, &status);
     return status;
@@ -369,14 +369,14 @@ MStatus getNodeEnabledState(const MObject &node, const MString &attrName,
                             bool &out_enabled) {
     MPlug plug;
     MStatus status = getNodePlug(node, attrName, plug);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (plug.isNull()) {
         out_enabled = false;
         return status;
     }
 
     out_enabled = plug.asBool(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     return status;
 }
@@ -386,7 +386,7 @@ MStatus getLensModelFromPlug(
     MStatus status = MS::kSuccess;
 
     MObject data_object = plug.asMObject(&status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (data_object.isNull()) {
         status = MS::kFailure;
         return status;
@@ -395,7 +395,7 @@ MStatus getLensModelFromPlug(
     MFnPluginData pluginDataFn(data_object);
     const mmsolver::MMLensData *outputLensData =
         (const mmsolver::MMLensData *)pluginDataFn.constData(&status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (outputLensData == nullptr) {
         status = MS::kFailure;
         return status;
@@ -482,12 +482,12 @@ MStatus getLensesFromCameraList(
             out_cameraLensNodeNames.push_back(lensNodeNames);
             continue;
         }
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         bool lens_toggle_enabled = false;
         status = getNodeEnabledState(node_object, enableAttrName,
                                      lens_toggle_enabled);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (!lens_toggle_enabled) {
             // The 'mmLensModelToggle' node will disable all downstream
             // lens nodes, so we can skip them.
@@ -498,18 +498,18 @@ MStatus getLensesFromCameraList(
 
         status = getConnectedLensNode(camera_shape_node_object, inputAttrName,
                                       node_object);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         std::vector<MString> lensNodeNames;
         for (uint32_t node_depth = 0; !node_object.isNull(); ++node_depth) {
             bool lens_model_enabled = false;
             status = getNodeEnabledState(node_object, enableAttrName,
                                          lens_model_enabled);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             if (lens_model_enabled) {
                 MString lensNodeName;
                 status = getUniqueNodeName(node_object, lensNodeName);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+                MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
                 std::string lensNodeNameStr(lensNodeName.asChar());
 
                 lensNodeNames.push_back(lensNodeName);
@@ -525,7 +525,7 @@ MStatus getLensesFromCameraList(
                 auto search = out_lensNodeNameToLensModel.find(lensNodeNameStr);
                 if (search == out_lensNodeNameToLensModel.end()) {
                     MFnDependencyNode mfnDependNode(node_object, &status);
-                    CHECK_MSTATUS_AND_RETURN_IT(status);
+                    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
                     const bool wantNetworkedPlug = true;
                     MPlug outputPlug = mfnDependNode.findPlug(
@@ -551,7 +551,7 @@ MStatus getLensesFromCameraList(
             MObject upstream_node;
             status =
                 getConnectedLensNode(node_object, inputAttrName, upstream_node);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             if (upstream_node.isNull()) {
                 // There is nothing upstream anymore.
                 node_object = MObject();
@@ -584,7 +584,7 @@ MStatus getLensModelFromCamera(
     MStatus status = getLensesFromCameraList(
         cameraList, cameraNodeNameToCameraIndex, cameraLensNodeNames,
         lensNodeNamesVec, lensNodeNameToLensModel);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (cameraLensNodeNames.size() != 1) {
         return MS::kFailure;
@@ -619,25 +619,25 @@ MStatus getAttrsFromLensNode(const MObject &node, const MString &nodeName,
     out_attrs.clear();
 
     MFnDependencyNode mfn_depend_node(node, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     const MString enableAttrName = "enable";
 
     bool nodeEnabled = false;
     status = getNodeEnabledState(node, enableAttrName, nodeEnabled);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!nodeEnabled) {
         return status;
     }
 
     MString nodeTypeName = mfn_depend_node.typeName(&status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MStringArray attrNames;
     if (nodeTypeName.asChar() == "mmLensModel3de") {
         const MString lensModelEnumAttrName = "lensModel";
         MPlug lensModelEnumPlug;
         status = getNodePlug(node, lensModelEnumAttrName, lensModelEnumPlug);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (lensModelEnumPlug.isNull()) {
             return status;
         }
@@ -779,7 +779,7 @@ MStatus constructLenses(
 
         MObject node;
         status = getAsObject(lensNodeName, node);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (node.isNull()) {
             MMSOLVER_MAYA_ERR("Node name "
                               << "\"" << lensNodeNameStr
@@ -813,7 +813,7 @@ MStatus constructLenses(
         // the lens node.
         std::vector<Attr> lensAttrs;
         status = getAttrsFromLensNode(node, lensNodeName, lensAttrs);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         auto num_lens_attrs = lensAttrs.size();
 
         for (uint32_t j = 0; j < num_frames; j++) {
@@ -830,13 +830,13 @@ MStatus constructLenses(
                 double value = 0.0;
                 const auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
                 status = lensAttrs[k].getValue(value, frame, timeEvalMode);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+                MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
                 const auto solverAttrType = lensAttrs[k].getSolverAttrType();
 
                 // Set attribute on the LensModel object.
                 status = setLensModelAttributeValue(lensModel, solverAttrType,
                                                     value);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+                MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             }
         }
     }
@@ -918,7 +918,7 @@ MStatus constructMarkerToLensModelMap(
                 << cameraShapeName
                 << "\" not found in camera names lookup map, cannot continue!");
             status = MS::kFailure;
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
         auto cameraIndex = search->second;
 
@@ -1026,28 +1026,28 @@ MStatus constructLensModelList(
     MStatus status = getLensesFromCameraList(
         cameraList, cameraNodeNameToCameraIndex, cameraLensNodeNames,
         lensNodeNamesVec, lensNodeNameToLensModel);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     std::unordered_map<std::string, uint32_t> lensNodeNameToLensModelIndex;
     status = constructLenses(lensNodeNamesVec, cameraList, timeArray,
                              cameraLensNodeNames, lensNodeNameToLensModel,
                              lensNodeNameToLensModelIndex, out_lensModelList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = connectLensModels(lensNodeNamesVec, timeArray, cameraLensNodeNames,
                                lensNodeNameToLensModelIndex, out_lensModelList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = constructMarkerToLensModelMap(
         markerList, timeArray, cameraNodeNameToCameraIndex, cameraLensNodeNames,
         lensNodeNameToLensModelIndex, out_lensModelList,
         out_markerFrameToLensModelList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = constructAttributeToLensModelMap(
         attrList, timeArray, lensNodeNameToLensModelIndex, out_lensModelList,
         out_attrFrameToLensModelList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }

@@ -90,14 +90,14 @@ function(mm_common_windows_msvc_set_global_compile_options)
   # Use multithread-specific Run-Time Library.
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /MD")
 
-  add_compile_options("/arch:AVX2")
+  add_compile_options("/arch:SSE4.2")
 
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Gy")  # Enable Function-Level Linking
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GF")  # Eliminate Duplicate Strings
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2")  # Optimize for Maximize Speed
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi")  # Generate Intrinsic Functions
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")  # Whole program optimization
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:AVX2")  # Use AVX2 instructions
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:SSE4.2")  # Use SSE4.2 instructions
 
   # Link-time code generation.
   #
@@ -223,7 +223,7 @@ function(mm_common_linux_gcc_set_global_compile_options)
 
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")  # Optimize for maximum performance.
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -m64")  # Set 64-bit machine.
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=skylake")   # Use AVX2 instructions
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=sandybridge")   # Use SSE4.2 instructions
 endfunction()
 
 function(mm_common_set_global_compile_options mmsolver_debug)

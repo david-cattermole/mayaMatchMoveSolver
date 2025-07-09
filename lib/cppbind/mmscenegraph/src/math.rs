@@ -102,12 +102,9 @@ pub fn bind_to_core_interpolation_method(
     match value {
         // BindInterpolation::Nearest => CoreInterpolation::Nearest,
         BindInterpolation::Linear => CoreInterpolation::Linear,
-        BindInterpolation::CubicNUBS => {
-            CoreInterpolation::CubicNUBS
-        }
-        BindInterpolation::CubicSpline => {
-            CoreInterpolation::CubicSpline
-        }
+        BindInterpolation::QuadraticNUBS => CoreInterpolation::QuadraticNUBS,
+        BindInterpolation::CubicNUBS => CoreInterpolation::CubicNUBS,
+        BindInterpolation::CubicSpline => CoreInterpolation::CubicSpline,
         _ => panic!("Invalid interpolation method: {:?}", value),
     }
 }
@@ -118,11 +115,8 @@ pub fn core_to_bind_interpolation_method(
     match value {
         // CoreInterpolation::Nearest => BindInterpolation::Nearest,
         CoreInterpolation::Linear => BindInterpolation::Linear,
-        CoreInterpolation::CubicNUBS => {
-            BindInterpolation::CubicNUBS
-        }
-        CoreInterpolation::CubicSpline => {
-            BindInterpolation::CubicSpline
-        }
+        CoreInterpolation::QuadraticNUBS => BindInterpolation::QuadraticNUBS,
+        CoreInterpolation::CubicNUBS => BindInterpolation::CubicNUBS,
+        CoreInterpolation::CubicSpline => BindInterpolation::CubicSpline,
     }
 }

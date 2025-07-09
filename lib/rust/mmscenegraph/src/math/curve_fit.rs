@@ -570,7 +570,7 @@ pub fn nonlinear_line_n_points_with_initial(
     } else {
         assert!(
             x_initial_control_points.len() >= 3,
-            "Must have at least 3 control points for Interpolation::Linear or Interpolation::CubicSpline."
+            "Must have at least 3 control points for Interpolation::Linear, Interpolation::QuadraticNUBS or Interpolation::CubicSpline."
         );
     }
     assert_eq!(
@@ -652,7 +652,7 @@ pub fn nonlinear_line_n_points(
     } else {
         assert!(
             control_point_count >= 3,
-            "Must have at least 3 control points for Interpolation::Linear or Interpolation::CubicSpline."
+            "Must have at least 3 control points for Interpolation::Linear, Interpolation::QuadraticNUBS or Interpolation::CubicSpline."
         );
     }
 

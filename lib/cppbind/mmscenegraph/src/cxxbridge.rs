@@ -456,11 +456,14 @@ pub mod ffi {
         #[cxx_name = "kLinear"]
         Linear = 1,
 
+        #[cxx_name = "kQuadraticNUBS"]
+        QuadraticNUBS = 2,
+
         #[cxx_name = "kCubicNUBS"]
-        CubicNUBS = 2,
+        CubicNUBS = 3,
 
         #[cxx_name = "kCubicSpline"]
-        CubicSpline = 3,
+        CubicSpline = 4,
 
         #[cxx_name = "kUnknown"]
         Unknown = 255,

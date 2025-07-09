@@ -86,6 +86,7 @@
 
 // Possible values for the 'interpolation' flag.
 #define INTERPOLATION_VALUE_LINEAR "linear"
+#define INTERPOLATION_VALUE_QUADRATIC_NUBS "quadratic_nubs"
 #define INTERPOLATION_VALUE_CUBIC_NUBS "cubic_nubs"
 #define INTERPOLATION_VALUE_CUBIC_SPLINE "cubic_spline"
 
@@ -229,6 +230,8 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (value == INTERPOLATION_VALUE_LINEAR) {
             m_interpolation = mmsg::Interpolation::kLinear;
+        } else if (value == INTERPOLATION_VALUE_QUADRATIC_NUBS) {
+            m_interpolation = mmsg::Interpolation::kQuadraticNUBS;
         } else if (value == INTERPOLATION_VALUE_CUBIC_NUBS) {
             m_interpolation = mmsg::Interpolation::kCubicNUBS;
         } else if (value == INTERPOLATION_VALUE_CUBIC_SPLINE) {
@@ -250,6 +253,13 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
             MMSOLVER_MAYA_ERR(CMD_NAME
                               << ": keypoint count is below minimum (2)"
                                  " for Linear interpolation method.");
+            return MS::kFailure;
+        }
+    } else if (m_interpolation == mmsg::Interpolation::kQuadraticNUBS) {
+        if (m_controlPointCount < 3) {
+            MMSOLVER_MAYA_ERR(CMD_NAME
+                              << ": keypoint count is below minimum (3)"
+                                 " for Quadratic NUBS interpolation method.");
             return MS::kFailure;
         }
     } else if (m_interpolation == mmsg::Interpolation::kCubicNUBS) {

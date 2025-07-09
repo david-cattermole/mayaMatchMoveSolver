@@ -95,6 +95,7 @@ pub fn linear_interpolate_y_value_at_value_x(
 pub enum Interpolation {
     // Nearest,
     Linear,
+    QuadraticNUBS,
     CubicNUBS,
     CubicSpline,
 }
@@ -187,15 +188,16 @@ impl CurveInterpolator for LinearInterpolator {
     }
 }
 
-/// Cubic Non-Uniform B-Spline interpolator providing smooth curves
-/// with local control.
+/// Generic Non-Uniform B-Spline interpolator with compile-time degree.
 ///
-/// This implementation uses cubic (degree 3) B-splines because they
-/// provide C2 continuity (second-derivative smoothness) - the minimum
-/// level where the human eye cannot detect curvature
-/// discontinuities. Higher degrees offer diminishing visual returns
-/// while significantly increasing computational cost and potentially
-/// introducing oscillations similar to Runge's phenomenon.
+/// This implementation uses const generics to provide degree-specific
+/// B-spline interpolation while maintaining zero runtime overhead.
+/// The degree is known at compile time, allowing the compiler to
+/// optimize and inline degree-specific code paths.
+///
+/// Supports:
+/// - Degree 2 (Quadratic): C1 continuity, requires at least 3 control points
+/// - Degree 3 (Cubic): C2 continuity, requires at least 4 control points
 ///
 /// NUBS solve the fundamental interpolation problem by providing:
 /// - **Local control**: Moving one control point affects only nearby
@@ -219,18 +221,22 @@ impl CurveInterpolator for LinearInterpolator {
 /// - Piegl, L. & Tiller, W. (1997): "The NURBS Book", Springer-Verlag
 ///
 #[derive(Debug, Clone)]
-pub struct CubicNUBSInterpolator {
+pub struct NUBSInterpolator<const DEGREE: usize> {
     control_points_x: RefCell<Vec<f64>>,
     control_points_y: RefCell<Vec<f64>>,
     knots: RefCell<Vec<f64>>,
     cache_dirty: Cell<bool>,
 }
 
-const CUBIC_NUBS_DEGREE: usize = 3;
+impl<const DEGREE: usize> NUBSInterpolator<DEGREE> {
+    /// Creates a new Non-Uniform B-Spline interpolator with the specified degree.
+    pub fn new() -> Self {
+        // Compile-time assertion to ensure valid degree.
+        assert!(
+            DEGREE >= 1 && DEGREE <= 3,
+            "NUBS degree must be between 1 and 3"
+        );
 
-impl CubicNUBSInterpolator {
-    /// Creates a new Cubic Non-Uniform B-Spline interpolator.
-    fn new() -> Self {
         Self {
             control_points_x: RefCell::new(Vec::new()),
             control_points_y: RefCell::new(Vec::new()),
@@ -239,8 +245,13 @@ impl CubicNUBSInterpolator {
         }
     }
 
-    /// Generates a clamped uniform knot vector for cubic B-spline
-    /// evaluation.
+    /// Returns the minimum number of control points required for this degree.
+    #[inline]
+    const fn min_control_points() -> usize {
+        DEGREE + 1
+    }
+
+    /// Generates a clamped uniform knot vector for B-spline evaluation.
     ///
     /// Clamped knot vectors solve the "endpoint problem" by forcing
     /// B-spline curves to pass through their first and last control
@@ -255,17 +266,17 @@ impl CubicNUBSInterpolator {
     /// calculations, uniform knots enable efficient evaluation
     /// algorithms and predictable memory access patterns.
     ///
-    /// **Knot vector structure for cubic B-splines:**
-    /// - First 4 knots = 0.0 (clamping for degree 3)
-    /// - Interior knots uniformly spaced between 0.0 and 1.0
-    /// - Last 4 knots = 1.0 (clamping for degree 3)
+    /// The structure is the same for all degrees:
+    /// - First (degree + 1) knots = 0.0.
+    /// - Interior knots uniformly spaced.
+    /// - Last (degree + 1) knots = 1.0.
     ///
-    /// **Example**: For 6 control points, generates:
+    /// **Example**: For degree 3 NUBS with 6 control points, this outputs:
     /// [0.0, 0.0, 0.0, 0.0, 0.25, 0.5, 0.75, 1.0, 1.0, 1.0, 1.0]
     ///
     /// # Arguments
     ///
-    /// * `n_control_points` - Number of control points (must be >= 4 for cubic splines)
+    /// * `n_control_points` - Number of control points.
     ///
     /// # Returns
     ///
@@ -273,18 +284,17 @@ impl CubicNUBSInterpolator {
     /// numerical stability
     fn generate_knot_vector(n_control_points: usize) -> Vec<f64> {
         let n = n_control_points;
-        let degree = CUBIC_NUBS_DEGREE;
 
         // Mathematical requirement: For n control points and degree
-        // p, we need exactly n + p + 1 knots. For cubic (p=3), this
-        // gives n + 4 knots total.
-        let n_knots = n + degree + 1;
+        // p, we need exactly n + p + 1 knots.
+        let n_knots = n + DEGREE + 1;
         let mut knots = vec![0.0; n_knots];
 
         assert!(
-            n >= degree + 1,
-            "Need at least {} control points for Cubic Non-Uniform B-Spline, got {}.",
-            degree + 1,
+            n >= Self::min_control_points(),
+            "Need at least {} control points for degree {} Non-Uniform B-Spline, got {}.",
+            Self::min_control_points(),
+            DEGREE,
             n
         );
 
@@ -294,7 +304,7 @@ impl CubicNUBSInterpolator {
         // This mathematical trick forces the curve to pass through
         // the first and last control points by making the basis
         // functions equal 1.0 at the boundaries.
-        for i in 0..=degree {
+        for i in 0..=DEGREE {
             knots[i] = 0.0;
             knots[n_knots - 1 - i] = 1.0;
         }
@@ -303,10 +313,10 @@ impl CubicNUBSInterpolator {
         // efficiency while maintaining curve quality. This creates
         // the parameter intervals that define where each basis
         // function has support.
-        let n_interior = n.saturating_sub(degree + 1);
+        let n_interior = n.saturating_sub(DEGREE + 1);
         if n_interior > 0 {
             for i in 1..=n_interior {
-                knots[degree + i] = i as f64 / (n_interior + 1) as f64;
+                knots[DEGREE + i] = i as f64 / (n_interior + 1) as f64;
             }
         }
 
@@ -317,14 +327,13 @@ impl CubicNUBSInterpolator {
     /// value.
     ///
     /// Returns the index i such that u is in [knots[i], knots[i+1]).
-    /// For clamped B-splines, this will be in the range [degree,
+    /// For clamped B-splines, this will be in the range [DEGREE,
     /// n-1].
     ///
     /// # Arguments
     ///
     /// * `u_coord` - Parameter value in [0, 1]
     /// * `knots` - Knot vector
-    /// * `degree` - Degree of the B-spline
     /// * `n_control_points` - Number of control points
     ///
     /// # Returns
@@ -335,7 +344,6 @@ impl CubicNUBSInterpolator {
         control_point_count: usize,
         knots: &[f64],
     ) -> usize {
-        let degree = CUBIC_NUBS_DEGREE;
         let n = control_point_count;
 
         // Special case: if u_coord is at the end, return the last
@@ -347,7 +355,7 @@ impl CubicNUBSInterpolator {
         // Binary search for the knot span.
         //
         // We search in the range [degree, n-1] for the valid spans.
-        let mut low = degree;
+        let mut low = DEGREE;
         let mut high = n - 1;
         while low < high {
             let mid = (low + high) / 2;
@@ -395,7 +403,7 @@ impl CubicNUBSInterpolator {
     /// # Arguments
     ///
     /// * `control_point_index` - Index of the control point for this basis function.
-    /// * `degree` - Degree of the basis function (3 for cubic).
+    /// * `degree` - Degree of the basis function (2 for quadratic, 3 for cubic).
     /// * `u_coord` - Parameter value in [0, 1] to evaluate.
     /// * `knots` - Knot vector defining the parameter space.
     ///
@@ -523,7 +531,7 @@ impl CubicNUBSInterpolator {
     }
 }
 
-impl CurveInterpolator for CubicNUBSInterpolator {
+impl<const DEGREE: usize> CurveInterpolator for NUBSInterpolator<DEGREE> {
     fn set_control_points(
         &self,
         control_points_x: &[f64],
@@ -531,8 +539,10 @@ impl CurveInterpolator for CubicNUBSInterpolator {
     ) {
         assert_eq!(control_points_x.len(), control_points_y.len());
         assert!(
-            control_points_x.len() >= 4,
-            "Need at least 4 control points for Cubic Non-Uniform B-Spline."
+            control_points_x.len() >= Self::min_control_points(),
+            "Need at least {} control points for degree {} Non-Uniform B-Spline.",
+            Self::min_control_points(),
+            DEGREE
         );
 
         let mut x_points = self.control_points_x.borrow_mut();
@@ -560,8 +570,8 @@ impl CurveInterpolator for CubicNUBSInterpolator {
         self.cache_dirty.set(true);
     }
 
-    /// Interpolates a y-value for the given x-coordinate using cubic
-    /// B-spline curves.
+    /// Interpolates a y-value for the given x-coordinate using NUBS
+    /// curves.
     ///
     /// # Arguments
     ///
@@ -573,8 +583,6 @@ impl CurveInterpolator for CubicNUBSInterpolator {
     ///
     /// Interpolated y-value at the specified x-coordinate
     fn interpolate(&self, value_x: f64) -> f64 {
-        let degree = CUBIC_NUBS_DEGREE;
-
         let x_points = self.control_points_x.borrow();
         if x_points.is_empty() {
             return 0.0;
@@ -590,7 +598,7 @@ impl CurveInterpolator for CubicNUBSInterpolator {
         let knots = self.knots.borrow();
 
         // Find the knot span containing u_coord This allows us to
-        // evaluate only the (degree + 1) non-zero basis functions
+        // evaluate only the (degree + 1) non-zero basis functions.
         let n = x_points.len();
         let u_coord = Self::value_to_u_coordinate(value_x, &x_points);
         let span = Self::find_knot_span(u_coord, x_points.len(), &knots);
@@ -600,17 +608,21 @@ impl CurveInterpolator for CubicNUBSInterpolator {
         // Due to local support, only basis functions [span-degree,
         // span] are non-zero.
         let mut result = 0.0;
-        let start_idx = span.saturating_sub(degree);
+        let start_idx = span.saturating_sub(DEGREE);
         let end_idx = span.min(n - 1);
 
         for i in start_idx..=end_idx {
-            let basis = Self::basis_function(i, degree, u_coord, &knots);
+            let basis = Self::basis_function(i, DEGREE, u_coord, &knots);
             result += basis * y_points[i];
         }
 
         result
     }
 }
+
+// Type aliases for specific degrees.
+pub type QuadraticNUBSInterpolator = NUBSInterpolator<2>;
+pub type CubicNUBSInterpolator = NUBSInterpolator<3>;
 
 /// Cubic coefficients for a single spline segment.
 #[derive(Debug, Clone, Copy)]
@@ -1004,6 +1016,7 @@ impl CurveInterpolator for CubicSplineInterpolator {
 #[derive(Debug, Clone)]
 pub enum Interpolator {
     Linear(LinearInterpolator),
+    QuadraticNUBS(QuadraticNUBSInterpolator),
     CubicNUBS(CubicNUBSInterpolator),
     CubicSpline(CubicSplineInterpolator),
 }
@@ -1012,8 +1025,9 @@ impl Interpolator {
     /// Creates an interpolator (without control points).
     pub fn from_method(method: Interpolation) -> Self {
         match method {
-            Interpolation::Linear => {
-                Self::Linear(LinearInterpolator::new())
+            Interpolation::Linear => Self::Linear(LinearInterpolator::new()),
+            Interpolation::QuadraticNUBS => {
+                Self::QuadraticNUBS(QuadraticNUBSInterpolator::new())
             }
             Interpolation::CubicNUBS => {
                 Self::CubicNUBS(CubicNUBSInterpolator::new())

@@ -1200,8 +1200,9 @@ enum class ControlPointDistribution : ::std::uint8_t {
 #define CXXBRIDGE1_ENUM_mmscenegraph$Interpolation
 enum class Interpolation : ::std::uint8_t {
   kLinear = 1,
-  kCubicNUBS = 2,
-  kCubicSpline = 3,
+  kQuadraticNUBS = 2,
+  kCubicNUBS = 3,
+  kCubicSpline = 4,
   kUnknown = 255,
 };
 #endif // CXXBRIDGE1_ENUM_mmscenegraph$Interpolation

@@ -668,8 +668,10 @@ MString Attr::getLongNodeName() {
         nodeName = dependFn.name();
     } else {
         nodeName = Attr::getNodeName();
-        MMSOLVER_MAYA_ERR("Attr::getLongNodeName: Invalid object: "
-                          << "\"" << nodeName.asChar() << "\"");
+        MMSOLVER_MAYA_ERR(
+            "Attr::getLongNodeName: Node is not DAG or DG node - invalid "
+            "object: "
+            << "\"" << nodeName.asChar() << "\"");
     }
 
     return nodeName;

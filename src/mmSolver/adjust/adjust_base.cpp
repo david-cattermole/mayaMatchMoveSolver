@@ -395,6 +395,7 @@ bool compute_error_stats(const int numberOfMarkerErrors,
     out_errorAvg = 0;
     out_errorMin = std::numeric_limits<double>::max();
     out_errorMax = -0.0;
+    Count32 bad_error_count = 0;
     const auto marker_error_count = numberOfMarkerErrors / ERRORS_PER_MARKER;
     for (int i = 0; i < marker_error_count; ++i) {
         const double err = errorDistanceList[i];
@@ -403,6 +404,7 @@ bool compute_error_stats(const int numberOfMarkerErrors,
                 "mmSolver: compute_error_stats: "
                 "Error distance value is invalid, skipping: "
                 << err);
+            bad_error_count++;
             continue;
         }
         out_errorAvg += err;
@@ -417,7 +419,7 @@ bool compute_error_stats(const int numberOfMarkerErrors,
                     "If we have zero, something bad has happened somewhere. We "
                     "cannot divide by zero.");
     out_errorAvg /= marker_error_count;
-    return true;
+    return bad_error_count != marker_error_count;
 }
 
 void logResultsTimer(const SolverTimer &timer, TimerResult &outTimerResult) {

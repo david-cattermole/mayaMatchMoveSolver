@@ -678,6 +678,17 @@ MString Attr::getLongNodeName() {
 MString Attr::getLongAttributeName() {
     MStatus status;
     MObject attrObj = Attr::getAttribute();
+    const bool attrIsNull = attrObj.isNull();
+    MMSOLVER_CHECK(attrIsNull == false, "Attribute is not valid.");
+    if (attrIsNull) {
+        MMSOLVER_MAYA_INFO("Attr::getLongAttributeName: Node Name: "
+                           << "\"" << m_nodeName.asChar() << "\"");
+        MMSOLVER_MAYA_INFO("Attr::getLongAttributeName: Attr Name: "
+                           << "\"" << m_attrName.asChar() << "\"");
+        MMSOLVER_MAYA_INFO("Attr::getLongAttributeName: Anim Curve Name: "
+                           << "\"" << m_animCurveName.asChar() << "\"");
+        return MString();
+    }
     MFnAttribute attrMFn(attrObj, &status);
     MMSOLVER_CHECK_MSTATUS(status);
     return attrMFn.name();

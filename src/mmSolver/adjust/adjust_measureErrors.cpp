@@ -566,10 +566,14 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
                                   ud->solverOptions->robustLossType,
                                   ud->solverOptions->robustLossScale);
     }
-    MMSOLVER_ASSERT(error_max >= error_min,
-                    "Maximum and minimum values must be consistent.");
-    MMSOLVER_ASSERT(error_min <= error_max,
-                    "Maximum and minimum values must be consistent.");
+
+    MMSOLVER_CHECK(error_max >= error_min,
+                   "Maximum and minimum values should be consistent."
+                       << " error_max=" << error_max
+                       << " error_min=" << error_min);
+    if (error_max >= error_min) {
+        ud->userInterrupted = true;
+    }
 }
 
 // Clean up #define

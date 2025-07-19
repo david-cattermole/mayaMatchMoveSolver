@@ -164,6 +164,8 @@ def _get_full_path_plug(plug):
     """
     node = plug.partition('.')[0]
     attr = plug.partition('.')[-1]
+    # NOTE: We assume the plug exists, so we assume the full path of
+    # such a node must exist.
     node = maya.cmds.ls(node, long=True)[0]
     full_path = node + '.' + attr
     return str(full_path)
@@ -207,6 +209,7 @@ def _get_connected_nodes(tfm_node):
     node_name = tfm_node
     out_nodes = _get_upstream_nodes(node_name)
     all_nodes += out_nodes
+    # TODO: Can we limit this more?
     max_iter_count = 9
     iter_count = 0
     while len(out_nodes) > 0:
@@ -216,18 +219,30 @@ def _get_connected_nodes(tfm_node):
             out_nodes = list(set(out_nodes).difference(all_nodes))
             all_nodes += out_nodes
         if iter_count > max_iter_count:
-            msg = 'Gathering connected nodes exceeded %r iterations,' ' stopping.'
+            msg = 'Gathering connected nodes exceeded %r iterations, stopping.'
             LOG.warn(msg, max_iter_count)
             break
     return sorted(list(set(all_nodes)))
 
 
 def __get_and_fill_cache_value(cache, key, func):
+    BAD_CACHE_VALUE = 'bad value'
     if cache is None:
-        return func()
+        try:
+            value = func()
+        except RuntimeError:
+            LOG.exception('Could not evaluate func for key in cache: key=%r func=%r', key, func)
+            value = BAD_CACHE_VALUE
+        return
     value = cache.get(key)
+    if value == BAD_CACHE_VALUE:
+        return None
     if value is None:
-        value = func()
+        try:
+            value = func()
+        except RuntimeError:
+            LOG.exception('Could not evaluate func for key in cache: key=%r func=%r', key, func)
+            value = BAD_CACHE_VALUE
         cache[key] = value
     return value
 
@@ -317,7 +332,7 @@ def _convert_node_to_plugs(
                 if not node_utils.attribute_exists(attr__, node_):
                     continue
                 node_attr = node_ + '.' + attr__
-                compound_attrs = maya.cmds.listAttr(node_attr, multi=True)
+                compound_attrs = maya.cmds.listAttr(node_attr, multi=True) or []
                 if len(compound_attrs) > 1:
                     for array_item in compound_attrs:
                         node_attr = node_ + '.' + array_item

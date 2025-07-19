@@ -659,6 +659,8 @@ class SolverStep(solverbase.SolverBase):
             affects_kwargs['marker'] = markers
             affects_kwargs['attr'] = attrs
             affects_kwargs['frame'] = frames
+            # TODO: Determine the best graph mode here.
+            affects_kwargs['graphMode'] = const.AFFECTS_GRAPH_MODE_NORMAL
             affects_kwargs['mode'] = 'addAttrsToMarkers'
             action = api_action.Action(
                 func='maya.cmds.mmSolverAffects',

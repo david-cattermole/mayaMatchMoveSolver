@@ -1012,13 +1012,14 @@ void analyseDependencyGraphRelationships(
 /**
  * @brief Determines the relationship between markers, attributes, and
  * frames using only known details of the objects, and does not
- * evaluate Maya's DG.
+ * evaluate Maya's DAG/DG.
  *
  * This is a simplified (and therefore less accurate) than the
  * `analyseDependencyGraphRelationships()` function. This function can
- * be used in cases where it is known that the Maya DG does not need
+ * be used in cases where it is known that the Maya DAG/DG does not need
  * to be evaluated in order to determine the "sparsity structure" of
- * the scene graph to be solved.
+ * the scene graph to be solved, or if it is prohibitively slow to
+ * evaluate the Maya DAG/DG.
  */
 void analyseObjectRelationships(const MarkerList &markerList,
                                 const AttrList &attrList,
@@ -1085,7 +1086,7 @@ void analyseObjectRelationships(const MarkerList &markerList,
         }
     }
 
-    // Calculate the relationship between attributes and markers.append
+    // Calculate the relationship between attributes and markers.
     out_markerToAttrToFrameMatrix.reset(markerList.size(), attrList.size(),
                                         frameList.size(),
                                         /*fill_value=*/defaultValue);
@@ -1095,6 +1096,11 @@ void analyseObjectRelationships(const MarkerList &markerList,
 
         for (FrameIndex frameIndex = 0; frameIndex < frameList.size();
              frameIndex++) {
+            const bool frameEnabled = frameList.get_enabled(frameIndex);
+            if (!frameEnabled) {
+                continue;
+            }
+
             const FrameNumber markerFrameNumber =
                 frameList.get_frame(frameIndex);
             const MTime markerFrame =
@@ -1118,6 +1124,90 @@ void analyseObjectRelationships(const MarkerList &markerList,
                 out_markerToAttrToFrameMatrix.set(
                     markerIndex, attrIndex, frameIndex,
                     markerIsEnabled || markerAffectsAttr);
+            }
+        }
+    }
+}
+
+/**
+ * @brief Determines a simplified relationship between markers,
+ * attributes, and frames.
+ *
+ * This function assumes that if a marker is enabled on a given frame,
+ * it is affected by all attributes being considered in the solve. It
+ * populates a 3D boolean matrix where the relationship is true if the
+ * marker is enabled for a specific frame, regardless of any actual
+ * dependency graph connections. This provides a basic, all-inclusive
+ * relationship map, useful for scenarios where a detailed dependency
+ * analysis is not required or is computationally prohibitive.
+ */
+void analyseSimpleRelationships(const MarkerList &markerList,
+                                const AttrList &attrList,
+                                const FrameList &frameList,
+
+                                // Outputs
+                                MatrixBool3D &out_markerToAttrToFrameMatrix,
+                                MStatus &out_status) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("analyseSimpleRelationships");
+
+    out_status = MStatus::kSuccess;
+
+    const std::string frame_numbers_string =
+        create_string_sorted_frame_numbers_enabled(frameList);
+    const MString frame_numbers_mstring = MString(frame_numbers_string.c_str());
+    const FrameCount frameEnabledCount = frameList.count_enabled();
+    MMSOLVER_MAYA_VRB(
+        "analyseSimpleRelationships: "
+        "frame_numbers_string='"
+        << frame_numbers_string.c_str() << "'");
+    MMSOLVER_MAYA_VRB(
+        "analyseSimpleRelationships: "
+        "frameEnabledCount="
+        << frameEnabledCount);
+
+    const auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    const auto uiUnit = MTime::uiUnit();
+
+    // The attribute's 'affect' is assumed to be false if the plug
+    // cannot be found. We go by "assumed guilty until proven
+    // innocent".
+    const bool defaultValue = false;
+
+    // Calculate the relationship between attributes and markers.
+    out_markerToAttrToFrameMatrix.reset(markerList.size(), attrList.size(),
+                                        frameList.size(),
+                                        /*fill_value=*/defaultValue);
+    for (MarkerIndex markerIndex = 0; markerIndex < markerList.size();
+         markerIndex++) {
+        MarkerPtr marker = markerList.get_marker(markerIndex);
+
+        for (FrameIndex frameIndex = 0; frameIndex < frameList.size();
+             frameIndex++) {
+            const bool frameEnabled = frameList.get_enabled(frameIndex);
+            if (!frameEnabled) {
+                continue;
+            }
+
+            const FrameNumber markerFrameNumber =
+                frameList.get_frame(frameIndex);
+            const MTime markerFrame =
+                convert_to_time(markerFrameNumber, uiUnit);
+
+            bool enable = false;
+            double weight = 0.0;
+            const bool markerIsEnabled = getMarkerIsEnabled(
+                marker, markerFrame, timeEvalMode, enable, weight);
+
+            if (!markerIsEnabled) {
+                // All attributes must be unaffected by this marker.
+                continue;
+            }
+
+            for (AttrIndex attrIndex = 0; attrIndex < attrList.size();
+                 attrIndex++) {
+                out_markerToAttrToFrameMatrix.set(markerIndex, attrIndex,
+                                                  frameIndex, markerIsEnabled);
             }
         }
     }

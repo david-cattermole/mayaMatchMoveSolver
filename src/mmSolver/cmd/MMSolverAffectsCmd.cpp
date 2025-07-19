@@ -92,6 +92,7 @@
 
 // Possible values for the 'graphMode' flag.
 #define GRAPH_MODE_VALUE_NORMAL "normal"
+#define GRAPH_MODE_VALUE_OBJECT "object"
 #define GRAPH_MODE_VALUE_SIMPLE "simple"
 
 namespace mmsolver {
@@ -133,7 +134,7 @@ MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    // Get 'Graph_Mode'
+    // Get 'GraphMode'
     MMSolverAffectsCmd::m_graph_mode = GraphMode::kNormal;
     if (argData.isFlagSet(GRAPH_MODE_FLAG)) {
         MString value = "";
@@ -141,10 +142,13 @@ MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         const MString graph_mode_normal = GRAPH_MODE_VALUE_NORMAL;
+        const MString graph_mode_object = GRAPH_MODE_VALUE_OBJECT;
         const MString graph_mode_simple = GRAPH_MODE_VALUE_SIMPLE;
 
         if (value == graph_mode_normal) {
             MMSolverAffectsCmd::m_graph_mode = GraphMode::kNormal;
+        } else if (value == graph_mode_object) {
+            MMSolverAffectsCmd::m_graph_mode = GraphMode::kObject;
         } else if (value == graph_mode_simple) {
             MMSolverAffectsCmd::m_graph_mode = GraphMode::kSimple;
         } else {
@@ -572,6 +576,28 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
         }
 
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    } else if (MMSolverAffectsCmd::m_graph_mode == GraphMode::kObject) {
+        MMSOLVER_MAYA_VRB("mmSolverAffects: Graph Analysis (object mode)...");
+
+        mmsolver::debug::TimestampBenchmark graph_timer =
+            mmsolver::debug::TimestampBenchmark();
+        graph_timer.start();
+
+        analyseObjectRelationships(m_markerList, m_attrList, m_frameList,
+
+                                   // Outputs
+                                   markerToAttrToFrameMatrix, status);
+
+        if (debug) {
+            graph_timer.stop();
+            const double duration_seconds = graph_timer.get_seconds();
+            MMSOLVER_MAYA_INFO(
+                "mmSolverAffects: Graph Analysis (object mode) completed! "
+                << "Time taken " << duration_seconds << " seconds");
+        }
+
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+
     } else if (MMSolverAffectsCmd::m_graph_mode == GraphMode::kSimple) {
         MMSOLVER_MAYA_VRB("mmSolverAffects: Graph Analysis (simple mode)...");
 
@@ -579,7 +605,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
             mmsolver::debug::TimestampBenchmark();
         graph_timer.start();
 
-        analyseObjectRelationships(m_markerList, m_attrList, m_frameList,
+        analyseSimpleRelationships(m_markerList, m_attrList, m_frameList,
 
                                    // Outputs
                                    markerToAttrToFrameMatrix, status);

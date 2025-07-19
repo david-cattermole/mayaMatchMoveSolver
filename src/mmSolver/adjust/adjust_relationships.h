@@ -105,6 +105,12 @@ void analyseObjectRelationships(
     // Outputs
     mmsolver::MatrixBool3D &out_markerToAttrToFrameMatrix, MStatus &out_status);
 
+void analyseSimpleRelationships(
+    const MarkerList &markerList, const AttrList &attrList,
+    const FrameList &frameList,
+    // Outputs
+    mmsolver::MatrixBool3D &out_markerToAttrToFrameMatrix, MStatus &out_status);
+
 void readStoredRelationships(
     const MarkerList &markerList, const AttrList &attrList,
     const FrameList &frameList,

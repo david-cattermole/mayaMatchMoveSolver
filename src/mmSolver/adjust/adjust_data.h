@@ -318,6 +318,9 @@ struct SolverData {
     MComputation *computation;
     bool userInterrupted;
 
+    // Allow the internal solver to cancel the solve.
+    bool internalErrorDetected;
+
     // Maya is running as an interactive or batch?
     MGlobal::MMayaState mayaSessionState;
 
@@ -341,6 +344,7 @@ struct SolverData {
         , curveChange(nullptr)
         , computation(nullptr)
         , userInterrupted(false)
+        , internalErrorDetected(false)
         , mayaSessionState()
         , logLevel(LogLevel::kInfo){};
 };

@@ -572,7 +572,7 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
                        << " error_max=" << error_max
                        << " error_min=" << error_min);
     if (error_max >= error_min) {
-        ud->userInterrupted = true;
+        ud->internalErrorDetected = true;
     }
 }
 

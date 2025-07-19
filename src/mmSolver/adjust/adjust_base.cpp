@@ -1367,6 +1367,7 @@ MStatus solveFrames(
     // Allow user to exit out of solve.
     userData.computation = &out_computation;
     userData.userInterrupted = false;
+    userData.internalErrorDetected = false;
 
     // Maya is running as an interactive or batch?
     userData.mayaSessionState = mayaSessionState;

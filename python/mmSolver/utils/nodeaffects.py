@@ -92,6 +92,9 @@ CAMERA_ATTRS = set(
 )
 
 
+# These are similar to the values in
+# "python/mmSolver/tools/loadlens/constant.py", but are not imported
+# directly from there to avoid importing circular dependencies.
 LENS_ATTRS = set(
     [
         'k1',
@@ -122,6 +125,29 @@ LENS_ATTRS = set(
         'tdeAnamorphicStdDeg4_lensRotation',
         'tdeAnamorphicStdDeg4_squeeze_x',
         'tdeAnamorphicStdDeg4_squeeze_y',
+        'tdeAnamorphicStdDeg4_rescale',
+        'tdeAnamorphicStdDeg6_degree2_cx02',
+        'tdeAnamorphicStdDeg6_degree2_cy02',
+        'tdeAnamorphicStdDeg6_degree2_cx22',
+        'tdeAnamorphicStdDeg6_degree2_cy22',
+        'tdeAnamorphicStdDeg6_degree4_cx04',
+        'tdeAnamorphicStdDeg6_degree4_cy04',
+        'tdeAnamorphicStdDeg6_degree4_cx24',
+        'tdeAnamorphicStdDeg6_degree4_cy24',
+        'tdeAnamorphicStdDeg6_degree4_cx44',
+        'tdeAnamorphicStdDeg6_degree4_cy44',
+        'tdeAnamorphicStdDeg6_degree6_cx06',
+        'tdeAnamorphicStdDeg6_degree6_cy06',
+        'tdeAnamorphicStdDeg6_degree6_cx26',
+        'tdeAnamorphicStdDeg6_degree6_cy26',
+        'tdeAnamorphicStdDeg6_degree6_cx46',
+        'tdeAnamorphicStdDeg6_degree6_cy46',
+        'tdeAnamorphicStdDeg6_degree6_cx66',
+        'tdeAnamorphicStdDeg6_degree6_cy66',
+        'tdeAnamorphicStdDeg6_lensRotation',
+        'tdeAnamorphicStdDeg6_squeeze_x',
+        'tdeAnamorphicStdDeg6_squeeze_y',
+        'tdeAnamorphicStdDeg6_rescale',
     ]
 )
 

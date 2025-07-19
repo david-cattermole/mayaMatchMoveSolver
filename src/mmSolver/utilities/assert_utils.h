@@ -61,6 +61,7 @@
 #define MMASSERT_CXX_LINKER ::mmsolver::build_info::cxx_linker()
 
 // Maya
+#include <maya/MTypes.h>
 #include <maya/MStreamUtils.h>
 
 // MM Solver Libs

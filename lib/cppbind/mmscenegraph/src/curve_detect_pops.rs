@@ -18,6 +18,8 @@
 // ====================================================================
 //
 
+use crate::shim_utilities::copy_vec_xy_to_x_y;
+
 use mmscenegraph_rust::constant::Real as CoreReal;
 use mmscenegraph_rust::curve::detect::pops::detect_curve_pops as core_detect_curve_pops;
 use mmscenegraph_rust::curve::detect::pops::filter_curve_pops as core_filter_curve_pops;
@@ -29,25 +31,10 @@ pub fn shim_detect_curve_pops(
     out_x_values: &mut Vec<CoreReal>,
     out_y_values: &mut Vec<CoreReal>,
 ) -> bool {
-    let result = core_detect_curve_pops(&x_values, &y_values, threshold);
+    let result = core_detect_curve_pops(x_values, y_values, threshold);
     match result {
         Ok(values) => {
-            let new_x_capacity =
-                values.len().saturating_sub(out_x_values.capacity());
-            let new_y_capacity =
-                values.len().saturating_sub(out_y_values.capacity());
-            out_x_values.reserve_exact(new_x_capacity);
-            out_y_values.reserve_exact(new_y_capacity);
-            out_x_values.clear();
-            out_y_values.clear();
-
-            for value in values.iter() {
-                let x = value.0;
-                let y = value.1;
-                out_x_values.push(x);
-                out_y_values.push(y);
-            }
-
+            copy_vec_xy_to_x_y(&values, out_x_values, out_y_values);
             true
         }
         Err(_) => false,
@@ -61,25 +48,10 @@ pub fn shim_filter_curve_pops(
     out_x_values: &mut Vec<CoreReal>,
     out_y_values: &mut Vec<CoreReal>,
 ) -> bool {
-    let result = core_filter_curve_pops(&x_values, &y_values, threshold);
+    let result = core_filter_curve_pops(x_values, y_values, threshold);
     match result {
         Ok(values) => {
-            let new_x_capacity =
-                values.len().saturating_sub(out_x_values.capacity());
-            let new_y_capacity =
-                values.len().saturating_sub(out_y_values.capacity());
-            out_x_values.reserve_exact(new_x_capacity);
-            out_y_values.reserve_exact(new_y_capacity);
-            out_x_values.clear();
-            out_y_values.clear();
-
-            for value in values.iter() {
-                let x = value.0;
-                let y = value.1;
-                out_x_values.push(x);
-                out_y_values.push(y);
-            }
-
+            copy_vec_xy_to_x_y(&values, out_x_values, out_y_values);
             true
         }
         Err(_) => false,

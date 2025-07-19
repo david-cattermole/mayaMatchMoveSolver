@@ -24,4 +24,5 @@ pub mod detect;
 pub mod infill;
 pub mod pyramid;
 pub mod resample;
+pub mod simplify;
 pub mod smooth;

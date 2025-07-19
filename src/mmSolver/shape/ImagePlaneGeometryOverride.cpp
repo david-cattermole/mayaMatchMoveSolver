@@ -121,7 +121,7 @@ void ImagePlaneGeometryOverride::updateDG() {
             auto frame_context = getFrameContext();
             MDagPath camera_node_path =
                 frame_context->getCurrentCameraPath(&status);
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
 
             // By default the draw is visible, unless overridden by
             // m_visible_to_camera_only or m_is_under_camera.
@@ -130,11 +130,11 @@ void ImagePlaneGeometryOverride::updateDG() {
             status = getNodeAttr(objPath,
                                  ImagePlaneShapeNode::m_visible_to_camera_only,
                                  m_visible_to_camera_only);
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
 
             status = getNodeAttr(objPath, ImagePlaneShapeNode::m_draw_hud,
                                  m_draw_hud);
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
 
             m_is_under_camera = true;
             if (camera_node_path.isValid() && m_camera_node_path.isValid()) {
@@ -322,7 +322,7 @@ void ImagePlaneGeometryOverride::populateGeometry(
     MGeometryExtractor extractor(requirements, m_geometry_node_path,
                                  polygon_geometry_options, &status);
     if (status == MS::kFailure) {
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         return;
     }
 

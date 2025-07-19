@@ -39,10 +39,10 @@
 
 // MM Solver
 #include "PixelDataType.h"
-#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/shader/shader_utils.h"
 #include "mmSolver/shape/constant_texture_data.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/path_utils.h"
 
@@ -97,7 +97,7 @@ MStatus resize_image(MImage &image, const double resize_scale) {
     uint32_t src_width = 2;
     uint32_t src_height = 2;
     MStatus status = image.getSize(src_width, src_height);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     auto dst_width_float = static_cast<double>(src_width) * resize_scale;
     auto dst_height_float = static_cast<double>(src_height) * resize_scale;
@@ -118,7 +118,7 @@ MStatus resize_image(MImage &image, const double resize_scale) {
         // NOTE: MImage.resize() only works on 8-bit images, not
         // floating point.
         status = image.resize(dst_width, dst_height, preserve_aspect_ratio);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     return status;
@@ -140,7 +140,8 @@ MStatus convert_image(const MString &src_file_path,
         MMSOLVER_MAYA_ERR("mmConvertImage: "
                           << "Cannot have source and destination as same path: "
                           << src_file_path.asChar());
-        CHECK_MSTATUS_AND_RETURN_IT(MS::kFailure);
+        const MStatus status = MS::kFailure;
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     auto image = MImage();
@@ -154,7 +155,7 @@ MStatus convert_image(const MString &src_file_path,
         MMSOLVER_MAYA_ERR("mmConvertImage: "
                           << "Image file path could not be read: "
                           << src_file_path.asChar());
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     src_pixel_type = image.pixelType();
     const bool src_is_rgba = image.isRGBA();
@@ -168,9 +169,9 @@ MStatus convert_image(const MString &src_file_path,
     MImage::MPixelType format_pixel_type;
     status =
         guess_output_format_pixel_type(dst_output_format, format_pixel_type);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = guess_file_path_pixel_type(dst_file_path, dst_pixel_type);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (format_pixel_type != dst_pixel_type) {
         MMSOLVER_MAYA_WRN(
             "mmConvertImage: "
@@ -201,7 +202,7 @@ MStatus convert_image(const MString &src_file_path,
                               << "Failed to write image file: "
                               << dst_file_path.asChar() << " output format: \""
                               << dst_output_format.asChar() << "\"");
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
     } else {
         // Convert 32-bit to 8-bit integer. We assume the image
@@ -219,7 +220,7 @@ MStatus convert_image(const MString &src_file_path,
         uint32_t image_width = 2;
         uint32_t image_height = 2;
         status = image.getSize(image_width, image_height);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Get exponent based on if we are converting to/from floating
         // point or not. Make (linear color space) pixels brighter.
@@ -287,7 +288,7 @@ MStatus convert_image(const MString &src_file_path,
                               << "Failed to write image file: "
                               << dst_file_path.asChar() << " output format: \""
                               << dst_output_format.asChar() << "\"");
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
     }
     return status;

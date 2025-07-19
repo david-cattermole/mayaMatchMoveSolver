@@ -92,6 +92,7 @@
 
 // Possible values for the 'graphMode' flag.
 #define GRAPH_MODE_VALUE_NORMAL "normal"
+#define GRAPH_MODE_VALUE_OBJECT "object"
 #define GRAPH_MODE_VALUE_SIMPLE "simple"
 
 namespace mmsolver {
@@ -123,28 +124,31 @@ MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get 'Mode'
     MMSolverAffectsCmd::m_mode = "";
     if (argData.isFlagSet(MODE_FLAG)) {
         status =
             argData.getFlagArgument(MODE_FLAG, 0, MMSolverAffectsCmd::m_mode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    // Get 'Graph_Mode'
+    // Get 'GraphMode'
     MMSolverAffectsCmd::m_graph_mode = GraphMode::kNormal;
     if (argData.isFlagSet(GRAPH_MODE_FLAG)) {
         MString value = "";
         status = argData.getFlagArgument(GRAPH_MODE_FLAG, 0, value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         const MString graph_mode_normal = GRAPH_MODE_VALUE_NORMAL;
+        const MString graph_mode_object = GRAPH_MODE_VALUE_OBJECT;
         const MString graph_mode_simple = GRAPH_MODE_VALUE_SIMPLE;
 
         if (value == graph_mode_normal) {
             MMSolverAffectsCmd::m_graph_mode = GraphMode::kNormal;
+        } else if (value == graph_mode_object) {
+            MMSolverAffectsCmd::m_graph_mode = GraphMode::kObject;
         } else if (value == graph_mode_simple) {
             MMSolverAffectsCmd::m_graph_mode = GraphMode::kSimple;
         } else {
@@ -160,11 +164,11 @@ MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
     }
 
     parseSolveFramesArguments(argData, m_frameList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     parseSolveObjectArguments(argData, m_cameraList, m_markerList, m_bundleList,
                               m_attrList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -241,14 +245,14 @@ MStatus setAttrsOnMarkers(
         MObject attrObject = attr->getAttribute();
 
         MUuid attrUuid = attrNodeFn.uuid(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         const MString attrUuidStr = attrUuid.asString();
 
         MString attrName = "";
         MFnAttribute attrAttrFn(attrObject);
         const MString nodeAttrName = attrAttrFn.name();
         status = constructAttrAffectsName(nodeAttrName, attrUuidStr, attrName);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         for (MarkerIndex markerIndex = 0; markerIndex < markerList.size();
              ++markerIndex) {
@@ -259,7 +263,7 @@ MStatus setAttrsOnMarkers(
             MFnNumericAttribute markerAttrFn(markerObject);
             MObject attributeObj = markerAttrFn.create(
                 attrName, attrName, unitType, defaultValue, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             const bool hasAttr = markerNodeFn.hasAttribute(attrName, &status);
             if (verbose) {
@@ -269,10 +273,10 @@ MStatus setAttrsOnMarkers(
                                   << markerName.asChar() << "\" attrName =\""
                                   << attrName.asChar() << "\".");
             }
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             if (!hasAttr) {
                 status = addAttr_dgmod.addAttribute(markerObject, attributeObj);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+                MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             }
         }
     }
@@ -319,7 +323,7 @@ MStatus setAttrsOnMarkers(
             MObject attrNodeObject = attr->getObject();
             MFnDependencyNode attrNodeFn(attrNodeObject);
             MUuid attrUuid = attrNodeFn.uuid(&status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MString attrUuidStr = attrUuid.asString();
             MObject attrObject = attr->getAttribute();
 
@@ -328,7 +332,7 @@ MStatus setAttrsOnMarkers(
             MString nodeAttrName = attrFn.name();
             status =
                 constructAttrAffectsName(nodeAttrName, attrUuidStr, attrName);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             bool wantNetworkedPlug = true;
             MPlug attrPlug =
@@ -336,7 +340,7 @@ MStatus setAttrsOnMarkers(
 
             const int plugValue = 1;
             status = setAttr_dgmod.newPlugValueInt(attrPlug, plugValue);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MFnAnimCurve fnAnimCurve(attrPlug, &status);
             if (status == MS::kNotFound) {
@@ -359,7 +363,7 @@ MStatus setAttrsOnMarkers(
                                   << " attrEnabled: " << attrEnabled
                                   << " ANIM CURVE FOUND.");
             }
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
     }
     setAttr_dgmod.doIt();
@@ -438,7 +442,7 @@ MStatus setAttrsOnMarkers(
             MObject attrNodeObject = attr->getObject();
             MFnDependencyNode attrNodeFn(attrNodeObject);
             MUuid attrUuid = attrNodeFn.uuid(&status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             MString attrUuidStr = attrUuid.asString();
             MObject attrObject = attr->getAttribute();
 
@@ -447,14 +451,14 @@ MStatus setAttrsOnMarkers(
             MString nodeAttrName = attrFn.name();
             status =
                 constructAttrAffectsName(nodeAttrName, attrUuidStr, attrName);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             bool wantNetworkedPlug = true;
             MPlug attrPlug =
                 markerNodeFn.findPlug(attrName, wantNetworkedPlug, &status);
 
             MFnAnimCurve fnAnimCurve(attrPlug, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             Count32 counter = 0;
             for (FrameIndex frameIndex = 0; frameIndex < frameCount;
@@ -513,7 +517,7 @@ MStatus setAttrsOnMarkers(
                                          tangentOutType, keepExistingKeys  // ,
                                          // &curveChange
             );
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
     }
 
@@ -571,9 +575,9 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
                 << "Time taken " << duration_seconds << " seconds");
         }
 
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-    } else if (MMSolverAffectsCmd::m_graph_mode == GraphMode::kSimple) {
-        MMSOLVER_MAYA_VRB("mmSolverAffects: Graph Analysis (simple mode)...");
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    } else if (MMSolverAffectsCmd::m_graph_mode == GraphMode::kObject) {
+        MMSOLVER_MAYA_VRB("mmSolverAffects: Graph Analysis (object mode)...");
 
         mmsolver::debug::TimestampBenchmark graph_timer =
             mmsolver::debug::TimestampBenchmark();
@@ -588,11 +592,33 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
             graph_timer.stop();
             const double duration_seconds = graph_timer.get_seconds();
             MMSOLVER_MAYA_INFO(
+                "mmSolverAffects: Graph Analysis (object mode) completed! "
+                << "Time taken " << duration_seconds << " seconds");
+        }
+
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    } else if (MMSolverAffectsCmd::m_graph_mode == GraphMode::kSimple) {
+        MMSOLVER_MAYA_VRB("mmSolverAffects: Graph Analysis (simple mode)...");
+
+        mmsolver::debug::TimestampBenchmark graph_timer =
+            mmsolver::debug::TimestampBenchmark();
+        graph_timer.start();
+
+        analyseSimpleRelationships(m_markerList, m_attrList, m_frameList,
+
+                                   // Outputs
+                                   markerToAttrToFrameMatrix, status);
+
+        if (debug) {
+            graph_timer.stop();
+            const double duration_seconds = graph_timer.get_seconds();
+            MMSOLVER_MAYA_INFO(
                 "mmSolverAffects: Graph Analysis (simple mode) completed! "
                 << "Time taken " << duration_seconds << " seconds");
         }
 
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         MMSOLVER_MAYA_ERR(
             "mmSolverAffects: Graph mode is invalid;"
@@ -622,7 +648,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
                 << "Time taken " << duration_seconds << " seconds");
         }
 
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (m_mode == MODE_VALUE_ADD_ATTRS_TO_MARKERS) {
@@ -647,7 +673,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
                 << "Time taken " << duration_seconds << " seconds");
         }
 
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     } else if (m_mode == MODE_VALUE_RETURN_STRING) {
         MMSOLVER_MAYA_VRB("mmSolverAffects: Log Affects Results...");
 
@@ -658,7 +684,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
         AffectsResult affectsResult;
         status = logResultsMarkerAffectsAttribute(
             m_validMarkerList, m_validAttrList, affectsResult);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         if (debug) {
             log_timer.stop();

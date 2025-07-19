@@ -76,11 +76,11 @@ MStatus getPoint2DAttrValue(MDataBlock &data, MObject &attr_x, MObject &attr_y,
     MStatus status = MS::kUnknownParameter;
 
     MDataHandle xHandle = data.inputValue(attr_x, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     double x = xHandle.asDouble();
 
     MDataHandle yHandle = data.inputValue(attr_y, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     double y = yHandle.asDouble();
 
     output = mmdata::Point2D(x, y);
@@ -92,15 +92,15 @@ MStatus getVector3DAttrValue(MDataBlock &data, MObject &attr_x, MObject &attr_y,
     MStatus status = MS::kUnknownParameter;
 
     MDataHandle xHandle = data.inputValue(attr_x, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     double x = xHandle.asDouble();
 
     MDataHandle yHandle = data.inputValue(attr_y, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     double y = yHandle.asDouble();
 
     MDataHandle zHandle = data.inputValue(attr_z, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     double z = zHandle.asDouble();
 
     output = mmdata::Vector3D(x, y, z);
@@ -220,57 +220,57 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
         ///////////////////////////////
         MDataHandle calibrationModeHandle =
             data.inputValue(a_calibrationMode, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         auto calibrationMode =
             static_cast<CalibrationMode>(calibrationModeHandle.asShort());
 
         ///////////////////////////////
         MDataHandle sceneScaleModeHandle =
             data.inputValue(a_sceneScaleMode, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         auto sceneScaleMode = static_cast<calibrate::SceneScaleMode>(
             sceneScaleModeHandle.asShort());
 
         MDataHandle uniformScaleHandle =
             data.inputValue(a_uniformScale, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double uniformScale = uniformScaleHandle.asDouble();
 
         MDataHandle cameraHeightHandle =
             data.inputValue(a_cameraHeight, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double cameraHeight = cameraHeightHandle.asDouble();
 
         ///////////////////////////////
         MDataHandle focalLengthHandle = data.inputValue(a_focalLength, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double focalLength_mm = focalLengthHandle.asDouble();
 
         ///////////////////////////////
         MDataHandle cameraApertureUnitHandle =
             data.inputValue(a_cameraApertureUnit, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         auto cameraApertureUnit =
             static_cast<CameraApertureUnit>(cameraApertureUnitHandle.asShort());
 
         MDataHandle horizontalFilmApertureHandle =
             data.inputValue(a_horizontalFilmAperture, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double apertureWidth = horizontalFilmApertureHandle.asDouble();
 
         MDataHandle verticalFilmApertureHandle =
             data.inputValue(a_verticalFilmAperture, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         double apertureHeight = verticalFilmApertureHandle.asDouble();
 
         ///////////////////////////////
         auto originPoint = mmdata::Point2D();
-        CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
             data, a_originPointX, a_originPointY, originPoint));
 
         ///////////////////////////////
         auto rotatePlane = mmdata::Vector3D();
-        CHECK_MSTATUS_AND_RETURN_IT(getVector3DAttrValue(
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(getVector3DAttrValue(
             data, a_rotatePlaneX, a_rotatePlaneY, a_rotatePlaneZ, rotatePlane));
         rotatePlane.x_ *= DEGREES_TO_RADIANS;
         rotatePlane.y_ *= DEGREES_TO_RADIANS;
@@ -278,7 +278,7 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
 
         ///////////////////////////////
         MDataHandle rotateOrderHandle = data.inputValue(a_rotateOrder, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         auto rotateOrderValue = rotateOrderHandle.asShort();
         auto rotateOrder =
             static_cast<MEulerRotation::RotationOrder>(rotateOrderValue);
@@ -286,16 +286,16 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
         ///////////////////////////////
         auto principalPoint = mmdata::Point2D();
 #ifdef WITH_PRINCIPAL_POINT
-        CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
             data, a_principalPointX, a_principalPointY, principalPoint));
 #endif
 
         ///////////////////////////////
         auto vanishingPointA = mmdata::Point2D();
         auto vanishingPointB = mmdata::Point2D();
-        CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
             data, a_vanishingPointAX, a_vanishingPointAY, vanishingPointA));
-        CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
             data, a_vanishingPointBX, a_vanishingPointBY, vanishingPointB));
 
         // Camera Calibration
@@ -350,9 +350,9 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
             // Use horizon line points.
             auto horizonPointA = mmdata::Point2D();
             auto horizonPointB = mmdata::Point2D();
-            CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
                 data, a_horizonPointAX, a_horizonPointAY, horizonPointA));
-            CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(getPoint2DAttrValue(
                 data, a_horizonPointBX, a_horizonPointBY, horizonPointB));
 
             ok = calibrate::oneVanishingPoint(
@@ -387,7 +387,7 @@ MStatus MMCameraCalibrateNode::compute(const MPlug &plug, MDataBlock &data) {
         auto orientTfmMatrix = MTransformationMatrix();
         auto space = MSpace::Space::kWorld;
         orientTfmMatrix.rotateBy(rotation, space, &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         auto orientMatrix = orientTfmMatrix.asMatrix();
 
         auto outMatrix = cameraMatrix * orientMatrix;
@@ -536,23 +536,24 @@ MStatus MMCameraCalibrateNode::initialize() {
         // Calibration mode.
         a_calibrationMode =
             enumAttr.create("calibrationMode", "clbrtmd", 0, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(enumAttr.addField("Disabled", 0));
-        CHECK_MSTATUS(enumAttr.addField("OneVanishingPoint", 1));
-        CHECK_MSTATUS(enumAttr.addField("OneVanishingPointAndHorizon", 2));
-        CHECK_MSTATUS(enumAttr.addField("TwoVanishingPoints", 3));
-        CHECK_MSTATUS(enumAttr.setStorable(true));
-        CHECK_MSTATUS(enumAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_calibrationMode));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("Disabled", 0));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("OneVanishingPoint", 1));
+        MMSOLVER_CHECK_MSTATUS(
+            enumAttr.addField("OneVanishingPointAndHorizon", 2));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("TwoVanishingPoints", 3));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_calibrationMode));
     }
 
     {
         // Focal Length (millimeters)
         a_focalLength = numericAttr.create("focalLength", "fl",
                                            MFnNumericData::kDouble, 35.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_focalLength));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_focalLength));
 
         auto width_mm = 36.0;
         auto height_mm = 24.0;
@@ -566,32 +567,33 @@ MStatus MMCameraCalibrateNode::initialize() {
         auto inchesUnit = static_cast<short>(CameraApertureUnit::Inches);
         a_cameraApertureUnit = enumAttr.create(
             "cameraApertureUnit", "cmraprtrunt", millimetersUnit, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(enumAttr.addField("Millimeters", millimetersUnit));
-        CHECK_MSTATUS(enumAttr.addField("Inches", inchesUnit));
-        CHECK_MSTATUS(enumAttr.setStorable(true));
-        CHECK_MSTATUS(enumAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_cameraApertureUnit));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(
+            enumAttr.addField("Millimeters", millimetersUnit));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("Inches", inchesUnit));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_cameraApertureUnit));
 
         // Horizontal Film Aperture (inches)
         a_horizontalFilmAperture = numericAttr.create(
             "horizontalFilmAperture", "hfa", MFnNumericData::kDouble, width_mm);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         // Vertical Film Aperture (inches)
         a_verticalFilmAperture = numericAttr.create(
             "verticalFilmAperture", "vfa", MFnNumericData::kDouble, height_mm);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         // Camera Aperture (parent of *filmAperture attributes)
         a_cameraAperture =
             compoundAttr.create("cameraAperture", "cap", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_horizontalFilmAperture);
         compoundAttr.addChild(a_verticalFilmAperture);
-        CHECK_MSTATUS(addAttribute(a_cameraAperture));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_cameraAperture));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -600,26 +602,26 @@ MStatus MMCameraCalibrateNode::initialize() {
         // Scene Scale mode.
         a_sceneScaleMode =
             enumAttr.create("sceneScaleMode", "scnsclmd", 1, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(enumAttr.addField("UniformScale", 1));
-        CHECK_MSTATUS(enumAttr.addField("CameraHeight", 2));
-        CHECK_MSTATUS(enumAttr.setStorable(true));
-        CHECK_MSTATUS(enumAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_sceneScaleMode));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("UniformScale", 1));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("CameraHeight", 2));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_sceneScaleMode));
 
         // Uniform Scale
         a_uniformScale = numericAttr.create("uniformScale", "unfscl",
                                             MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_uniformScale));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_uniformScale));
 
         // Camera Height
         a_cameraHeight = numericAttr.create("cameraHeight", "cmrhght",
                                             MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_cameraHeight));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_cameraHeight));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -631,43 +633,43 @@ MStatus MMCameraCalibrateNode::initialize() {
 
         a_originPointX = numericAttr.create("originPointX", "orgptx",
                                             MFnNumericData::kDouble, x);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_originPointY = numericAttr.create("originPointY", "orgpty",
                                             MFnNumericData::kDouble, y);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_originPoint = compoundAttr.create("originPoint", "orgpt", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_originPointX);
         compoundAttr.addChild(a_originPointY);
-        CHECK_MSTATUS(addAttribute(a_originPoint));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_originPoint));
     }
 
     {
         a_rotatePlaneX = numericAttr.create("rotatePlaneX", "rotplnx",
                                             MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_rotatePlaneY = numericAttr.create("rotatePlaneY", "rotplny",
                                             MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_rotatePlaneZ = numericAttr.create("rotatePlaneZ", "rotplnz",
                                             MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_rotatePlane = compoundAttr.create("rotatePlane", "rotpln", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_rotatePlaneX);
         compoundAttr.addChild(a_rotatePlaneY);
         compoundAttr.addChild(a_rotatePlaneZ);
-        CHECK_MSTATUS(addAttribute(a_rotatePlane));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_rotatePlane));
 
         // Rotate Order
         auto xyzMode = static_cast<short>(MEulerRotation::kXYZ);
@@ -678,16 +680,16 @@ MStatus MMCameraCalibrateNode::initialize() {
         auto zyxMode = static_cast<short>(MEulerRotation::kZYX);
         a_rotateOrder =
             enumAttr.create("rotateOrder", "rotordr", xyzMode, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(enumAttr.addField("XYZ", xyzMode));
-        CHECK_MSTATUS(enumAttr.addField("YZX", yzxMode));
-        CHECK_MSTATUS(enumAttr.addField("ZXY", zxyMode));
-        CHECK_MSTATUS(enumAttr.addField("XZY", xzyMode));
-        CHECK_MSTATUS(enumAttr.addField("YXZ", yxzMode));
-        CHECK_MSTATUS(enumAttr.addField("ZYX", zyxMode));
-        CHECK_MSTATUS(enumAttr.setStorable(true));
-        CHECK_MSTATUS(enumAttr.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_rotateOrder));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("XYZ", xyzMode));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("YZX", yzxMode));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("ZXY", zxyMode));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("XZY", xzyMode));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("YXZ", yxzMode));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.addField("ZYX", zyxMode));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(enumAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_rotateOrder));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -700,20 +702,20 @@ MStatus MMCameraCalibrateNode::initialize() {
 
         a_principalPointX = numericAttr.create("principalPointX", "ppntx",
                                                MFnNumericData::kDouble, x);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_principalPointY = numericAttr.create("principalPointY", "ppnty",
                                                MFnNumericData::kDouble, y);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_principalPoint =
             compoundAttr.create("principalPoint", "ppnt", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_principalPointX);
         compoundAttr.addChild(a_principalPointY);
-        CHECK_MSTATUS(addAttribute(a_principalPoint));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_principalPoint));
     }
 #endif
 
@@ -722,39 +724,39 @@ MStatus MMCameraCalibrateNode::initialize() {
     {
         a_horizonPointAX = numericAttr.create("horizonPointAX", "horpntax",
                                               MFnNumericData::kDouble, -1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_horizonPointAY = numericAttr.create("horizonPointAY", "horpntay",
                                               MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_horizonPointA =
             compoundAttr.create("horizonPointA", "horpnta", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_horizonPointAX);
         compoundAttr.addChild(a_horizonPointAY);
-        CHECK_MSTATUS(addAttribute(a_horizonPointA));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_horizonPointA));
     }
 
     {
         a_horizonPointBX = numericAttr.create("horizonPointBX", "horpntbx",
                                               MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_horizonPointBY = numericAttr.create("horizonPointBY", "horpntby",
                                               MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_horizonPointB =
             compoundAttr.create("horizonPointB", "horpntb", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_horizonPointBX);
         compoundAttr.addChild(a_horizonPointBY);
-        CHECK_MSTATUS(addAttribute(a_horizonPointB));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_horizonPointB));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -762,39 +764,39 @@ MStatus MMCameraCalibrateNode::initialize() {
     {
         a_vanishingPointAX = numericAttr.create("vanishingPointAX", "vpax",
                                                 MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_vanishingPointAY = numericAttr.create("vanishingPointAY", "vpay",
                                                 MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_vanishingPointA =
             compoundAttr.create("vanishingPointA", "vpa", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_vanishingPointAX);
         compoundAttr.addChild(a_vanishingPointAY);
-        CHECK_MSTATUS(addAttribute(a_vanishingPointA));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_vanishingPointA));
     }
 
     {
         a_vanishingPointBX = numericAttr.create("vanishingPointBX", "vpbx",
                                                 MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_vanishingPointBY = numericAttr.create("vanishingPointBY", "vpby",
                                                 MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         a_vanishingPointB =
             compoundAttr.create("vanishingPointB", "vpb", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_vanishingPointBX);
         compoundAttr.addChild(a_vanishingPointBY);
-        CHECK_MSTATUS(addAttribute(a_vanishingPointB));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_vanishingPointB));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -803,12 +805,12 @@ MStatus MMCameraCalibrateNode::initialize() {
     {
         a_outMatrix = matrixAttr.create("outMatrix", "omtx",
                                         MFnMatrixAttribute::kDouble, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(matrixAttr.setStorable(false));
-        CHECK_MSTATUS(matrixAttr.setKeyable(false));
-        CHECK_MSTATUS(matrixAttr.setReadable(true));
-        CHECK_MSTATUS(matrixAttr.setWritable(false));
-        CHECK_MSTATUS(addAttribute(a_outMatrix));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outMatrix));
     }
 
     // Out Matrix Inverse
@@ -816,44 +818,44 @@ MStatus MMCameraCalibrateNode::initialize() {
         a_outMatrixInverse =
             matrixAttr.create("outMatrixInverse", "omtxinv",
                               MFnMatrixAttribute::kDouble, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(matrixAttr.setStorable(false));
-        CHECK_MSTATUS(matrixAttr.setKeyable(false));
-        CHECK_MSTATUS(matrixAttr.setReadable(true));
-        CHECK_MSTATUS(matrixAttr.setWritable(false));
-        CHECK_MSTATUS(addAttribute(a_outMatrixInverse));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outMatrixInverse));
     }
 
     // Camera Focal Length (millimetres)
     {
         a_outFocalLength = numericAttr.create("outFocalLength", "ofl",
                                               MFnNumericData::kDouble, 35.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(addAttribute(a_outFocalLength));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outFocalLength));
     }
 
     // Camera Film Back (inches)
     {
         a_outHorizontalFilmAperture = numericAttr.create(
             "outHorizontalFilmAperture", "ohfa", MFnNumericData::kDouble, 35.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(addAttribute(a_outHorizontalFilmAperture));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outHorizontalFilmAperture));
 
         a_outVerticalFilmAperture = numericAttr.create(
             "outVerticalFilmAperture", "ovfa", MFnNumericData::kDouble, 35.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(addAttribute(a_outVerticalFilmAperture));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outVerticalFilmAperture));
 
         // Camera Aperture (parent of *FilmAperture attributes)
         a_outCameraAperture =
             compoundAttr.create("outCameraAperture", "ocap", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_outHorizontalFilmAperture);
         compoundAttr.addChild(a_outVerticalFilmAperture);
-        CHECK_MSTATUS(addAttribute(a_outCameraAperture));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outCameraAperture));
     }
 
 #ifdef WITH_PRINCIPAL_POINT
@@ -861,42 +863,42 @@ MStatus MMCameraCalibrateNode::initialize() {
     {
         a_outHorizontalFilmOffset = numericAttr.create(
             "outHorizontalFilmOffset", "ohfo", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(addAttribute(a_outHorizontalFilmOffset));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outHorizontalFilmOffset));
 
         a_outVerticalFilmOffset = numericAttr.create(
             "outVerticalFilmOffset", "ovfo", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(addAttribute(a_outVerticalFilmOffset));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outVerticalFilmOffset));
 
         // Film Offset (parent of *FilmOffset attributes)
         a_outFilmOffset = compoundAttr.create("outFilmOffset", "ofo", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_outHorizontalFilmOffset);
         compoundAttr.addChild(a_outVerticalFilmOffset);
-        CHECK_MSTATUS(addAttribute(a_outFilmOffset));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outFilmOffset));
     }
 
     // Out Principal Point
     {
         a_outPrincipalPointX = numericAttr.create("outPrincipalPointX", "oppx",
                                                   MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         a_outPrincipalPointY = numericAttr.create("outPrincipalPointY", "oppy",
                                                   MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         a_outPrincipalPoint =
             compoundAttr.create("outPrincipalPoint", "opp", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_outPrincipalPointX);
         compoundAttr.addChild(a_outPrincipalPointY);
-        CHECK_MSTATUS(addAttribute(a_outPrincipalPoint));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outPrincipalPoint));
     }
 #endif
 
@@ -904,40 +906,40 @@ MStatus MMCameraCalibrateNode::initialize() {
     {
         a_outVanishingPointAX = numericAttr.create(
             "outVanishingPointAX", "ovpax", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         a_outVanishingPointAY = numericAttr.create(
             "outVanishingPointAY", "ovpay", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         a_outVanishingPointA =
             compoundAttr.create("outVanishingPointA", "ovpa", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_outVanishingPointAX);
         compoundAttr.addChild(a_outVanishingPointAY);
-        CHECK_MSTATUS(addAttribute(a_outVanishingPointA));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outVanishingPointA));
     }
 
     // Out Vanishing Point B
     {
         a_outVanishingPointBX = numericAttr.create(
             "outVanishingPointBX", "ovpbx", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         a_outVanishingPointBY = numericAttr.create(
             "outVanishingPointBY", "ovpby", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         a_outVanishingPointB =
             compoundAttr.create("outVanishingPointB", "ovpb", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_outVanishingPointBX);
         compoundAttr.addChild(a_outVanishingPointBY);
-        CHECK_MSTATUS(addAttribute(a_outVanishingPointB));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outVanishingPointB));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -1017,7 +1019,7 @@ MStatus MMCameraCalibrateNode::initialize() {
     outputAttrs.append(a_outVanishingPointBX);
     outputAttrs.append(a_outVanishingPointBY);
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return MS::kSuccess;

@@ -150,9 +150,9 @@ MStatus MarkerShapeNode::initialize() {
 
     // Color
     m_color = nAttr.createColor("color", "clr");
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 0.0f));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 0.0f));
 
     // Alpha
     auto alpha_min = 0.0;
@@ -160,10 +160,10 @@ MStatus MarkerShapeNode::initialize() {
     auto alpha_default = 1.0;
     m_alpha =
         nAttr.create("alpha", "alp", MFnNumericData::kDouble, alpha_default);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setMin(alpha_min));
-    CHECK_MSTATUS(nAttr.setMax(alpha_max));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setMin(alpha_min));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setMax(alpha_max));
 
     // Line Width
     auto line_width_min = 0.01;
@@ -171,11 +171,11 @@ MStatus MarkerShapeNode::initialize() {
     auto line_width_soft_max = 10.0;
     m_line_width =
         nAttr.create("lineWidth", "lnwd", MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setMin(line_width_min));
-    CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
-    CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setMin(line_width_min));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
 
     // Point size
     auto point_size_min = 0.0;
@@ -183,40 +183,40 @@ MStatus MarkerShapeNode::initialize() {
     auto point_size_soft_max = 10.0;
     m_point_size =
         nAttr.create("pointSize", "ptsz", MFnNumericData::kDouble, 4.0);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setMin(point_size_min));
-    CHECK_MSTATUS(nAttr.setSoftMin(point_size_soft_min));
-    CHECK_MSTATUS(nAttr.setSoftMax(point_size_soft_max));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setMin(point_size_min));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setSoftMin(point_size_soft_min));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setSoftMax(point_size_soft_max));
 
     // icon size
     auto icon_size_min = 0.0;
     m_icon_size =
         nAttr.create("iconSize", "icnsz", MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setMin(icon_size_min));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setMin(icon_size_min));
 
     // Draw Name
     m_draw_name =
         nAttr.create("drawName", "drwnm", MFnNumericData::kBoolean, 1);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
 
     // Show In Camera Only
     m_show_in_camera_only = nAttr.create("showInCameraOnly", "shwcamony",
                                          MFnNumericData::kBoolean, 1);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
 
     // Add attributes
-    CHECK_MSTATUS(addAttribute(m_icon_size));
-    CHECK_MSTATUS(addAttribute(m_draw_name));
-    CHECK_MSTATUS(addAttribute(m_color));
-    CHECK_MSTATUS(addAttribute(m_alpha));
-    CHECK_MSTATUS(addAttribute(m_line_width));
-    CHECK_MSTATUS(addAttribute(m_point_size));
-    CHECK_MSTATUS(addAttribute(m_show_in_camera_only));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_icon_size));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_draw_name));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_color));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_alpha));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_line_width));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_point_size));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(m_show_in_camera_only));
 
     return MS::kSuccess;
 }

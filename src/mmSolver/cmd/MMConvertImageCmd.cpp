@@ -64,6 +64,7 @@
 
 // MM Solver
 #include "mmSolver/image/image_convert.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
@@ -137,7 +138,7 @@ MStatus find_existing_file_path(MFileObject &file_object,
     }
 
     MStatus status = find_file_path(file_object, out_file_path);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     return status;
 }
 
@@ -197,7 +198,7 @@ MStatus MMConvertImageCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = argData.getFlagArgument(SRC_FILE_PATH_FLAG, 0, m_src_file_path);
     if (status != MStatus::kSuccess) {
@@ -215,34 +216,34 @@ MStatus MMConvertImageCmd::parseArgs(const MArgList &args) {
 
     bool is_set_dst_output_format =
         argData.isFlagSet(DST_OUTPUT_FORMAT_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     bool is_set_src_frame_start =
         argData.isFlagSet(SRC_FRAME_START_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     bool is_set_src_frame_end = argData.isFlagSet(SRC_FRAME_END_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     bool is_set_src_frame_padding =
         argData.isFlagSet(SRC_FRAME_PADDING_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     bool is_set_dst_frame_start =
         argData.isFlagSet(DST_FRAME_START_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     bool is_set_dst_frame_padding =
         argData.isFlagSet(DST_FRAME_PADDING_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     bool is_set_resize_scale = argData.isFlagSet(RESIZE_SCALE_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (is_set_dst_output_format) {
         status = argData.getFlagArgument(DST_OUTPUT_FORMAT_FLAG, 0,
                                          m_dst_output_format);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (m_dst_output_format.length() == 0) {
             MMSOLVER_MAYA_WRN(
                 "Destination output format argument (\""
@@ -255,36 +256,36 @@ MStatus MMConvertImageCmd::parseArgs(const MArgList &args) {
     if (is_set_src_frame_start) {
         status =
             argData.getFlagArgument(SRC_FRAME_START_FLAG, 0, m_src_frame_start);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (is_set_src_frame_end) {
         status =
             argData.getFlagArgument(SRC_FRAME_END_FLAG, 0, m_src_frame_end);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (is_set_src_frame_padding) {
         status = argData.getFlagArgument(SRC_FRAME_PADDING_FLAG, 0,
                                          m_src_frame_padding);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (is_set_dst_frame_start) {
         status =
             argData.getFlagArgument(DST_FRAME_START_FLAG, 0, m_dst_frame_start);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (is_set_dst_frame_padding) {
         status = argData.getFlagArgument(DST_FRAME_PADDING_FLAG, 0,
                                          m_dst_frame_padding);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (is_set_resize_scale) {
         status = argData.getFlagArgument(RESIZE_SCALE_FLAG, 0, m_resize_scale);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     return status;
@@ -293,7 +294,7 @@ MStatus MMConvertImageCmd::parseArgs(const MArgList &args) {
 MStatus MMConvertImageCmd::doIt(const MArgList &args) {
     // Convert all the flag arguments.
     MStatus status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     auto src_file_object = MFileObject();
     auto dst_file_object = MFileObject();
@@ -310,11 +311,11 @@ MStatus MMConvertImageCmd::doIt(const MArgList &args) {
 
         status = expand_file_path_with_frame_number(
             m_src_file_path, m_src_frame_padding, src_frame, src_file_path);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         status = expand_file_path_with_frame_number(
             m_dst_file_path, m_dst_frame_padding, dst_frame, dst_file_path);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         src_file_object.setRawFullName(src_file_path);
         src_file_object.setResolveMethod(MFileObject::kInputFile);

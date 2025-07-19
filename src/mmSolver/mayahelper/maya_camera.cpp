@@ -478,7 +478,7 @@ MObject Camera::getTransformObject() {
         MStatus status;
         MString name = Camera::getTransformNodeName();
         status = getAsObject(name, m_transformObject);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
     return m_transformObject;
 }
@@ -507,7 +507,7 @@ MObject Camera::getShapeObject() {
         MStatus status;
         MString name = Camera::getShapeNodeName();
         status = getAsObject(name, m_shapeObject);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
     return m_shapeObject;
 }
@@ -554,7 +554,7 @@ double Camera::getFilmbackWidthValue(const MTime &time,
     double value = 1.0;
     Attr attr = getFilmbackWidthAttr();
     status = attr.getValue(value, time, timeEvalMode);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     return value;
 }
 
@@ -564,7 +564,7 @@ double Camera::getFilmbackHeightValue(const MTime &time,
     double value = 1.0;
     Attr attr = getFilmbackHeightAttr();
     status = attr.getValue(value, time, timeEvalMode);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     return value;
 }
 
@@ -574,7 +574,7 @@ double Camera::getFilmbackOffsetXValue(const MTime &time,
     double value = 1.0;
     Attr attr = getFilmbackOffsetXAttr();
     status = attr.getValue(value, time, timeEvalMode);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     return value;
 }
 
@@ -584,7 +584,7 @@ double Camera::getFilmbackOffsetYValue(const MTime &time,
     double value = 1.0;
     Attr attr = getFilmbackOffsetYAttr();
     status = attr.getValue(value, time, timeEvalMode);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     return value;
 }
 
@@ -594,7 +594,7 @@ double Camera::getFocalLengthValue(const MTime &time,
     double value = 1.0;
     Attr attr = getFocalLengthAttr();
     status = attr.getValue(value, time, timeEvalMode);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     return value;
 }
 
@@ -607,7 +607,7 @@ double Camera::getCameraScaleValue() {
         MStatus status;
         Attr attr = getCameraScaleAttr();
         status = attr.getValue(m_cameraScaleValue, timeEvalMode);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         value = m_cameraScaleValue;
         m_cameraScaleCached = true;
     }
@@ -623,7 +623,7 @@ double Camera::getNearClipPlaneValue() {
         MStatus status;
         Attr attr = getNearClipPlaneAttr();
         status = attr.getValue(m_nearClipPlaneValue, timeEvalMode);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         value = m_nearClipPlaneValue;
         m_nearClipPlaneCached = true;
     }
@@ -639,7 +639,7 @@ double Camera::getFarClipPlaneValue() {
         MStatus status;
         Attr attr = getFarClipPlaneAttr();
         status = attr.getValue(m_farClipPlaneValue, timeEvalMode);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         value = m_farClipPlaneValue;
         m_farClipPlaneCached = true;
     }
@@ -655,7 +655,7 @@ short Camera::getFilmFitValue() {
         MStatus status;
         Attr attr = getFilmFitAttr();
         status = attr.getValue(m_filmFitValue, timeEvalMode);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         value = m_filmFitValue;
         m_filmFitCached = true;
     }
@@ -671,7 +671,7 @@ int32_t Camera::getRenderWidthValue() {
         MStatus status;
         Attr attr = getRenderWidthAttr();
         status = attr.getValue(m_renderWidthValue, timeEvalMode);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         value = m_renderWidthValue;
         m_renderWidthCached = true;
     }
@@ -689,7 +689,7 @@ int32_t Camera::getRenderHeightValue() {
         status = attr.getValue(m_renderHeightValue, timeEvalMode);
         value = m_renderHeightValue;
         m_renderHeightCached = true;
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
     return value;
 }
@@ -703,7 +703,7 @@ double Camera::getRenderAspectValue() {
         MStatus status;
         Attr attr = getRenderAspectAttr();
         status = attr.getValue(m_renderAspectValue, timeEvalMode);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         value = m_renderAspectValue;
         m_renderAspectCached = true;
     }
@@ -758,7 +758,7 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time,
         MDGContext ctx(time);
         MFloatMatrix floatProjMat_maya =
             cameraFn.projectionMatrix(ctx, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         MMatrix floatProjMat = MMatrix(&floatProjMat_maya.matrix[0]);
 #else
         short filmFit = 1;  // 1 == Horizontal
@@ -796,7 +796,7 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time,
         status = getProjectionMatrix(
             focal, filmWidth, filmHeight, filmOffsetX, filmOffsetY, imageWidth,
             imageHeight, filmFit, nearClip, farClip, cameraScale, value);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
 #endif
         // Add into the cache.
         DoubleMatrixPair timeMatrixPair(timeDouble, value);
@@ -820,7 +820,7 @@ MStatus Camera::getWorldPosition(MPoint &value, const MTime &time,
     // Get world matrix at time
     MMatrix worldMat;
     status = m_matrix.getValue(worldMat, time, timeEvalMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Position
     value.x = worldMat[3][0];
@@ -844,7 +844,7 @@ MStatus Camera::getForwardDirection(MVector &value, const MTime &time,
     // Get world matrix at time
     MMatrix worldMat;
     status = m_matrix.getValue(worldMat, time, timeEvalMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MVector temp(0.0, 0.0, -1.0);
     value = temp * worldMat;
@@ -873,13 +873,13 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time,
         // Get world matrix at time
         MMatrix worldMat;
         status = m_matrix.getValue(worldMat, time, timeEvalMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         worldMat = worldMat.inverse();
 
         // Get the projection matrix.
         MMatrix projMat;
         status = Camera::getProjMatrix(projMat, time, timeEvalMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         value = worldMat * projMat;
 
         // Add into the cache.

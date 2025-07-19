@@ -62,6 +62,7 @@
 #include "mmSolver/image/PixelDataType.h"
 #include "mmSolver/image/image_io.h"
 #include "mmSolver/mayahelper/maya_string_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/path_utils.h"
 #include "mmSolver/utilities/string_utils.h"
@@ -120,11 +121,11 @@ MStatus MMReadImageCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Query Flag
     const bool query = argData.isQuery(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     if (status != MStatus::kSuccess) {
         status.perror("mmReadImage: Could not get the query flag");
         return status;
@@ -156,14 +157,14 @@ MStatus MMReadImageCmd::parseArgs(const MArgList &args) {
     m_file_path = objects[0];
 
     m_query_width_height = argData.isFlagSet(WIDTH_HEIGHT_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_query_data_header = argData.isFlagSet(DATA_HEADER_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_query_resolve_file_path =
         argData.isFlagSet(RESOLVE_FILE_PATH_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -206,7 +207,7 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
 
     // Read all the flag arguments.
     MStatus status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_query_resolve_file_path) {
         status = mmpath::resolve_input_file_path(m_file_path);
@@ -218,7 +219,7 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
         }
     } else if (m_query_width_height) {
         status = mmpath::resolve_input_file_path(m_file_path);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         uint32_t image_width = 0;
         uint32_t image_height = 0;
@@ -230,7 +231,7 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
         status = read_image_header(m_file_path, image_width, image_height,
                                    num_channels, bytes_per_channel,
                                    texture_format, pixel_data_type);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MIntArray outResult;
         outResult.append(image_width);
@@ -238,7 +239,7 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
         MMReadImageCmd::setResult(outResult);
     } else if (m_query_data_header) {
         status = mmpath::resolve_input_file_path(m_file_path);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // NOTE: We do not want to have to call mmReadImage multiple
         // times. We want to get as much data as possible in a single
@@ -255,7 +256,7 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
         status = read_image_header(m_file_path, image_width, image_height,
                                    num_channels, bytes_per_channel,
                                    texture_format, pixel_data_type);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         void *pixel_data = nullptr;
         image::ImagePixelData image_pixel_data(pixel_data, image_width,

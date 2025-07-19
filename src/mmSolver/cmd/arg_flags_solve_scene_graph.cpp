@@ -51,7 +51,7 @@ MStatus parseSolveSceneGraphArguments(const MArgDatabase &argData,
     if (argData.isFlagSet(SCENE_GRAPH_MODE_FLAG)) {
         status =
             argData.getFlagArgument(SCENE_GRAPH_MODE_FLAG, 0, sceneGraphMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     out_sceneGraphMode = static_cast<SceneGraphMode>(sceneGraphMode);
 

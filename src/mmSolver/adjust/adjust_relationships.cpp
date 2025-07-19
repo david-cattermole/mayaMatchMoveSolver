@@ -202,7 +202,7 @@ Count32 countUpNumberOfErrors(
                 bool applyOverscan = true;
                 status = marker->getPosXY(px, py, frame, timeEvalMode,
                                           applyOverscan);
-                CHECK_MSTATUS(status);
+                MMSOLVER_CHECK_MSTATUS(status);
                 MPoint marker_pos(px, py, 0.0);
                 out_markerPosList.push_back(marker_pos);
             }
@@ -663,7 +663,7 @@ void markFrameAffectedByAttribute(
         out_splitFrameStrings.append(out_affectedFramesString);
     } else {
         out_status = out_affectedFramesString.split(',', out_splitFrameStrings);
-        CHECK_MSTATUS(out_status);
+        MMSOLVER_CHECK_MSTATUS(out_status);
         MMSOLVER_ASSERT(out_status == MS::kSuccess,
                         "Comma character is expected to exist in string; "
                         "out_affectedFramesString='"
@@ -796,7 +796,7 @@ void parseMarkerAttributeRelationships(
                     splitFrameStrings, out_markerToAttrToFrameMatrix,
                     out_status);
                 if (out_status != MS::kSuccess) {
-                    CHECK_MSTATUS(out_status);
+                    MMSOLVER_CHECK_MSTATUS(out_status);
                     return;
                 }
 
@@ -842,7 +842,7 @@ void parseMarkerAttributeRelationships(
                     splitFrameStrings, out_markerToAttrToFrameMatrix,
                     out_status);
                 if (out_status != MS::kSuccess) {
-                    CHECK_MSTATUS(out_status);
+                    MMSOLVER_CHECK_MSTATUS(out_status);
                     return;
                 }
 
@@ -970,7 +970,7 @@ void analyseDependencyGraphRelationships(
                           cmd);
         out_status = MGlobal::executePythonCommand(cmd, bundleAffectsResult,
                                                    display, undoable);
-        CHECK_MSTATUS(out_status);
+        MMSOLVER_CHECK_MSTATUS(out_status);
 
         // Find list of plug names that are affected by the marker
         // (and camera projection matrix).
@@ -994,7 +994,7 @@ void analyseDependencyGraphRelationships(
                           cmd);
         out_status = MGlobal::executePythonCommand(cmd, markerAffectsResult,
                                                    display, undoable);
-        CHECK_MSTATUS(out_status);
+        MMSOLVER_CHECK_MSTATUS(out_status);
 
         parseMarkerAttributeRelationships(
             markerIndex, attrList, frameList, bundleAffectsResult,
@@ -1003,7 +1003,7 @@ void analyseDependencyGraphRelationships(
             // Outputs
             out_markerToAttrToFrameMatrix, out_status);
         if (out_status != MS::kSuccess) {
-            CHECK_MSTATUS(out_status);
+            MMSOLVER_CHECK_MSTATUS(out_status);
             return;
         }
     }
@@ -1012,13 +1012,14 @@ void analyseDependencyGraphRelationships(
 /**
  * @brief Determines the relationship between markers, attributes, and
  * frames using only known details of the objects, and does not
- * evaluate Maya's DG.
+ * evaluate Maya's DAG/DG.
  *
  * This is a simplified (and therefore less accurate) than the
  * `analyseDependencyGraphRelationships()` function. This function can
- * be used in cases where it is known that the Maya DG does not need
+ * be used in cases where it is known that the Maya DAG/DG does not need
  * to be evaluated in order to determine the "sparsity structure" of
- * the scene graph to be solved.
+ * the scene graph to be solved, or if it is prohibitively slow to
+ * evaluate the Maya DAG/DG.
  */
 void analyseObjectRelationships(const MarkerList &markerList,
                                 const AttrList &attrList,
@@ -1085,7 +1086,7 @@ void analyseObjectRelationships(const MarkerList &markerList,
         }
     }
 
-    // Calculate the relationship between attributes and markers.append
+    // Calculate the relationship between attributes and markers.
     out_markerToAttrToFrameMatrix.reset(markerList.size(), attrList.size(),
                                         frameList.size(),
                                         /*fill_value=*/defaultValue);
@@ -1095,6 +1096,11 @@ void analyseObjectRelationships(const MarkerList &markerList,
 
         for (FrameIndex frameIndex = 0; frameIndex < frameList.size();
              frameIndex++) {
+            const bool frameEnabled = frameList.get_enabled(frameIndex);
+            if (!frameEnabled) {
+                continue;
+            }
+
             const FrameNumber markerFrameNumber =
                 frameList.get_frame(frameIndex);
             const MTime markerFrame =
@@ -1118,6 +1124,90 @@ void analyseObjectRelationships(const MarkerList &markerList,
                 out_markerToAttrToFrameMatrix.set(
                     markerIndex, attrIndex, frameIndex,
                     markerIsEnabled || markerAffectsAttr);
+            }
+        }
+    }
+}
+
+/**
+ * @brief Determines a simplified relationship between markers,
+ * attributes, and frames.
+ *
+ * This function assumes that if a marker is enabled on a given frame,
+ * it is affected by all attributes being considered in the solve. It
+ * populates a 3D boolean matrix where the relationship is true if the
+ * marker is enabled for a specific frame, regardless of any actual
+ * dependency graph connections. This provides a basic, all-inclusive
+ * relationship map, useful for scenarios where a detailed dependency
+ * analysis is not required or is computationally prohibitive.
+ */
+void analyseSimpleRelationships(const MarkerList &markerList,
+                                const AttrList &attrList,
+                                const FrameList &frameList,
+
+                                // Outputs
+                                MatrixBool3D &out_markerToAttrToFrameMatrix,
+                                MStatus &out_status) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("analyseSimpleRelationships");
+
+    out_status = MStatus::kSuccess;
+
+    const std::string frame_numbers_string =
+        create_string_sorted_frame_numbers_enabled(frameList);
+    const MString frame_numbers_mstring = MString(frame_numbers_string.c_str());
+    const FrameCount frameEnabledCount = frameList.count_enabled();
+    MMSOLVER_MAYA_VRB(
+        "analyseSimpleRelationships: "
+        "frame_numbers_string='"
+        << frame_numbers_string.c_str() << "'");
+    MMSOLVER_MAYA_VRB(
+        "analyseSimpleRelationships: "
+        "frameEnabledCount="
+        << frameEnabledCount);
+
+    const auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    const auto uiUnit = MTime::uiUnit();
+
+    // The attribute's 'affect' is assumed to be false if the plug
+    // cannot be found. We go by "assumed guilty until proven
+    // innocent".
+    const bool defaultValue = false;
+
+    // Calculate the relationship between attributes and markers.
+    out_markerToAttrToFrameMatrix.reset(markerList.size(), attrList.size(),
+                                        frameList.size(),
+                                        /*fill_value=*/defaultValue);
+    for (MarkerIndex markerIndex = 0; markerIndex < markerList.size();
+         markerIndex++) {
+        MarkerPtr marker = markerList.get_marker(markerIndex);
+
+        for (FrameIndex frameIndex = 0; frameIndex < frameList.size();
+             frameIndex++) {
+            const bool frameEnabled = frameList.get_enabled(frameIndex);
+            if (!frameEnabled) {
+                continue;
+            }
+
+            const FrameNumber markerFrameNumber =
+                frameList.get_frame(frameIndex);
+            const MTime markerFrame =
+                convert_to_time(markerFrameNumber, uiUnit);
+
+            bool enable = false;
+            double weight = 0.0;
+            const bool markerIsEnabled = getMarkerIsEnabled(
+                marker, markerFrame, timeEvalMode, enable, weight);
+
+            if (!markerIsEnabled) {
+                // All attributes must be unaffected by this marker.
+                continue;
+            }
+
+            for (AttrIndex attrIndex = 0; attrIndex < attrList.size();
+                 attrIndex++) {
+                out_markerToAttrToFrameMatrix.set(markerIndex, attrIndex,
+                                                  frameIndex, markerIsEnabled);
             }
         }
     }
@@ -1207,7 +1297,7 @@ void readStoredRelationships(const MarkerList &markerList,
             MFnDependencyNode attrNodeFn(attrNodeObject);
             MObject attrObject = attr->getAttribute();
             MUuid attrUuid = attrNodeFn.uuid(&out_status);
-            CHECK_MSTATUS(out_status);
+            MMSOLVER_CHECK_MSTATUS(out_status);
             MString attrUuidStr = attrUuid.asString();
 
             // Get Attribute's Name.
@@ -1219,7 +1309,7 @@ void readStoredRelationships(const MarkerList &markerList,
             MString attrName = "";
             out_status =
                 constructAttrAffectsName(nodeAttrName, attrUuidStr, attrName);
-            CHECK_MSTATUS(out_status);
+            MMSOLVER_CHECK_MSTATUS(out_status);
 
             // Get plug value
             bool value = defaultValue;
@@ -1227,7 +1317,7 @@ void readStoredRelationships(const MarkerList &markerList,
                 attrName, /*wantNetworkedPlug=*/true, &out_status);
             if (out_status != MS::kSuccess) {
                 if (verbose) {
-                    CHECK_MSTATUS(out_status);
+                    MMSOLVER_CHECK_MSTATUS(out_status);
                     const MString markerNodeName = marker->getNodeName();
                     MMSOLVER_MAYA_VRB(
                         "readStoredRelationships: "
@@ -1272,7 +1362,7 @@ void readStoredRelationships(const MarkerList &markerList,
                         double curveValue = 0;
                         out_status = curveFn.evaluate(frame, curveValue);
                         if (out_status != MS::kSuccess) {
-                            CHECK_MSTATUS(out_status);
+                            MMSOLVER_CHECK_MSTATUS(out_status);
                             return;
                         }
 
@@ -1832,14 +1922,14 @@ void calculateMarkerAndParameterCount(
             markerList, attrList, frameList, numParameters, numMarkerErrors,
             paramToAttrList, errorToMarkerList, markerToAttrToFrameMatrix,
             out_validFrameList, out_status);
-        CHECK_MSTATUS(out_status);
+        MMSOLVER_CHECK_MSTATUS(out_status);
     } else if (frameSolveMode == FrameSolveMode::kPerFrame) {
         MMSOLVER_MAYA_VRB("calculateMarkerAndParameterCount: D0");
         calculateMarkerAndParameterCountPerFrame(
             markerList, attrList, frameList, numParameters, numMarkerErrors,
             paramToAttrList, errorToMarkerList, markerToAttrToFrameMatrix,
             out_validFrameList, out_status);
-        CHECK_MSTATUS(out_status);
+        MMSOLVER_CHECK_MSTATUS(out_status);
     } else {
         const auto frameSolveModeValue = static_cast<int32_t>(frameSolveMode);
         MMSOLVER_MAYA_ERR(

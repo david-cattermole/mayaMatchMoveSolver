@@ -67,7 +67,7 @@ void RenderOverrideStandard::renderer_change_func(const MString &panel_name,
 
     if (new_renderer == MM_RENDERER_STANDARD_NAME) {
         MStatus status = create_render_globals_node();
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 }
 
@@ -83,7 +83,7 @@ void RenderOverrideStandard::render_override_change_func(
 
     if (new_renderer == MM_RENDERER_STANDARD_NAME) {
         MStatus status = create_render_globals_node();
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 }
 
@@ -195,7 +195,7 @@ MStatus RenderOverrideStandard::setup(const MString &destination) {
         MMSOLVER_MAYA_VRB(
             "RenderOverrideStandard::setup: m_image_plane_nodes.length()="
             << m_image_plane_nodes.length());
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         m_backgroundOp->setObjectSetOverride(&m_image_plane_nodes);
     }

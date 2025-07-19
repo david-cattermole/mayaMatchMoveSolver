@@ -32,6 +32,7 @@
 #include <maya/MDrawContext.h>
 
 // MM Solver
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -43,7 +44,7 @@ MStatus objectIsBelowCamera(const MDagPath &objPath, const MDagPath &cameraPath,
     belowCamera = false;
 
     MDagPath cameraTransformPath(cameraPath);
-    CHECK_MSTATUS(cameraTransformPath.pop(1));
+    MMSOLVER_CHECK_MSTATUS(cameraTransformPath.pop(1));
     MString cameraTransformName = cameraTransformPath.fullPathName();
 
     MString tfmName = "";
@@ -52,7 +53,7 @@ MStatus objectIsBelowCamera(const MDagPath &objPath, const MDagPath &cameraPath,
         if (transformPath.length() == 0) {
             break;
         }
-        CHECK_MSTATUS(transformPath.pop(1));
+        MMSOLVER_CHECK_MSTATUS(transformPath.pop(1));
         tfmName = transformPath.fullPathName();
         if (cameraTransformName == tfmName) {
             belowCamera = true;
@@ -69,7 +70,7 @@ MStatus getViewportScaleRatio(const MHWRender::MFrameContext &frameContext,
     // Use the camera position.
     MDoubleArray view_pos =
         frameContext.getTuple(MFrameContext::kViewPosition, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MPoint camera_pos(view_pos[0], view_pos[1], view_pos[2]);
 
     // Get Viewport size

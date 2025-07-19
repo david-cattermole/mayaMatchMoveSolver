@@ -103,11 +103,11 @@ MStatus MMTestCameraMatrixCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MStringArray objects;
     status = argData.getObjects(objects);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (objects.length() != 2) {
         status = MS::kFailure;
         return status;
@@ -115,12 +115,12 @@ MStatus MMTestCameraMatrixCmd::parseArgs(const MArgList &args) {
 
     MString cameraTransform = objects[0];
     status = nodeExistsAndIsType(cameraTransform, MFn::Type::kTransform);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MString cameraShape = objects[1];
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = nodeExistsAndIsType(cameraShape, MFn::Type::kCamera);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_camera = CameraPtr(new Camera());
     m_camera->setTransformNodeName(cameraTransform);
@@ -152,21 +152,21 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
 
     // Read all the arguments.
     MStatus status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Maya Camera Function Set
     MFnCamera cameraFn(m_camera->getShapeObject(), &status);
 
     // Maya Projection Matrix
     MFloatMatrix floatProjMatrix_maya = cameraFn.projectionMatrix(&status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MMatrix projMatrix_maya = MMatrix(&floatProjMatrix_maya.matrix[0]);
 
     // Maya World Matrix
     MMatrix worldMatrix_maya;
     Attr matrixAttr = m_camera->getMatrixAttr();
     status = matrixAttr.getValue(worldMatrix_maya, timeEvalMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     worldMatrix_maya = worldMatrix_maya.inverse();
     MMatrix value_maya = worldMatrix_maya * projMatrix_maya;
 

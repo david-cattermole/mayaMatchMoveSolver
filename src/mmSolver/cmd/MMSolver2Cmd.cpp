@@ -75,14 +75,14 @@ MStatus MMSolver2Cmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveObjectArguments(argData, m_cameraList, m_markerList,
                                        m_bundleList, m_attrList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveFramesArguments(argData, m_frameList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveInfoArguments_v2(
         argData, m_solverOptions.iterMax, m_solverOptions.tau,
@@ -97,12 +97,12 @@ MStatus MMSolver2Cmd::parseArgs(const MArgList &args) {
         m_solverOptions.solverSupportsAutoDiffCentral,
         m_solverOptions.solverSupportsParameterBounds,
         m_solverOptions.solverSupportsRobustLoss, m_solverOptions.imageWidth);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveLogArguments_v2(argData, m_printStatsList, m_logLevel,
                                        m_resultsNodeObject,
                                        m_setMarkerDeviationAttrs);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -127,7 +127,7 @@ MStatus MMSolver2Cmd::doIt(const MArgList &args) {
 
     // Read all the flag arguments.
     MStatus status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MMSOLVER_ASSERT(
         !m_frameList.is_empty(),
         "We must solve at least one frame, otherwise there's no point.");
@@ -148,14 +148,14 @@ MStatus MMSolver2Cmd::doIt(const MArgList &args) {
         status = setCommandResultDataOnNode(m_cmdResult, m_cmdResult.printStats,
                                             m_resultsNodeObject, m_dgmod,
                                             m_curveChange);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (m_setMarkerDeviationAttrs) {
         status = setErrorMetricsResultDataOnMarkers(
             m_cmdResult.errorMetricsResult, m_markerList, m_dgmod,
             m_curveChange);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     MMSolver2Cmd::setResult(ret);

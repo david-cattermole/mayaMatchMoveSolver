@@ -112,39 +112,39 @@ MStatus MMImageSequenceFrameLogicNode::initialize() {
     // In Frame
     a_inFrame =
         numericAttr.create("inFrame", "ifrm", MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_inFrame));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_inFrame));
 
     // Frame First
     a_firstFrame = numericAttr.create("firstFrame", "fstfrm",
                                       MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_firstFrame));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_firstFrame));
 
     // Frame Start
     a_startFrame =
         numericAttr.create("startFrame", "stfrm", MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_startFrame));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_startFrame));
 
     // Frame End
     a_endFrame =
         numericAttr.create("endFrame", "edfrm", MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_endFrame));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_endFrame));
 
     // Out Frame
     a_outFrame =
         numericAttr.create("outFrame", "ofrm", MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(false));
-    CHECK_MSTATUS(numericAttr.setKeyable(false));
-    CHECK_MSTATUS(numericAttr.setReadable(true));
-    CHECK_MSTATUS(numericAttr.setWritable(false));
-    CHECK_MSTATUS(addAttribute(a_outFrame));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_outFrame));
 
     // Attribute Affects
     MObjectArray inputAttrs;
@@ -156,7 +156,7 @@ MStatus MMImageSequenceFrameLogicNode::initialize() {
     MObjectArray outputAttrs;
     outputAttrs.append(a_outFrame);
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return (MS::kSuccess);

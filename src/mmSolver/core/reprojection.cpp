@@ -139,7 +139,7 @@ MStatus reprojection(
         focalLength, horizontalFilmAperture, verticalFilmAperture,
         horizontalFilmOffset, verticalFilmOffset, imageWidth, imageHeight,
         filmFit, nearClipPlane, farClipPlane, cameraScale, camProjMatrix);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Camera World Projection Matrix
     const MMatrix camWorldProjMatrix = camMatrix.inverse() * camProjMatrix;

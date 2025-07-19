@@ -21,4 +21,6 @@
 
 #include "assert_utils.h"
 
+namespace mmsolver {
 namespace assert {}  // namespace assert
+}  // namespace mmsolver

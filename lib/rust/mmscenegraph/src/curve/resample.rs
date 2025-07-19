@@ -24,14 +24,14 @@ use log::debug;
 
 use crate::constant::Real;
 use crate::math::interpolate::evaluate_curve_points;
-use crate::math::interpolate::InterpolationMethod;
+use crate::math::interpolate::Interpolation;
 
 pub fn resample_uniform_xy(
     values_xy: &[(Real, Real)],
     start: Real,
     end: Real,
     increment: Real,
-    interpolation_method: InterpolationMethod,
+    interpolation_method: Interpolation,
 ) -> Result<Vec<(Real, Real)>> {
     if values_xy.is_empty() {
         bail!("Input value slices must have values.");

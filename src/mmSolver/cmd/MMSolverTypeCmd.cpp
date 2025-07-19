@@ -110,10 +110,10 @@ MStatus MMSolverTypeCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     const bool query = argData.isQuery(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     if (status != MStatus::kSuccess) {
         status.perror("mmSolverType Could not get the query flag");
         return status;

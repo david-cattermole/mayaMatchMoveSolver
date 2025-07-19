@@ -18,9 +18,13 @@
 // ====================================================================
 //
 
+use crate::cxxbridge::ffi::ControlPointDistribution as BindControlPointDistribution;
 use crate::cxxbridge::ffi::FilmFit as BindFilmFit;
+use crate::cxxbridge::ffi::Interpolation as BindInterpolation;
 use crate::cxxbridge::ffi::RotateOrder as BindRotateOrder;
+use mmscenegraph_rust::curve::simplify::ControlPointDistribution as CoreControlPointDistribution;
 use mmscenegraph_rust::math::camera::FilmFit as CoreFilmFit;
+use mmscenegraph_rust::math::interpolate::Interpolation as CoreInterpolation;
 use mmscenegraph_rust::math::rotate::euler::RotateOrder as CoreRotateOrder;
 
 pub fn bind_to_core_rotate_order(value: BindRotateOrder) -> CoreRotateOrder {
@@ -52,7 +56,7 @@ pub fn bind_to_core_film_fit(value: BindFilmFit) -> CoreFilmFit {
         BindFilmFit::Horizontal => CoreFilmFit::Horizontal,
         BindFilmFit::Vertical => CoreFilmFit::Vertical,
         BindFilmFit::Overscan => CoreFilmFit::Overscan,
-        _ => panic!("Invalid rotate order: {:?}", value),
+        _ => panic!("Invalid film fit: {:?}", value),
     }
 }
 
@@ -62,5 +66,57 @@ pub fn core_to_bind_film_fit(value: CoreFilmFit) -> BindFilmFit {
         CoreFilmFit::Horizontal => BindFilmFit::Horizontal,
         CoreFilmFit::Vertical => BindFilmFit::Vertical,
         CoreFilmFit::Overscan => BindFilmFit::Overscan,
+    }
+}
+
+pub fn bind_to_core_control_point_distribution(
+    value: BindControlPointDistribution,
+) -> CoreControlPointDistribution {
+    match value {
+        BindControlPointDistribution::Uniform => {
+            CoreControlPointDistribution::Uniform
+        }
+        BindControlPointDistribution::AutoKeypoints => {
+            CoreControlPointDistribution::AutoKeypoints
+        }
+        _ => panic!("Invalid control point distribution: {:?}", value),
+    }
+}
+
+pub fn core_to_bind_control_point_distribution(
+    value: CoreControlPointDistribution,
+) -> BindControlPointDistribution {
+    match value {
+        CoreControlPointDistribution::Uniform => {
+            BindControlPointDistribution::Uniform
+        }
+        CoreControlPointDistribution::AutoKeypoints => {
+            BindControlPointDistribution::AutoKeypoints
+        }
+    }
+}
+
+pub fn bind_to_core_interpolation_method(
+    value: BindInterpolation,
+) -> CoreInterpolation {
+    match value {
+        // BindInterpolation::Nearest => CoreInterpolation::Nearest,
+        BindInterpolation::Linear => CoreInterpolation::Linear,
+        BindInterpolation::QuadraticNUBS => CoreInterpolation::QuadraticNUBS,
+        BindInterpolation::CubicNUBS => CoreInterpolation::CubicNUBS,
+        BindInterpolation::CubicSpline => CoreInterpolation::CubicSpline,
+        _ => panic!("Invalid interpolation method: {:?}", value),
+    }
+}
+
+pub fn core_to_bind_interpolation_method(
+    value: CoreInterpolation,
+) -> BindInterpolation {
+    match value {
+        // CoreInterpolation::Nearest => BindInterpolation::Nearest,
+        CoreInterpolation::Linear => BindInterpolation::Linear,
+        CoreInterpolation::QuadraticNUBS => BindInterpolation::QuadraticNUBS,
+        CoreInterpolation::CubicNUBS => BindInterpolation::CubicNUBS,
+        CoreInterpolation::CubicSpline => BindInterpolation::CubicSpline,
     }
 }

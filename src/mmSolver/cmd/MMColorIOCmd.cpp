@@ -155,79 +155,79 @@ MStatus MMColorIOCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_list_color_spaces_all =
         argData.isFlagSet(LIST_COLOR_SPACES_ALL_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_list_color_spaces_active =
         argData.isFlagSet(LIST_COLOR_SPACES_ACTIVE_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_list_color_spaces_inactive =
         argData.isFlagSet(LIST_COLOR_SPACES_INACTIVE_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_role_color_picking = argData.isFlagSet(ROLE_COLOR_PICKING_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_role_color_timing = argData.isFlagSet(ROLE_COLOR_TIMING_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_role_compositing_log =
         argData.isFlagSet(ROLE_COMPOSITING_LOG_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_role_data = argData.isFlagSet(ROLE_DATA_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_role_default = argData.isFlagSet(ROLE_DEFAULT_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_role_matte_paint = argData.isFlagSet(ROLE_MATTE_PAINT_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_role_reference = argData.isFlagSet(ROLE_REFERENCE_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_role_rendering = argData.isFlagSet(ROLE_RENDERING_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_role_scene_linear = argData.isFlagSet(ROLE_SCENE_LINEAR_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_role_texture_paint = argData.isFlagSet(ROLE_TEXTURE_PAINT_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_config_name = argData.isFlagSet(CONFIG_NAME_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_config_description = argData.isFlagSet(CONFIG_DESCRIPTION_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_config_search_path = argData.isFlagSet(CONFIG_SEARCH_PATH_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_config_working_directory =
         argData.isFlagSet(CONFIG_WORKING_DIRECTORY_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_guess_color_space_from_file =
         argData.isFlagSet(GUESS_COLOR_SPACE_FROM_FILE_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (m_guess_color_space_from_file) {
         status = argData.getFlagArgument(GUESS_COLOR_SPACE_FROM_FILE_FLAG, 0,
                                          m_file_path);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     m_color_space_exists = argData.isFlagSet(COLOR_SPACE_EXISTS_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (m_color_space_exists) {
         status = argData.getFlagArgument(COLOR_SPACE_EXISTS_FLAG, 0,
                                          m_color_space_name);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     return status;
@@ -238,7 +238,7 @@ MStatus MMColorIOCmd::doIt(const MArgList &args) {
 
     // Read all the flag arguments.
     MStatus status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_list_color_spaces_all || m_list_color_spaces_active ||
         m_list_color_spaces_inactive) {
@@ -328,7 +328,7 @@ MStatus MMColorIOCmd::doIt(const MArgList &args) {
         if (m_file_path.length() > 0) {
             MString resolved_file_path = m_file_path;
             status = mmpath::resolve_input_file_path(resolved_file_path);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             const char *color_space_name =
                 mmcolorio::guess_color_space_name_from_file_path(

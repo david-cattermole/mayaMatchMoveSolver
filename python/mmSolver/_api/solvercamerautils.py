@@ -1143,10 +1143,9 @@ def _runSolverAffects(
     # LOG.debug('maya.cmds.mmSolverAffects frame: %s', pprint.pformat(all_frames))
 
     affects_mode = 'addAttrsToMarkers'
-    graph_mode = 'simple'
     result = maya.cmds.mmSolverAffects(
         mode=affects_mode,
-        graphMode=graph_mode,
+        graphMode=const.AFFECTS_GRAPH_MODE_OBJECT,
         camera=cameras,
         marker=markers,
         attr=node_attrs,

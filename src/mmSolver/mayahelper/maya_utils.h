@@ -45,6 +45,7 @@
 #include <maya/MVector.h>
 
 // MM Solver
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 #define MMSOLVER_OBJECT_TYPE_UNINITIALIZED (0)
@@ -239,7 +240,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
         MPlug plug(node, attr);
         if (!plug.isNull()) {
             MDataHandle data_handle = plug.asMDataHandle(&status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             auto data = data_handle.asFloat3();
             value.r = data[0];
             value.g = data[1];
@@ -258,7 +259,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
         MPlug plug(node, attr);
         if (!plug.isNull()) {
             MDataHandle data_handle = plug.asMDataHandle(&status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             value = data_handle.asMatrix();
             return status;
         }
@@ -274,7 +275,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
         MPlug plug(node, attr);
         if (!plug.isNull()) {
             auto data = plug.asString(&status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             value = data;
             return status;
         }

@@ -114,22 +114,22 @@ MSyntax MMCameraPoseFromPointsCmd::newSyntax() {
     syntax.enableQuery(false);
     syntax.enableEdit(false);
 
-    CHECK_MSTATUS(syntax.addFlag(SET_VALUES_SHORT_FLAG, SET_VALUES_LONG_FLAG,
-                                 MSyntax::kBoolean));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        SET_VALUES_SHORT_FLAG, SET_VALUES_LONG_FLAG, MSyntax::kBoolean));
 
-    CHECK_MSTATUS(syntax.addFlag(CAMERA_SHORT_FLAG, CAMERA_LONG_FLAG,
-                                 MSyntax::kSelectionItem));
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(CAMERA_SHORT_FLAG, CAMERA_LONG_FLAG,
+                                          MSyntax::kSelectionItem));
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(FRAME_SHORT_FLAG, FRAME_LONG_FLAG, MSyntax::kUnsigned));
-    CHECK_MSTATUS(syntax.makeFlagMultiUse(FRAME_SHORT_FLAG));
+    MMSOLVER_CHECK_MSTATUS(syntax.makeFlagMultiUse(FRAME_SHORT_FLAG));
 
-    CHECK_MSTATUS(syntax.addFlag(MARKER_SHORT_FLAG, MARKER_LONG_FLAG,
-                                 MSyntax::kString, MSyntax::kString));
-    CHECK_MSTATUS(syntax.makeFlagMultiUse(MARKER_SHORT_FLAG));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(MARKER_SHORT_FLAG, MARKER_LONG_FLAG,
+                                          MSyntax::kString, MSyntax::kString));
+    MMSOLVER_CHECK_MSTATUS(syntax.makeFlagMultiUse(MARKER_SHORT_FLAG));
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(BUNDLE_SHORT_FLAG, BUNDLE_LONG_FLAG, MSyntax::kString));
-    CHECK_MSTATUS(syntax.makeFlagMultiUse(BUNDLE_SHORT_FLAG));
+    MMSOLVER_CHECK_MSTATUS(syntax.makeFlagMultiUse(BUNDLE_SHORT_FLAG));
 
     return syntax;
 }
@@ -144,7 +144,7 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
     const bool verbose = false;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Reset saved data structures.
     m_marker_list.clear();
@@ -156,7 +156,7 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
     if (argData.isFlagSet(SET_VALUES_SHORT_FLAG)) {
         status =
             argData.getFlagArgument(SET_VALUES_SHORT_FLAG, 0, m_set_values);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // List of frames.
@@ -166,11 +166,11 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
         MArgList frameArgs;
 
         status = argData.getFlagArgumentList(FRAME_SHORT_FLAG, i, frameArgs);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto frame = 0;
         frame = frameArgs.asInt(0, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto frame_value = static_cast<double>(frame);
         auto time = MTime(frame_value, uiUnit);
@@ -185,7 +185,7 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
     status = ::mmsolver::sfm::parse_camera_argument(
         camera_selection_list, m_camera, m_camera_tx_attr, m_camera_ty_attr,
         m_camera_tz_attr, m_camera_rx_attr, m_camera_ry_attr, m_camera_rz_attr);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     m_camera->getRotateOrder(m_camera_rotate_order, m_times[0], timeEvalMode);
@@ -201,14 +201,14 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
         MString markerName = "";
         MObject markerObject;
         status = argData.getFlagArgumentList(MARKER_SHORT_FLAG, i, markerArgs);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         markerName = markerArgs.asString(0, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsObject(markerName, markerObject);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsDagPath(markerName, dagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         ObjectType objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
             MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
@@ -220,11 +220,11 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
         MString bundleName = "";
         MObject bundleObject;
         bundleName = markerArgs.asString(1, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsObject(bundleName, bundleObject);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsDagPath(bundleName, dagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(bundleObject, dagPath);
         if (objectType != ObjectType::kBundle) {
             MMSOLVER_MAYA_ERR("Given bundle node is not a Bundle; "
@@ -282,7 +282,7 @@ MStatus MMCameraPoseFromPointsCmd::doIt(const MArgList &args) {
         status = ::mmsolver::sfm::get_camera_values(
             time, m_camera, image_width, image_height, focal_length_mm,
             sensor_width_mm, sensor_height_mm);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         ::mmsolver::sfm::convert_camera_lens_mm_to_pixel_units(
             image_width, image_height, focal_length_mm, sensor_width_mm,

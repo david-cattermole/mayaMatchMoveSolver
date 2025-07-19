@@ -22,6 +22,7 @@ use crate::attrdatablock::shim_create_attr_data_block_box;
 use crate::attrdatablock::ShimAttrDataBlock;
 use crate::curve_detect_pops::shim_detect_curve_pops;
 use crate::curve_detect_pops::shim_filter_curve_pops;
+use crate::curve_simplify::shim_curve_simplify;
 use crate::evaluationobjects::shim_create_evaluation_objects_box;
 use crate::evaluationobjects::ShimEvaluationObjects;
 use crate::fit_plane::shim_fit_plane_to_points;
@@ -434,6 +435,40 @@ pub mod ffi {
         ) -> bool;
     }
 
+    #[repr(u8)]
+    #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
+    pub(crate) enum ControlPointDistribution {
+        #[cxx_name = "kUniform"]
+        Uniform = 1,
+
+        #[cxx_name = "kAutoKeypoints"]
+        AutoKeypoints = 2,
+
+        #[cxx_name = "kUnknown"]
+        Unknown = 255,
+    }
+
+    #[repr(u8)]
+    #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
+    pub(crate) enum Interpolation {
+        // #[cxx_name = "kNearest"]
+        // Nearest = 0,
+        #[cxx_name = "kLinear"]
+        Linear = 1,
+
+        #[cxx_name = "kQuadraticNUBS"]
+        QuadraticNUBS = 2,
+
+        #[cxx_name = "kCubicNUBS"]
+        CubicNUBS = 3,
+
+        #[cxx_name = "kCubicSpline"]
+        CubicSpline = 4,
+
+        #[cxx_name = "kUnknown"]
+        Unknown = 255,
+    }
+
     // Detect Curve Pops
     extern "Rust" {
         fn shim_detect_curve_pops(
@@ -448,6 +483,19 @@ pub mod ffi {
             x_values: &[f64],
             y_values: &[f64],
             threshold: f64,
+            out_x_values: &mut Vec<f64>,
+            out_y_values: &mut Vec<f64>,
+        ) -> bool;
+    }
+
+    // Curve Simplify
+    extern "Rust" {
+        fn shim_curve_simplify(
+            x_values: &[f64],
+            y_values: &[f64],
+            control_point_count: usize,
+            distribution: ControlPointDistribution,
+            interpolation_method: Interpolation,
             out_x_values: &mut Vec<f64>,
             out_y_values: &mut Vec<f64>,
         ) -> bool;

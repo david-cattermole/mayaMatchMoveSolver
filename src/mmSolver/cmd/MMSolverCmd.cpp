@@ -75,18 +75,18 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveObjectArguments(argData, m_cameraList, m_markerList,
                                        m_bundleList, m_attrList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseAttributeDetailsArguments(
         argData, m_attrList, m_stiffAttrsList, m_smoothAttrsList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveFramesArguments(argData, m_frameList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveInfoArguments_v1(
         argData, m_iterations, m_tau, m_function_tolerance,
@@ -96,10 +96,10 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_supportAutoDiffForward, m_supportAutoDiffCentral,
         m_supportParameterBounds, m_supportRobustLoss, m_removeUnusedMarkers,
         m_removeUnusedAttributes, m_removeUnusedFrames, m_imageWidth);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveLogArguments_v1(argData, m_printStatsList, m_logLevel);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -124,7 +124,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
 
     // Read all the flag arguments.
     MStatus status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MMSOLVER_ASSERT(
         !m_frameList.is_empty(),
         "We must solve at least one frame, otherwise there's no point.");

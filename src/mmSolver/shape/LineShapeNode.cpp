@@ -136,17 +136,17 @@ MStatus LineShapeNode::compute(const MPlug &plug, MDataBlock &data) {
 
         MArrayDataHandle transformArrayHandle =
             data.inputArrayValue(m_transform_matrix, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Get Transform Positions
         status =
             query_line_point_data(parentInverseMatrix, transformArrayHandle,
                                   m_point_data_x, m_point_data_y, verbose);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MDataHandle middleLineScaleHandle =
             data.inputValue(m_middle_scale, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         auto line_length = middleLineScaleHandle.asDouble();
 
         auto line_center = mmdata::Point2D();
@@ -160,7 +160,7 @@ MStatus LineShapeNode::compute(const MPlug &plug, MDataBlock &data) {
             fit_line_to_points(line_length, m_point_data_x, m_point_data_y,
                                line_center, line_slope, line_angle, line_dir,
                                line_point_a, line_point_b, verbose);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Output Points
         MDataHandle outLinePointAXHandle =
@@ -238,7 +238,7 @@ MStatus LineShapeNode::preEvaluation(const MDGContext &context,
     if (context.isNormal()) {
         MStatus status;
         bool ok = evaluationNode.dirtyPlugExists(m_objects, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (ok) {
             MHWRender::MRenderer::setGeometryDrawDirty(thisMObject());
         }
@@ -276,26 +276,26 @@ MStatus LineShapeNode::initialize() {
     {
         m_draw_name =
             nAttr.create("drawName", "drwnm", MFnNumericData::kBoolean, 1);
-        CHECK_MSTATUS(nAttr.setStorable(true));
-        CHECK_MSTATUS(nAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
 
         m_draw_middle =
             nAttr.create("drawMiddle", "drwmid", MFnNumericData::kBoolean, 0);
-        CHECK_MSTATUS(nAttr.setStorable(true));
-        CHECK_MSTATUS(nAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
 
-        CHECK_MSTATUS(addAttribute(m_draw_name));
-        CHECK_MSTATUS(addAttribute(m_draw_middle));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_draw_name));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_draw_middle));
     }
 
     // Color
     {
         m_color = nAttr.createColor("color", "clr");
-        CHECK_MSTATUS(nAttr.setStorable(true));
-        CHECK_MSTATUS(nAttr.setKeyable(true));
-        CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 1.0f));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 1.0f));
 
-        CHECK_MSTATUS(addAttribute(m_color));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_color));
     }
 
     // Alpha
@@ -305,12 +305,12 @@ MStatus LineShapeNode::initialize() {
         auto alpha_default = 1.0;
         m_alpha = nAttr.create("alpha", "alp", MFnNumericData::kDouble,
                                alpha_default);
-        CHECK_MSTATUS(nAttr.setStorable(true));
-        CHECK_MSTATUS(nAttr.setKeyable(true));
-        CHECK_MSTATUS(nAttr.setMin(alpha_min));
-        CHECK_MSTATUS(nAttr.setMax(alpha_max));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setMin(alpha_min));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setMax(alpha_max));
 
-        CHECK_MSTATUS(addAttribute(m_alpha));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_alpha));
     }
 
     // Line Width
@@ -320,22 +320,22 @@ MStatus LineShapeNode::initialize() {
         auto line_width_soft_max = 10.0;
         m_inner_line_width = nAttr.create("innerLineWidth", "inrlnwd",
                                           MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(nAttr.setStorable(true));
-        CHECK_MSTATUS(nAttr.setKeyable(true));
-        CHECK_MSTATUS(nAttr.setMin(line_width_min));
-        CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
-        CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setMin(line_width_min));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
 
         m_middle_line_width = nAttr.create("middleLineWidth", "midlnwd",
                                            MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(nAttr.setStorable(true));
-        CHECK_MSTATUS(nAttr.setKeyable(true));
-        CHECK_MSTATUS(nAttr.setMin(line_width_min));
-        CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
-        CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setMin(line_width_min));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
 
-        CHECK_MSTATUS(addAttribute(m_inner_line_width));
-        CHECK_MSTATUS(addAttribute(m_middle_line_width));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_inner_line_width));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_middle_line_width));
     }
 
     // Scale
@@ -343,10 +343,10 @@ MStatus LineShapeNode::initialize() {
         auto scale_min = 0.0;
         m_middle_scale =
             nAttr.create("middleScale", "midscl", MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(nAttr.setStorable(true));
-        CHECK_MSTATUS(nAttr.setKeyable(true));
-        CHECK_MSTATUS(nAttr.setMin(scale_min));
-        CHECK_MSTATUS(addAttribute(m_middle_scale));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setMin(scale_min));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_middle_scale));
     }
 
     // Point size
@@ -356,41 +356,41 @@ MStatus LineShapeNode::initialize() {
         auto point_size_soft_max = 10.0;
         m_point_size =
             nAttr.create("pointSize", "ptsz", MFnNumericData::kDouble, 4.0);
-        CHECK_MSTATUS(nAttr.setStorable(true));
-        CHECK_MSTATUS(nAttr.setKeyable(true));
-        CHECK_MSTATUS(nAttr.setMin(point_size_min));
-        CHECK_MSTATUS(nAttr.setSoftMin(point_size_soft_min));
-        CHECK_MSTATUS(nAttr.setSoftMax(point_size_soft_max));
-        CHECK_MSTATUS(addAttribute(m_point_size));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setMin(point_size_min));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setSoftMin(point_size_soft_min));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setSoftMax(point_size_soft_max));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_point_size));
     }
 
     // Objects
     {
         m_objects = msgAttr.create("objects", "objs", &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(msgAttr.setStorable(true));
-        CHECK_MSTATUS(msgAttr.setCached(true));
-        CHECK_MSTATUS(msgAttr.setConnectable(true));
-        CHECK_MSTATUS(msgAttr.setArray(true));
-        CHECK_MSTATUS(msgAttr.setReadable(false));
-        CHECK_MSTATUS(msgAttr.setWritable(true));
-        CHECK_MSTATUS(msgAttr.setIndexMatters(false));
-        CHECK_MSTATUS(msgAttr.setDisconnectBehavior(
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(msgAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(msgAttr.setCached(true));
+        MMSOLVER_CHECK_MSTATUS(msgAttr.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(msgAttr.setArray(true));
+        MMSOLVER_CHECK_MSTATUS(msgAttr.setReadable(false));
+        MMSOLVER_CHECK_MSTATUS(msgAttr.setWritable(true));
+        MMSOLVER_CHECK_MSTATUS(msgAttr.setIndexMatters(false));
+        MMSOLVER_CHECK_MSTATUS(msgAttr.setDisconnectBehavior(
             MFnAttribute::DisconnectBehavior::kDelete));
-        CHECK_MSTATUS(addAttribute(m_objects));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_objects));
     }
 
     // (World-space) Transform Matrices.
     {
         m_transform_matrix = matrixAttr.create(
             "transformMatrix", "tfmmtx", MFnMatrixAttribute::kDouble, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(matrixAttr.setStorable(true));
-        CHECK_MSTATUS(matrixAttr.setConnectable(true));
-        CHECK_MSTATUS(matrixAttr.setArray(true));
-        CHECK_MSTATUS(matrixAttr.setDisconnectBehavior(
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setArray(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setDisconnectBehavior(
             MFnAttribute::DisconnectBehavior::kDelete));
-        CHECK_MSTATUS(addAttribute(m_transform_matrix));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_transform_matrix));
     }
 
     // Parent Inverse Matrix
@@ -401,111 +401,111 @@ MStatus LineShapeNode::initialize() {
         m_parent_inverse_matrix =
             matrixAttr.create("transformParentInverseMatrix", "tfmpinvm",
                               MFnMatrixAttribute::kDouble, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(matrixAttr.setStorable(true));
-        CHECK_MSTATUS(matrixAttr.setConnectable(true));
-        CHECK_MSTATUS(addAttribute(m_parent_inverse_matrix));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_parent_inverse_matrix));
     }
 
     // Out Line Point A
     {
         m_out_line_point_ax = nAttr.create("outLinePointAX", "opax",
                                            MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(nAttr.setStorable(false));
-        CHECK_MSTATUS(nAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
 
         m_out_line_point_ay = nAttr.create("outLinePointAY", "opay",
                                            MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(nAttr.setStorable(false));
-        CHECK_MSTATUS(nAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
 
         m_out_line_point_a =
             compoundAttr.create("outLinePointA", "opa", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(m_out_line_point_ax);
         compoundAttr.addChild(m_out_line_point_ay);
-        CHECK_MSTATUS(addAttribute(m_out_line_point_a));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_out_line_point_a));
     }
 
     // Out Line Point B
     {
         m_out_line_point_bx = nAttr.create("outLinePointBX", "opbx",
                                            MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(nAttr.setStorable(false));
-        CHECK_MSTATUS(nAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
 
         m_out_line_point_by = nAttr.create("outLinePointBY", "opby",
                                            MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(nAttr.setStorable(false));
-        CHECK_MSTATUS(nAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
 
         m_out_line_point_b =
             compoundAttr.create("outLinePointB", "opb", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(m_out_line_point_bx);
         compoundAttr.addChild(m_out_line_point_by);
-        CHECK_MSTATUS(addAttribute(m_out_line_point_b));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_out_line_point_b));
     }
 
     {
         // Out Line Center X
         m_out_line_center_x =
             nAttr.create("outLineX", "olncx", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(nAttr.setStorable(false));
-        CHECK_MSTATUS(nAttr.setKeyable(false));
-        CHECK_MSTATUS(nAttr.setReadable(true));
-        CHECK_MSTATUS(nAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setWritable(false));
 
         // Out Line Center Y
         m_out_line_center_y =
             nAttr.create("outLineY", "olncy", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(nAttr.setStorable(false));
-        CHECK_MSTATUS(nAttr.setKeyable(false));
-        CHECK_MSTATUS(nAttr.setReadable(true));
-        CHECK_MSTATUS(nAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setWritable(false));
 
         // Out Line Direction X
         m_out_line_dir_x =
             nAttr.create("outLineDirX", "olndrx", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(nAttr.setStorable(false));
-        CHECK_MSTATUS(nAttr.setKeyable(false));
-        CHECK_MSTATUS(nAttr.setReadable(true));
-        CHECK_MSTATUS(nAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setWritable(false));
 
         // Out Line Direction Y
         m_out_line_dir_y =
             nAttr.create("outLineDirY", "olndry", MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(nAttr.setStorable(false));
-        CHECK_MSTATUS(nAttr.setKeyable(false));
-        CHECK_MSTATUS(nAttr.setReadable(true));
-        CHECK_MSTATUS(nAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setWritable(false));
 
         // Out Line Slope
         m_out_line_slope = nAttr.create("outLineSlope", "olnslp",
                                         MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(nAttr.setStorable(false));
-        CHECK_MSTATUS(nAttr.setKeyable(false));
-        CHECK_MSTATUS(nAttr.setReadable(true));
-        CHECK_MSTATUS(nAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setWritable(false));
 
         // Out Line Angle
         m_out_line_angle = nAttr.create("outLineAngle", "olnagl",
                                         MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(nAttr.setStorable(false));
-        CHECK_MSTATUS(nAttr.setKeyable(false));
-        CHECK_MSTATUS(nAttr.setReadable(true));
-        CHECK_MSTATUS(nAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(nAttr.setWritable(false));
 
         // Out Coord (parent of outLine* attributes)
         m_out_line = compoundAttr.create("outLine", "oln", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(m_out_line_center_x);
         compoundAttr.addChild(m_out_line_center_y);
         compoundAttr.addChild(m_out_line_dir_x);
         compoundAttr.addChild(m_out_line_dir_y);
         compoundAttr.addChild(m_out_line_slope);
         compoundAttr.addChild(m_out_line_angle);
-        CHECK_MSTATUS(addAttribute(m_out_line));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_out_line));
     }
 
     // Attribute Affects
@@ -532,7 +532,7 @@ MStatus LineShapeNode::initialize() {
     outputAttrs.append(m_out_line_slope);
     outputAttrs.append(m_out_line_angle);
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return MS::kSuccess;

@@ -34,6 +34,7 @@
 #include <mmcore/mmmath.h>
 
 #include "mmSolver/nodeTypeIds.h"
+#include "mmSolver/utilities/assert_utils.h"
 
 namespace mmsolver {
 
@@ -74,7 +75,7 @@ MMatrix MMMarkerTransformMatrix::asMatrix(double percent) const {
     std::shared_ptr<mmlens::LensModel> lensModel = getLensModel();
     if (lensModel != nullptr) {
         MVector translate = tm.getTranslation(MSpace::kTransform, &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         MVector out_translate(translate);
 
         double temp_out_x = translate.x;
@@ -100,7 +101,7 @@ MMatrix MMMarkerTransformMatrix::asMatrix(double percent) const {
         }
 
         status = tm.setTranslation(out_translate, MSpace::kTransform);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 
     return tm.asMatrix();

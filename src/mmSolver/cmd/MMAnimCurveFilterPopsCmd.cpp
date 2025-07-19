@@ -33,6 +33,7 @@
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MDagPath.h>
+#include <maya/MFnAnimCurve.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MGlobal.h>
 #include <maya/MStreamUtils.h>
@@ -43,6 +44,8 @@
 #include <mmcore/mmmath.h>
 
 // MM Solver
+#include "mmSolver/cmd/anim_curve_cmd_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 // MM Scene Graph
@@ -58,6 +61,12 @@
 #define THRESHOLD_FLAG_SHORT "-th"
 #define THRESHOLD_FLAG_LONG "-threshold"
 
+// When true, don't modify the animCurve, just return the results.
+#define RETURN_RESULT_ONLY_FLAG_SHORT "-rro"
+#define RETURN_RESULT_ONLY_FLAG_LONG "-returnResultOnly"
+
+#define CMD_NAME "mmAnimCurveFilterPops"
+
 namespace mmsg = mmscenegraph;
 
 namespace mmsolver {
@@ -68,9 +77,7 @@ void *MMAnimCurveFilterPopsCmd::creator() {
     return new MMAnimCurveFilterPopsCmd();
 }
 
-MString MMAnimCurveFilterPopsCmd::cmdName() {
-    return MString("mmAnimCurveFilterPops");
-}
+MString MMAnimCurveFilterPopsCmd::cmdName() { return MString(CMD_NAME); }
 
 bool MMAnimCurveFilterPopsCmd::hasSyntax() const { return true; }
 
@@ -78,17 +85,22 @@ bool MMAnimCurveFilterPopsCmd::isUndoable() const { return true; }
 
 MSyntax MMAnimCurveFilterPopsCmd::newSyntax() {
     const bool verbose = false;
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::newSyntax");
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": newSyntax");
 
     MSyntax syntax;
     syntax.enableQuery(false);
     syntax.enableEdit(false);
 
     syntax.addFlag(START_FRAME_FLAG_SHORT, START_FRAME_FLAG_LONG,
-                   MSyntax::kDouble);
-    syntax.addFlag(END_FRAME_FLAG_SHORT, END_FRAME_FLAG_LONG, MSyntax::kDouble);
+                   MSyntax::kUnsigned);
+    syntax.addFlag(END_FRAME_FLAG_SHORT, END_FRAME_FLAG_LONG,
+                   MSyntax::kUnsigned);
     syntax.addFlag(THRESHOLD_FLAG_SHORT, THRESHOLD_FLAG_LONG, MSyntax::kDouble);
     // TODO: Add an option to 'infill' the pops.
+
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(RETURN_RESULT_ONLY_FLAG_SHORT,
+                                          RETURN_RESULT_ONLY_FLAG_LONG,
+                                          MSyntax::kBoolean));
 
     // Add object argument for animation curve
     const unsigned int min_curves = 1;
@@ -100,18 +112,19 @@ MSyntax MMAnimCurveFilterPopsCmd::newSyntax() {
 
 MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
     const bool verbose = false;
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::parseArgs");
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": parseArgs");
 
     MStatus status = MStatus::kSuccess;
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get animation curve from selection.
     status = argData.getObjects(m_selection);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_selection.length() == 0) {
-        MGlobal::displayError("Please select at least one animation curve.");
+        MGlobal::displayError(CMD_NAME
+                              ": Please select at least one animation curve.");
         return MS::kFailure;
     }
 
@@ -119,62 +132,41 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
     // not during 'doIt'.
     for (auto i = 0; i < m_selection.length(); i++) {
         status = m_selection.getDependNode(i, m_animCurveObj);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    if (argData.isFlagSet(RETURN_RESULT_ONLY_FLAG_SHORT)) {
+        bool value = false;
+        status =
+            argData.getFlagArgument(RETURN_RESULT_ONLY_FLAG_SHORT, 0, value);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+        m_returnResultOnly = value;
     }
 
     // Parse optional arguments
+    m_startFrame = std::numeric_limits<uint32_t>::max();
+    m_endFrame = std::numeric_limits<uint32_t>::max();
     if (argData.isFlagSet(START_FRAME_FLAG_SHORT)) {
         status =
             argData.getFlagArgument(START_FRAME_FLAG_SHORT, 0, m_startFrame);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-    } else {
-        m_startFrame = m_animCurveFn.time(0).value();
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
-
     if (argData.isFlagSet(END_FRAME_FLAG_SHORT)) {
         status = argData.getFlagArgument(END_FRAME_FLAG_SHORT, 0, m_endFrame);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-    } else {
-        auto last_key_index = m_animCurveFn.numKeys() - 1;
-        m_endFrame = m_animCurveFn.time(last_key_index).value();
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (argData.isFlagSet(THRESHOLD_FLAG_SHORT)) {
         status = argData.getFlagArgument(THRESHOLD_FLAG_SHORT, 0, m_threshold);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    const double frame_range_duration = m_endFrame - m_startFrame;
-    MMSOLVER_MAYA_VRB(
-        "MMAnimCurveFilterPopsCmd::m_startFrame=" << m_startFrame);
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::m_endFrame=" << m_endFrame);
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::m_threshold=" << m_threshold);
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::frame_range_duration="
-                      << frame_range_duration);
-
-    if (m_startFrame > m_endFrame) {
-        MGlobal::displayError(
-            "Invalid frame range; "
-            "The start frame is larger than the end frame.");
-        return MS::kFailure;
-    }
-
-    if (m_startFrame == m_endFrame) {
-        MGlobal::displayError(
-            "Invalid frame range; "
-            "The start frame is equal to the end frame.");
-        return MS::kFailure;
-    }
-
-    if (frame_range_duration <= 2.0) {
-        MGlobal::displayError(
-            "Invalid frame range; "
-            "The frame range length is less than 2 frames.");
-        return MS::kFailure;
-    }
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_startFrame=" << m_startFrame);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_endFrame=" << m_endFrame);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_threshold=" << m_threshold);
 
     if (m_threshold < 0.0) {
-        MGlobal::displayError("Threshold value is less than 0.0.");
+        MGlobal::displayError(CMD_NAME ": Threshold value is less than 0.0.");
         return MS::kFailure;
     }
 
@@ -185,123 +177,161 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
     const bool verbose = false;
 
     MStatus status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Don't store each individual edit, just store the combination.
     m_curveChange.setInteractive(true);
 
-    auto count = static_cast<size_t>((m_endFrame - m_startFrame) / 1.0);
-    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::count=" << count);
+    auto count = static_cast<size_t>(m_endFrame - m_startFrame) + 1;
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": count=" << count);
 
-    rust::Vec<mmsg::Real> x_values;
-    rust::Vec<mmsg::Real> y_values;
-    x_values.reserve(count);
-    y_values.reserve(count);
+    rust::Vec<mmsg::Real> values_x;
+    rust::Vec<mmsg::Real> values_y;
+    values_x.reserve(count);
+    values_y.reserve(count);
 
-    rust::Vec<mmsg::Real> filtered_x_values;
-    rust::Vec<mmsg::Real> filtered_y_values;
+    rust::Vec<mmsg::Real> out_values_x;
+    rust::Vec<mmsg::Real> out_values_y;
+    MDoubleArray result;
 
+    auto time_unit = MTime::uiUnit();
+    uint32_t success_count = 0;
+    uint32_t failure_count = 0;
     for (auto i = 0; i < m_selection.length(); i++) {
         status = m_selection.getDependNode(i, m_animCurveObj);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-
-        status = m_animCurveFn.setObject(m_animCurveObj);
         if (status != MS::kSuccess) {
-            MGlobal::displayError("Selected object is not an animation curve.");
+            MGlobal::displayError(
+                CMD_NAME ": Selected object is not an animation curve.");
             return status;
         }
 
-        x_values.clear();
-        y_values.clear();
-
-        auto time_unit = MTime::uiUnit();
-        for (auto frame = m_startFrame; frame <= m_endFrame; frame += 1.0) {
-            auto time = MTime(frame, time_unit);
-            auto value = m_animCurveFn.evaluate(time, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            MMSOLVER_MAYA_VRB("f=" << frame << " v=" << value);
-
-            x_values.push_back(frame);
-            y_values.push_back(value);
+        status = m_animCurveFn.setObject(m_animCurveObj);
+        if (status != MS::kSuccess) {
+            MGlobal::displayError(
+                CMD_NAME ": Selected object is not an animation curve.");
+            return status;
         }
 
-        MMSOLVER_MAYA_VRB("In curve: " << x_values.size() << " | "
-                                       << y_values.size());
+        FrameNumber start_frame = 0;
+        FrameNumber end_frame = 0;
+        const FrameCount min_keyframe_count = 2;
+        const FrameCount min_frame_count = 2;
+        const char *cmd_name = CMD_NAME;
+        bool success = validate_anim_curve(
+            cmd_name, m_startFrame, m_endFrame, min_keyframe_count,
+            min_frame_count, m_animCurveFn, start_frame, end_frame);
+        if (!success) {
+            MGlobal::displayWarning(CMD_NAME
+                                    ": failed to validate animation curve.");
+            failure_count++;
+            continue;
+        }
 
-        auto actual_count = x_values.size();
-        MMSOLVER_MAYA_VRB(
-            "MMAnimCurveFilterPopsCmd::actual_count=" << actual_count);
-        filtered_x_values.reserve(actual_count);
-        filtered_y_values.reserve(actual_count);
-        filtered_x_values.clear();
-        filtered_y_values.clear();
+        status = evaluate_curve(start_frame, end_frame, time_unit,
+                                m_animCurveFn, values_x, values_y);
+        if (status != MS::kSuccess) {
+            MGlobal::displayWarning(
+                CMD_NAME ": failed to set animation curve keyframes.");
+            failure_count++;
+            continue;
+        }
+
+        MMSOLVER_MAYA_VRB(CMD_NAME << ": Input curve size:"
+                                      " x="
+                                   << values_x.size()
+                                   << " y=" << values_y.size());
+
+        auto actual_count = values_x.size();
+        MMSOLVER_MAYA_VRB(CMD_NAME << ": actual_count=" << actual_count);
+        out_values_x.reserve(actual_count);
+        out_values_y.reserve(actual_count);
+        out_values_x.clear();
+        out_values_y.clear();
 
         // TODO: Can we 'calc_signal_to_noise_ratio', so we can determine
         // if a pop-detection is actually needed?
 
-        MMSOLVER_MAYA_VRB("m_threshold: " << m_threshold);
-        rust::Slice<const mmsg::Real> x_values_slice{x_values.data(),
-                                                     x_values.size()};
-        rust::Slice<const mmsg::Real> y_values_slice{y_values.data(),
-                                                     y_values.size()};
-        mmsg::filter_curve_pops(x_values_slice, y_values_slice, m_threshold,
-                                filtered_x_values, filtered_y_values);
-
-        // Clear all keys from the anim curve.
-        //
-        // TODO: Only keyframes between (and including) the start frame
-        // and end frame should be removed.
-        auto num_keys = m_animCurveFn.numKeys();
-        MMSOLVER_MAYA_VRB("num_keys=" << num_keys);
-        for (auto i = 0; i < num_keys; i++) {
-            m_animCurveFn.remove(0, &m_curveChange);
+        MMSOLVER_MAYA_VRB(CMD_NAME << ": m_threshold=" << m_threshold);
+        rust::Slice<const mmsg::Real> values_slice_x{values_x.data(),
+                                                     values_x.size()};
+        rust::Slice<const mmsg::Real> values_slice_y{values_y.data(),
+                                                     values_y.size()};
+        success =
+            mmsg::filter_curve_pops(values_slice_x, values_slice_y, m_threshold,
+                                    out_values_x, out_values_y);
+        if (!success) {
+            MGlobal::displayWarning(CMD_NAME ": failed to detect curve pops.");
+            failure_count++;
+            continue;
         }
 
-        MMSOLVER_MAYA_VRB("Filtered curve: " << filtered_x_values.size()
-                                             << " | "
-                                             << filtered_y_values.size());
-        const auto tangent_in_type = MFnAnimCurve::TangentType::kTangentGlobal;
-        const auto tangent_out_type = MFnAnimCurve::TangentType::kTangentGlobal;
-        for (auto i = 0; i < filtered_x_values.size(); i++) {
-            auto frame = filtered_x_values[i];
-            auto value = filtered_y_values[i];
-            MMSOLVER_MAYA_VRB("f=" << frame << " v=" << value);
-
-            auto time = MTime(frame, time_unit);
-
-            uint32_t key_index = 0;
-            const bool found = m_animCurveFn.find(time, key_index, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            if (found) {
-                status =
-                    m_animCurveFn.setValue(key_index, value, &m_curveChange);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-            } else {
-                key_index = m_animCurveFn.addKey(time, value, tangent_in_type,
-                                                 tangent_out_type,
-                                                 &m_curveChange, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+        rust::Slice<const mmsg::Real> out_values_slice_x{out_values_x.data(),
+                                                         out_values_x.size()};
+        rust::Slice<const mmsg::Real> out_values_slice_y{out_values_y.data(),
+                                                         out_values_y.size()};
+        if (m_returnResultOnly) {
+            append_curve_values_to_command_result(out_values_slice_x,
+                                                  out_values_slice_y, result);
+        } else {
+            // Modify the animation curve.
+            const bool preserve_first_last_keys = true;
+            status = set_anim_curve_keys(
+                cmd_name, out_values_slice_x, out_values_slice_y, time_unit,
+                m_animCurveFn, m_curveChange, start_frame, end_frame,
+                preserve_first_last_keys);
+            if (status != MS::kSuccess) {
+                MGlobal::displayWarning(
+                    CMD_NAME ": failed to set animation curve keyframes.");
+                failure_count++;
+                continue;
             }
         }
+
+        success_count++;
     }
 
-    m_dgmod.doIt();
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": failure_count="
+                               << static_cast<int32_t>(failure_count));
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": success_count="
+                               << static_cast<int32_t>(success_count));
+    if (failure_count > 0) {
+        MGlobal::displayError(CMD_NAME
+                              ": failed to filter pops on animation curves.");
+    }
+    if (success_count == 0) {
+        status = MS::kFailure;
+        return status;
+    }
+
+    if (m_returnResultOnly) {
+        // Return calculated values from the command.
+        MPxCommand::setResult(result);
+    } else {
+        // Modify the animation curve.
+        m_dgmod.doIt();
+    }
     return status;
 }
 
 MStatus MMAnimCurveFilterPopsCmd::redoIt() {
-    MStatus status = m_dgmod.doIt();
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    status = m_curveChange.redoIt();
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MStatus status = MS::kSuccess;
+    if (!m_returnResultOnly) {
+        status = m_dgmod.doIt();
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = m_curveChange.redoIt();
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
     return status;
 }
 
 MStatus MMAnimCurveFilterPopsCmd::undoIt() {
-    MStatus status = m_curveChange.undoIt();
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    status = m_dgmod.undoIt();
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MStatus status = MS::kSuccess;
+    if (!m_returnResultOnly) {
+        status = m_curveChange.undoIt();
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = m_dgmod.undoIt();
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
     return status;
 }
 

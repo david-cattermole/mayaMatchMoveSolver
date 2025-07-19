@@ -21,6 +21,7 @@
 pub mod attr;
 pub mod attrdatablock;
 pub mod curve_detect_pops;
+pub mod curve_simplify;
 pub mod cxxbridge;
 pub mod evaluationobjects;
 pub mod fit_plane;
@@ -30,3 +31,4 @@ pub mod math;
 pub mod node;
 pub mod scenebake;
 pub mod scenegraph;
+pub mod shim_utilities;

@@ -27,6 +27,7 @@
 #include "_types.h"
 #include "attrdatablock.h"
 #include "curve_detect_pops.h"
+#include "curve_simplify.h"
 #include "fit_plane.h"
 #include "flatscene.h"
 #include "line.h"

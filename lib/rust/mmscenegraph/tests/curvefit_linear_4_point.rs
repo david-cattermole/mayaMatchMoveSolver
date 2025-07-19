@@ -40,7 +40,7 @@ use crate::common::CHART_RESOLUTION;
 
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points;
 use mmscenegraph_rust::math::curve_fit::Point2;
-use mmscenegraph_rust::math::interpolate::InterpolationMethod;
+use mmscenegraph_rust::math::interpolate::Interpolation;
 
 fn curvefit_common(
     chart_title: &str,
@@ -48,7 +48,7 @@ fn curvefit_common(
     in_file_name: &str,
     out_file_name: &str,
     n_points: usize,
-    interpolation_method: InterpolationMethod,
+    interpolation_method: Interpolation,
 ) -> Result<Vec<Point2>> {
     let chart_resolution = CHART_RESOLUTION;
 
@@ -65,7 +65,7 @@ fn curvefit_common(
     let y_values = chan_data_filter_only_y(&data);
 
     let n_points = 4;
-    let interpolation_method = InterpolationMethod::Linear;
+    let interpolation_method = Interpolation::Linear;
     let points = nonlinear_line_n_points(
         &x_values,
         &y_values,
@@ -93,7 +93,7 @@ fn curvefit_linear_4_point_raw() -> Result<()> {
     let in_file_name = "linear_4_point_raw.chan";
     let out_file_name = "curvefit_linear_4_point_raw.png";
     let n_points = 4;
-    let interpolation_method = InterpolationMethod::Linear;
+    let interpolation_method = Interpolation::Linear;
 
     let points = curvefit_common(
         chart_title,
@@ -135,7 +135,7 @@ fn curvefit_linear_4_point_variance1() -> Result<()> {
     let in_file_name = "linear_4_point_variance1.chan";
     let out_file_name = "curvefit_linear_4_point_variance1.png";
     let n_points = 4;
-    let interpolation_method = InterpolationMethod::Linear;
+    let interpolation_method = Interpolation::Linear;
 
     let points = curvefit_common(
         chart_title,
@@ -177,7 +177,7 @@ fn curvefit_linear_4_point_variance2() -> Result<()> {
     let in_file_name = "linear_4_point_variance2.chan";
     let out_file_name = "curvefit_linear_4_point_variance2.png";
     let n_points = 4;
-    let interpolation_method = InterpolationMethod::Linear;
+    let interpolation_method = Interpolation::Linear;
 
     let points = curvefit_common(
         chart_title,
@@ -219,7 +219,7 @@ fn curvefit_linear_4_point_variance3() -> Result<()> {
     let in_file_name = "linear_4_point_variance3.chan";
     let out_file_name = "curvefit_linear_4_point_variance3.png";
     let n_points = 4;
-    let interpolation_method = InterpolationMethod::Linear;
+    let interpolation_method = Interpolation::Linear;
 
     let points = curvefit_common(
         chart_title,
@@ -261,7 +261,7 @@ fn curvefit_linear_4_point_variance4() -> Result<()> {
     let in_file_name = "linear_4_point_variance4.chan";
     let out_file_name = "curvefit_linear_4_point_variance4.png";
     let n_points = 4;
-    let interpolation_method = InterpolationMethod::Linear;
+    let interpolation_method = Interpolation::Linear;
 
     let points = curvefit_common(
         chart_title,

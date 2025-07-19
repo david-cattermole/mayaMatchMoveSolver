@@ -52,7 +52,7 @@ use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points;
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points_with_initial;
 use mmscenegraph_rust::math::curve_fit::Point2;
 use mmscenegraph_rust::math::interpolate::evaluate_curve_points;
-use mmscenegraph_rust::math::interpolate::InterpolationMethod;
+use mmscenegraph_rust::math::interpolate::Interpolation;
 
 fn print_keypoints(keypoints: &[RankedKeypoint]) {
     println!("keypoints.len()={:?}", keypoints.len());
@@ -97,23 +97,12 @@ fn keypoints_common(
         .map(|x| (x.time as Real, x.value as Real))
         .collect();
 
-    let mut weights = vec![0.0; x_values.len()];
-    detect_curve_pop_scores(&x_values, &y_values, &mut weights)?;
-    // println!("weights: {weights:?}");
-    assert_eq!(x_values.len(), weights.len());
-    for i in 0..weights.len() {
-        weights[i] = 1.0 / weights[i];
-    }
-    // println!("weights: {weights:?}");
-    // assert!(false);
-
-    let interpolation_method = InterpolationMethod::CubicNUBS;
+    let interpolation_method = Interpolation::CubicNUBS;
     let points = nonlinear_line_n_points_with_initial(
         &x_values,
         &y_values,
         &x_values_keypoint,
         &y_values_keypoint,
-        &weights,
         interpolation_method,
     )?;
     print_points(&points);

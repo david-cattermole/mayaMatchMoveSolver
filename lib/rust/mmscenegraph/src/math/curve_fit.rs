@@ -30,7 +30,7 @@ use ndarray::{Array1, Array2};
 use crate::constant::Real;
 use crate::math::interpolate::linear_interpolate_y_value_at_value_x;
 use crate::math::interpolate::CurveInterpolator;
-use crate::math::interpolate::InterpolationMethod;
+use crate::math::interpolate::Interpolation;
 use crate::math::interpolate::Interpolator;
 use crate::math::line::curve_fit_linear_regression_type1;
 
@@ -296,17 +296,11 @@ pub fn nonlinear_line_n3(
     );
 
     let x_first = x_values[0];
-    let y_first = y_values[0];
     let x_last = x_values[value_count - 1];
-    let y_last = y_values[value_count - 1];
-    let x_diff = (x_last - x_first) as f64 / 2.0;
-    let y_diff = (y_last - y_first) as f64 / 2.0;
+    let x_diff = (x_last - x_first) / 2.0;
     debug!("x_first={x_first}");
-    debug!("y_first={y_first}");
     debug!("x_last={x_last}");
-    debug!("y_last={y_last}");
     debug!("x_diff={x_diff}");
-    debug!("y_diff={y_diff}");
 
     // Scale up to X axis range.
     let dir_x = dir_x * x_diff;
@@ -402,41 +396,32 @@ impl CurveFitLinearNPointsProblem {
     fn new(
         control_points_x: Vec<f64>,
         reference_curve: &[(f64, f64)],
-        interpolation_method: InterpolationMethod,
-    ) -> Self {
-        let reference_values: Vec<(f64, f64)> =
-            reference_curve.iter().copied().collect();
+        interpolation_method: Interpolation,
+    ) -> Result<Self> {
+        let reference_values: Vec<(f64, f64)> = reference_curve.to_vec();
+        debug!("reference_values.len()={}", reference_values.len());
 
-        Self {
+        let interpolator = Interpolator::from_method(interpolation_method);
+        interpolator.set_control_points_x(&control_points_x);
+
+        Ok(Self {
             reference_values,
             control_points_x,
-            interpolator: Interpolator::from_method(interpolation_method),
-        }
+            interpolator,
+        })
     }
 
     fn parameter_count(&self) -> usize {
         self.control_points_x.len()
     }
 
-    fn interpolate_y_value_at_x(
-        &self,
-        value_x: f64,
-        control_points_y: &[f64],
-    ) -> f64 {
-        self.interpolator.interpolate(
-            value_x,
-            &self.control_points_x,
-            control_points_y,
-        )
-    }
-
     fn residuals(&self, control_points_y: &[f64]) -> Vec<f64> {
+        self.interpolator.set_control_points_y(control_points_y);
         self.reference_values
             .iter()
             .map(|&(value_x, data_y)| {
-                let curve_y =
-                    self.interpolate_y_value_at_x(value_x, control_points_y);
-                (curve_y - data_y).abs()
+                let value_y = self.interpolator.interpolate(value_x);
+                (value_y - data_y).abs()
             })
             .collect()
     }
@@ -511,7 +496,7 @@ fn control_point_guess_from_linear_regression(
     out_dir_x: &mut f64,
     out_dir_y: &mut f64,
 ) {
-    // First get initial guess using linear regression
+    // First get initial guess using linear regression.
     *out_point_x = 0.0;
     *out_point_y = 0.0;
     let mut angle = 0.0;
@@ -543,12 +528,12 @@ fn generate_evenly_space_control_points(
         "Must have at least 3 control points"
     );
 
-    // Calculate the range of x values
+    // Calculate the range of x values.
     let x_first = x_values[0];
     let x_last = x_values[x_values.len() - 1];
     let x_range = x_last - x_first;
 
-    // Generate evenly spaced control points along x-axis
+    // Generate evenly spaced control points along x-axis.
     let mut x_initial_control_points = Vec::with_capacity(control_point_count);
     let mut y_initial_control_points = Vec::with_capacity(control_point_count);
     for i in 0..control_point_count {
@@ -569,7 +554,7 @@ pub fn nonlinear_line_n_points_with_initial(
     y_values: &[f64],
     x_initial_control_points: &[f64],
     y_initial_control_points: &[f64],
-    interpolation_method: InterpolationMethod,
+    interpolation_method: Interpolation,
 ) -> Result<Vec<Point2>> {
     assert!(x_values.len() > 2);
     assert_eq!(
@@ -577,10 +562,17 @@ pub fn nonlinear_line_n_points_with_initial(
         y_values.len(),
         "X and Y values must match length."
     );
-    assert!(
-        x_initial_control_points.len() >= 3,
-        "Must have at least 3 control points."
-    );
+    if interpolation_method == Interpolation::CubicNUBS {
+        assert!(
+            x_initial_control_points.len() >= 4,
+            "Must have at least 4 control points for Interpolation::CubicNUBS."
+        );
+    } else {
+        assert!(
+            x_initial_control_points.len() >= 3,
+            "Must have at least 3 control points for Interpolation::Linear, Interpolation::QuadraticNUBS or Interpolation::CubicSpline."
+        );
+    }
     assert_eq!(
         x_initial_control_points.len(),
         y_initial_control_points.len(),
@@ -600,7 +592,7 @@ pub fn nonlinear_line_n_points_with_initial(
         x_initial_control_points.to_vec(),
         &reference_values,
         interpolation_method,
-    );
+    )?;
 
     // Set up solver
     let epsilon = 1e-3;
@@ -613,6 +605,7 @@ pub fn nonlinear_line_n_points_with_initial(
         .with_tolerance_cost(epsilon)?;
 
     // Run solver
+    let max_iterations = x_initial_control_points.len() as u64 * 20;
     let initial_parameters = Array1::from(y_initial_control_points.to_vec());
     let initial_hessian: Array2<f64> = Array2::eye(control_point_count);
     let result = argmin::core::Executor::new(problem, solver)
@@ -620,7 +613,7 @@ pub fn nonlinear_line_n_points_with_initial(
             state
                 .param(initial_parameters)
                 .inv_hessian(initial_hessian)
-                .max_iters(50)
+                .max_iters(max_iterations)
         })
         .run()?;
 
@@ -645,15 +638,23 @@ pub fn nonlinear_line_n_points(
     x_values: &[f64],
     y_values: &[f64],
     control_point_count: usize,
-    interpolation: InterpolationMethod,
+    interpolation: Interpolation,
 ) -> Result<Vec<Point2>> {
     assert_eq!(x_values.len(), y_values.len());
     let value_count = x_values.len();
     assert!(value_count > 2);
-    assert!(
-        control_point_count >= 3,
-        "Must have at least 3 control points"
-    );
+
+    if interpolation == Interpolation::CubicNUBS {
+        assert!(
+            control_point_count >= 4,
+            "Must have at least 4 control points for Interpolation::CubicNUBS."
+        );
+    } else {
+        assert!(
+            control_point_count >= 3,
+            "Must have at least 3 control points for Interpolation::Linear, Interpolation::QuadraticNUBS or Interpolation::CubicSpline."
+        );
+    }
 
     let mut point_x = 0.0;
     let mut point_y = 0.0;

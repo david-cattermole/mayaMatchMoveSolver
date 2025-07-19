@@ -187,7 +187,7 @@ void ImagePlaneGeometry2Override::query_node_attributes(
 
     auto frame_context = MPxGeometryOverride::getFrameContext();
     MDagPath camera_node_path = frame_context->getCurrentCameraPath(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // By default the draw is visible, unless overridden by
     // out_visible_to_camera_only or out_is_under_camera.
@@ -196,11 +196,11 @@ void ImagePlaneGeometry2Override::query_node_attributes(
     status =
         getNodeAttr(objPath, ImagePlaneShape2Node::m_visible_to_camera_only,
                     out_visible_to_camera_only);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status =
         getNodeAttr(objPath, ImagePlaneShape2Node::m_draw_hud, out_draw_hud);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     out_is_under_camera = true;
     if (camera_node_path.isValid() && out_camera_node_path.isValid()) {
@@ -238,67 +238,67 @@ void ImagePlaneGeometry2Override::query_node_attributes(
 
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_image_color_gain,
                          out_color_gain);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_image_color_exposure,
                          out_color_exposure);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_image_color_gamma,
                          out_color_gamma);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status =
         getNodeAttr(objPath, ImagePlaneShape2Node::m_image_color_saturation,
                     out_color_saturation);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_image_color_soft_clip,
                          out_color_soft_clip);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_image_alpha_gain,
                          out_alpha_gain);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     short image_display_channel_value = 0;
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_image_display_channel,
                          image_display_channel_value);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     out_image_display_channel =
         static_cast<ImageDisplayChannel>(image_display_channel_value);
 
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_image_ignore_alpha,
                          out_ignore_alpha);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_image_flip, out_flip);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_image_flop, out_flop);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_shader_is_transparent,
                          out_is_transparent);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_image_frame_number,
                          out_frame);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, ImagePlaneShape2Node::m_image_file_path,
                          out_file_path);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status =
         getNodeAttr(objPath, ImagePlaneShape2Node::m_image_input_color_space,
                     out_input_color_space_name);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status =
         getNodeAttr(objPath, ImagePlaneShape2Node::m_image_output_color_space,
                     out_output_color_space_name);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Find the input/output file color spaces.
     //
@@ -415,46 +415,46 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
 
     const float color[] = {color_gain[0], color_gain[1], color_gain[2], 1.0f};
     MStatus status = shader->setParameter("gColorGain", color);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = shader->setParameter("gColorExposure", color_exposure);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = shader->setParameter("gColorGamma", color_gamma);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     MFloatMatrix saturation_matrix = create_saturation_matrix(color_saturation);
     status = shader->setParameter("gColorSaturationMatrix", saturation_matrix);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = shader->setParameter("gColorSoftClip", color_soft_clip);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = shader->setParameter("gAlphaGain", alpha_gain);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     const float temp_default_color[] = {default_color[0], default_color[1],
                                         default_color[2], 1.0f};
     status = shader->setParameter("gFallbackColor", temp_default_color);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = shader->setParameter("gFlip", flip);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = shader->setParameter("gFlop", flop);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = shader->setParameter("gIgnoreAlpha", m_ignore_alpha);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = shader->setParameter("gDisplayChannel",
                                   static_cast<int32_t>(image_display_channel));
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     status = shader->setIsTransparent(is_transparent);
     MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: shader->isTransparent()="
                       << shader->isTransparent());
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     MMSOLVER_MAYA_VRB(
         "mmImagePlaneGeometry2Override: file_path=" << file_path.asChar());
@@ -556,7 +556,7 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
     if (out_texture_sampler) {
         status =
             shader->setParameter("gImageTextureSampler", *out_texture_sampler);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     } else {
         MMSOLVER_MAYA_WRN(
             "mmImagePlaneGeometry2Override: "
@@ -568,7 +568,7 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
         MHWRender::MTextureAssignment texture_assignment;
         texture_assignment.texture = out_color_texture;
         status = shader->setParameter("gImageTexture", texture_assignment);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
 
         out_color_texture = nullptr;
     } else {
@@ -670,7 +670,7 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
         if (shader) {
             static const float color[] = {1.0f, 0.0f, 0.0f, 1.0f};
             MStatus status = shader->setParameter("solidColor", color);
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
             wireframeItem->setShader(shader);
             shaderManager->releaseShader(shader);
         }
@@ -739,7 +739,7 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
                     MStatus status = shader_text.substitute(
                         ocio_function_declare_text,
                         MString(ocio_shader_text.c_str()));
-                    CHECK_MSTATUS(status);
+                    MMSOLVER_CHECK_MSTATUS(status);
                 }
 
                 m_shader =
@@ -803,7 +803,7 @@ void ImagePlaneGeometry2Override::populateGeometry(
     MGeometryExtractor extractor(requirements, m_geometry_node_path,
                                  polygon_geometry_options, &status);
     if (status == MS::kFailure) {
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         return;
     }
 

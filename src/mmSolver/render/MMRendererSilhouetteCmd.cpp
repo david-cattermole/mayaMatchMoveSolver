@@ -71,7 +71,7 @@ MStatus MMRendererSilhouetteCmd::doIt(const MArgList &args) {
     }
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     M3dView view = M3dView::active3dView(&status);
     if (!status) {

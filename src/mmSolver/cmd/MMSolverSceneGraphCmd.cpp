@@ -109,14 +109,14 @@ MStatus MMSolverSceneGraphCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get 'Mode'
     m_commandMode = CommandMode::kUndefined;
     if (argData.isFlagSet(COMMAND_MODE_FLAG)) {
         MString string = "";
         status = argData.getFlagArgument(COMMAND_MODE_FLAG, 0, string);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (string == MODE_VALUE_DEBUG_CONSTRUCT) {
             m_commandMode = CommandMode::kDebugConstruct;
         } else {
@@ -127,13 +127,13 @@ MStatus MMSolverSceneGraphCmd::parseArgs(const MArgList &args) {
 
     status = parseSolveObjectArguments(argData, m_cameraList, m_markerList,
                                        m_bundleList, m_attrList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveFramesArguments(argData, m_frameList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveSceneGraphArguments(argData, m_sceneGraphMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -184,7 +184,7 @@ MStatus MMSolverSceneGraphCmd::doIt(const MArgList &args) {
                                        frameList, cameraNodes, bundleNodes,
                                        markerNodes, attrIdList);
         if (status != MS::kSuccess) {
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
             // Do not allow this command to fail, we want to allow the
             // script interpeter to continue with the value 'false'
             // instead.
@@ -196,7 +196,7 @@ MStatus MMSolverSceneGraphCmd::doIt(const MArgList &args) {
         MMSOLVER_MAYA_ERR("Scene Graph Mode value is invalid: value="
                           << static_cast<int>(m_sceneGraphMode));
         status = MS::kFailure;
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     return status;

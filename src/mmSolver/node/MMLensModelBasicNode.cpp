@@ -71,7 +71,7 @@ MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
     if (plug == a_outLens) {
         // Enable Attribute toggle
         MDataHandle enableHandle = data.inputValue(a_enable, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         bool enable = enableHandle.asBool();
 
         // Create initial plug-in data structure. We don't need to
@@ -79,11 +79,11 @@ MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
         MFnPluginData fnPluginData;
         MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
         fnPluginData.create(data_type_id, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Get Input Lens
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         MMLensData *inputLensData = (MMLensData *)inLensHandle.asPluginData();
         std::shared_ptr<mmlens::LensModel> inputLensModel;
         if (inputLensData != nullptr) {
@@ -96,12 +96,12 @@ MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
         if (enable) {
             // K1 Attribute
             MDataHandle k1Handle = data.inputValue(a_k1, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             double k1 = k1Handle.asDouble();
 
             // K2 Attribute
             MDataHandle k2Handle = data.inputValue(a_k2, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             double k2 = k2Handle.asDouble();
 
             // Create a lens distortion function to be passed to the
@@ -135,44 +135,44 @@ MStatus MMLensModelBasicNode::initialize() {
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
     a_inLens = typedAttr.create("inLens", "ilns", data_type_id);
-    CHECK_MSTATUS(typedAttr.setStorable(false));
-    CHECK_MSTATUS(typedAttr.setKeyable(false));
-    CHECK_MSTATUS(typedAttr.setReadable(true));
-    CHECK_MSTATUS(typedAttr.setWritable(true));
-    CHECK_MSTATUS(addAttribute(a_inLens));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setWritable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_inLens));
 
     // Enable
     a_enable =
         numericAttr.create("enable", "enb", MFnNumericData::kBoolean, true);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_enable));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_enable));
 
     // K1
     a_k1 = numericAttr.create("k1", "k1", MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_k1));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_k1));
 
     // K2
     a_k2 = numericAttr.create("k2", "k2", MFnNumericData::kDouble, 0.0);
-    CHECK_MSTATUS(numericAttr.setStorable(true));
-    CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_k2));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+    MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(true));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_k2));
 
     // Out Lens
     a_outLens = typedAttr.create("outLens", "olns", data_type_id);
-    CHECK_MSTATUS(typedAttr.setStorable(false));
-    CHECK_MSTATUS(typedAttr.setKeyable(false));
-    CHECK_MSTATUS(typedAttr.setReadable(true));
-    CHECK_MSTATUS(typedAttr.setWritable(false));
-    CHECK_MSTATUS(addAttribute(a_outLens));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setStorable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setKeyable(false));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setReadable(true));
+    MMSOLVER_CHECK_MSTATUS(typedAttr.setWritable(false));
+    MMSOLVER_CHECK_MSTATUS(addAttribute(a_outLens));
 
     // Attribute Affects
-    CHECK_MSTATUS(attributeAffects(a_k1, a_outLens));
-    CHECK_MSTATUS(attributeAffects(a_k2, a_outLens));
-    CHECK_MSTATUS(attributeAffects(a_enable, a_outLens));
-    CHECK_MSTATUS(attributeAffects(a_inLens, a_outLens));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_k1, a_outLens));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_k2, a_outLens));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_enable, a_outLens));
+    MMSOLVER_CHECK_MSTATUS(attributeAffects(a_inLens, a_outLens));
 
     return MS::kSuccess;
 }

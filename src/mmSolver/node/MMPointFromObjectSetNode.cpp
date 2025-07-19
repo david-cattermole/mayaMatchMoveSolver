@@ -80,20 +80,20 @@ MStatus resolve_destination_plug_into_set_members(const MPlug &plug,
     outMembers.clear();
 
     const bool plugValid = !plug.isNull(&status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     if (plugValid) {
         MPlug sourcePlug = plug.source(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         const bool sourcePlugValid = !sourcePlug.isNull(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (sourcePlugValid) {
             MObject node = sourcePlug.node(&status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             if (!node.isNull()) {
                 MFnSet fnSet(node, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+                MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
                 // 'flatten=true' means that all sets that exist
                 // inside this set will be expanded into a list of
@@ -101,7 +101,7 @@ MStatus resolve_destination_plug_into_set_members(const MPlug &plug,
                 const bool flatten = false;
 
                 status = fnSet.getMembers(outMembers, flatten);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+                MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
                 MMSOLVER_MAYA_VRB(
                     "mmPointFromObjectSet: "
@@ -114,7 +114,7 @@ MStatus resolve_destination_plug_into_set_members(const MPlug &plug,
     if (verbose && !outMembers.isEmpty()) {
         MStringArray selectionArray;
         status = outMembers.getSelectionStrings(selectionArray);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         for (auto i = 0; i < selectionArray.length(); i++) {
             MMSOLVER_MAYA_VRB(
@@ -166,7 +166,7 @@ MStatus get_average_point(const MSelectionList &members, double &outPointX,
     for (MItSelectionList componentIter(members, MFn::kMeshVertComponent);
          !componentIter.isDone(); componentIter.next()) {
         status = componentIter.getDagPath(dagPath, components);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (components.isNull()) {
             continue;
         }
@@ -176,7 +176,7 @@ MStatus get_average_point(const MSelectionList &members, double &outPointX,
         for (MItMeshVertex vertIter(dagPath, components); !vertIter.isDone();
              vertIter.next()) {
             MPoint vertPos = vertIter.position(space, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             averagePoint += vertPos;
             count++;
@@ -194,7 +194,7 @@ MStatus get_average_point(const MSelectionList &members, double &outPointX,
     for (MItSelectionList componentIter(members, MFn::kMeshPolygonComponent);
          !componentIter.isDone(); componentIter.next()) {
         status = componentIter.getDagPath(dagPath, components);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (components.isNull()) {
             continue;
         }
@@ -204,7 +204,7 @@ MStatus get_average_point(const MSelectionList &members, double &outPointX,
         for (MItMeshPolygon faceIter(dagPath, components); !faceIter.isDone();
              faceIter.next()) {
             MPoint facePos = faceIter.center(space, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             averagePoint += facePos;
             count++;
@@ -231,7 +231,7 @@ MStatus get_average_point(const MSelectionList &members, double &outPointX,
         for (MItMeshEdge edgeIter(dagPath, components); !edgeIter.isDone();
              edgeIter.next()) {
             MPoint edgePos = edgeIter.center(space, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             averagePoint += edgePos;
             count++;
@@ -368,12 +368,12 @@ MStatus MMPointFromObjectSetNode::compute(const MPlug &plug, MDataBlock &data) {
         // Resolve Set attribute into members.
         MSelectionList members;
         status = resolve_destination_plug_into_set_members(plug, members);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         if (!members.isEmpty()) {
             status =
                 get_average_point(members, outPointX, outPointY, outPointZ);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
 
         MMSOLVER_MAYA_VRB("mmPointFromObjectSet: pointX=" << outPointX);
@@ -429,10 +429,10 @@ MStatus MMPointFromObjectSetNode::initialize() {
         // valid set node. The members of the set node are used to
         // evaluate the transform output of this node.
         a_setNode = msgAttr.create("set", "set", &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(msgAttr.setStorable(true));
-        CHECK_MSTATUS(msgAttr.setConnectable(true));
-        CHECK_MSTATUS(addAttribute(a_setNode));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(msgAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(msgAttr.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_setNode));
 
         // The "matrix" and "mesh" attributes are intended to allow
         // the Maya DAG to automatically update for changes to the
@@ -450,11 +450,11 @@ MStatus MMPointFromObjectSetNode::initialize() {
         // updates when matrices of input objects are changed.
         a_matrixArray = matrixAttr.create("matrix", "mat",
                                           MFnMatrixAttribute::kDouble, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(matrixAttr.setReadable(true));
-        CHECK_MSTATUS(matrixAttr.setConnectable(true));
-        CHECK_MSTATUS(matrixAttr.setArray(true));
-        CHECK_MSTATUS(addAttribute(a_matrixArray));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setArray(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_matrixArray));
 
         // Meshes.
         //
@@ -462,11 +462,11 @@ MStatus MMPointFromObjectSetNode::initialize() {
         // updates when mesh of input objects are changed.
         a_meshArray = typedAttr.create("mesh", "msh", MFnData::kMesh,
                                        MObject::kNullObj, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(typedAttr.setReadable(true));
-        CHECK_MSTATUS(typedAttr.setConnectable(true));
-        CHECK_MSTATUS(typedAttr.setArray(true));
-        CHECK_MSTATUS(addAttribute(a_meshArray));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(typedAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(typedAttr.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(typedAttr.setArray(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_meshArray));
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -475,35 +475,35 @@ MStatus MMPointFromObjectSetNode::initialize() {
         // Out Point X
         a_outPointX = numericAttr.create("outPointX", "opx",
                                          MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Point Y
         a_outPointY = numericAttr.create("outPointY", "opy",
                                          MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Point Z
         a_outPointZ = numericAttr.create("outPointZ", "opz",
                                          MFnNumericData::kDouble, 0.0, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Point (parent of outPoint* attributes)
         a_outPoint = compoundAttr.create("outPoint", "op", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(a_outPointX);
         compoundAttr.addChild(a_outPointY);
         compoundAttr.addChild(a_outPointZ);
-        CHECK_MSTATUS(addAttribute(a_outPoint));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outPoint));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -512,12 +512,12 @@ MStatus MMPointFromObjectSetNode::initialize() {
         // Out Matrix (camera-space)
         a_outMatrix = matrixAttr.create("outMatrix", "omt",
                                         MFnMatrixAttribute::kDouble, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(matrixAttr.setStorable(false));
-        CHECK_MSTATUS(matrixAttr.setKeyable(false));
-        CHECK_MSTATUS(matrixAttr.setReadable(true));
-        CHECK_MSTATUS(matrixAttr.setWritable(false));
-        CHECK_MSTATUS(addAttribute(a_outMatrix));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_outMatrix));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -535,7 +535,7 @@ MStatus MMPointFromObjectSetNode::initialize() {
     outputAttrs.append(a_outPointZ);
     outputAttrs.append(a_outMatrix);
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return MS::kSuccess;

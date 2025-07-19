@@ -28,8 +28,6 @@ import unittest
 import maya.cmds
 
 import test.test_tools.toolsutils as test_tools_utils
-import mmSolver.utils.transform as tfm_utils
-import mmSolver.tools.reparent.lib as lib
 
 
 # @unittest.skip

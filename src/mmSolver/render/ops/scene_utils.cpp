@@ -95,7 +95,7 @@ MStatus add_all_image_planes(MSelectionList& out_selection_list) {
     MItDag it(infoObject);
     for (; !it.isDone(); it.next()) {
         status = it.getPath(dagPath);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         if (status != MS::kSuccess) {
             continue;
         }
@@ -170,7 +170,7 @@ MStatus only_named_layer_objects(MObject& layer_node,
     MStatus status = MS::kSuccess;
 
     MFnDependencyNode layer_depends_fn(layer_node, &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     const MString layer_node_name = layer_depends_fn.name();
     MMSOLVER_MAYA_VRB(
         "only_named_layer_objects: layer: " << layer_node_name.asChar());
@@ -181,7 +181,7 @@ MStatus only_named_layer_objects(MObject& layer_node,
     // 'DisplayLayer.drawInfo' -> 'Transform.drawOverrides'.
     MPlug draw_info_plug =
         layer_depends_fn.findPlug("drawInfo", want_networked_plug, &status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     if (status != MStatus::kSuccess || draw_info_plug.isNull()) {
         return status;
@@ -262,13 +262,13 @@ const MSelectionList* find_draw_objects(const DrawObjects draw_objects,
         // Get the objects from the given display layer node.
         MObject layer_node;
         MStatus status = getAsObject(layer_name, layer_node);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         if ((status != MS::kSuccess) || layer_node.isNull()) {
             return nullptr;
         }
 
         MFnDependencyNode layer_depends_fn(layer_node, &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         const MString layer_name = layer_depends_fn.name();
         MMSOLVER_MAYA_VRB("find_draw_objects::layer: " << layer_name.asChar());
 
@@ -278,7 +278,7 @@ const MSelectionList* find_draw_objects(const DrawObjects draw_objects,
         // 'DisplayLater.drawInfo' -> 'Transform.drawOverrides'.
         MPlug draw_info_plug =
             layer_depends_fn.findPlug("drawInfo", want_networked_plug, &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         if (status == MStatus::kSuccess && !draw_info_plug.isNull()) {
             MPlugArray destination_plugs;
             draw_info_plug.destinations(destination_plugs, &status);

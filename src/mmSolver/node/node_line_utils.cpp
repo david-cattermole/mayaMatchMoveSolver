@@ -61,7 +61,7 @@ MStatus query_line_point_data(const MMatrix parentInverseMatrix,
         do {
             MDataHandle transformArrayHandleElement =
                 transformArrayHandle.inputValue(&status);
-            CHECK_MSTATUS(status);
+            MMSOLVER_CHECK_MSTATUS(status);
 
             MMatrix transformMatrix = transformArrayHandleElement.asMatrix();
 
@@ -75,7 +75,7 @@ MStatus query_line_point_data(const MMatrix parentInverseMatrix,
             if (verbose) {
                 uint32_t element_index =
                     transformArrayHandle.elementIndex(&status);
-                CHECK_MSTATUS(status);
+                MMSOLVER_CHECK_MSTATUS(status);
                 MMSOLVER_MAYA_VRB("Point X: " << element_index << " : "
                                               << point.x);
                 MMSOLVER_MAYA_VRB("Point Y: " << element_index << " : "

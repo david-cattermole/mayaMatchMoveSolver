@@ -60,19 +60,19 @@ MStatus Marker::setNodeName(MString value) {
         m_object = MObject();
 
         status = m_matrix.setNodeName(value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         status = m_px.setNodeName(value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         status = m_py.setNodeName(value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         status = m_enable.setNodeName(value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         status = m_weight.setNodeName(value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         m_nodeName = value;
     }
@@ -84,7 +84,7 @@ MObject Marker::getObject() {
         MStatus status;
         MString name = Marker::getNodeName();
         status = getAsObject(name, m_object);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
     return m_object;
 }
@@ -134,7 +134,7 @@ MStatus Marker::getPos(double &x, double &y, double &z, const MTime &time,
     MStatus status;
     MMatrix matrix;
     status = Marker::getMatrix(matrix, time, timeEvalMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     x = matrix(3, 0);
     y = matrix(3, 1);
     z = matrix(3, 2);
@@ -146,7 +146,7 @@ MStatus Marker::getPos(MPoint &point, const MTime &time,
     MStatus status;
     MMatrix matrix;
     status = Marker::getMatrix(matrix, time, timeEvalMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     point.x = matrix(3, 0);
     point.y = matrix(3, 1);
     point.z = matrix(3, 2);
@@ -185,7 +185,7 @@ MStatus Marker::getPosXY(double &out_x, double &out_y, const MTime &time,
             // the inverse of the overscan X/Y values.
             status = m_markerGroup->getOverscanXY(overscan_x, overscan_y, time,
                                                   timeEvalMode);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             overscan_x = 1.0 / overscan_x;
             overscan_y = 1.0 / overscan_y;
         } else {
@@ -196,9 +196,9 @@ MStatus Marker::getPosXY(double &out_x, double &out_y, const MTime &time,
     }
 
     status = attr_pos_x.getValue(out_x, time, timeEvalMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     status = attr_pos_y.getValue(out_y, time, timeEvalMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     out_x *= overscan_x;
     out_y *= overscan_y;
@@ -222,7 +222,7 @@ MStatus Marker::getEnable(bool &value, const MTime &time,
         status = MS::kSuccess;
     } else {
         status = m_enable.getValue(value, time, timeEvalMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
@@ -236,7 +236,7 @@ MStatus Marker::getWeight(double &value, const MTime &time,
         status = MS::kSuccess;
     } else {
         status = m_weight.getValue(value, time, timeEvalMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
@@ -246,10 +246,10 @@ MString Marker::getLongNodeName() {
 
     MDagPath nodeDagPath;
     MStatus status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     MString result = nodeDagPath.fullPathName(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     return result;
 }

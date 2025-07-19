@@ -260,7 +260,7 @@ pub fn curve_fit_linear_regression_type1(
 
         *out_angle = slope.atan();
         let angle_degree = out_angle.to_degrees();
-        println!(
+        debug!(
             "fit_line_to_points_type1_curve angle={out_angle} degrees={angle_degree}"
         );
     }

@@ -47,6 +47,7 @@
 #include <mmcolorio/lib.h>
 
 #include "mmSolver/mayahelper/maya_string_utils.h"
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/memory_gpu_utils.h"
 #include "mmSolver/utilities/path_utils.h"
@@ -112,7 +113,7 @@ MStatus MMMemoryGPUCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (!argData.isQuery()) {
         status = MStatus::kFailure;
@@ -123,24 +124,24 @@ MStatus MMMemoryGPUCmd::parseArgs(const MArgList &args) {
     }
 
     m_memory_total = argData.isFlagSet(MEMORY_TOTAL_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_memory_free = argData.isFlagSet(MEMORY_FREE_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_memory_used = argData.isFlagSet(MEMORY_USED_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     const bool as_kilobytes =
         argData.isFlagSet(MEMORY_AS_KILOBYTES_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     const bool as_megabytes =
         argData.isFlagSet(MEMORY_AS_MEGABYTES_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     const bool as_gigabytes =
         argData.isFlagSet(MEMORY_AS_GIGABYTES_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     m_memory_unit = mmmemory::MemoryUnit::kBytes;
     if (as_kilobytes) {
@@ -159,7 +160,7 @@ MStatus MMMemoryGPUCmd::doIt(const MArgList &args) {
 
     // Read all the flag arguments.
     MStatus status = parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // When running without a GPU (for example in a Docker container),
     // don't Spam the user with warnings and errors that the MRenderer
@@ -185,7 +186,7 @@ MStatus MMMemoryGPUCmd::doIt(const MArgList &args) {
             "Give a flag to the command!");
         return MStatus::kFailure;
     }
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     if (m_memory_unit == mmmemory::MemoryUnit::kBytes) {
         // It is only possible to return a maximum of "unsigned int"

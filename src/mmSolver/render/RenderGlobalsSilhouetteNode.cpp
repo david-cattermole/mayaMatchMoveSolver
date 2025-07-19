@@ -147,10 +147,10 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         a_enable = numeric_attribute.create(
             kAttrNameSilhouetteEnable, "enbl", MFnNumericData::kBoolean,
             static_cast<int>(kSilhouetteEnableDefault));
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_enable));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_enable));
     }
 
     // Silhouette Override Color
@@ -159,10 +159,10 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
             kAttrNameSilhouetteOverrideColor, "ovrdcol",
             MFnNumericData::kBoolean,
             static_cast<int>(kSilhouetteOverrideColorDefault));
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_overrideColor));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_overrideColor));
     }
 
     // Silhouette Depth Offset
@@ -173,13 +173,15 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         a_depthOffset = numeric_attribute.create(
             kAttrNameSilhouetteDepthOffset, "dpthoffst",
             MFnNumericData::kDouble, kSilhouetteDepthOffsetDefault);
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(numeric_attribute.setMax(depth_offset_max));
-        CHECK_MSTATUS(numeric_attribute.setSoftMin(depth_offset_soft_min));
-        CHECK_MSTATUS(numeric_attribute.setSoftMax(depth_offset_soft_max));
-        CHECK_MSTATUS(addAttribute(a_depthOffset));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setMax(depth_offset_max));
+        MMSOLVER_CHECK_MSTATUS(
+            numeric_attribute.setSoftMin(depth_offset_soft_min));
+        MMSOLVER_CHECK_MSTATUS(
+            numeric_attribute.setSoftMax(depth_offset_soft_max));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_depthOffset));
     }
 
     // Silhouette Width
@@ -190,26 +192,26 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         a_width = numeric_attribute.create(kAttrNameSilhouetteWidth, "wdth",
                                            MFnNumericData::kDouble,
                                            kSilhouetteWidthDefault);
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(numeric_attribute.setMin(width_min));
-        CHECK_MSTATUS(numeric_attribute.setSoftMin(width_soft_min));
-        CHECK_MSTATUS(numeric_attribute.setSoftMax(width_soft_max));
-        CHECK_MSTATUS(addAttribute(a_width));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setMin(width_min));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setSoftMin(width_soft_min));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setSoftMax(width_soft_max));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_width));
     }
 
     // Silhouette Color (RGB)
     {
         a_color =
             numeric_attribute.createColor(kAttrNameSilhouetteColor, "clr");
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(numeric_attribute.setDefault(kSilhouetteColorDefault[0],
-                                                   kSilhouetteColorDefault[1],
-                                                   kSilhouetteColorDefault[2]));
-        CHECK_MSTATUS(addAttribute(a_color));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setDefault(
+            kSilhouetteColorDefault[0], kSilhouetteColorDefault[1],
+            kSilhouetteColorDefault[2]));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_color));
     }
 
     // Silhouette Alpha
@@ -219,12 +221,12 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         a_alpha = numeric_attribute.create(kAttrNameSilhouetteAlpha, "alp",
                                            MFnNumericData::kDouble,
                                            kSilhouetteAlphaDefault);
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(numeric_attribute.setMin(alpha_min));
-        CHECK_MSTATUS(numeric_attribute.setMax(alpha_max));
-        CHECK_MSTATUS(addAttribute(a_alpha));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setMin(alpha_min));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setMax(alpha_max));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_alpha));
     }
 
     // Silhouette Cull Face
@@ -236,14 +238,14 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
             static_cast<short>(CullFace::kFrontAndBack);
         a_cullFace =
             enum_attribute.create("cullFace", "cllfc", back_value, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(enum_attribute.addField("Front", front_value));
-        CHECK_MSTATUS(enum_attribute.addField("Back", back_value));
-        CHECK_MSTATUS(
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(enum_attribute.addField("Front", front_value));
+        MMSOLVER_CHECK_MSTATUS(enum_attribute.addField("Back", back_value));
+        MMSOLVER_CHECK_MSTATUS(
             enum_attribute.addField("FrontAndBack", front_and_back_value));
-        CHECK_MSTATUS(enum_attribute.setStorable(true));
-        CHECK_MSTATUS(enum_attribute.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_cullFace));
+        MMSOLVER_CHECK_MSTATUS(enum_attribute.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(enum_attribute.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_cullFace));
     }
 
     // Silhouette Operation Number
@@ -257,12 +259,12 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         a_operationNum = numeric_attribute.create(
             kAttrNameSilhouetteOperationNum, "opNm", MFnNumericData::kInt,
             kSilhouetteOperationNumDefault);
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(numeric_attribute.setMin(num_min));
-        CHECK_MSTATUS(numeric_attribute.setMax(num_max));
-        CHECK_MSTATUS(addAttribute(a_operationNum));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setMin(num_min));
+        MMSOLVER_CHECK_MSTATUS(numeric_attribute.setMax(num_max));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(a_operationNum));
     }
 
     return MS::kSuccess;

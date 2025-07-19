@@ -93,6 +93,7 @@
 #include "mmscenegraph/mmscenegraph.h"
 
 // MM Solver
+#include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 // Command arguments
@@ -159,7 +160,7 @@ MStatus MMBestFitPlaneCmd::parseArgs(const MArgList &args) {
     const bool verbose = false;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get number of 'point' flags used.
     auto numPointComponents = static_cast<size_t>(
@@ -185,11 +186,11 @@ MStatus MMBestFitPlaneCmd::parseArgs(const MArgList &args) {
         MArgList pointArgs;
         status = argData.getFlagArgumentList(POINT_COMPONENTS_SHORT_FLAG, i,
                                              pointArgs);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         mmsg::Real value = pointArgs.asDouble(0, &status);
         MMSOLVER_MAYA_VRB("mmBestFitPlane: i=" << i << " value=" << value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         m_points_xyz.push_back(value);
     }
@@ -197,26 +198,26 @@ MStatus MMBestFitPlaneCmd::parseArgs(const MArgList &args) {
     m_with_scale = false;
     const bool with_scale_flag =
         argData.isFlagSet(WITH_SCALE_SHORT_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MMSOLVER_MAYA_VRB("mmBestFitPlane: with_scale_flag=" << with_scale_flag);
     if (with_scale_flag) {
         status =
             argData.getFlagArgument(WITH_SCALE_SHORT_FLAG, 0, m_with_scale);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         MMSOLVER_MAYA_VRB("mmBestFitPlane: m_with_scale=" << m_with_scale);
     }
 
     m_output_values_as = OutputValuesAs::kPositionAndDirection;
     const bool output_as_values_flag =
         argData.isFlagSet(OUTPUT_VALUES_AS_SHORT_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MMSOLVER_MAYA_VRB(
         "mmBestFitPlane: output_as_values_flag=" << output_as_values_flag);
     if (output_as_values_flag) {
         MString flag_value;
         status =
             argData.getFlagArgument(OUTPUT_VALUES_AS_SHORT_FLAG, 0, flag_value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         const char *string = flag_value.asChar();
         MMSOLVER_MAYA_VRB("mmBestFitPlane: output_as_values=" << string);
         if (std::strcmp(string, OUTPUT_VALUES_AS_POSITION_AND_DIRECTION) == 0) {
@@ -235,13 +236,13 @@ MStatus MMBestFitPlaneCmd::parseArgs(const MArgList &args) {
     m_output_rms_error = true;
     const bool output_rms_error_flag =
         argData.isFlagSet(OUTPUT_RMS_ERROR_SHORT_FLAG, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     MMSOLVER_MAYA_VRB(
         "mmBestFitPlane: output_rms_error_flag=" << output_rms_error_flag);
     if (output_rms_error_flag) {
         status = argData.getFlagArgument(OUTPUT_RMS_ERROR_SHORT_FLAG, 0,
                                          m_output_rms_error);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         MMSOLVER_MAYA_VRB(
             "mmBestFitPlane: m_output_rms_error=" << m_output_rms_error);
     }
@@ -251,7 +252,7 @@ MStatus MMBestFitPlaneCmd::parseArgs(const MArgList &args) {
 
 MStatus MMBestFitPlaneCmd::doIt(const MArgList &args) {
     MStatus status = MMBestFitPlaneCmd::parseArgs(args);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Output values.
     mmsg::Real plane_position_x = 0.0;

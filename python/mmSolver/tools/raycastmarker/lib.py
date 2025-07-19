@@ -183,7 +183,11 @@ def _do_raycast(
                 mkr_node,
                 camera=(cam_tfm, cam_shp),
                 time=(frame,),
-                distortMode=utils_const.DISTORT_MODE_UNDISTORT,
+                # NOTE: We don't need to account for lens distortion
+                # here (at least in Maya 2024), because the Marker
+                # transform node is already un-distorting
+                # automatically.
+                distortMode=utils_const.DISTORT_MODE_NONE,
                 asWorldPoint=True,
             )
 

@@ -16,6 +16,7 @@ cmake-build-*
 python/mmSolver/constant.py
 docs/source/conf.py
 compile_commands.json
+tools/lensdistortion/tests/test_output/*.exr
 
 test*.pstat
 test*.txt

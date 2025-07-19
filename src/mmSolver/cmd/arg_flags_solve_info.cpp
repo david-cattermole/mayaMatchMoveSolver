@@ -113,7 +113,7 @@ MStatus parseSolveInfoArguments_solverType(
     out_solverType = solverType.first;
     if (argData.isFlagSet(SOLVER_TYPE_FLAG)) {
         status = argData.getFlagArgument(SOLVER_TYPE_FLAG, 0, out_solverType);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Tau values represent the range of values that the solver can
@@ -317,13 +317,13 @@ MStatus parseSolveInfoArguments_solverType(
     // Get 'Iterations'
     if (argData.isFlagSet(ITERATIONS_FLAG)) {
         status = argData.getFlagArgument(ITERATIONS_FLAG, 0, out_iterations);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Tau'
     if (argData.isFlagSet(TAU_FLAG)) {
         status = argData.getFlagArgument(TAU_FLAG, 0, out_tau);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     out_tau = std::max(tau_min_value, out_tau);
     out_tau = std::min(out_tau, tau_max_value);
@@ -334,55 +334,55 @@ MStatus parseSolveInfoArguments_solverType(
     if (argData.isFlagSet(FUNCTION_TOLERANCE_FLAG)) {
         status = argData.getFlagArgument(FUNCTION_TOLERANCE_FLAG, 0,
                                          out_function_tolerance);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Parameter_Tolerance'
     if (argData.isFlagSet(PARAMETER_TOLERANCE_FLAG)) {
         status = argData.getFlagArgument(PARAMETER_TOLERANCE_FLAG, 0,
                                          out_parameter_tolerance);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Gradient_Tolerance'
     if (argData.isFlagSet(GRADIENT_TOLERANCE_FLAG)) {
         status = argData.getFlagArgument(GRADIENT_TOLERANCE_FLAG, 0,
                                          out_gradient_tolerance);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Delta'
     if (argData.isFlagSet(DELTA_FLAG)) {
         status = argData.getFlagArgument(DELTA_FLAG, 0, out_delta);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Auto Differencing Type'
     if (argData.isFlagSet(AUTO_DIFF_TYPE_FLAG)) {
         status =
             argData.getFlagArgument(AUTO_DIFF_TYPE_FLAG, 0, out_autoDiffType);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Auto Parameter Scaling'
     if (argData.isFlagSet(AUTO_PARAM_SCALE_FLAG)) {
         status = argData.getFlagArgument(AUTO_PARAM_SCALE_FLAG, 0,
                                          out_autoParamScale);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Robust Loss Type'
     if (argData.isFlagSet(ROBUST_LOSS_TYPE_FLAG)) {
         status = argData.getFlagArgument(ROBUST_LOSS_TYPE_FLAG, 0,
                                          out_robustLossType);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Robust Loss Scale'
     if (argData.isFlagSet(ROBUST_LOSS_SCALE_FLAG)) {
         status = argData.getFlagArgument(ROBUST_LOSS_SCALE_FLAG, 0,
                                          out_robustLossScale);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     return status;
@@ -399,7 +399,7 @@ MStatus parseSolveInfoArguments_removeUnused(const MArgDatabase &argData,
     if (argData.isFlagSet(REMOVE_UNUSED_MARKERS_FLAG)) {
         status = argData.getFlagArgument(REMOVE_UNUSED_MARKERS_FLAG, 0,
                                          out_removeUnusedMarkers);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 
     // Get 'Remove Unused Attributes'
@@ -407,7 +407,7 @@ MStatus parseSolveInfoArguments_removeUnused(const MArgDatabase &argData,
     if (argData.isFlagSet(REMOVE_UNUSED_ATTRIBUTES_FLAG)) {
         status = argData.getFlagArgument(REMOVE_UNUSED_ATTRIBUTES_FLAG, 0,
                                          out_removeUnusedAttributes);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 
     // Get 'Remove Unused Frames'
@@ -415,7 +415,7 @@ MStatus parseSolveInfoArguments_removeUnused(const MArgDatabase &argData,
     if (argData.isFlagSet(REMOVE_UNUSED_FRAMES_FLAG)) {
         status = argData.getFlagArgument(REMOVE_UNUSED_FRAMES_FLAG, 0,
                                          out_removeUnusedFrames);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 
     return status;
@@ -429,14 +429,14 @@ MStatus parseSolveInfoArguments_other(const MArgDatabase &argData,
                                       double &out_imageWidth) {
     // Get 'Scene Graph Mode'
     MStatus status = parseSolveSceneGraphArguments(argData, out_sceneGraphMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get 'Time Evaluation Mode'
     out_timeEvalMode = TIME_EVAL_MODE_DEFAULT_VALUE;
     if (argData.isFlagSet(TIME_EVAL_MODE_FLAG)) {
         status =
             argData.getFlagArgument(TIME_EVAL_MODE_FLAG, 0, out_timeEvalMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get 'Accept Only Better'
@@ -444,7 +444,7 @@ MStatus parseSolveInfoArguments_other(const MArgDatabase &argData,
     if (argData.isFlagSet(ACCEPT_ONLY_BETTER_FLAG)) {
         status = argData.getFlagArgument(ACCEPT_ONLY_BETTER_FLAG, 0,
                                          out_acceptOnlyBetter);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
     }
 
     // Get 'Frame Solve Mode'
@@ -452,7 +452,7 @@ MStatus parseSolveInfoArguments_other(const MArgDatabase &argData,
     if (argData.isFlagSet(FRAME_SOLVE_MODE_FLAG)) {
         status =
             argData.getFlagArgument(FRAME_SOLVE_MODE_FLAG, 0, frameSolveMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     out_frameSolveMode = static_cast<FrameSolveMode>(frameSolveMode);
 
@@ -460,7 +460,7 @@ MStatus parseSolveInfoArguments_other(const MArgDatabase &argData,
     out_imageWidth = IMAGE_WIDTH_DEFAULT_VALUE;
     if (argData.isFlagSet(IMAGE_WIDTH_FLAG)) {
         status = argData.getFlagArgument(IMAGE_WIDTH_FLAG, 0, out_imageWidth);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     return status;
@@ -485,17 +485,17 @@ MStatus parseSolveInfoArguments_v1(
         out_robustLossScale, out_solverType, out_supportAutoDiffForward,
         out_supportAutoDiffCentral, out_supportParameterBounds,
         out_supportRobustLoss);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveInfoArguments_other(
         argData, out_sceneGraphMode, out_timeEvalMode, out_acceptOnlyBetter,
         out_frameSolveMode, out_imageWidth);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveInfoArguments_removeUnused(
         argData, out_removeUnusedMarkers, out_removeUnusedAttributes,
         out_removeUnusedFrames);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -517,12 +517,12 @@ MStatus parseSolveInfoArguments_v2(
         out_robustLossScale, out_solverType, out_supportAutoDiffForward,
         out_supportAutoDiffCentral, out_supportParameterBounds,
         out_supportRobustLoss);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveInfoArguments_other(
         argData, out_sceneGraphMode, out_timeEvalMode, out_acceptOnlyBetter,
         out_frameSolveMode, out_imageWidth);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }

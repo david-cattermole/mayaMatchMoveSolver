@@ -191,32 +191,32 @@ MSyntax MMCameraRelativePoseCmd::newSyntax() {
     syntax.enableQuery(false);
     syntax.enableEdit(false);
 
-    CHECK_MSTATUS(syntax.addFlag(SET_VALUES_SHORT_FLAG, SET_VALUES_LONG_FLAG,
-                                 MSyntax::kBoolean));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        SET_VALUES_SHORT_FLAG, SET_VALUES_LONG_FLAG, MSyntax::kBoolean));
 
-    CHECK_MSTATUS(syntax.addFlag(CAMERA_A_SHORT_FLAG, CAMERA_A_LONG_FLAG,
-                                 MSyntax::kSelectionItem));
-    CHECK_MSTATUS(syntax.addFlag(CAMERA_B_SHORT_FLAG, CAMERA_B_LONG_FLAG,
-                                 MSyntax::kSelectionItem));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        CAMERA_A_SHORT_FLAG, CAMERA_A_LONG_FLAG, MSyntax::kSelectionItem));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(
+        CAMERA_B_SHORT_FLAG, CAMERA_B_LONG_FLAG, MSyntax::kSelectionItem));
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(FRAME_A_SHORT_FLAG, FRAME_A_LONG_FLAG, MSyntax::kLong));
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         syntax.addFlag(FRAME_B_SHORT_FLAG, FRAME_B_LONG_FLAG, MSyntax::kLong));
 
-    CHECK_MSTATUS(syntax.addFlag(USE_CAMERA_TRANSFORM_SHORT_FLAG,
-                                 USE_CAMERA_TRANSFORM_LONG_FLAG,
-                                 MSyntax::kBoolean));
+    MMSOLVER_CHECK_MSTATUS(syntax.addFlag(USE_CAMERA_TRANSFORM_SHORT_FLAG,
+                                          USE_CAMERA_TRANSFORM_LONG_FLAG,
+                                          MSyntax::kBoolean));
 
-    CHECK_MSTATUS(syntax.addFlag(MARKER_BUNDLE_SHORT_FLAG,
-                                 MARKER_BUNDLE_LONG_FLAG, MSyntax::kString,
-                                 MSyntax::kString, MSyntax::kString));
-    CHECK_MSTATUS(syntax.makeFlagMultiUse(MARKER_BUNDLE_SHORT_FLAG));
+    MMSOLVER_CHECK_MSTATUS(
+        syntax.addFlag(MARKER_BUNDLE_SHORT_FLAG, MARKER_BUNDLE_LONG_FLAG,
+                       MSyntax::kString, MSyntax::kString, MSyntax::kString));
+    MMSOLVER_CHECK_MSTATUS(syntax.makeFlagMultiUse(MARKER_BUNDLE_SHORT_FLAG));
 
-    CHECK_MSTATUS(syntax.addFlag(BUNDLE_POSITION_SHORT_FLAG,
-                                 BUNDLE_POSITION_LONG_FLAG, MSyntax::kDouble,
-                                 MSyntax::kDouble, MSyntax::kDouble));
-    CHECK_MSTATUS(syntax.makeFlagMultiUse(BUNDLE_POSITION_SHORT_FLAG));
+    MMSOLVER_CHECK_MSTATUS(
+        syntax.addFlag(BUNDLE_POSITION_SHORT_FLAG, BUNDLE_POSITION_LONG_FLAG,
+                       MSyntax::kDouble, MSyntax::kDouble, MSyntax::kDouble));
+    MMSOLVER_CHECK_MSTATUS(syntax.makeFlagMultiUse(BUNDLE_POSITION_SHORT_FLAG));
 
     return syntax;
 }
@@ -231,7 +231,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     const bool verbose = false;
 
     MArgDatabase argData(syntax(), args, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Reset saved data structures.
     m_marker_list_a.clear();
@@ -255,7 +255,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     if (argData.isFlagSet(FRAME_A_SHORT_FLAG)) {
         int value = 0;
         status = argData.getFlagArgument(FRAME_A_SHORT_FLAG, 0, value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         m_frame_a = static_cast<FrameNumber>(value);
     }
 
@@ -263,7 +263,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     if (argData.isFlagSet(FRAME_B_SHORT_FLAG)) {
         int value = 0;
         status = argData.getFlagArgument(FRAME_B_SHORT_FLAG, 0, value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         m_frame_b = static_cast<FrameNumber>(value);
     }
 
@@ -272,14 +272,14 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     if (argData.isFlagSet(USE_CAMERA_TRANSFORM_SHORT_FLAG)) {
         status = argData.getFlagArgument(USE_CAMERA_TRANSFORM_SHORT_FLAG, 0,
                                          m_use_camera_transform);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     m_set_values = false;
     if (argData.isFlagSet(SET_VALUES_SHORT_FLAG)) {
         status =
             argData.getFlagArgument(SET_VALUES_SHORT_FLAG, 0, m_set_values);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     const auto uiUnit = MTime::uiUnit();
@@ -296,7 +296,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         m_camera_ry_attr_a, m_camera_rz_attr_a, m_image_width_a,
         m_image_height_a, m_focal_length_mm_a, m_sensor_width_mm_a,
         m_sensor_height_mm_a);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MSelectionList camera_selection_list_b;
     argData.getFlagArgument(CAMERA_B_SHORT_FLAG, 0, camera_selection_list_b);
@@ -306,7 +306,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         m_camera_ry_attr_b, m_camera_rz_attr_b, m_image_width_b,
         m_image_height_b, m_focal_length_mm_b, m_sensor_width_mm_b,
         m_sensor_height_mm_b);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
     {
         const auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
@@ -359,7 +359,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
         status = camera_matrix_attr.getValue(m_camera_transform_matrix,
                                              m_time_a, timeEvalMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     const uint32_t numberOfBundlePositionFlags =
@@ -425,7 +425,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         MArgList markerBundleArgs;
         status = argData.getFlagArgumentList(MARKER_BUNDLE_SHORT_FLAG, i,
                                              markerBundleArgs);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         if (markerBundleArgs.length() != 3) {
             MMSOLVER_MAYA_ERR(
                 "mmCameraRelativePose: "
@@ -442,7 +442,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             MArgList bundlePositionArgs;
             status = argData.getFlagArgumentList(BUNDLE_POSITION_SHORT_FLAG, i,
                                                  bundlePositionArgs);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             if (bundlePositionArgs.length() != 3) {
                 MMSOLVER_MAYA_ERR(
                     "mmCameraRelativePose: "
@@ -452,21 +452,21 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             }
 
             bundlePosition_x = bundlePositionArgs.asDouble(0, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             bundlePosition_y = bundlePositionArgs.asDouble(1, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
             bundlePosition_z = bundlePositionArgs.asDouble(2, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         }
 
         ObjectType objectType = ObjectType::kUnknown;
 
         markerNameA = markerBundleArgs.asString(0, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsObject(markerNameA, markerObject);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsDagPath(markerNameA, dagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
             MMSOLVER_MAYA_ERR(
@@ -481,11 +481,11 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             << markerNameA.asChar());
 
         markerNameB = markerBundleArgs.asString(1, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsObject(markerNameB, markerObject);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsDagPath(markerNameB, dagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
             MMSOLVER_MAYA_ERR(
@@ -500,11 +500,11 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             << markerNameB.asChar());
 
         bundleName = markerBundleArgs.asString(2, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsObject(bundleName, bundleObject);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsDagPath(bundleName, dagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(bundleObject, dagPath);
         if (objectType != ObjectType::kBundle) {
             MMSOLVER_MAYA_ERR(
@@ -558,7 +558,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
                 cameraList, markerList, attrList, frameList,
                 markerFrameToLensModelList, attrFrameToLensModelList,
                 lensModelList);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
             lensModel_a = markerFrameToLensModelList[0];
             lensModel_b = markerFrameToLensModelList[1];

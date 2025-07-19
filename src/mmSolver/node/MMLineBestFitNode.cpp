@@ -110,21 +110,21 @@ MStatus MMLineBestFitNode::compute(const MPlug &plug, MDataBlock &data) {
         // Get Parent Inverse Matrix
         MDataHandle parentInverseMatrixHandle =
             data.inputValue(m_parentInverseMatrix, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         MMatrix parentInverseMatrix = parentInverseMatrixHandle.asMatrix();
 
         MArrayDataHandle transformArrayHandle =
             data.inputArrayValue(m_transformMatrix, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Get Transform Positions
         status =
             query_line_point_data(parentInverseMatrix, transformArrayHandle,
                                   m_point_data_x, m_point_data_y, verbose);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MDataHandle lineLengthHandle = data.inputValue(m_lineLength, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
         auto line_length = lineLengthHandle.asDouble() * 0.5;
 
         auto line_center = mmdata::Point2D();
@@ -138,7 +138,7 @@ MStatus MMLineBestFitNode::compute(const MPlug &plug, MDataBlock &data) {
             fit_line_to_points(line_length, m_point_data_x, m_point_data_y,
                                line_center, line_slope, line_angle, line_dir,
                                line_point_a, line_point_b, verbose);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Output Points
         MDataHandle outLinePointAXHandle = data.outputValue(m_outLinePointAX);
@@ -193,13 +193,13 @@ MStatus MMLineBestFitNode::initialize() {
         // (World-space) Transform Matrices.
         m_transformMatrix = matrixAttr.create(
             "transformMatrix", "tfmmtx", MFnMatrixAttribute::kDouble, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(matrixAttr.setStorable(true));
-        CHECK_MSTATUS(matrixAttr.setConnectable(true));
-        CHECK_MSTATUS(matrixAttr.setArray(true));
-        CHECK_MSTATUS(matrixAttr.setDisconnectBehavior(
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setArray(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setDisconnectBehavior(
             MFnAttribute::DisconnectBehavior::kDelete));
-        CHECK_MSTATUS(addAttribute(m_transformMatrix));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_transformMatrix));
     }
 
     // Parent Inverse Matrix
@@ -210,19 +210,19 @@ MStatus MMLineBestFitNode::initialize() {
         m_parentInverseMatrix =
             matrixAttr.create("parentInverseMatrix", "pinvm",
                               MFnMatrixAttribute::kDouble, &status);
-        CHECK_MSTATUS(status);
-        CHECK_MSTATUS(matrixAttr.setStorable(true));
-        CHECK_MSTATUS(matrixAttr.setConnectable(true));
-        CHECK_MSTATUS(addAttribute(m_parentInverseMatrix));
+        MMSOLVER_CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(matrixAttr.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_parentInverseMatrix));
     }
 
     // Line Length
     {
         m_lineLength = numericAttr.create("lineLength", "lnlgth",
                                           MFnNumericData::kDouble, 1.0);
-        CHECK_MSTATUS(numericAttr.setStorable(true));
-        CHECK_MSTATUS(numericAttr.setConnectable(true));
-        CHECK_MSTATUS(addAttribute(m_lineLength));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setConnectable(true));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_lineLength));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -231,38 +231,38 @@ MStatus MMLineBestFitNode::initialize() {
     {
         m_outLinePointAX = numericAttr.create("outLinePointAX", "opax",
                                               MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         m_outLinePointAY = numericAttr.create("outLinePointAY", "opay",
                                               MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         m_outLinePointA = compoundAttr.create("outLinePointA", "opa", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(m_outLinePointAX);
         compoundAttr.addChild(m_outLinePointAY);
-        CHECK_MSTATUS(addAttribute(m_outLinePointA));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_outLinePointA));
     }
 
     // Out Line Point B
     {
         m_outLinePointBX = numericAttr.create("outLinePointBX", "opbx",
                                               MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         m_outLinePointBY = numericAttr.create("outLinePointBY", "opby",
                                               MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
 
         m_outLinePointB = compoundAttr.create("outLinePointB", "opb", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(m_outLinePointBX);
         compoundAttr.addChild(m_outLinePointBY);
-        CHECK_MSTATUS(addAttribute(m_outLinePointB));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_outLinePointB));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -271,61 +271,61 @@ MStatus MMLineBestFitNode::initialize() {
         // Out Line Center X
         m_outLineCenterX = numericAttr.create("outLineX", "olncx",
                                               MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Line Center Y
         m_outLineCenterY = numericAttr.create("outLineY", "olncy",
                                               MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Line Direction X
         m_outLineDirX = numericAttr.create("outLineDirX", "olndrx",
                                            MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Line Direction Y
         m_outLineDirY = numericAttr.create("outLineDirY", "olndry",
                                            MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Line Slope
         m_outLineSlope = numericAttr.create("outLineSlope", "olnslp",
                                             MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Line Angle
         m_outLineAngle = numericAttr.create("outLineAngle", "olnagl",
                                             MFnNumericData::kDouble, 0.0);
-        CHECK_MSTATUS(numericAttr.setStorable(false));
-        CHECK_MSTATUS(numericAttr.setKeyable(false));
-        CHECK_MSTATUS(numericAttr.setReadable(true));
-        CHECK_MSTATUS(numericAttr.setWritable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setStorable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setKeyable(false));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setReadable(true));
+        MMSOLVER_CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Coord (parent of outLine* attributes)
         m_outLine = compoundAttr.create("outLine", "oln", &status);
-        CHECK_MSTATUS(status);
+        MMSOLVER_CHECK_MSTATUS(status);
         compoundAttr.addChild(m_outLineCenterX);
         compoundAttr.addChild(m_outLineCenterY);
         compoundAttr.addChild(m_outLineDirX);
         compoundAttr.addChild(m_outLineDirY);
         compoundAttr.addChild(m_outLineSlope);
         compoundAttr.addChild(m_outLineAngle);
-        CHECK_MSTATUS(addAttribute(m_outLine));
+        MMSOLVER_CHECK_MSTATUS(addAttribute(m_outLine));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -351,7 +351,7 @@ MStatus MMLineBestFitNode::initialize() {
     outputAttrs.append(m_outLineSlope);
     outputAttrs.append(m_outLineAngle);
 
-    CHECK_MSTATUS(
+    MMSOLVER_CHECK_MSTATUS(
         MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return MS::kSuccess;

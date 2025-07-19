@@ -127,11 +127,11 @@ MBoundingBox LineDrawOverride::boundingBox(
             uint32_t numElements = plug.evaluateNumElements();
             for (uint32_t i = 0; i < numElements; ++i) {
                 MPlug plugElement = plug.elementByPhysicalIndex(i, &status);
-                CHECK_MSTATUS(status);
+                MMSOLVER_CHECK_MSTATUS(status);
                 if (!plugElement.isNull()) {
                     status =
                         get_position_from_connected_node(plugElement, x, y, z);
-                    CHECK_MSTATUS(status);
+                    MMSOLVER_CHECK_MSTATUS(status);
 
                     corner1[0] = std::min(corner1[0], x);
                     corner1[1] = std::min(corner1[1], y);
@@ -163,48 +163,48 @@ MUserData *LineDrawOverride::prepareForDraw(
     bool verbose = false;
 
     MDagPath transformPath(objPath);
-    CHECK_MSTATUS(transformPath.pop(1));
+    MMSOLVER_CHECK_MSTATUS(transformPath.pop(1));
     MObject transformObj = transformPath.node();
     MFnDependencyNode dependNodeFn(transformObj);
     data->m_name = dependNodeFn.name();
 
     // The object's transform matrix
     MMatrix matrix_inverse = objPath.exclusiveMatrixInverse(&status);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
     MMatrix obj_matrix = matrix_inverse;
 
     status = getNodeAttr(objPath, LineShapeNode::m_middle_scale,
                          data->m_middle_scale);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Color
     MColor color1(0.0f, 0.0f, 0.0f, 1.0f);
     status = getNodeAttr(objPath, LineShapeNode::m_color, color1);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Alpha
     status = getNodeAttr(objPath, LineShapeNode::m_alpha, color1[3]);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Line Width
     status = getNodeAttr(objPath, LineShapeNode::m_inner_line_width,
                          data->m_inner_line_width);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Point Size
     status =
         getNodeAttr(objPath, LineShapeNode::m_point_size, data->m_point_size);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Draw Name
     status =
         getNodeAttr(objPath, LineShapeNode::m_draw_name, data->m_draw_name);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Draw Middle
     status =
         getNodeAttr(objPath, LineShapeNode::m_draw_middle, data->m_draw_middle);
-    CHECK_MSTATUS(status);
+    MMSOLVER_CHECK_MSTATUS(status);
 
     // Create secondary color.
     MColor color2(0.0f, 0.0f, 0.0f, 1.0f);
@@ -261,14 +261,14 @@ MUserData *LineDrawOverride::prepareForDraw(
             uint32_t numElements = plug.evaluateNumElements();
             for (uint32_t i = 0; i < numElements; ++i) {
                 MPlug plugElement = plug.elementByPhysicalIndex(i, &status);
-                CHECK_MSTATUS(status);
+                MMSOLVER_CHECK_MSTATUS(status);
                 if (!plugElement.isNull()) {
                     double x = 0.0;
                     double y = 0.0;
                     double z = 0.0;
                     status =
                         get_position_from_connected_node(plugElement, x, y, z);
-                    CHECK_MSTATUS(status);
+                    MMSOLVER_CHECK_MSTATUS(status);
 
                     point = MPoint(x, y, z);
                     point = point * obj_matrix;

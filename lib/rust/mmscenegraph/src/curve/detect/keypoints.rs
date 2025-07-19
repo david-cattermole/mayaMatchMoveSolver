@@ -449,7 +449,7 @@ fn pick_keypoints(
     }
 
     // Sort with stable handling of NaN (highest importance first)
-    all_keypoints.sort_by(|a, b| match b.partial_cmp(&a) {
+    all_keypoints.sort_by(|a, b| match b.partial_cmp(a) {
         Some(ordering) => ordering,
         None => Ordering::Equal, // Handle NaN case
     });

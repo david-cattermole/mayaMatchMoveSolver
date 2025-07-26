@@ -582,7 +582,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     } else if (MMSolverAffectsCmd::m_graph_mode == GraphMode::kNodeName) {
         MMSOLVER_MAYA_VRB(
-            "mmSolverAffects: Graph Analysis (name-based mode)...");
+            "mmSolverAffects: Graph Analysis (node name mode)...");
 
         mmsolver::debug::TimestampBenchmark graph_timer =
             mmsolver::debug::TimestampBenchmark();
@@ -597,7 +597,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
             graph_timer.stop();
             const double duration_seconds = graph_timer.get_seconds();
             MMSOLVER_MAYA_INFO(
-                "mmSolverAffects: Graph Analysis (name-based mode) completed! "
+                "mmSolverAffects: Graph Analysis (node name mode) completed! "
                 << "Time taken " << duration_seconds << " seconds");
         }
 

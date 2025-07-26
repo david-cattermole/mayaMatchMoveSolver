@@ -1357,6 +1357,14 @@ void analyseNodeNameRelationships(const MarkerList &markerList,
                     "analyseNodeNameRelationships: "
                     "Rule 5: "
                     "Parent transform attributes affect child nodes.");
+            } else if (isParentOf(markerPath, attrInfo.fullPath)) {
+                // Rule 6: Parent transform attributes affect child marker
+                // nodes.
+                attrAffectsMarker = true;
+                MMSOLVER_MAYA_VRB(
+                    "analyseNodeNameRelationships: "
+                    "Rule 6: "
+                    "Parent transform attributes affect child marker nodes.");
             } else {
                 MMSOLVER_MAYA_VRB(
                     "analyseNodeNameRelationships: "

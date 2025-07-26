@@ -58,7 +58,7 @@ enum class GraphMode : uint8_t {
 
 class MMSolverAffectsCmd : public MPxCommand {
 public:
-    MMSolverAffectsCmd() : m_mode(), m_graph_mode(GraphMode::kUnspecified){};
+    MMSolverAffectsCmd() : m_mode(), m_graph_mode(GraphMode::kUnspecified) {};
 
     virtual ~MMSolverAffectsCmd();
 

@@ -787,9 +787,9 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
 
     timer.stop();
     const double duration_seconds = timer.get_seconds();
-    MMSOLVER_MAYA_INFO("Analysing Scene completed! "
-                       << "Total time taken " << duration_seconds
-                       << " seconds");
+    MMSOLVER_MAYA_INFO("Analysing Scene completed! " << "Total time taken "
+                                                     << duration_seconds
+                                                     << " seconds");
     return status;
 }
 

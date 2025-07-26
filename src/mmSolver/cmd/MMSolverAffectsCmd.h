@@ -50,8 +50,9 @@ namespace mmsolver {
 
 enum class GraphMode : uint8_t {
     kNormal = 0,
-    kObject = 1,
-    kSimple = 2,
+    kNameBased = 1,
+    kObject = 2,
+    kSimple = 3,
     kUnspecified = 255,
 };
 

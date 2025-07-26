@@ -1043,22 +1043,29 @@ bool isDGNode(const MString &nodePath) {
 }
 
 bool isStandardTransformAttribute(const MString &attrName) {
-    return (attrName == "translateX" || attrName == "translateY" ||
-            attrName == "translateZ" || attrName == "rotateX" ||
-            attrName == "rotateY" || attrName == "rotateZ" ||
-            attrName == "scaleX" || attrName == "scaleY" ||
-            attrName == "scaleZ" || attrName == "shearXY" ||
-            attrName == "shearXZ" || attrName == "shearYZ" ||
-            attrName == "rotateOrder" || attrName == "rotateAxisX" ||
-            attrName == "rotateAxisY" || attrName == "rotateAxisZ" ||
-            attrName == "rotatePivotX" || attrName == "rotatePivotY" ||
-            attrName == "rotatePivotZ" || attrName == "rotatePivotTranslateX" ||
-            attrName == "rotatePivotTranslateY" ||
-            attrName == "rotatePivotTranslateZ" || attrName == "scalePivotX" ||
-            attrName == "scalePivotY" || attrName == "scalePivotZ" ||
-            attrName == "scalePivotTranslateX" ||
-            attrName == "scalePivotTranslateY" ||
-            attrName == "scalePivotTranslateZ");
+    return ((attrName == "translateX" || attrName == "translateY" ||
+             attrName == "translateZ") ||
+            (attrName == "rotateX" || attrName == "rotateY" ||
+             attrName == "rotateZ") ||
+            (attrName == "scaleX" || attrName == "scaleY" ||
+             attrName == "scaleZ") ||
+            (attrName == "shearXY" || attrName == "shearXZ" ||
+             attrName == "shearYZ") ||
+            (attrName == "tx" || attrName == "ty" || attrName == "tz") ||
+            (attrName == "rx" || attrName == "ry" || attrName == "rz") ||
+            (attrName == "sx" || attrName == "sy" || attrName == "sz") ||
+            (attrName == "rotateAxisX" || attrName == "rotateAxisY" ||
+             attrName == "rotateAxisZ") ||
+            (attrName == "rotatePivotX" || attrName == "rotatePivotY" ||
+             attrName == "rotatePivotZ") ||
+            (attrName == "rotatePivotTranslateX" ||
+             attrName == "rotatePivotTranslateY" ||
+             attrName == "rotatePivotTranslateZ") ||
+            (attrName == "scalePivotX" || attrName == "scalePivotY" ||
+             attrName == "scalePivotZ") ||
+            (attrName == "scalePivotTranslateX" ||
+             attrName == "scalePivotTranslateY" ||
+             attrName == "scalePivotTranslateZ"));
 }
 
 struct AttributeInfo {

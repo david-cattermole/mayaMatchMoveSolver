@@ -146,8 +146,8 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
-        # This solve does not use solve any attributes that are
-        # affected by 'markerUnused_tfm' and 'bundleUnused_tfm' nodes.
+        # This solve does not use any attributes that are affected by
+        # 'markerUnused_tfm' and 'bundleUnused_tfm' nodes.
         cameras = ((cam_tfm, cam_shp),)
         markers = (
             (marker_tfm, cam_shp, bundle_tfm),

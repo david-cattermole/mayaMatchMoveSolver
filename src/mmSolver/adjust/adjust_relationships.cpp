@@ -1091,15 +1091,15 @@ struct AttributeInfo {
  * DG nodes and non-standard attributes are assumed to affect all
  * markers.
  */
-void analyseNameBasedRelationships(const MarkerList &markerList,
-                                   const AttrList &attrList,
-                                   const FrameList &frameList,
+void analyseNodeNameRelationships(const MarkerList &markerList,
+                                  const AttrList &attrList,
+                                  const FrameList &frameList,
 
-                                   // Outputs
-                                   MatrixBool3D &out_markerToAttrToFrameMatrix,
-                                   MStatus &out_status) {
+                                  // Outputs
+                                  MatrixBool3D &out_markerToAttrToFrameMatrix,
+                                  MStatus &out_status) {
     const bool verbose = false;
-    MMSOLVER_MAYA_VRB("analyseNameBasedRelationships");
+    MMSOLVER_MAYA_VRB("analyseNodeNameRelationships");
 
     out_status = MStatus::kSuccess;
 
@@ -1199,14 +1199,14 @@ void analyseNameBasedRelationships(const MarkerList &markerList,
                 // Rule 1: DG nodes affect all markers.
                 attrAffectsMarker = true;
                 MMSOLVER_MAYA_VRB(
-                    "analyseNameBasedRelationships: "
+                    "analyseNodeNameRelationships: "
                     "DG node affects all markers: "
                     << attrInfo.fullPath);
             } else if (!attrInfo.isStandardTransformAttr) {
                 // Rule 2: Non-standard attributes affect all markers.
                 attrAffectsMarker = true;
                 MMSOLVER_MAYA_VRB(
-                    "analyseNameBasedRelationships: "
+                    "analyseNodeNameRelationships: "
                     "Non-standard attribute affects all markers: "
                     << attrInfo.fullPath << "." << attrInfo.attrName);
             } else if (bundlePath == attrInfo.fullPath) {

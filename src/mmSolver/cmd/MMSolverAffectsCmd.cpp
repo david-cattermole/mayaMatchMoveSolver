@@ -92,7 +92,7 @@
 
 // Possible values for the 'graphMode' flag.
 #define GRAPH_MODE_VALUE_NORMAL "normal"
-#define GRAPH_MODE_VALUE_NAME_BASED "name_based"
+#define GRAPH_MODE_VALUE_NODE_NAME "node_name"
 #define GRAPH_MODE_VALUE_OBJECT "object"
 #define GRAPH_MODE_VALUE_SIMPLE "simple"
 
@@ -143,14 +143,14 @@ MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
         const MString graph_mode_normal = GRAPH_MODE_VALUE_NORMAL;
-        const MString graph_mode_name_based = GRAPH_MODE_VALUE_NAME_BASED;
+        const MString graph_mode_name_based = GRAPH_MODE_VALUE_NODE_NAME;
         const MString graph_mode_object = GRAPH_MODE_VALUE_OBJECT;
         const MString graph_mode_simple = GRAPH_MODE_VALUE_SIMPLE;
 
         if (value == graph_mode_normal) {
             MMSolverAffectsCmd::m_graph_mode = GraphMode::kNormal;
         } else if (value == graph_mode_name_based) {
-            MMSolverAffectsCmd::m_graph_mode = GraphMode::kNameBased;
+            MMSolverAffectsCmd::m_graph_mode = GraphMode::kNodeName;
         } else if (value == graph_mode_object) {
             MMSolverAffectsCmd::m_graph_mode = GraphMode::kObject;
         } else if (value == graph_mode_simple) {
@@ -580,7 +580,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
         }
 
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
-    } else if (MMSolverAffectsCmd::m_graph_mode == GraphMode::kNameBased) {
+    } else if (MMSolverAffectsCmd::m_graph_mode == GraphMode::kNodeName) {
         MMSOLVER_MAYA_VRB(
             "mmSolverAffects: Graph Analysis (name-based mode)...");
 
@@ -588,10 +588,10 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
             mmsolver::debug::TimestampBenchmark();
         graph_timer.start();
 
-        analyseNameBasedRelationships(m_markerList, m_attrList, m_frameList,
+        analyseNodeNameRelationships(m_markerList, m_attrList, m_frameList,
 
-                                      // Outputs
-                                      markerToAttrToFrameMatrix, status);
+                                     // Outputs
+                                     markerToAttrToFrameMatrix, status);
 
         if (debug) {
             graph_timer.stop();

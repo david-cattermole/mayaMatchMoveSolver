@@ -58,7 +58,7 @@ echo "Build root directory base: ${BUILD_DIR_BASE}"
 
 # OpenColorIO build related stuff will go here.
 BUILD_OCIO_DIR_NAME="build_opencolorio"
-BUILD_OCIO_DIR_BASE="${BUILD_OCIO_DIR_BASE}/${BUILD_OCIO_DIR_NAME}"
+BUILD_OCIO_DIR_BASE="${BUILD_DIR_BASE}/${BUILD_OCIO_DIR_NAME}"
 echo "Build OpenColorIO directory base: ${BUILD_OCIO_DIR_BASE}"
 
 # Install directory.

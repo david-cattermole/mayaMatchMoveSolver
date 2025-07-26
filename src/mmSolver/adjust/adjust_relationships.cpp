@@ -1064,14 +1064,14 @@ bool isStandardTransformAttribute(const MString &attrName) {
 struct AttributeInfo {
     bool isDGNodeAttr;
     bool isStandardTransformAttr;
-    bool isCameraAttr;
+    bool isCameraNodeAttr;
     MString fullPath;
     MString attrName;
 
     AttributeInfo()
         : isDGNodeAttr(false)
         , isStandardTransformAttr(false)
-        , isCameraAttr(false) {}
+        , isCameraNodeAttr(false) {}
 };
 
 }  // namespace
@@ -1126,17 +1126,17 @@ void analyseNodeNameRelationships(const MarkerList &markerList,
         }
 
         AttrPtr attr = attrList.get_attr(attrIndex);
-        AttributeInfo info;
-        info.fullPath = attr->getLongNodeName();
-        info.attrName = attr->getAttrName();
-        info.isDGNodeAttr = isDGNode(info.fullPath);
-        info.isStandardTransformAttr =
-            isStandardTransformAttribute(info.attrName);
+        AttributeInfo attrInfo;
+        attrInfo.fullPath = attr->getLongNodeName();
+        attrInfo.attrName = attr->getAttrName();
+        attrInfo.isDGNodeAttr = isDGNode(attrInfo.fullPath);
+        attrInfo.isStandardTransformAttr =
+            isStandardTransformAttribute(attrInfo.attrName);
 
         MObject attrNodeObj = attr->getObject();
-        info.isCameraAttr = nodeIsCameraType(attrNodeObj);
+        attrInfo.isCameraNodeAttr = nodeIsCameraType(attrNodeObj);
 
-        attrInfoList.push_back(info);
+        attrInfoList.push_back(attrInfo);
     }
 
     // Pre-allocate vector for marker enabled states.
@@ -1199,6 +1199,7 @@ void analyseNodeNameRelationships(const MarkerList &markerList,
                 attrAffectsMarker = true;
                 MMSOLVER_MAYA_VRB(
                     "analyseNodeNameRelationships: "
+                    "Rule 1: "
                     "DG node affects all markers: "
                     << attrInfo.fullPath);
             } else if (!attrInfo.isStandardTransformAttr) {
@@ -1206,23 +1207,46 @@ void analyseNodeNameRelationships(const MarkerList &markerList,
                 attrAffectsMarker = true;
                 MMSOLVER_MAYA_VRB(
                     "analyseNodeNameRelationships: "
+                    "Rule 2: "
                     "Non-standard attribute affects all markers: "
                     << attrInfo.fullPath << "." << attrInfo.attrName);
-            } else if (bundlePath == attrInfo.fullPath) {
-                // Rule 3: Bundle attributes affect their associated markers.
+            } else if (attrInfo.isCameraNodeAttr &&
+                       (cameraTransformPath == attrInfo.fullPath ||
+                        isParentOf(markerPath, attrInfo.fullPath))) {
+                // Rule 3: Camera attributes affect all markers under
+                // that camera.
                 attrAffectsMarker = true;
-            } else if (attrInfo.isCameraAttr) {
-                // Rule 4: Camera attributes affect all markers under that
-                // camera.
-                if (cameraTransformPath == attrInfo.fullPath ||
-                    isParentOf(markerPath, attrInfo.fullPath) ||
-                    isParentOf(markerPath, cameraTransformPath)) {
-                    attrAffectsMarker = true;
-                }
+                MMSOLVER_MAYA_VRB(
+                    "analyseNodeNameRelationships: "
+                    "Rule 3: "
+                    "Camera attributes affect all markers under that camera.");
+
+            } else if (bundlePath == attrInfo.fullPath) {
+                // Rule 4: Bundle attributes affect their associated markers.
+                attrAffectsMarker = true;
+                MMSOLVER_MAYA_VRB(
+                    "analyseNodeNameRelationships: "
+                    "Rule 4: "
+                    "Bundle attributes affect their associated markers. "
+                    "bundlePath="
+                    << bundlePath.asChar());
             } else if (isParentOf(bundlePath, attrInfo.fullPath)) {
                 // Rule 5: Parent transform attributes affect child nodes.
                 attrAffectsMarker = true;
+                MMSOLVER_MAYA_VRB(
+                    "analyseNodeNameRelationships: "
+                    "Rule 5: "
+                    "Parent transform attributes affect child nodes.");
+            } else {
+                MMSOLVER_MAYA_VRB(
+                    "analyseNodeNameRelationships: "
+                    "No rule hit.");
             }
+
+            MMSOLVER_MAYA_VRB(
+                "analyseNodeNameRelationships: "
+                "attrAffectsMarker="
+                << attrAffectsMarker);
 
             if (attrAffectsMarker) {
                 for (FrameIndex frameIndex = 0; frameIndex < frameList.size();

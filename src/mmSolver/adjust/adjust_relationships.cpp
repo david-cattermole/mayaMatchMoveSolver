@@ -1088,6 +1088,31 @@ struct AttributeInfo {
         , isCameraNodeAttr(false) {}
 };
 
+// Check if a bundle node has any of its translate attributes connected.
+bool bundleHasConnectedTranslates(const MObject &bundleObj) {
+    MStatus status;
+
+    MFnDependencyNode bundleFn(bundleObj, &status);
+    if (status != MS::kSuccess) {
+        return false;
+    }
+
+    // Check translate attributes
+    const char *translateAttrs[] = {"translateX", "translateY", "translateZ",
+                                    "tx",         "ty",         "tz"};
+    for (int i = 0; i < 6; ++i) {
+        MPlug plug = bundleFn.findPlug(translateAttrs[i], true, &status);
+        if (status == MS::kSuccess && !plug.isNull()) {
+            // Check if this plug has an incoming connection.
+            if (plug.isDestination(&status)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 }  // namespace
 
 /**
@@ -1205,6 +1230,15 @@ void analyseNodeNameRelationships(const MarkerList &markerList,
             "Marker bundlePath="
             << bundlePath.asChar());
 
+        MObject bundleObj = bundle->getObject();
+        const bool bundleIsConnected = bundleHasConnectedTranslates(bundleObj);
+
+        MMSOLVER_MAYA_VRB(
+            "analyseNodeNameRelationships: "
+            "Bundle "
+            << bundlePath.asChar()
+            << " bundleHasConnectedTranslates=" << bundleIsConnected);
+
         // Determine which frames this marker is enabled on.
         bool hasEnabledFrames = false;
         for (FrameIndex frameIndex = 0; frameIndex < frameList.size();
@@ -1271,7 +1305,16 @@ void analyseNodeNameRelationships(const MarkerList &markerList,
                 << attrInfo.isCameraNodeAttr);
 
             bool attrAffectsMarker = false;
-            if (attrInfo.isDGNodeAttr) {
+            if (bundleIsConnected) {
+                // Rule 0: If bundle has connected translates, all attributes
+                // affect it
+                attrAffectsMarker = true;
+                MMSOLVER_MAYA_VRB(
+                    "analyseNodeNameRelationships: "
+                    "Rule 0: "
+                    "Bundle has connected translates, all attributes affect "
+                    "it");
+            } else if (attrInfo.isDGNodeAttr) {
                 // Rule 1: DG nodes affect all markers.
                 attrAffectsMarker = true;
                 MMSOLVER_MAYA_VRB(

@@ -64,7 +64,7 @@ class TestSolver12(solverUtils.SolverTestCase):
         maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
 
-        tfm_a = maya.cmds.createNode('transform')
+        tfm_a = maya.cmds.createNode('transform', name='transform_a')
         maya.cmds.setAttr(tfm_a + '.tx', -5.5)
         maya.cmds.setAttr(tfm_a + '.ty', 6.4)
         maya.cmds.setAttr(tfm_a + '.tz', -25.0)
@@ -72,7 +72,7 @@ class TestSolver12(solverUtils.SolverTestCase):
             maya.cmds.setKeyframe(tfm_a + '.tx', time=start_frame)
             maya.cmds.setKeyframe(tfm_a + '.ty', time=end_frame)
 
-        tfm_b = maya.cmds.createNode('transform')
+        tfm_b = maya.cmds.createNode('transform', name='transform_b')
         maya.cmds.connectAttr(tfm_a + '.tx', tfm_b + '.tx')
         maya.cmds.connectAttr(tfm_a + '.ty', tfm_b + '.ty')
         maya.cmds.connectAttr(tfm_a + '.tz', tfm_b + '.tz')

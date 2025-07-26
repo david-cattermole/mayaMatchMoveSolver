@@ -626,6 +626,61 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
         return status;
     }
 
+    // To help the developer analyse the quality of the relationships
+    // matrix that was generated.
+    if (debug) {
+        const Count32 markerCount = markerToAttrToFrameMatrix.width();
+        const Count32 attrCount = markerToAttrToFrameMatrix.height();
+        const Count32 frameCount = markerToAttrToFrameMatrix.depth();
+
+        Count32 enabled = 0;
+        for (MarkerIndex markerIndex = 0; markerIndex < markerCount;
+             ++markerIndex) {
+            for (AttrIndex attrIndex = 0; attrIndex < attrCount; ++attrIndex) {
+                for (FrameIndex frameIndex = 0; frameIndex < frameCount;
+                     ++frameIndex) {
+                    enabled +=
+                        static_cast<Count32>(markerToAttrToFrameMatrix.at(
+                            markerIndex, attrIndex, frameIndex));
+                }
+            }
+        }
+        const Count32 disabled = markerToAttrToFrameMatrix.size() - enabled;
+
+        MMSOLVER_MAYA_INFO(
+            "mmSolverAffects: "
+            "markerToAttrToFrameMatrix.width="
+            << markerCount);
+        MMSOLVER_MAYA_INFO(
+            "mmSolverAffects: "
+            "markerToAttrToFrameMatrix.height="
+            << attrCount);
+        MMSOLVER_MAYA_INFO(
+            "mmSolverAffects: "
+            "markerToAttrToFrameMatrix.depth="
+            << frameCount);
+        MMSOLVER_MAYA_INFO(
+            "mmSolverAffects: "
+            "markerToAttrToFrameMatrix.size="
+            << markerToAttrToFrameMatrix.size());
+        MMSOLVER_MAYA_INFO(
+            "mmSolverAffects: "
+            "markerToAttrToFrameMatrix enabled="
+            << enabled);
+        MMSOLVER_MAYA_INFO(
+            "mmSolverAffects: "
+            "markerToAttrToFrameMatrix disabled="
+            << disabled);
+
+        const float ratio =
+            static_cast<float>(enabled) /
+            static_cast<float>(markerToAttrToFrameMatrix.size());
+        MMSOLVER_MAYA_INFO(
+            "mmSolverAffects: "
+            "markerToAttrToFrameMatrix enabled ratio="
+            << ratio);
+    }
+
     // Create 'valid' lists.
     {
         MMSOLVER_MAYA_VRB("mmSolverAffects: Running Solver Object Validity...");

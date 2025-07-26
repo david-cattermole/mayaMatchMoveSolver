@@ -1014,6 +1014,11 @@ namespace {
 // Check if one node is a parent of another based on their full path
 // names.
 bool isParentOf(const MString &childPath, const MString &parentPath) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("isParentOf");
+    MMSOLVER_MAYA_VRB("isParentOf: childPath=" << childPath.asChar());
+    MMSOLVER_MAYA_VRB("isParentOf: parentPath=" << parentPath.asChar());
+
     // Both paths should start with '|' for DAG nodes.
     if (parentPath.length() == 0 || childPath.length() == 0) {
         return false;
@@ -1028,7 +1033,9 @@ bool isParentOf(const MString &childPath, const MString &parentPath) {
     //
     // Avoid string concatenation for performance.
     const auto parentPathLength = static_cast<int32_t>(parentPath.length());
+    MMSOLVER_MAYA_VRB("isParentOf: parentPathLength=" << parentPathLength);
     const MString childSubString = childPath.substring(0, parentPathLength - 1);
+    MMSOLVER_MAYA_VRB("isParentOf: childSubString=" << childSubString.asChar());
     if (childSubString != parentPath) {
         return false;
     }
@@ -1143,6 +1150,27 @@ void analyseNodeNameRelationships(const MarkerList &markerList,
         MObject attrNodeObj = attr->getObject();
         attrInfo.isCameraNodeAttr = nodeIsCameraType(attrNodeObj);
 
+        MMSOLVER_MAYA_VRB(
+            "analyseNodeNameRelationships: "
+            "AttributeInfo.fullPath="
+            << attrInfo.fullPath.asChar());
+        MMSOLVER_MAYA_VRB(
+            "analyseNodeNameRelationships: "
+            "AttributeInfo.attrName="
+            << attrInfo.attrName.asChar());
+        MMSOLVER_MAYA_VRB(
+            "analyseNodeNameRelationships: "
+            "AttributeInfo.isDGNodeAttr="
+            << attrInfo.isDGNodeAttr);
+        MMSOLVER_MAYA_VRB(
+            "analyseNodeNameRelationships: "
+            "AttributeInfo.isStandardTransformAttr="
+            << attrInfo.isStandardTransformAttr);
+        MMSOLVER_MAYA_VRB(
+            "analyseNodeNameRelationships: "
+            "AttributeInfo.isCameraNodeAttr="
+            << attrInfo.isCameraNodeAttr);
+
         attrInfoList.push_back(attrInfo);
     }
 
@@ -1163,6 +1191,19 @@ void analyseNodeNameRelationships(const MarkerList &markerList,
         const MString markerPath = marker->getLongNodeName();
         const MString cameraTransformPath = camera->getTransformLongNodeName();
         const MString bundlePath = bundle->getLongNodeName();
+
+        MMSOLVER_MAYA_VRB(
+            "analyseNodeNameRelationships: "
+            "Marker markerPath="
+            << markerPath.asChar());
+        MMSOLVER_MAYA_VRB(
+            "analyseNodeNameRelationships: "
+            "Marker cameraTransformPath="
+            << cameraTransformPath.asChar());
+        MMSOLVER_MAYA_VRB(
+            "analyseNodeNameRelationships: "
+            "Marker bundlePath="
+            << bundlePath.asChar());
 
         // Determine which frames this marker is enabled on.
         bool hasEnabledFrames = false;
@@ -1187,6 +1228,10 @@ void analyseNodeNameRelationships(const MarkerList &markerList,
                 hasEnabledFrames = true;
             }
         }
+        MMSOLVER_MAYA_VRB(
+            "analyseNodeNameRelationships: "
+            "Marker hasEnabledFrames="
+            << hasEnabledFrames);
 
         if (!hasEnabledFrames) {
             continue;
@@ -1195,11 +1240,36 @@ void analyseNodeNameRelationships(const MarkerList &markerList,
         for (AttrIndex attrIndex = 0; attrIndex < attrList.size();
              ++attrIndex) {
             const bool attrEnabled = attrList.get_enabled(attrIndex);
+            MMSOLVER_MAYA_VRB(
+                "analyseNodeNameRelationships: "
+                "Attr attrEnabled="
+                << attrEnabled);
             if (!attrEnabled) {
                 continue;
             }
 
             const AttributeInfo &attrInfo = attrInfoList[attrIndex];
+            MMSOLVER_MAYA_VRB(
+                "analyseNodeNameRelationships: "
+                "AttributeInfo.fullPath="
+                << attrInfo.fullPath.asChar());
+            MMSOLVER_MAYA_VRB(
+                "analyseNodeNameRelationships: "
+                "AttributeInfo.attrName="
+                << attrInfo.attrName.asChar());
+            MMSOLVER_MAYA_VRB(
+                "analyseNodeNameRelationships: "
+                "AttributeInfo.isDGNodeAttr="
+                << attrInfo.isDGNodeAttr);
+            MMSOLVER_MAYA_VRB(
+                "analyseNodeNameRelationships: "
+                "AttributeInfo.isStandardTransformAttr="
+                << attrInfo.isStandardTransformAttr);
+            MMSOLVER_MAYA_VRB(
+                "analyseNodeNameRelationships: "
+                "AttributeInfo.isCameraNodeAttr="
+                << attrInfo.isCameraNodeAttr);
+
             bool attrAffectsMarker = false;
             if (attrInfo.isDGNodeAttr) {
                 // Rule 1: DG nodes affect all markers.

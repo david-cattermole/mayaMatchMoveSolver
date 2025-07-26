@@ -113,6 +113,9 @@ public:
     MObject getTransformObject();
     MObject getShapeObject();
 
+    MString getTransformLongNodeName();
+    MString getShapeLongNodeName();
+
     // TODO: Use 'Projection Dynamic' to tell the solver that
     // the projection matrix of the camera will change over time.
     // For example, we can tell if the projection matrix is dynamic

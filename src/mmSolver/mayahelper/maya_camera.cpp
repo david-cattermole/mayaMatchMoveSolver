@@ -483,6 +483,19 @@ MObject Camera::getTransformObject() {
     return m_transformObject;
 }
 
+MString Camera::getTransformLongNodeName() {
+    MObject nodeObj = Camera::getTransformObject();
+
+    MDagPath nodeDagPath;
+    MStatus status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
+    MMSOLVER_CHECK_MSTATUS(status);
+
+    MString result = nodeDagPath.fullPathName(&status);
+    MMSOLVER_CHECK_MSTATUS(status);
+
+    return result;
+}
+
 MString Camera::getShapeNodeName() { return m_shapeNodeName; }
 
 void Camera::setShapeNodeName(MString value) {
@@ -510,6 +523,19 @@ MObject Camera::getShapeObject() {
         MMSOLVER_CHECK_MSTATUS(status);
     }
     return m_shapeObject;
+}
+
+MString Camera::getShapeLongNodeName() {
+    MObject nodeObj = Camera::getShapeObject();
+
+    MDagPath nodeDagPath;
+    MStatus status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
+    MMSOLVER_CHECK_MSTATUS(status);
+
+    MString result = nodeDagPath.fullPathName(&status);
+    MMSOLVER_CHECK_MSTATUS(status);
+
+    return result;
 }
 
 bool Camera::getProjectionDynamic() const { return m_isProjectionDynamic; }

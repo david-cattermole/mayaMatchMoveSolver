@@ -1009,6 +1009,235 @@ void analyseDependencyGraphRelationships(
     }
 }
 
+namespace {
+
+// Check if one node is a parent of another based on their full path
+// names.
+bool isParentOf(const MString &childPath, const MString &parentPath) {
+    // Both paths should start with '|' for DAG nodes.
+    if (parentPath.length() == 0 || childPath.length() == 0) {
+        return false;
+    }
+
+    // Check if child path starts with parent path.
+    if (childPath.length() <= parentPath.length()) {
+        return false;
+    }
+
+    // The child should start with the parent path followed by '|'.
+    //
+    // Avoid string concatenation for performance.
+    const auto parentPathLength = static_cast<int32_t>(parentPath.length());
+    if (childPath.substring(0, parentPathLength) != parentPath) {
+        return false;
+    }
+
+    // Check that the next character is '|' to ensure it's a child,
+    // not just a prefix match.
+    return childPath.asChar()[parentPathLength] == '|';
+}
+
+// Check if a node is a DG node (not a DAG node).
+bool isDGNode(const MString &nodePath) {
+    // DAG nodes start with '|', DG nodes don't.
+    return nodePath.length() > 0 && nodePath.asChar()[0] != '|';
+}
+
+bool isStandardTransformAttribute(const MString &attrName) {
+    return (attrName == "translateX" || attrName == "translateY" ||
+            attrName == "translateZ" || attrName == "rotateX" ||
+            attrName == "rotateY" || attrName == "rotateZ" ||
+            attrName == "scaleX" || attrName == "scaleY" ||
+            attrName == "scaleZ" || attrName == "shearXY" ||
+            attrName == "shearXZ" || attrName == "shearYZ" ||
+            attrName == "rotateOrder" || attrName == "rotateAxisX" ||
+            attrName == "rotateAxisY" || attrName == "rotateAxisZ" ||
+            attrName == "rotatePivotX" || attrName == "rotatePivotY" ||
+            attrName == "rotatePivotZ" || attrName == "rotatePivotTranslateX" ||
+            attrName == "rotatePivotTranslateY" ||
+            attrName == "rotatePivotTranslateZ" || attrName == "scalePivotX" ||
+            attrName == "scalePivotY" || attrName == "scalePivotZ" ||
+            attrName == "scalePivotTranslateX" ||
+            attrName == "scalePivotTranslateY" ||
+            attrName == "scalePivotTranslateZ");
+}
+
+struct AttributeInfo {
+    bool isDGNodeAttr;
+    bool isStandardTransformAttr;
+    bool isCameraAttr;
+    MString fullPath;
+    MString attrName;
+
+    AttributeInfo()
+        : isDGNodeAttr(false)
+        , isStandardTransformAttr(false)
+        , isCameraAttr(false) {}
+};
+
+}  // namespace
+
+/**
+ * @brief Determines the relationship between markers, attributes, and
+ * frames using node name parsing and hierarchy analysis.
+ *
+ * This function analyzes the DAG hierarchy by parsing node names with
+ * pipe delimiters, avoiding expensive Python calls and DG evaluation.
+ *
+ * It uses the hierarchical relationships to determine which
+ * attributes can affect which markers based on parent-child
+ * relationships and direct marker-bundle associations.
+ *
+ * DG nodes and non-standard attributes are assumed to affect all
+ * markers.
+ */
+void analyseNameBasedRelationships(const MarkerList &markerList,
+                                   const AttrList &attrList,
+                                   const FrameList &frameList,
+
+                                   // Outputs
+                                   MatrixBool3D &out_markerToAttrToFrameMatrix,
+                                   MStatus &out_status) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("analyseNameBasedRelationships");
+
+    out_status = MStatus::kSuccess;
+
+    const auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    const auto uiUnit = MTime::uiUnit();
+
+    // The attribute's 'affect' is assumed to be false if the plug
+    // cannot be found. We go by "assumed guilty until proven
+    // innocent".
+    const bool defaultValue = false;
+
+    // Calculate the relationship between attributes and markers.
+    out_markerToAttrToFrameMatrix.reset(markerList.size(), attrList.size(),
+                                        frameList.size(),
+                                        /*fill_value=*/defaultValue);
+
+    // Pre-compute attribute information to avoid redundant calls.
+    std::vector<AttributeInfo> attrInfoList;
+    attrInfoList.reserve(attrList.size());
+    for (AttrIndex attrIndex = 0; attrIndex < attrList.size(); ++attrIndex) {
+        const bool attrEnabled = attrList.get_enabled(attrIndex);
+        if (!attrEnabled) {
+            attrInfoList.push_back(AttributeInfo());
+            continue;
+        }
+
+        AttrPtr attr = attrList.get_attr(attrIndex);
+        AttributeInfo info;
+        info.fullPath = attr->getLongNodeName();
+        info.attrName = attr->getAttrName();
+        info.isDGNodeAttr = isDGNode(info.fullPath);
+        info.isStandardTransformAttr =
+            isStandardTransformAttribute(info.attrName);
+
+        MObject attrNodeObj = attr->getObject();
+        info.isCameraAttr = nodeIsCameraType(attrNodeObj);
+
+        attrInfoList.push_back(info);
+    }
+
+    // Pre-allocate vector for marker enabled states.
+    std::vector<bool> markerEnabledPerFrame;
+    markerEnabledPerFrame.resize(frameList.size());
+    for (MarkerIndex markerIndex = 0; markerIndex < markerList.size();
+         ++markerIndex) {
+        const bool markerEnabled = markerList.get_enabled(markerIndex);
+        if (!markerEnabled) {
+            continue;
+        }
+
+        MarkerPtr marker = markerList.get_marker(markerIndex);
+        CameraPtr camera = marker->getCamera();
+        BundlePtr bundle = marker->getBundle();
+
+        const MString markerPath = marker->getLongNodeName();
+        const MString cameraTransformPath = camera->getTransformLongNodeName();
+        const MString bundlePath = bundle->getLongNodeName();
+
+        // Determine which frames this marker is enabled on.
+        bool hasEnabledFrames = false;
+        for (FrameIndex frameIndex = 0; frameIndex < frameList.size();
+             ++frameIndex) {
+            const bool frameEnabled = frameList.get_enabled(frameIndex);
+            if (!frameEnabled) {
+                markerEnabledPerFrame[frameIndex] = false;
+                continue;
+            }
+
+            const FrameNumber frameNumber = frameList.get_frame(frameIndex);
+            const MTime frame = convert_to_time(frameNumber, uiUnit);
+
+            bool enable = false;
+            double weight = 0.0;
+            const bool markerIsEnabled =
+                getMarkerIsEnabled(marker, frame, timeEvalMode, enable, weight);
+
+            markerEnabledPerFrame[frameIndex] = markerIsEnabled;
+            if (markerIsEnabled) {
+                hasEnabledFrames = true;
+            }
+        }
+
+        if (!hasEnabledFrames) {
+            continue;
+        }
+
+        for (AttrIndex attrIndex = 0; attrIndex < attrList.size();
+             ++attrIndex) {
+            const bool attrEnabled = attrList.get_enabled(attrIndex);
+            if (!attrEnabled) {
+                continue;
+            }
+
+            const AttributeInfo &attrInfo = attrInfoList[attrIndex];
+            bool attrAffectsMarker = false;
+            if (attrInfo.isDGNodeAttr) {
+                // Rule 1: DG nodes affect all markers.
+                attrAffectsMarker = true;
+                MMSOLVER_MAYA_VRB(
+                    "analyseNameBasedRelationships: "
+                    "DG node affects all markers: "
+                    << attrInfo.fullPath);
+            } else if (!attrInfo.isStandardTransformAttr) {
+                // Rule 2: Non-standard attributes affect all markers.
+                attrAffectsMarker = true;
+                MMSOLVER_MAYA_VRB(
+                    "analyseNameBasedRelationships: "
+                    "Non-standard attribute affects all markers: "
+                    << attrInfo.fullPath << "." << attrInfo.attrName);
+            } else if (bundlePath == attrInfo.fullPath) {
+                // Rule 3: Bundle attributes affect their associated markers.
+                attrAffectsMarker = true;
+            } else if (attrInfo.isCameraAttr) {
+                // Rule 4: Camera attributes affect all markers under that
+                // camera.
+                if (cameraTransformPath == attrInfo.fullPath ||
+                    isParentOf(markerPath, attrInfo.fullPath) ||
+                    isParentOf(markerPath, cameraTransformPath)) {
+                    attrAffectsMarker = true;
+                }
+            } else if (isParentOf(bundlePath, attrInfo.fullPath)) {
+                // Rule 5: Parent transform attributes affect child nodes.
+                attrAffectsMarker = true;
+            }
+
+            if (attrAffectsMarker) {
+                for (FrameIndex frameIndex = 0; frameIndex < frameList.size();
+                     ++frameIndex) {
+                    if (markerEnabledPerFrame[frameIndex]) {
+                        out_markerToAttrToFrameMatrix.set(
+                            markerIndex, attrIndex, frameIndex, true);
+                    }
+                }
+            }
+        }
+    }
+}
+
 /**
  * @brief Determines the relationship between markers, attributes, and
  * frames using only known details of the objects, and does not

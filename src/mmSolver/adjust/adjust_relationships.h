@@ -99,6 +99,13 @@ void analyseDependencyGraphRelationships(
     // Outputs
     mmsolver::MatrixBool3D &out_markerToAttrToFrameMatrix, MStatus &out_status);
 
+void analyseNameBasedRelationships(const MarkerList &markerList,
+                                   const AttrList &attrList,
+                                   const FrameList &frameList,
+                                   // Outputs
+                                   MatrixBool3D &out_markerToAttrToFrameMatrix,
+                                   MStatus &out_status);
+
 void analyseObjectRelationships(
     const MarkerList &markerList, const AttrList &attrList,
     const FrameList &frameList,

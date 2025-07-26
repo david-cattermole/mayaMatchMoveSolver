@@ -734,6 +734,9 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
     }
 
     if (m_mode == MODE_VALUE_ADD_ATTRS_TO_MARKERS) {
+        // TODO: The majority of time spent in this command is spent
+        // setting marker attributes, especially for large solves.
+        // Therefore this area is the next part to optimize.
         MMSOLVER_MAYA_VRB(
             "mmSolverAffects: Setting Marker Validity Attributes...");
 

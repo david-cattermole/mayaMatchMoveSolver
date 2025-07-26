@@ -59,6 +59,8 @@ public:
     MStatus getPos(double &x, double &y, double &z, const int timeEvalMode);
     MStatus getPos(MPoint &point, const int timeEvalMode);
 
+    MString getLongNodeName();
+
 private:
     MString m_nodeName;
     MObject m_object;

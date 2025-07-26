@@ -117,3 +117,16 @@ MStatus Bundle::getPos(MPoint &point, const int timeEvalMode) {
     MStatus status = Bundle::getPos(point, time, timeEvalMode);
     return status;
 }
+
+MString Bundle::getLongNodeName() {
+    MObject nodeObj = Bundle::getObject();
+
+    MDagPath nodeDagPath;
+    MStatus status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
+    MMSOLVER_CHECK_MSTATUS(status);
+
+    MString result = nodeDagPath.fullPathName(&status);
+    MMSOLVER_CHECK_MSTATUS(status);
+
+    return result;
+}

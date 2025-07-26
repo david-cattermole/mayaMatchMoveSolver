@@ -1028,13 +1028,12 @@ bool isParentOf(const MString &childPath, const MString &parentPath) {
     //
     // Avoid string concatenation for performance.
     const auto parentPathLength = static_cast<int32_t>(parentPath.length());
-    if (childPath.substring(0, parentPathLength) != parentPath) {
+    const MString childSubString = childPath.substring(0, parentPathLength - 1);
+    if (childSubString != parentPath) {
         return false;
     }
 
-    // Check that the next character is '|' to ensure it's a child,
-    // not just a prefix match.
-    return childPath.asChar()[parentPathLength] == '|';
+    return true;
 }
 
 // Check if a node is a DG node (not a DAG node).

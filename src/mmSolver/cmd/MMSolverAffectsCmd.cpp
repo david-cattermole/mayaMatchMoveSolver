@@ -136,7 +136,7 @@ MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
     }
 
     // Get 'GraphMode'
-    MMSolverAffectsCmd::m_graph_mode = GraphMode::kNormal;
+    MMSolverAffectsCmd::m_graph_mode = GraphMode::kNodeName;
     if (argData.isFlagSet(GRAPH_MODE_FLAG)) {
         MString value = "";
         status = argData.getFlagArgument(GRAPH_MODE_FLAG, 0, value);

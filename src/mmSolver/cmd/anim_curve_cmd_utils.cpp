@@ -74,8 +74,8 @@ bool validate_anim_curve(
 
     FrameNumber start_frame = input_start_frame;
     FrameNumber end_frame = input_end_frame;
-    if (input_start_frame != std::numeric_limits<FrameNumber>::max() &&
-        input_end_frame != std::numeric_limits<FrameNumber>::max()) {
+    if (input_start_frame == std::numeric_limits<FrameNumber>::max() &&
+        input_end_frame == std::numeric_limits<FrameNumber>::max()) {
         start_frame = static_cast<FrameNumber>(anim_curve_fn.time(0).value());
 
         auto last_key_index = keyframeCount - 1;

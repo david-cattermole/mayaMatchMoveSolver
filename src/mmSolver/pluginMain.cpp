@@ -36,6 +36,7 @@
 #include "mmSolver/nodeTypeIds.h"
 
 // Solver and nodes
+#include "mmSolver/cmd/MMAnimCurveDiffStatisticsCmd.h"
 #include "mmSolver/cmd/MMAnimCurveFilterPopsCmd.h"
 #include "mmSolver/cmd/MMAnimCurveSimplifyCmd.h"
 #include "mmSolver/cmd/MMAnimCurveStatisticsCmd.h"
@@ -250,6 +251,10 @@ MStatus initializePlugin(MObject obj) {
     REGISTER_COMMAND(plugin, mmsolver::MMTestCameraMatrixCmd::cmdName(),
                      mmsolver::MMTestCameraMatrixCmd::creator,
                      mmsolver::MMTestCameraMatrixCmd::newSyntax, status);
+
+    REGISTER_COMMAND(plugin, mmsolver::MMAnimCurveDiffStatisticsCmd::cmdName(),
+                     mmsolver::MMAnimCurveDiffStatisticsCmd::creator,
+                     mmsolver::MMAnimCurveDiffStatisticsCmd::newSyntax, status);
 
     REGISTER_COMMAND(plugin, mmsolver::MMAnimCurveFilterPopsCmd::cmdName(),
                      mmsolver::MMAnimCurveFilterPopsCmd::creator,
@@ -684,6 +689,8 @@ MStatus uninitializePlugin(MObject obj) {
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMTestCameraMatrixCmd::cmdName(),
                        status);
+    DEREGISTER_COMMAND(
+        plugin, mmsolver::MMAnimCurveDiffStatisticsCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMAnimCurveFilterPopsCmd::cmdName(),
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMAnimCurveSimplifyCmd::cmdName(),

@@ -52,6 +52,7 @@ set(SOURCE_FILES
   mmSolver/adjust/adjust_solveFunc.cpp
   mmSolver/calibrate/calibrate_common.cpp
   mmSolver/calibrate/vanishing_point.cpp
+  mmSolver/cmd/MMAnimCurveDiffStatisticsCmd.cpp
   mmSolver/cmd/MMAnimCurveFilterPopsCmd.cpp
   mmSolver/cmd/MMAnimCurveSimplifyCmd.cpp
   mmSolver/cmd/MMAnimCurveStatisticsCmd.cpp

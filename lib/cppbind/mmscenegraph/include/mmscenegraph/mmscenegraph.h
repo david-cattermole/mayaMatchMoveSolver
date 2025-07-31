@@ -33,5 +33,6 @@
 #include "line.h"
 #include "scenebake.h"
 #include "scenegraph.h"
+#include "statistics.h"
 
 #endif  // MM_SOLVER_MM_SCENE_GRAPH_MM_SCENE_GRAPH_H

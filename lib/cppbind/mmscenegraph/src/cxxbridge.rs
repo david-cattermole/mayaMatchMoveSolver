@@ -34,6 +34,33 @@ use crate::line::shim_line_point_intersection;
 use crate::scenebake::shim_bake_scene_graph;
 use crate::scenegraph::shim_create_scene_graph_box;
 use crate::scenegraph::ShimSceneGraph;
+use crate::statistics::{
+    shim_calc_interquartile_range,
+    shim_calc_local_minima_maxima,
+    shim_calc_mean_absolute_deviation,
+    shim_calc_median_absolute_deviation,
+    shim_calc_median_absolute_deviation_sigma,
+    shim_calc_peak_to_peak,
+    shim_calc_percentile_rank,
+    shim_calc_population_coefficient_of_variation,
+    shim_calc_population_kurtosis_excess,
+    shim_calc_population_relative_standard_deviation,
+    shim_calc_population_standard_deviation,
+    shim_calc_population_variance,
+    shim_calc_quantile,
+    shim_calc_quartiles,
+    shim_calc_sample_coefficient_of_variation,
+    shim_calc_sample_kurtosis_excess,
+    shim_calc_sample_relative_standard_deviation,
+    shim_calc_sample_standard_deviation,
+    shim_calc_sample_variance,
+    shim_calc_signal_to_noise_ratio,
+    shim_calc_signal_to_noise_ratio_as_decibels,
+    shim_calc_skewness_type1,
+    shim_calc_skewness_type2,
+    shim_calc_z_score,
+    shim_gaussian,
+};
 
 #[cxx::bridge(namespace = "mmscenegraph")]
 pub mod ffi {
@@ -498,6 +525,147 @@ pub mod ffi {
             interpolation_method: Interpolation,
             out_x_values: &mut Vec<f64>,
             out_y_values: &mut Vec<f64>,
+        ) -> bool;
+    }
+
+    // Statistics
+    extern "Rust" {
+        fn shim_gaussian(x: f64, mean: f64, sigma: f64) -> f64;
+
+        fn shim_calc_mean_absolute_deviation(
+            data: &[f64],
+            out_mean: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_population_variance(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_variance: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_sample_variance(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_variance: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_population_standard_deviation(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_std_dev: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_sample_standard_deviation(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_std_dev: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_population_coefficient_of_variation(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_cv: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_sample_coefficient_of_variation(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_cv: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_population_relative_standard_deviation(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_rsd: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_sample_relative_standard_deviation(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_rsd: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_z_score(mean: f64, std_dev: f64, value: f64) -> f64;
+
+        fn shim_calc_peak_to_peak(data: &[f64], out_value: &mut f64) -> bool;
+
+        fn shim_calc_skewness_type1(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_skewness: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_skewness_type2(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_skewness: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_population_kurtosis_excess(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_kurtosis: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_sample_kurtosis_excess(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_kurtosis: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_local_minima_maxima(
+            data: &[f64],
+            out_indices: &mut Vec<usize>,
+        ) -> bool;
+
+        fn shim_calc_signal_to_noise_ratio(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_snr: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_signal_to_noise_ratio_as_decibels(
+            data: &[f64],
+            out_mean: &mut f64,
+            out_snr_db: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_median_absolute_deviation(
+            sorted_data: &[f64],
+            out_median: &mut f64,
+            out_mad: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_median_absolute_deviation_sigma(
+            value: f64,
+            sorted_data: &[f64],
+            out_median: &mut f64,
+            out_sigma: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_quantile(
+            sorted_data: &[f64],
+            probability: f64,
+            out_value: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_quartiles(
+            sorted_data: &[f64],
+            out_q1: &mut f64,
+            out_q2: &mut f64,
+            out_q3: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_interquartile_range(
+            sorted_data: &[f64],
+            out_median: &mut f64,
+            out_iqr: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_percentile_rank(
+            sorted_data: &[f64],
+            value: f64,
+            out_rank: &mut f64,
         ) -> bool;
     }
 }

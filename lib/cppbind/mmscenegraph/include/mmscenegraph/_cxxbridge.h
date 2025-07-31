@@ -1230,4 +1230,54 @@ MMSCENEGRAPH_API_EXPORT bool shim_detect_curve_pops(::rust::Slice<const double> 
 MMSCENEGRAPH_API_EXPORT bool shim_filter_curve_pops(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
 
 MMSCENEGRAPH_API_EXPORT bool shim_curve_simplify(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, ::std::size_t control_point_count, ::mmscenegraph::ControlPointDistribution distribution, ::mmscenegraph::Interpolation interpolation_method, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
+
+MMSCENEGRAPH_API_EXPORT double shim_gaussian(double x, double mean, double sigma) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_mean_absolute_deviation(::rust::Slice<const double> data, double &out_mean) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_population_variance(::rust::Slice<const double> data, double &out_mean, double &out_variance) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_variance(::rust::Slice<const double> data, double &out_mean, double &out_variance) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_population_standard_deviation(::rust::Slice<const double> data, double &out_mean, double &out_std_dev) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_standard_deviation(::rust::Slice<const double> data, double &out_mean, double &out_std_dev) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_population_coefficient_of_variation(::rust::Slice<const double> data, double &out_mean, double &out_cv) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_coefficient_of_variation(::rust::Slice<const double> data, double &out_mean, double &out_cv) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_population_relative_standard_deviation(::rust::Slice<const double> data, double &out_mean, double &out_rsd) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_relative_standard_deviation(::rust::Slice<const double> data, double &out_mean, double &out_rsd) noexcept;
+
+MMSCENEGRAPH_API_EXPORT double shim_calc_z_score(double mean, double std_dev, double value) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_peak_to_peak(::rust::Slice<const double> data, double &out_value) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_skewness_type1(::rust::Slice<const double> data, double &out_mean, double &out_skewness) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_skewness_type2(::rust::Slice<const double> data, double &out_mean, double &out_skewness) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_population_kurtosis_excess(::rust::Slice<const double> data, double &out_mean, double &out_kurtosis) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_kurtosis_excess(::rust::Slice<const double> data, double &out_mean, double &out_kurtosis) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_local_minima_maxima(::rust::Slice<const double> data, ::rust::Vec<::std::size_t> &out_indices) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_signal_to_noise_ratio(::rust::Slice<const double> data, double &out_mean, double &out_snr) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_signal_to_noise_ratio_as_decibels(::rust::Slice<const double> data, double &out_mean, double &out_snr_db) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_median_absolute_deviation(::rust::Slice<const double> sorted_data, double &out_median, double &out_mad) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_median_absolute_deviation_sigma(double value, ::rust::Slice<const double> sorted_data, double &out_median, double &out_sigma) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_quantile(::rust::Slice<const double> sorted_data, double probability, double &out_value) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_quartiles(::rust::Slice<const double> sorted_data, double &out_q1, double &out_q2, double &out_q3) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_interquartile_range(::rust::Slice<const double> sorted_data, double &out_median, double &out_iqr) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_percentile_rank(::rust::Slice<const double> sorted_data, double value, double &out_rank) noexcept;
 } // namespace mmscenegraph

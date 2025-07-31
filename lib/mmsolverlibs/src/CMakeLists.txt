@@ -82,6 +82,7 @@ set(lib_source_files
   ${mmscenegraph_source_dir}/line.cpp
   ${mmscenegraph_source_dir}/scenebake.cpp
   ${mmscenegraph_source_dir}/scenegraph.cpp
+  ${mmscenegraph_source_dir}/statistics.cpp
 )
 
 include(MMCommonUtils)

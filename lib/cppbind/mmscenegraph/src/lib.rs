@@ -32,3 +32,4 @@ pub mod node;
 pub mod scenebake;
 pub mod scenegraph;
 pub mod shim_utilities;
+pub mod statistics;

@@ -60,6 +60,30 @@
 #define END_FRAME_FLAG_SHORT "-ef"
 #define END_FRAME_FLAG_LONG "-endFrame"
 
+#define MEAN_ABSOLUTE_DIFF_FLAG_SHORT "-mad"
+#define MEAN_ABSOLUTE_DIFF_FLAG_LONG "-meanAbsoluteDifference"
+
+#define RMS_DIFF_FLAG_SHORT "-rms"
+#define RMS_DIFF_FLAG_LONG "-rootMeanSquareDifference"
+
+#define MEAN_DIFF_FLAG_SHORT "-md"
+#define MEAN_DIFF_FLAG_LONG "-meanDifference"
+
+#define MEDIAN_DIFF_FLAG_SHORT "-mdd"
+#define MEDIAN_DIFF_FLAG_LONG "-medianDifference"
+
+#define VARIANCE_FLAG_SHORT "-var"
+#define VARIANCE_FLAG_LONG "-variance"
+
+#define STANDARD_DEVIATION_FLAG_SHORT "-sd"
+#define STANDARD_DEVIATION_FLAG_LONG "-standardDeviation"
+
+#define PEAK_TO_PEAK_FLAG_SHORT "-ptp"
+#define PEAK_TO_PEAK_FLAG_LONG "-peakToPeak"
+
+#define SIGNAL_TO_NOISE_RATIO_FLAG_SHORT "-snr"
+#define SIGNAL_TO_NOISE_RATIO_FLAG_LONG "-signalToNoiseRatio"
+
 #define CMD_NAME "mmAnimCurveDiffStatistics"
 
 // Statistic type identifiers for output
@@ -100,6 +124,22 @@ MSyntax MMAnimCurveDiffStatisticsCmd::newSyntax() {
                    MSyntax::kUnsigned);
     syntax.addFlag(END_FRAME_FLAG_SHORT, END_FRAME_FLAG_LONG,
                    MSyntax::kUnsigned);
+
+    // Statistics flags
+    syntax.addFlag(MEAN_ABSOLUTE_DIFF_FLAG_SHORT, MEAN_ABSOLUTE_DIFF_FLAG_LONG,
+                   MSyntax::kBoolean);
+    syntax.addFlag(RMS_DIFF_FLAG_SHORT, RMS_DIFF_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(MEAN_DIFF_FLAG_SHORT, MEAN_DIFF_FLAG_LONG,
+                   MSyntax::kBoolean);
+    syntax.addFlag(MEDIAN_DIFF_FLAG_SHORT, MEDIAN_DIFF_FLAG_LONG,
+                   MSyntax::kBoolean);
+    syntax.addFlag(VARIANCE_FLAG_SHORT, VARIANCE_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(STANDARD_DEVIATION_FLAG_SHORT, STANDARD_DEVIATION_FLAG_LONG,
+                   MSyntax::kBoolean);
+    syntax.addFlag(PEAK_TO_PEAK_FLAG_SHORT, PEAK_TO_PEAK_FLAG_LONG,
+                   MSyntax::kBoolean);
+    syntax.addFlag(SIGNAL_TO_NOISE_RATIO_FLAG_SHORT,
+                   SIGNAL_TO_NOISE_RATIO_FLAG_LONG, MSyntax::kBoolean);
 
     // Require exactly 2 animation curves
     const unsigned int min_curves = 2;
@@ -147,8 +187,83 @@ MStatus MMAnimCurveDiffStatisticsCmd::parseArgs(const MArgList &args) {
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
+    // Parse statistics flags with default values.
+    m_calculateMeanAbsDiff = false;
+    m_calculateRmsDiff = false;
+    m_calculateMeanDiff = false;
+    m_calculateMedianDiff = false;
+    m_calculateVariance = false;
+    m_calculateStdDev = false;
+    m_calculatePeakToPeak = false;
+    m_calculateSNR = false;
+
+    if (argData.isFlagSet(MEAN_ABSOLUTE_DIFF_FLAG_SHORT)) {
+        status = argData.getFlagArgument(MEAN_ABSOLUTE_DIFF_FLAG_SHORT, 0,
+                                         m_calculateMeanAbsDiff);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    if (argData.isFlagSet(RMS_DIFF_FLAG_SHORT)) {
+        status =
+            argData.getFlagArgument(RMS_DIFF_FLAG_SHORT, 0, m_calculateRmsDiff);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    if (argData.isFlagSet(MEAN_DIFF_FLAG_SHORT)) {
+        status = argData.getFlagArgument(MEAN_DIFF_FLAG_SHORT, 0,
+                                         m_calculateMeanDiff);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    if (argData.isFlagSet(MEDIAN_DIFF_FLAG_SHORT)) {
+        status = argData.getFlagArgument(MEDIAN_DIFF_FLAG_SHORT, 0,
+                                         m_calculateMedianDiff);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    if (argData.isFlagSet(VARIANCE_FLAG_SHORT)) {
+        status = argData.getFlagArgument(VARIANCE_FLAG_SHORT, 0,
+                                         m_calculateVariance);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    if (argData.isFlagSet(STANDARD_DEVIATION_FLAG_SHORT)) {
+        status = argData.getFlagArgument(STANDARD_DEVIATION_FLAG_SHORT, 0,
+                                         m_calculateStdDev);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    if (argData.isFlagSet(PEAK_TO_PEAK_FLAG_SHORT)) {
+        status = argData.getFlagArgument(PEAK_TO_PEAK_FLAG_SHORT, 0,
+                                         m_calculatePeakToPeak);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    if (argData.isFlagSet(SIGNAL_TO_NOISE_RATIO_FLAG_SHORT)) {
+        status = argData.getFlagArgument(SIGNAL_TO_NOISE_RATIO_FLAG_SHORT, 0,
+                                         m_calculateSNR);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    // If no flags are set, calculate all statistics by default
+    if (!m_calculateMeanAbsDiff && !m_calculateRmsDiff &&
+        !m_calculateMeanDiff && !m_calculateMedianDiff &&
+        !m_calculateVariance && !m_calculateStdDev && !m_calculatePeakToPeak &&
+        !m_calculateSNR) {
+        MGlobal::displayError(CMD_NAME
+                              ": At least one statistic must be enabled.");
+        return MS::kFailure;
+    }
+
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_startFrame=" << m_startFrame);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_endFrame=" << m_endFrame);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateMeanAbsDiff="
+                               << m_calculateMeanAbsDiff);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateRmsDiff="
+                               << m_calculateRmsDiff);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateMeanDiff="
+                               << m_calculateMeanDiff);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateMedianDiff="
+                               << m_calculateMedianDiff);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateVariance="
+                               << m_calculateVariance);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateStdDev=" << m_calculateStdDev);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculatePeakToPeak="
+                               << m_calculatePeakToPeak);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateSNR=" << m_calculateSNR);
 
     return status;
 }
@@ -273,104 +388,150 @@ MStatus MMAnimCurveDiffStatisticsCmd::doIt(const MArgList &args) {
     MDoubleArray result;
     std::vector<std::pair<double, double>> statsResults;
 
-    // Calculate mean absolute difference.
-    mmsg::Real mean_abs_diff = 0.0;
-    mmsg::Real mad = 0.0;
-    if (mmsg::calc_mean_absolute_deviation(abs_diff_slice, mean_abs_diff,
-                                           mad)) {
-        statsResults.push_back({STAT_TYPE_MEAN_ABSOLUTE_DIFF, mean_abs_diff});
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": mean_absolute_diff=" << mean_abs_diff);
-    } else {
-        MGlobal::displayWarning(
-            CMD_NAME ": Failed to calculate mean absolute difference.");
-    }
-
-    // Calculate mean of differences (for bias detection).
+    // Variables to store calculated values that might be reused
     mmsg::Real mean_diff = 0.0;
     mmsg::Real variance_diff = 0.0;
-    if (mmsg::calc_population_variance(diff_slice, mean_diff, variance_diff)) {
-        statsResults.push_back({STAT_TYPE_MEAN_DIFF, mean_diff});
-        statsResults.push_back({STAT_TYPE_POPULATION_VARIANCE, variance_diff});
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": mean_diff=" << mean_diff);
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": population_variance="
-                                   << variance_diff);
-    } else {
-        MGlobal::displayWarning(
-            CMD_NAME ": Failed to calculate mean and variance of differences.");
+    bool meanCalculated = false;
+    bool varianceCalculated = false;
+
+    // Calculate mean absolute difference.
+    if (m_calculateMeanAbsDiff) {
+        mmsg::Real mean_abs_diff = 0.0;
+        mmsg::Real mad = 0.0;
+        if (mmsg::calc_mean_absolute_deviation(abs_diff_slice, mean_abs_diff,
+                                               mad)) {
+            statsResults.push_back(
+                {STAT_TYPE_MEAN_ABSOLUTE_DIFF, mean_abs_diff});
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": mean_absolute_diff="
+                                       << mean_abs_diff);
+        } else {
+            MGlobal::displayWarning(
+                CMD_NAME ": Failed to calculate mean absolute difference.");
+        }
+    }
+
+    // Calculate mean and variance if needed (they come together)
+    if (m_calculateMeanDiff || m_calculateVariance) {
+        if (mmsg::calc_population_variance(diff_slice, mean_diff,
+                                           variance_diff)) {
+            meanCalculated = true;
+            varianceCalculated = true;
+
+            if (m_calculateMeanDiff) {
+                statsResults.push_back({STAT_TYPE_MEAN_DIFF, mean_diff});
+                MMSOLVER_MAYA_VRB(CMD_NAME << ": mean_diff=" << mean_diff);
+            }
+            if (m_calculateVariance) {
+                statsResults.push_back(
+                    {STAT_TYPE_POPULATION_VARIANCE, variance_diff});
+                MMSOLVER_MAYA_VRB(CMD_NAME << ": population_variance="
+                                           << variance_diff);
+            }
+        } else {
+            MGlobal::displayWarning(
+                CMD_NAME
+                ": Failed to calculate mean and variance of differences.");
+        }
     }
 
     // Calculate population standard deviation.
-    mmsg::Real std_dev_diff = 0.0;
-    mmsg::Real mean_for_std = 0.0;
-    if (mmsg::calc_population_standard_deviation(diff_slice, mean_for_std,
-                                                 std_dev_diff)) {
-        statsResults.push_back({STAT_TYPE_POPULATION_STD_DEV, std_dev_diff});
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": population_std_dev=" << std_dev_diff);
-    } else {
-        MGlobal::displayWarning(
-            CMD_NAME ": Failed to calculate population standard deviation.");
+    if (m_calculateStdDev) {
+        if (varianceCalculated) {
+            // We already have variance, just calculate std dev from it
+            mmsg::Real std_dev_diff = std::sqrt(variance_diff);
+            statsResults.push_back(
+                {STAT_TYPE_POPULATION_STD_DEV, std_dev_diff});
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": population_std_dev="
+                                       << std_dev_diff);
+        } else {
+            // Calculate std dev directly
+            mmsg::Real std_dev_diff = 0.0;
+            mmsg::Real mean_for_std = 0.0;
+            if (mmsg::calc_population_standard_deviation(
+                    diff_slice, mean_for_std, std_dev_diff)) {
+                statsResults.push_back(
+                    {STAT_TYPE_POPULATION_STD_DEV, std_dev_diff});
+                MMSOLVER_MAYA_VRB(CMD_NAME << ": population_std_dev="
+                                           << std_dev_diff);
+                if (!meanCalculated) {
+                    mean_diff = mean_for_std;
+                    meanCalculated = true;
+                }
+            } else {
+                MGlobal::displayWarning(
+                    CMD_NAME
+                    ": Failed to calculate population standard deviation.");
+            }
+        }
     }
 
     // Calculate Root Mean Square (RMS) of differences.
-    // RMS = sqrt(mean(x^2))
-    mmsg::Real rms_diff = 0.0;
-    rust::Vec<mmsg::Real> squared_differences;
-    squared_differences.reserve(differences.size());
-    for (const auto &diff : differences) {
-        squared_differences.push_back(diff * diff);
-    }
-    rust::Slice<const mmsg::Real> squared_diff_slice{
-        squared_differences.data(), squared_differences.size()};
-    mmsg::Real mean_squared = 0.0;
-    mmsg::Real variance_squared = 0.0;
-    if (mmsg::calc_population_variance(squared_diff_slice, mean_squared,
-                                       variance_squared)) {
-        rms_diff = std::sqrt(mean_squared);
-        statsResults.push_back({STAT_TYPE_RMS_DIFF, rms_diff});
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": rms_diff=" << rms_diff);
-    } else {
-        MGlobal::displayWarning(CMD_NAME
-                                ": Failed to calculate RMS difference.");
+    if (m_calculateRmsDiff) {
+        mmsg::Real rms_diff = 0.0;
+        rust::Vec<mmsg::Real> squared_differences;
+        squared_differences.reserve(differences.size());
+        for (const auto &diff : differences) {
+            squared_differences.push_back(diff * diff);
+        }
+        rust::Slice<const mmsg::Real> squared_diff_slice{
+            squared_differences.data(), squared_differences.size()};
+        mmsg::Real mean_squared = 0.0;
+        mmsg::Real variance_squared = 0.0;
+        if (mmsg::calc_population_variance(squared_diff_slice, mean_squared,
+                                           variance_squared)) {
+            rms_diff = std::sqrt(mean_squared);
+            statsResults.push_back({STAT_TYPE_RMS_DIFF, rms_diff});
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": rms_diff=" << rms_diff);
+        } else {
+            MGlobal::displayWarning(CMD_NAME
+                                    ": Failed to calculate RMS difference.");
+        }
     }
 
     // Calculate peak-to-peak difference.
-    mmsg::Real peak_to_peak_diff = 0.0;
-    if (mmsg::calc_peak_to_peak(diff_slice, peak_to_peak_diff)) {
-        statsResults.push_back(
-            {STAT_TYPE_PEAK_TO_PEAK_DIFF, peak_to_peak_diff});
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": peak_to_peak_diff="
-                                   << peak_to_peak_diff);
-    } else {
-        MGlobal::displayWarning(
-            CMD_NAME ": fFiled to calculate peak-to-peak difference.");
+    if (m_calculatePeakToPeak) {
+        mmsg::Real peak_to_peak_diff = 0.0;
+        if (mmsg::calc_peak_to_peak(diff_slice, peak_to_peak_diff)) {
+            statsResults.push_back(
+                {STAT_TYPE_PEAK_TO_PEAK_DIFF, peak_to_peak_diff});
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": peak_to_peak_diff="
+                                       << peak_to_peak_diff);
+        } else {
+            MGlobal::displayWarning(
+                CMD_NAME ": Failed to calculate peak-to-peak difference.");
+        }
     }
 
     // Calculate signal-to-noise ratio of differences.
-    mmsg::Real snr_mean = 0.0;
-    mmsg::Real snr = 0.0;
-    if (mmsg::calc_signal_to_noise_ratio(diff_slice, snr_mean, snr)) {
-        statsResults.push_back({STAT_TYPE_SIGNAL_TO_NOISE_RATIO, snr});
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": signal_to_noise_ratio=" << snr);
-    } else {
-        MGlobal::displayWarning(CMD_NAME
-                                ": Failed to calculate signal-to-noise ratio.");
+    if (m_calculateSNR) {
+        mmsg::Real snr_mean = 0.0;
+        mmsg::Real snr = 0.0;
+        if (mmsg::calc_signal_to_noise_ratio(diff_slice, snr_mean, snr)) {
+            statsResults.push_back({STAT_TYPE_SIGNAL_TO_NOISE_RATIO, snr});
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": signal_to_noise_ratio=" << snr);
+        } else {
+            MGlobal::displayWarning(
+                CMD_NAME ": Failed to calculate signal-to-noise ratio.");
+        }
     }
 
     // Calculate median difference (requires sorted data).
-    rust::Vec<mmsg::Real> sorted_differences = differences;
-    std::sort(sorted_differences.begin(), sorted_differences.end());
-    rust::Slice<const mmsg::Real> sorted_diff_slice{sorted_differences.data(),
-                                                    sorted_differences.size()};
-    mmsg::Real q1 = 0.0, q2 = 0.0, q3 = 0.0;
-    if (mmsg::calc_quartiles(sorted_diff_slice, q1, q2, q3)) {
-        statsResults.push_back({STAT_TYPE_MEDIAN_DIFF, q2});
-        MMSOLVER_MAYA_VRB(CMD_NAME << ": median_diff=" << q2);
-    } else {
-        MGlobal::displayWarning(CMD_NAME
-                                ": Failed to calculate median difference.");
+    if (m_calculateMedianDiff) {
+        rust::Vec<mmsg::Real> sorted_differences = differences;
+        std::sort(sorted_differences.begin(), sorted_differences.end());
+        rust::Slice<const mmsg::Real> sorted_diff_slice{
+            sorted_differences.data(), sorted_differences.size()};
+        mmsg::Real q1 = 0.0, q2 = 0.0, q3 = 0.0;
+        if (mmsg::calc_quartiles(sorted_diff_slice, q1, q2, q3)) {
+            statsResults.push_back({STAT_TYPE_MEDIAN_DIFF, q2});
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": median_diff=" << q2);
+        } else {
+            MGlobal::displayWarning(CMD_NAME
+                                    ": Failed to calculate median difference.");
+        }
     }
 
-    // Build result array for this curve.
+    // Build result array.
     const auto statistics_count = static_cast<double>(statsResults.size());
     result.append(static_cast<double>(statistics_count));
 

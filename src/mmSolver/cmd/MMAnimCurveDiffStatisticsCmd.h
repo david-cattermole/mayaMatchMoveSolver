@@ -45,7 +45,15 @@ class MMAnimCurveDiffStatisticsCmd : public MPxCommand {
 public:
     MMAnimCurveDiffStatisticsCmd()
         : m_startFrame(std::numeric_limits<FrameNumber>::max())
-        , m_endFrame(std::numeric_limits<FrameNumber>::max()){};
+        , m_endFrame(std::numeric_limits<FrameNumber>::max())
+        , m_calculateMeanAbsDiff(false)
+        , m_calculateRmsDiff(false)
+        , m_calculateMeanDiff(false)
+        , m_calculateMedianDiff(false)
+        , m_calculateVariance(false)
+        , m_calculateStdDev(false)
+        , m_calculatePeakToPeak(false)
+        , m_calculateSNR(false){};
     virtual ~MMAnimCurveDiffStatisticsCmd();
 
     virtual bool hasSyntax() const;
@@ -63,6 +71,16 @@ private:
     // Start/End frames.
     FrameNumber m_startFrame;
     FrameNumber m_endFrame;
+
+    // Statistics flags
+    bool m_calculateMeanAbsDiff;
+    bool m_calculateRmsDiff;
+    bool m_calculateMeanDiff;
+    bool m_calculateMedianDiff;
+    bool m_calculateVariance;
+    bool m_calculateStdDev;
+    bool m_calculatePeakToPeak;
+    bool m_calculateSNR;
 
     // The two animation curves to compare.
     MSelectionList m_selection;

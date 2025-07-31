@@ -89,8 +89,20 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         animCurve_tx = maya.cmds.listConnections(tfm_attr_tx, type="animCurve")[0]
         animCurve_ty = maya.cmds.listConnections(tfm_attr_ty, type="animCurve")[0]
 
+        # Test with all statistics enabled.
         result = maya.cmds.mmAnimCurveDiffStatistics(
-            animCurve_tx, animCurve_ty, startFrame=1, endFrame=200
+            animCurve_tx,
+            animCurve_ty,
+            startFrame=1,
+            endFrame=200,
+            meanAbsoluteDifference=True,
+            rootMeanSquareDifference=True,
+            meanDifference=True,
+            medianDifference=True,
+            variance=True,
+            standardDeviation=True,
+            peakToPeak=True,
+            signalToNoiseRatio=True,
         )
 
         stats = self._parse_diff_statistics_result(result)
@@ -148,7 +160,18 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             "{}.translateY".format(transform), type="animCurve"
         )[0]
 
-        result = maya.cmds.mmAnimCurveDiffStatistics(animCurve_tx, animCurve_ty)
+        # Test with all statistics.
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx,
+            animCurve_ty,
+            meanAbsoluteDifference=True,
+            rootMeanSquareDifference=True,
+            meanDifference=True,
+            medianDifference=True,
+            variance=True,
+            standardDeviation=True,
+            peakToPeak=True,
+        )
 
         stats = self._parse_diff_statistics_result(result)
 
@@ -184,7 +207,15 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             "{}.translateY".format(transform), type="animCurve"
         )[0]
 
-        result = maya.cmds.mmAnimCurveDiffStatistics(animCurve_tx, animCurve_ty)
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx,
+            animCurve_ty,
+            meanAbsoluteDifference=True,
+            meanDifference=True,
+            medianDifference=True,
+            variance=True,
+            peakToPeak=True,
+        )
 
         stats = self._parse_diff_statistics_result(result)
 
@@ -215,13 +246,21 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
         # Full range.
         result_full = maya.cmds.mmAnimCurveDiffStatistics(
-            animCurve_tx, animCurve_ty, startFrame=1, endFrame=200
+            animCurve_tx,
+            animCurve_ty,
+            startFrame=1,
+            endFrame=200,
+            meanAbsoluteDifference=True,
         )
         stats_full = self._parse_diff_statistics_result(result_full)
 
         # Partial range.
         result_partial = maya.cmds.mmAnimCurveDiffStatistics(
-            animCurve_tx, animCurve_ty, startFrame=50, endFrame=150
+            animCurve_tx,
+            animCurve_ty,
+            startFrame=50,
+            endFrame=150,
+            meanAbsoluteDifference=True,
         )
         stats_partial = self._parse_diff_statistics_result(result_partial)
 
@@ -258,7 +297,13 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             "{}.translateX".format(transform2), type="animCurve"
         )[0]
 
-        result = maya.cmds.mmAnimCurveDiffStatistics(animCurve1, animCurve2)
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve1,
+            animCurve2,
+            standardDeviation=True,
+            rootMeanSquareDifference=True,
+            meanDifference=True,
+        )
         stats = self._parse_diff_statistics_result(result)
 
         # Verify noise is detected.
@@ -279,11 +324,13 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
         # Test with only one curve (should fail).
         with self.assertRaises(TypeError):
-            maya.cmds.mmAnimCurveDiffStatistics(animCurve)
+            maya.cmds.mmAnimCurveDiffStatistics(animCurve, meanDifference=True)
 
         # Test with non-animation curve nodes.
         with self.assertRaises(RuntimeError):
-            maya.cmds.mmAnimCurveDiffStatistics(transform, transform)
+            maya.cmds.mmAnimCurveDiffStatistics(
+                transform, transform, meanDifference=True
+            )
 
         # Test with three curves (should fail).
         maya.cmds.setKeyframe(transform, attribute="translateY", time=1, value=0)
@@ -296,7 +343,13 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         )[0]
 
         with self.assertRaises(TypeError):
-            maya.cmds.mmAnimCurveDiffStatistics(animCurve, animCurve_ty, animCurve_tz)
+            maya.cmds.mmAnimCurveDiffStatistics(
+                animCurve, animCurve_ty, animCurve_tz, meanDifference=True
+            )
+
+        # Test with no statistic flags (should fail).
+        with self.assertRaises(RuntimeError):
+            maya.cmds.mmAnimCurveDiffStatistics(animCurve, animCurve_ty)
 
     def test_diff_statistics_non_overlapping_ranges(self):
         """Test with curves that have non-overlapping frame ranges."""
@@ -324,7 +377,9 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
         # This should fail due to non-overlapping ranges.
         with self.assertRaises(RuntimeError):
-            maya.cmds.mmAnimCurveDiffStatistics(animCurve_tx, animCurve_ty)
+            maya.cmds.mmAnimCurveDiffStatistics(
+                animCurve_tx, animCurve_ty, meanDifference=True
+            )
 
     def test_diff_statistics_single_keyframe(self):
         """Test with curves that have only one keyframe."""
@@ -344,7 +399,81 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
         # This should fail due to insufficient keyframes.
         with self.assertRaises(RuntimeError):
-            maya.cmds.mmAnimCurveDiffStatistics(animCurve_tx, animCurve_ty)
+            maya.cmds.mmAnimCurveDiffStatistics(
+                animCurve_tx, animCurve_ty, meanDifference=True
+            )
+
+    def test_diff_statistics_single_flag(self):
+        """Test calculating individual statistics."""
+        name = "anim_curves1.ma"
+        path = self.get_data_path("anim_curves", name)
+        maya.cmds.file(path, open=True, force=True)
+
+        tfm = "transform1"
+        tfm_attr_tx = "{}.translateX".format(tfm)
+        tfm_attr_ty = "{}.translateY".format(tfm)
+
+        animCurve_tx = maya.cmds.listConnections(tfm_attr_tx, type="animCurve")[0]
+        animCurve_ty = maya.cmds.listConnections(tfm_attr_ty, type="animCurve")[0]
+
+        # Test mean absolute difference only.
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx, animCurve_ty, meanAbsoluteDifference=True
+        )
+        parsed = self._parse_diff_statistics_result(result)
+        self.assertEqual(len(parsed), 1)
+        self.assertIn("mean_absolute_diff", parsed)
+
+        # Test RMS only.
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx, animCurve_ty, rootMeanSquareDifference=True
+        )
+        parsed = self._parse_diff_statistics_result(result)
+        self.assertEqual(len(parsed), 1)
+        self.assertIn("rms_diff", parsed)
+
+        # Test median difference only.
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx, animCurve_ty, medianDifference=True
+        )
+        parsed = self._parse_diff_statistics_result(result)
+        self.assertEqual(len(parsed), 1)
+        self.assertIn("median_diff", parsed)
+
+    def test_diff_statistics_combined_flags(self):
+        """Test various combinations of statistics flags."""
+        name = "anim_curves1.ma"
+        path = self.get_data_path("anim_curves", name)
+        maya.cmds.file(path, open=True, force=True)
+
+        tfm = "transform1"
+        tfm_attr_tx = "{}.translateX".format(tfm)
+        tfm_attr_ty = "{}.translateY".format(tfm)
+
+        animCurve_tx = maya.cmds.listConnections(tfm_attr_tx, type="animCurve")[0]
+        animCurve_ty = maya.cmds.listConnections(tfm_attr_ty, type="animCurve")[0]
+
+        # Test mean + variance.
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx, animCurve_ty, meanDifference=True, variance=True
+        )
+        parsed = self._parse_diff_statistics_result(result)
+        self.assertEqual(len(parsed), 2)
+        self.assertIn("mean_diff", parsed)
+        self.assertIn("population_variance", parsed)
+
+        # Test variance + stddev.
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx, animCurve_ty, variance=True, standardDeviation=True
+        )
+        parsed = self._parse_diff_statistics_result(result)
+        self.assertEqual(len(parsed), 2)
+        self.assertIn("population_variance", parsed)
+        self.assertIn("population_std_dev", parsed)
+
+        # Verify stddev = sqrt(variance).
+        expected_stddev = math.sqrt(parsed["population_variance"])
+        self.assertAlmostEqual(parsed["population_std_dev"], expected_stddev, places=5)
 
 
 if __name__ == "__main__":

@@ -257,13 +257,6 @@ MStatus MMAnimCurveDiffStatisticsCmd::doIt(const MArgList &args) {
 
     // Validate data and compute differences.
     for (size_t i = 0; i < values_y1.size(); ++i) {
-        if (!std::isfinite(values_y1[i]) || !std::isfinite(values_y2[i])) {
-            MGlobal::displayError(
-                CMD_NAME
-                ": Animation curves contain non-finite values (NaN or Inf).");
-            return MS::kFailure;
-        }
-
         mmsg::Real diff = values_y1[i] - values_y2[i];
         differences.push_back(diff);
         absolute_differences.push_back(std::abs(diff));

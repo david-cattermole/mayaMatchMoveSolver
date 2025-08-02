@@ -65,11 +65,11 @@
 #define MEDIAN_FLAG_SHORT "-md"
 #define MEDIAN_FLAG_LONG "-median"
 
-#define VARIANCE_FLAG_SHORT "-var"
-#define VARIANCE_FLAG_LONG "-variance"
+#define POPULATION_VARIANCE_FLAG_SHORT "-pvr"
+#define POPULATION_VARIANCE_FLAG_LONG "-populationVariance"
 
-#define STANDARD_DEVIATION_FLAG_SHORT "-sd"
-#define STANDARD_DEVIATION_FLAG_LONG "-standardDeviation"
+#define POPULATION_STANDARD_DEVIATION_FLAG_SHORT "-psd"
+#define POPULATION_STANDARD_DEVIATION_FLAG_LONG "-populationStandardDeviation"
 
 #define SIGNAL_TO_NOISE_RATIO_FLAG_SHORT "-snr"
 #define SIGNAL_TO_NOISE_RATIO_FLAG_LONG "-signalToNoiseRatio"
@@ -85,9 +85,9 @@
 // Statistic type identifiers for output.
 #define STAT_TYPE_MEAN 0.0
 #define STAT_TYPE_MEDIAN 1.0
-#define STAT_TYPE_VARIANCE 2.0
-#define STAT_TYPE_STDDEV 3.0
-#define STAT_TYPE_SNR 4.0
+#define STAT_TYPE_POPULATION_VARIANCE 2.0
+#define STAT_TYPE_POPULATION_STD_DEV 3.0
+#define STAT_TYPE_SIGNAL_TO_NOISE_RATIO 4.0
 
 namespace mmsg = mmscenegraph;
 
@@ -121,9 +121,10 @@ MSyntax MMAnimCurveStatisticsCmd::newSyntax() {
     // Statistics flags.
     syntax.addFlag(MEAN_FLAG_SHORT, MEAN_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(MEDIAN_FLAG_SHORT, MEDIAN_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(VARIANCE_FLAG_SHORT, VARIANCE_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(STANDARD_DEVIATION_FLAG_SHORT, STANDARD_DEVIATION_FLAG_LONG,
-                   MSyntax::kBoolean);
+    syntax.addFlag(POPULATION_VARIANCE_FLAG_SHORT,
+                   POPULATION_VARIANCE_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(POPULATION_STANDARD_DEVIATION_FLAG_SHORT,
+                   POPULATION_STANDARD_DEVIATION_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(SIGNAL_TO_NOISE_RATIO_FLAG_SHORT,
                    SIGNAL_TO_NOISE_RATIO_FLAG_LONG, MSyntax::kBoolean);
 
@@ -242,9 +243,9 @@ MStatus MMAnimCurveStatisticsCmd::parseArgs(const MArgList &args) {
     // Parse statistics flags with default values.
     m_calculateMean = false;
     m_calculateMedian = false;
-    m_calculateVariance = false;
-    m_calculateStdDev = false;
-    m_calculateSNR = false;
+    m_calculatePopVariance = false;
+    m_calculatePopStdDev = false;
+    m_calculateSignalToNoiseRatio = false;
 
     if (argData.isFlagSet(MEAN_FLAG_SHORT)) {
         status = argData.getFlagArgument(MEAN_FLAG_SHORT, 0, m_calculateMean);
@@ -255,25 +256,25 @@ MStatus MMAnimCurveStatisticsCmd::parseArgs(const MArgList &args) {
             argData.getFlagArgument(MEDIAN_FLAG_SHORT, 0, m_calculateMedian);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
-    if (argData.isFlagSet(VARIANCE_FLAG_SHORT)) {
-        status = argData.getFlagArgument(VARIANCE_FLAG_SHORT, 0,
-                                         m_calculateVariance);
+    if (argData.isFlagSet(POPULATION_VARIANCE_FLAG_SHORT)) {
+        status = argData.getFlagArgument(POPULATION_VARIANCE_FLAG_SHORT, 0,
+                                         m_calculatePopVariance);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
-    if (argData.isFlagSet(STANDARD_DEVIATION_FLAG_SHORT)) {
-        status = argData.getFlagArgument(STANDARD_DEVIATION_FLAG_SHORT, 0,
-                                         m_calculateStdDev);
+    if (argData.isFlagSet(POPULATION_STANDARD_DEVIATION_FLAG_SHORT)) {
+        status = argData.getFlagArgument(
+            POPULATION_STANDARD_DEVIATION_FLAG_SHORT, 0, m_calculatePopStdDev);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     if (argData.isFlagSet(SIGNAL_TO_NOISE_RATIO_FLAG_SHORT)) {
         status = argData.getFlagArgument(SIGNAL_TO_NOISE_RATIO_FLAG_SHORT, 0,
-                                         m_calculateSNR);
+                                         m_calculateSignalToNoiseRatio);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Check that at least one statistic is enabled.
-    if (!m_calculateMean && !m_calculateMedian && !m_calculateVariance &&
-        !m_calculateStdDev && !m_calculateSNR) {
+    if (!m_calculateMean && !m_calculateMedian && !m_calculatePopVariance &&
+        !m_calculatePopStdDev && !m_calculateSignalToNoiseRatio) {
         MGlobal::displayError(CMD_NAME
                               ": At least one statistic must be enabled.");
         return MS::kFailure;
@@ -283,10 +284,12 @@ MStatus MMAnimCurveStatisticsCmd::parseArgs(const MArgList &args) {
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_endFrame=" << m_endFrame);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateMean=" << m_calculateMean);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateMedian=" << m_calculateMedian);
-    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateVariance="
-                               << m_calculateVariance);
-    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateStdDev=" << m_calculateStdDev);
-    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateSNR=" << m_calculateSNR);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculatePopVariance="
+                               << m_calculatePopVariance);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculatePopStdDev="
+                               << m_calculatePopStdDev);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateSignalToNoiseRatio="
+                               << m_calculateSignalToNoiseRatio);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_useListInput=" << m_useListInput);
 
     return status;
@@ -398,50 +401,55 @@ MStatus MMAnimCurveStatisticsCmd::doIt(const MArgList &args) {
 
         // Variables to store calculated values.
         mmsg::Real mean = 0.0;
-        mmsg::Real variance = 0.0;
-        mmsg::Real std_dev = 0.0;
+        mmsg::Real pop_variance = 0.0;
+        mmsg::Real pop_std_dev = 0.0;
         mmsg::Real snr = 0.0;
         bool meanCalculated = false;
 
         // Calculate variance first, because it gives us the mean as well.
-        if (m_calculateVariance) {
+        if (m_calculatePopVariance) {
             if (mmsg::calc_population_variance(values_slice_y, mean,
-                                               variance)) {
-                statsResults.push_back({STAT_TYPE_VARIANCE, variance});
+                                               pop_variance)) {
+                statsResults.push_back(
+                    {STAT_TYPE_POPULATION_VARIANCE, pop_variance});
                 meanCalculated = true;
-                MMSOLVER_MAYA_VRB(CMD_NAME << ": variance=" << variance);
+                MMSOLVER_MAYA_VRB(CMD_NAME << ": pop_variance="
+                                           << pop_variance);
             } else {
-                MGlobal::displayWarning(CMD_NAME
-                                        ": Failed to calculate variance.");
+                MGlobal::displayWarning(
+                    CMD_NAME ": Failed to calculate population variance.");
             }
         }
 
-        if (m_calculateStdDev && !m_calculateVariance) {
+        if (m_calculatePopStdDev && !m_calculatePopVariance) {
             if (mmsg::calc_population_standard_deviation(values_slice_y, mean,
-                                                         std_dev)) {
-                statsResults.push_back({STAT_TYPE_STDDEV, std_dev});
+                                                         pop_std_dev)) {
+                statsResults.push_back(
+                    {STAT_TYPE_POPULATION_STD_DEV, pop_std_dev});
                 meanCalculated = true;
                 MMSOLVER_MAYA_VRB(CMD_NAME << ": standard deviation="
-                                           << std_dev);
+                                           << pop_std_dev);
             } else {
                 MGlobal::displayWarning(
                     CMD_NAME ": Failed to calculate standard deviation.");
             }
-        } else if (m_calculateStdDev && m_calculateVariance) {
-            // We already have variance, just calculate std dev from it.
-            std_dev = std::sqrt(variance);
-            statsResults.push_back({STAT_TYPE_STDDEV, std_dev});
-            MMSOLVER_MAYA_VRB(CMD_NAME << ": standard deviation=" << std_dev);
+        } else if (m_calculatePopStdDev && m_calculatePopVariance) {
+            // We already have population variance, just calculate population
+            // std dev from it.
+            pop_std_dev = std::sqrt(pop_variance);
+            statsResults.push_back({STAT_TYPE_POPULATION_STD_DEV, pop_std_dev});
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": standard deviation="
+                                       << pop_std_dev);
         }
 
         // Calculate SNR if needed.
-        if (m_calculateSNR) {
-            mmsg::Real snr_mean = 0.0;
-            if (mmsg::calc_signal_to_noise_ratio(values_slice_y, snr_mean,
-                                                 snr)) {
-                statsResults.push_back({STAT_TYPE_SNR, snr});
+        if (m_calculateSignalToNoiseRatio) {
+            mmsg::Real signal_to_noise_ratio_mean = 0.0;
+            if (mmsg::calc_signal_to_noise_ratio(
+                    values_slice_y, signal_to_noise_ratio_mean, snr)) {
+                statsResults.push_back({STAT_TYPE_SIGNAL_TO_NOISE_RATIO, snr});
                 if (!meanCalculated) {
-                    mean = snr_mean;
+                    mean = signal_to_noise_ratio_mean;
                     meanCalculated = true;
                 }
                 MMSOLVER_MAYA_VRB(CMD_NAME << ": SNR=" << snr);

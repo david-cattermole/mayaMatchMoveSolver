@@ -34,21 +34,21 @@ import test.test_tools.toolsutils as test_tools_utils
 # Statistic type identifiers from the C++ code
 STAT_TYPE_MEAN = 0
 STAT_TYPE_MEDIAN = 1
-STAT_TYPE_VARIANCE = 2
-STAT_TYPE_STDDEV = 3
-STAT_TYPE_SNR = 4
+STAT_TYPE_POPULATION_VARIANCE = 2
+STAT_TYPE_POPULATION_STD_DEV = 3
+STAT_TYPE_SIGNAL_TO_NOISE_RATIO = 4
 
 # Names for each statistic identifier defined in this module.
 STAT_NAME_MEAN = "mean"
 STAT_NAME_MEDIAN = "median"
-STAT_NAME_VARIANCE = "variance"
-STAT_NAME_STD_DEV = "stddev"
+STAT_NAME_POPULATION_VARIANCE = "population_variance"
+STAT_NAME_POPULATION_STD_DEV = "population_std_dev"
 STAT_NAME_SIGNAL_TO_NOISE_RATIO = "signal_to_noise_ratio"
 STAT_NAME_LIST = [
     STAT_NAME_MEAN,
     STAT_NAME_MEDIAN,
-    STAT_NAME_VARIANCE,
-    STAT_NAME_STD_DEV,
+    STAT_NAME_POPULATION_VARIANCE,
+    STAT_NAME_POPULATION_STD_DEV,
     STAT_NAME_SIGNAL_TO_NOISE_RATIO,
 ]
 
@@ -73,11 +73,11 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
                     stats[STAT_NAME_MEAN] = stat_value
                 elif stat_type == STAT_TYPE_MEDIAN:
                     stats[STAT_NAME_MEDIAN] = stat_value
-                elif stat_type == STAT_TYPE_VARIANCE:
-                    stats[STAT_NAME_VARIANCE] = stat_value
-                elif stat_type == STAT_TYPE_STDDEV:
-                    stats[STAT_NAME_STD_DEV] = stat_value
-                elif stat_type == STAT_TYPE_SNR:
+                elif stat_type == STAT_TYPE_POPULATION_VARIANCE:
+                    stats[STAT_NAME_POPULATION_VARIANCE] = stat_value
+                elif stat_type == STAT_TYPE_POPULATION_STD_DEV:
+                    stats[STAT_NAME_POPULATION_STD_DEV] = stat_value
+                elif stat_type == STAT_TYPE_SIGNAL_TO_NOISE_RATIO:
                     stats[STAT_NAME_SIGNAL_TO_NOISE_RATIO] = stat_value
 
                 i += 2
@@ -112,8 +112,8 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
             endFrame=endFrame,
             mean=True,
             median=True,
-            variance=True,
-            standardDeviation=True,
+            populationVariance=True,
+            populationStandardDeviation=True,
             signalToNoiseRatio=True,
         )
 
@@ -129,8 +129,10 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
 
             # Verify relationships between statistics.
             # Standard deviation should be sqrt(variance).
-            expected_stddev = math.sqrt(stats[STAT_NAME_VARIANCE])
-            self.assertAlmostEqual(stats[STAT_NAME_STD_DEV], expected_stddev, places=5)
+            expected_stddev = math.sqrt(stats[STAT_NAME_POPULATION_VARIANCE])
+            self.assertAlmostEqual(
+                stats[STAT_NAME_POPULATION_STD_DEV], expected_stddev, places=5
+            )
 
             # All values should be finite.
             for stat_name, stat_value in stats.items():
@@ -163,12 +165,12 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         self.assertEqual(len(parsed[0]["stats"]), 1)
         self.assertIn(STAT_NAME_MEDIAN, parsed[0]["stats"])
 
-        # Test variance only.
-        result = maya.cmds.mmAnimCurveStatistics(animCurve_tx, variance=True)
+        # Test populationVariance only.
+        result = maya.cmds.mmAnimCurveStatistics(animCurve_tx, populationVariance=True)
         parsed = self._parse_statistics_result(result)
         self.assertEqual(len(parsed), 1)
         self.assertEqual(len(parsed[0]["stats"]), 1)
-        self.assertIn(STAT_NAME_VARIANCE, parsed[0]["stats"])
+        self.assertIn(STAT_NAME_POPULATION_VARIANCE, parsed[0]["stats"])
 
     def test_statistics_frame_range(self):
         """Test statistics with different frame ranges."""
@@ -182,13 +184,17 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
 
         # Full range.
         result_full = maya.cmds.mmAnimCurveStatistics(
-            animCurve_tx, startFrame=1, endFrame=200, mean=True, variance=True
+            animCurve_tx, startFrame=1, endFrame=200, mean=True, populationVariance=True
         )
         parsed_full = self._parse_statistics_result(result_full)
 
         # Partial range.
         result_partial = maya.cmds.mmAnimCurveStatistics(
-            animCurve_tx, startFrame=50, endFrame=150, mean=True, variance=True
+            animCurve_tx,
+            startFrame=50,
+            endFrame=150,
+            mean=True,
+            populationVariance=True,
         )
         parsed_partial = self._parse_statistics_result(result_partial)
 
@@ -215,7 +221,9 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         animCurve_tz = maya.cmds.listConnections(tfm_attr_tz, type="animCurve")[0]
 
         maya.cmds.select(animCurve_tx, animCurve_ty, animCurve_tz)
-        result = maya.cmds.mmAnimCurveStatistics(mean=True, standardDeviation=True)
+        result = maya.cmds.mmAnimCurveStatistics(
+            mean=True, populationStandardDeviation=True
+        )
 
         parsed = self._parse_statistics_result(result)
         self.assertEqual(len(parsed), 3)
@@ -225,7 +233,7 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
             self.assertEqual(curve_data["index"], i)
             self.assertEqual(len(curve_data["stats"]), 2)
             self.assertIn(STAT_NAME_MEAN, curve_data["stats"])
-            self.assertIn(STAT_NAME_STD_DEV, curve_data["stats"])
+            self.assertIn(STAT_NAME_POPULATION_STD_DEV, curve_data["stats"])
 
     def test_statistics_constant_curve(self):
         """Test statistics on a constant (flat) animation curve."""
@@ -248,8 +256,8 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
             animCurve,
             mean=True,
             median=True,
-            variance=True,
-            standardDeviation=True,
+            populationVariance=True,
+            populationStandardDeviation=True,
             signalToNoiseRatio=True,
         )
 
@@ -263,8 +271,8 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
 
         # For a constant curve variance and standard deviation should
         # be zero.
-        self.assertAlmostEqual(stats[STAT_NAME_VARIANCE], 0.0, places=5)
-        self.assertAlmostEqual(stats[STAT_NAME_STD_DEV], 0.0, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_POPULATION_VARIANCE], 0.0, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_POPULATION_STD_DEV], 0.0, places=5)
 
         # For a constant curve SNR should be infinity (but might be
         # represented as a large value).
@@ -290,7 +298,12 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         )[0]
 
         result = maya.cmds.mmAnimCurveStatistics(
-            animCurve, startFrame=1, endFrame=10, mean=True, median=True, variance=True
+            animCurve,
+            startFrame=1,
+            endFrame=10,
+            mean=True,
+            median=True,
+            populationVariance=True,
         )
 
         parsed = self._parse_statistics_result(result)
@@ -303,8 +316,8 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         # - Median should also be 4.5.
         self.assertAlmostEqual(stats[STAT_NAME_MEDIAN], 4.5, places=2)
 
-        # - Variance should be > 0 (approximately 8.25 for 0-9 range).
-        self.assertGreater(stats[STAT_NAME_VARIANCE], 0)
+        # - PopulationVariance should be > 0 (approximately 8.25 for 0-9 range).
+        self.assertGreater(stats[STAT_NAME_POPULATION_VARIANCE], 0)
 
     def test_statistics_error_handling(self):
         """Test error handling for invalid inputs."""
@@ -324,21 +337,25 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         animCurve_tx = maya.cmds.listConnections(tfm_attr_tx, type="animCurve")[0]
 
         # Test mean + variance (should calculate mean efficiently).
-        result = maya.cmds.mmAnimCurveStatistics(animCurve_tx, mean=True, variance=True)
+        result = maya.cmds.mmAnimCurveStatistics(
+            animCurve_tx, mean=True, populationVariance=True
+        )
         parsed = self._parse_statistics_result(result)
         self.assertEqual(len(parsed[0]["stats"]), 2)
 
         # Test variance + stddev (should calculate both efficiently).
         result = maya.cmds.mmAnimCurveStatistics(
-            animCurve_tx, variance=True, standardDeviation=True
+            animCurve_tx, populationVariance=True, populationStandardDeviation=True
         )
         parsed = self._parse_statistics_result(result)
         self.assertEqual(len(parsed[0]["stats"]), 2)
 
         # Verify stddev = sqrt(variance).
         stats = parsed[0]["stats"]
-        expected_stddev = math.sqrt(stats[STAT_NAME_VARIANCE])
-        self.assertAlmostEqual(stats[STAT_NAME_STD_DEV], expected_stddev, places=5)
+        expected_stddev = math.sqrt(stats[STAT_NAME_POPULATION_VARIANCE])
+        self.assertAlmostEqual(
+            stats[STAT_NAME_POPULATION_STD_DEV], expected_stddev, places=5
+        )
 
     def test_statistics_with_list_input(self):
         """Test statistics with Python list inputs."""
@@ -351,8 +368,8 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
             yValues=y_values,
             mean=True,
             median=True,
-            variance=True,
-            standardDeviation=True,
+            populationVariance=True,
+            populationStandardDeviation=True,
             signalToNoiseRatio=True,
         )
 
@@ -366,8 +383,10 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         self.assertEqual(len(stats.keys()), len(STAT_NAME_LIST))
 
         # Verify relationships between statistics
-        expected_stddev = math.sqrt(stats[STAT_NAME_VARIANCE])
-        self.assertAlmostEqual(stats[STAT_NAME_STD_DEV], expected_stddev, places=5)
+        expected_stddev = math.sqrt(stats[STAT_NAME_POPULATION_VARIANCE])
+        self.assertAlmostEqual(
+            stats[STAT_NAME_POPULATION_STD_DEV], expected_stddev, places=5
+        )
 
         expected_mean = sum(y_values) / len(y_values)
         self.assertAlmostEqual(stats[STAT_NAME_MEAN], expected_mean, places=5)

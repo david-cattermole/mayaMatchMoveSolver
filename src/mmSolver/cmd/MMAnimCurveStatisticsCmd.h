@@ -49,9 +49,9 @@ public:
         , m_endFrame(std::numeric_limits<FrameNumber>::max())
         , m_calculateMean(false)
         , m_calculateMedian(false)
-        , m_calculateVariance(false)
-        , m_calculateStdDev(false)
-        , m_calculateSNR(false)
+        , m_calculatePopVariance(false)
+        , m_calculatePopStdDev(false)
+        , m_calculateSignalToNoiseRatio(false)
         , m_useListInput(false){};
     virtual ~MMAnimCurveStatisticsCmd();
 
@@ -74,9 +74,9 @@ private:
     // Statistics flags
     bool m_calculateMean;
     bool m_calculateMedian;
-    bool m_calculateVariance;
-    bool m_calculateStdDev;
-    bool m_calculateSNR;
+    bool m_calculatePopVariance;
+    bool m_calculatePopStdDev;
+    bool m_calculateSignalToNoiseRatio;
 
     // The animation curves to process.
     MSelectionList m_selection;

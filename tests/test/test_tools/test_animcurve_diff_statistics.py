@@ -43,6 +43,27 @@ STAT_TYPE_MEAN_DIFF = 6
 STAT_TYPE_MEDIAN_DIFF = 7
 
 
+# Names for each statistic identifier defined in this module.
+STAT_NAME_MEAN_ABS_DIFF = "mean_absolute_diff"
+STAT_NAME_RMS_DIFF = "root_mean_square_diff"
+STAT_NAME_STD_POPULATION_DEV = "population_std_dev"
+STAT_NAME_POPULATION_VARIANCE = "population_variance"
+STAT_NAME_PEAK_TO_PEAK_DIFF = "peak_to_peak_diff"
+STAT_NAME_SIGNAL_TO_NOISE_RATIO = "signal_to_noise_ratio"
+STAT_NAME_MEAN_DIFF = "mean_diff"
+STAT_NAME_MEDIAN_DIFF = "median_diff"
+STAT_NAME_LIST = [
+    STAT_NAME_MEAN_ABS_DIFF,
+    STAT_NAME_RMS_DIFF,
+    STAT_NAME_STD_POPULATION_DEV,
+    STAT_NAME_POPULATION_VARIANCE,
+    STAT_NAME_PEAK_TO_PEAK_DIFF,
+    STAT_NAME_SIGNAL_TO_NOISE_RATIO,
+    STAT_NAME_MEAN_DIFF,
+    STAT_NAME_MEDIAN_DIFF,
+]
+
+
 # @unittest.skip
 class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
     def _parse_diff_statistics_result(self, result):
@@ -56,21 +77,21 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             stat_value = result[i + 1]
 
             if stat_type == STAT_TYPE_MEAN_ABSOLUTE_DIFF:
-                stats["mean_absolute_diff"] = stat_value
+                stats[STAT_NAME_MEAN_ABS_DIFF] = stat_value
             elif stat_type == STAT_TYPE_RMS_DIFF:
-                stats["rms_diff"] = stat_value
+                stats[STAT_NAME_RMS_DIFF] = stat_value
             elif stat_type == STAT_TYPE_POPULATION_STD_DEV:
-                stats["population_std_dev"] = stat_value
+                stats[STAT_NAME_STD_POPULATION_DEV] = stat_value
             elif stat_type == STAT_TYPE_PEAK_TO_PEAK_DIFF:
-                stats["peak_to_peak_diff"] = stat_value
+                stats[STAT_NAME_PEAK_TO_PEAK_DIFF] = stat_value
             elif stat_type == STAT_TYPE_SIGNAL_TO_NOISE_RATIO:
-                stats["signal_to_noise_ratio"] = stat_value
+                stats[STAT_NAME_SIGNAL_TO_NOISE_RATIO] = stat_value
             elif stat_type == STAT_TYPE_POPULATION_VARIANCE:
-                stats["population_variance"] = stat_value
+                stats[STAT_NAME_POPULATION_VARIANCE] = stat_value
             elif stat_type == STAT_TYPE_MEAN_DIFF:
-                stats["mean_diff"] = stat_value
+                stats[STAT_NAME_MEAN_DIFF] = stat_value
             elif stat_type == STAT_TYPE_MEDIAN_DIFF:
-                stats["median_diff"] = stat_value
+                stats[STAT_NAME_MEDIAN_DIFF] = stat_value
 
             i += 2
 
@@ -108,37 +129,29 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         stats = self._parse_diff_statistics_result(result)
 
         # Verify all expected statistics are present.
-        expected_stats = [
-            "mean_absolute_diff",
-            "rms_diff",
-            "population_std_dev",
-            "peak_to_peak_diff",
-            "signal_to_noise_ratio",
-            "population_variance",
-            "mean_diff",
-            "median_diff",
-        ]
-
-        for stat_name in expected_stats:
+        for stat_name in STAT_NAME_LIST:
             self.assertIn(stat_name, stats)
             self.assertTrue(
                 math.isfinite(stats[stat_name]),
                 "{} is not finite: {}".format(stat_name, stats[stat_name]),
             )
+        self.assertEquals(len(stats.keys()), len(STAT_NAME_LIST))
 
         # Verify relationships between statistics.
         # Standard deviation should be sqrt(variance).
-        expected_std = math.sqrt(stats["population_variance"])
-        self.assertAlmostEqual(stats["population_std_dev"], expected_std, places=5)
+        expected_std = math.sqrt(stats[STAT_NAME_POPULATION_VARIANCE])
+        self.assertAlmostEqual(
+            stats[STAT_NAME_STD_POPULATION_DEV], expected_std, places=5
+        )
 
         # Mean absolute diff should be >= 0.
-        self.assertGreaterEqual(stats["mean_absolute_diff"], 0.0)
+        self.assertGreaterEqual(stats[STAT_NAME_MEAN_ABS_DIFF], 0.0)
 
         # RMS should be >= 0.
-        self.assertGreaterEqual(stats["rms_diff"], 0.0)
+        self.assertGreaterEqual(stats[STAT_NAME_RMS_DIFF], 0.0)
 
         # Peak-to-peak should be >= 0.
-        self.assertGreaterEqual(stats["peak_to_peak_diff"], 0.0)
+        self.assertGreaterEqual(stats[STAT_NAME_PEAK_TO_PEAK_DIFF], 0.0)
 
     def test_diff_statistics_identical_curves(self):
         """Test statistics when comparing identical curves."""
@@ -176,13 +189,10 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         stats = self._parse_diff_statistics_result(result)
 
         # For identical curves, all differences should be zero.
-        self.assertAlmostEqual(stats["mean_absolute_diff"], 0.0, places=5)
-        self.assertAlmostEqual(stats["rms_diff"], 0.0, places=5)
-        self.assertAlmostEqual(stats["mean_diff"], 0.0, places=5)
-        self.assertAlmostEqual(stats["median_diff"], 0.0, places=5)
-        self.assertAlmostEqual(stats["population_variance"], 0.0, places=5)
-        self.assertAlmostEqual(stats["population_std_dev"], 0.0, places=5)
-        self.assertAlmostEqual(stats["peak_to_peak_diff"], 0.0, places=5)
+        for stat_name in STAT_NAME_LIST:
+            stat = stats[stat_name]
+            self.assertAlmostEqual(stat, 0.0, places=5)
+        self.assertEquals(len(stats.keys()), len(STAT_NAME_LIST))
 
     def test_diff_statistics_constant_offset(self):
         """Test statistics with curves that have a constant offset."""
@@ -221,15 +231,15 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
         # For constant offset:
         # - Mean diff should equal the offset.
-        self.assertAlmostEqual(stats["mean_diff"], -offset, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_MEAN_DIFF], -offset, places=5)
         # - Mean absolute diff should equal abs(offset).
-        self.assertAlmostEqual(stats["mean_absolute_diff"], abs(offset), places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_MEAN_ABS_DIFF], abs(offset), places=5)
         # - Median diff should equal the offset.
-        self.assertAlmostEqual(stats["median_diff"], -offset, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_MEDIAN_DIFF], -offset, places=5)
         # - Variance should be 0 (no variation in differences).
-        self.assertAlmostEqual(stats["population_variance"], 0.0, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_POPULATION_VARIANCE], 0.0, places=5)
         # - Peak-to-peak should be 0.
-        self.assertAlmostEqual(stats["peak_to_peak_diff"], 0.0, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_PEAK_TO_PEAK_DIFF], 0.0, places=5)
 
     def test_diff_statistics_frame_range(self):
         """Test statistics with different frame ranges."""
@@ -266,8 +276,8 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
         # Statistics should be different for different ranges.
         self.assertNotAlmostEqual(
-            stats_full["mean_absolute_diff"],
-            stats_partial["mean_absolute_diff"],
+            stats_full[STAT_NAME_MEAN_ABS_DIFF],
+            stats_partial[STAT_NAME_MEAN_ABS_DIFF],
             places=2,
         )
 
@@ -307,10 +317,10 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         stats = self._parse_diff_statistics_result(result)
 
         # Verify noise is detected.
-        self.assertGreater(stats["population_std_dev"], 0.1)
-        self.assertGreater(stats["rms_diff"], 0.1)
+        self.assertGreater(stats[STAT_NAME_STD_POPULATION_DEV], 0.1)
+        self.assertGreater(stats[STAT_NAME_RMS_DIFF], 0.1)
         # Mean difference should be close to zero for random noise.
-        self.assertLess(abs(stats["mean_diff"]), 0.2)
+        self.assertLess(abs(stats[STAT_NAME_MEAN_DIFF]), 0.2)
 
     def test_diff_statistics_error_handling(self):
         """Test error handling for invalid inputs."""
@@ -323,7 +333,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         )[0]
 
         # Test with only one curve (should fail).
-        with self.assertRaises(TypeError):
+        with self.assertRaises(RuntimeError):
             maya.cmds.mmAnimCurveDiffStatistics(animCurve, meanDifference=True)
 
         # Test with non-animation curve nodes.
@@ -422,7 +432,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         )
         parsed = self._parse_diff_statistics_result(result)
         self.assertEqual(len(parsed), 1)
-        self.assertIn("mean_absolute_diff", parsed)
+        self.assertIn(STAT_NAME_MEAN_ABS_DIFF, parsed)
 
         # Test RMS only.
         result = maya.cmds.mmAnimCurveDiffStatistics(
@@ -430,7 +440,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         )
         parsed = self._parse_diff_statistics_result(result)
         self.assertEqual(len(parsed), 1)
-        self.assertIn("rms_diff", parsed)
+        self.assertIn(STAT_NAME_RMS_DIFF, parsed)
 
         # Test median difference only.
         result = maya.cmds.mmAnimCurveDiffStatistics(
@@ -438,7 +448,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         )
         parsed = self._parse_diff_statistics_result(result)
         self.assertEqual(len(parsed), 1)
-        self.assertIn("median_diff", parsed)
+        self.assertIn(STAT_NAME_MEDIAN_DIFF, parsed)
 
     def test_diff_statistics_combined_flags(self):
         """Test various combinations of statistics flags."""
@@ -459,8 +469,8 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         )
         parsed = self._parse_diff_statistics_result(result)
         self.assertEqual(len(parsed), 2)
-        self.assertIn("mean_diff", parsed)
-        self.assertIn("population_variance", parsed)
+        self.assertIn(STAT_NAME_MEAN_DIFF, parsed)
+        self.assertIn(STAT_NAME_POPULATION_VARIANCE, parsed)
 
         # Test variance + stddev.
         result = maya.cmds.mmAnimCurveDiffStatistics(
@@ -468,12 +478,14 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         )
         parsed = self._parse_diff_statistics_result(result)
         self.assertEqual(len(parsed), 2)
-        self.assertIn("population_variance", parsed)
-        self.assertIn("population_std_dev", parsed)
+        self.assertIn(STAT_NAME_POPULATION_VARIANCE, parsed)
+        self.assertIn(STAT_NAME_STD_POPULATION_DEV, parsed)
 
         # Verify stddev = sqrt(variance).
-        expected_stddev = math.sqrt(parsed["population_variance"])
-        self.assertAlmostEqual(parsed["population_std_dev"], expected_stddev, places=5)
+        expected_stddev = math.sqrt(parsed[STAT_NAME_POPULATION_VARIANCE])
+        self.assertAlmostEqual(
+            parsed[STAT_NAME_STD_POPULATION_DEV], expected_stddev, places=5
+        )
 
 
 if __name__ == "__main__":

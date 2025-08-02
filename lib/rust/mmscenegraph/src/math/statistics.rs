@@ -762,7 +762,6 @@ pub fn calc_skewness_type2<T: UnsortedDataSliceOps>(
 /// kurtosis = [1/n * sum((x-mean)/std_dev)^4] - 3 where:
 /// - Subtraction of 3 makes normal distribution = 0
 ///
-///
 /// Returns:
 /// - Excess kurtosis value where:
 ///   * Positive values indicate heavier tails than normal distribution
@@ -1766,5 +1765,431 @@ mod tests {
         assert_eq!(calc_percentile_rank(&data_slice, 1.0).unwrap(), 0.0);
         assert_eq!(calc_percentile_rank(&data_slice, 3.0).unwrap(), 40.0);
         assert_eq!(calc_percentile_rank(&data_slice, 5.0).unwrap(), 80.0);
+    }
+}
+
+/// Calculates the Mean Absolute Error (MAE) between two datasets.
+///
+/// Mathematics:
+/// MAE = (1/n) * sum(|actual[i] - predicted[i]|)
+///
+/// Parameters:
+/// - actual: The actual/noisy values.
+/// - predicted: The predicted/smoothed values.
+///
+/// Returns:
+/// - Mean absolute error between the datasets.
+///
+/// Usage:
+/// - Compare model predictions to actual values.
+/// - Measure average prediction error.
+/// - Less sensitive to outliers than RMSE.
+/// - Same units as input data.
+///
+/// Note:
+/// - Both datasets must have the same length.
+/// - Returns intuitive error measurement.
+/// - Good for understanding typical error magnitude.
+pub fn calc_mean_absolute_error(
+    actual: &[Real],
+    predicted: &[Real],
+) -> Result<Real> {
+    if actual.is_empty() {
+        bail!(StatisticsError::EmptyDataSlice);
+    }
+    if actual.len() != predicted.len() {
+        bail!(StatisticsError::DataLengthNotEqual);
+    }
+
+    if cfg!(debug_assertions) {
+        if has_non_finite_values::<Real>(actual)
+            || has_non_finite_values::<Real>(predicted)
+        {
+            bail!(StatisticsError::DataContainsNonFiniteValues);
+        }
+    }
+
+    let mae = actual
+        .iter()
+        .zip(predicted.iter())
+        .map(|(a, p)| (a - p).abs())
+        .sum::<Real>()
+        / actual.len() as Real;
+
+    Ok(mae)
+}
+
+/// Calculates the Root Mean Square Error (RMSE) between two datasets.
+///
+/// Mathematics:
+/// RMSE = sqrt[(1/n) * sum((actual[i] - predicted[i])^2)]
+///
+/// Parameters:
+/// - actual: The actual/noisy values.
+/// - predicted: The predicted/smoothed values.
+///
+/// Returns:
+/// - Root mean square error between the datasets.
+///
+/// Usage:
+/// - Compare model predictions to actual values.
+/// - Penalizes larger errors more heavily than MAE.
+/// - Standard metric for regression evaluation.
+/// - Same units as input data.
+///
+/// Note:
+/// - Both datasets must have the same length.
+/// - More sensitive to outliers than MAE.
+/// - Widely used in machine learning and statistics.
+pub fn calc_root_mean_square_error(
+    actual: &[Real],
+    predicted: &[Real],
+) -> Result<Real> {
+    if actual.is_empty() {
+        bail!(StatisticsError::EmptyDataSlice);
+    }
+    if actual.len() != predicted.len() {
+        bail!(StatisticsError::DataLengthNotEqual);
+    }
+
+    if cfg!(debug_assertions) {
+        if has_non_finite_values::<Real>(actual)
+            || has_non_finite_values::<Real>(predicted)
+        {
+            bail!(StatisticsError::DataContainsNonFiniteValues);
+        }
+    }
+
+    let mse = actual
+        .iter()
+        .zip(predicted.iter())
+        .map(|(a, p)| (a - p).powi(2))
+        .sum::<Real>()
+        / actual.len() as Real;
+
+    Ok(mse.sqrt())
+}
+
+/// Calculates the Normalized Root Mean Square Error (NRMSE) between two datasets.
+///
+/// Mathematics:
+/// NRMSE = RMSE / (max(actual) - min(actual))
+///
+/// Parameters:
+/// - actual: The actual/noisy values.
+/// - predicted: The predicted/smoothed values.
+///
+/// Returns:
+/// - Normalized root mean square error (dimensionless, 0-1 range typically).
+///
+/// Usage:
+/// - Compare errors across different scales.
+/// - Dimensionless error metric.
+/// - Useful when comparing multiple datasets with different ranges.
+/// - Percentage-like interpretation when multiplied by 100.
+///
+/// Note:
+/// - Both datasets must have the same length.
+/// - Returns a ratio, making it scale-independent.
+/// - Undefined when actual data has zero range.
+pub fn calc_normalized_root_mean_square_error(
+    actual: &[Real],
+    predicted: &[Real],
+) -> Result<Real> {
+    let rmse = calc_root_mean_square_error(actual, predicted)?;
+
+    let max_val = actual.iter().fold(Real::NEG_INFINITY, |a, &b| a.max(b));
+    let min_val = actual.iter().fold(Real::INFINITY, |a, &b| a.min(b));
+    let range = max_val - min_val;
+
+    if range == 0.0 {
+        bail!(StatisticsError::OutputValueIsZero);
+    }
+
+    Ok(rmse / range)
+}
+
+/// Calculates the coefficient of determination (R^2) between two datasets.
+///
+/// Mathematics:
+/// R^2 = 1 - (SS_res / SS_tot)
+/// where SS_res = sum((actual[i] - predicted[i])^2)
+/// and SS_tot = sum((actual[i] - mean(actual))^2)
+///
+/// Parameters:
+/// - actual: The actual/noisy values.
+/// - predicted: The predicted/smoothed values.
+///
+/// Returns:
+/// - R^2 value between -infinity and 1, where:
+///   * 1.0 = perfect fit.
+///   * 0.0 = model performs as well as simply using the mean.
+///   * < 0.0 = model performs worse than using the mean.
+///
+/// Usage:
+/// - Measure how well predictions explain variance in actual data.
+/// - Compare different models.
+/// - Assess goodness of fit.
+/// - Widely used in regression analysis.
+///
+/// Note:
+/// - Both datasets must have the same length.
+/// - Dimensionless metric.
+/// - Can be negative for very poor fits.
+pub fn calc_coefficient_of_determination(
+    actual: &[Real],
+    predicted: &[Real],
+) -> Result<Real> {
+    if actual.is_empty() {
+        bail!(StatisticsError::EmptyDataSlice);
+    }
+    if actual.len() != predicted.len() {
+        bail!(StatisticsError::DataLengthNotEqual);
+    }
+
+    if cfg!(debug_assertions) {
+        if has_non_finite_values::<Real>(actual)
+            || has_non_finite_values::<Real>(predicted)
+        {
+            bail!(StatisticsError::DataContainsNonFiniteValues);
+        }
+    }
+
+    let actual_mean = actual.iter().sum::<Real>() / actual.len() as Real;
+
+    let ss_res = actual
+        .iter()
+        .zip(predicted.iter())
+        .map(|(a, p)| (a - p).powi(2))
+        .sum::<Real>();
+
+    let ss_tot = actual
+        .iter()
+        .map(|a| (a - actual_mean).powi(2))
+        .sum::<Real>();
+
+    if ss_tot == 0.0 {
+        // All actual values are the same.
+        if ss_res == 0.0 {
+            Ok(1.0) // Perfect prediction of constant.
+        } else {
+            bail!(StatisticsError::OutputValueIsZero); // Undefined case.
+        }
+    } else {
+        Ok(1.0 - (ss_res / ss_tot))
+    }
+}
+
+#[cfg(test)]
+mod curve_compare_tests {
+    use super::*;
+    use approx::assert_relative_eq;
+
+    const EPSILON: Real = 1e-6;
+
+    #[test]
+    fn test_mean_absolute_error() -> Result<()> {
+        // Perfect fit.
+        let actual = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let predicted = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let mae = calc_mean_absolute_error(&actual, &predicted)?;
+        assert_relative_eq!(mae, 0.0, epsilon = EPSILON);
+
+        // Simple case.
+        let actual = vec![1.0, 2.0, 3.0, 4.0];
+        let predicted = vec![1.1, 1.9, 3.1, 3.9];
+        let mae = calc_mean_absolute_error(&actual, &predicted)?;
+        assert_relative_eq!(mae, 0.1, epsilon = EPSILON);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_root_mean_square_error() -> Result<()> {
+        // Perfect fit.
+        let actual = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let predicted = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let rmse = calc_root_mean_square_error(&actual, &predicted)?;
+        assert_relative_eq!(rmse, 0.0, epsilon = EPSILON);
+
+        // Known case.
+        let actual = vec![1.0, 2.0, 3.0, 4.0];
+        let predicted = vec![1.1, 1.9, 3.1, 3.9];
+        let rmse = calc_root_mean_square_error(&actual, &predicted)?;
+        assert_relative_eq!(rmse, 0.1, epsilon = EPSILON);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_coefficient_of_determination() -> Result<()> {
+        // The following values were confirmed to match the following
+        // implementation in R.
+        //
+        // R code:
+        //     actual = c(-2.0, -1.0, 0.0, 1.0, 2.0)
+        //     predicted = c(-2.0, -1.0, 0.0, 1.0, 2.0)
+        //
+        //     # Goodness of fit : coefficient of determination (R-squared)
+        //     library('ehaGoF')
+        //     gofRSq(actual, predicted)
+        //
+
+        // Perfect fit.
+        let actual = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let predicted = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        assert_relative_eq!(r_squared, 1.0, epsilon = EPSILON);
+
+        // Predictions equal to mean (R^2 should be 0).
+        let actual = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let predicted = vec![3.0, 3.0, 3.0, 3.0, 3.0]; // mean of actual
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        assert_relative_eq!(r_squared, 0.0, epsilon = EPSILON);
+
+        // Good fit (0 < R^2 < 1)
+        let actual = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let predicted = vec![1.1, 1.9, 3.2, 3.8, 5.1];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        // Manual calculation: SS_res = 0.01 + 0.01 + 0.04 + 0.04 + 0.01 = 0.11
+        // SS_tot = 4 + 1 + 0 + 1 + 4 = 10
+        // R^2 = 1 - 0.11/10 = 0.989
+        assert_relative_eq!(r_squared, 0.989, epsilon = EPSILON);
+
+        // Poor fit (R^2 < 0) - predictions worse than mean
+        let actual = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let predicted = vec![5.0, 4.0, 3.0, 2.0, 1.0]; // Completely reversed
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        // SS_res = 16 + 4 + 0 + 4 + 16 = 40
+        // SS_tot = 10 (as before)
+        // R^2 = 1 - 40/10 = -3
+        assert_relative_eq!(r_squared, -3.0, epsilon = EPSILON);
+
+        // All actual values are the same (constant) with perfect prediction
+        let actual = vec![5.0, 5.0, 5.0, 5.0];
+        let predicted = vec![5.0, 5.0, 5.0, 5.0];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        assert_relative_eq!(r_squared, 1.0, epsilon = EPSILON);
+
+        // Linear relationship with some noise.
+        let actual = vec![2.0, 4.0, 6.0, 8.0, 10.0];
+        let predicted = vec![2.2, 3.8, 6.1, 7.9, 10.2];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        // This should give a high R^2 close to 1.
+        assert_relative_eq!(r_squared, 0.9965, epsilon = EPSILON);
+
+        // Negative values.
+        let actual = vec![-2.0, -1.0, 0.0, 1.0, 2.0];
+        let predicted = vec![-2.0, -1.0, 0.0, 1.0, 2.0];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        assert_relative_eq!(r_squared, 1.0, epsilon = EPSILON);
+
+        // Single data point
+        let actual = vec![5.0];
+        let predicted = vec![5.0];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        assert_relative_eq!(r_squared, 1.0, epsilon = EPSILON);
+
+        // Large values.
+        let actual = vec![1e6, 2e6, 3e6, 4e6, 5e6];
+        let predicted = vec![1e6, 2e6, 3e6, 4e6, 5e6];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        assert_relative_eq!(r_squared, 1.0, epsilon = EPSILON);
+
+        // Extreme prediction errors with no pattern.
+        let actual = vec![1.2, 1.0, 2.0, 3.0];
+        let predicted = vec![0.0, 5.0, 2.0, 0.0];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        // Result is very negative, because the predictions are much
+        // worse than using mean.
+        assert_relative_eq!(r_squared, -9.66129, epsilon = EPSILON);
+
+        // Systematic overestimation with correct trend.
+        let actual = vec![1.0, 2.0, 3.0];
+        let predicted = vec![1.0, 4.0, 6.0];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        // Result: Predictions capture trend but with large systematic
+        // error.
+        assert_relative_eq!(r_squared, -5.5, epsilon = EPSILON);
+
+        // Shifted predictions with moderate error.
+        let actual = vec![1.0, 4.0, 6.0, 8.0];
+        let predicted = vec![4.0, 8.0, 9.0, 10.0];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        // Result is negative but not extremely so.
+        assert_relative_eq!(r_squared, -0.4205607, epsilon = EPSILON);
+
+        // Random-like predictions with no correlation.
+        let actual = vec![5.0, 2.0, 4.0, 7.0];
+        let predicted = vec![3.0, 8.0, 1.0, 5.0];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        // Result is strongly negative, because there is no predictive
+        // value.
+        assert_relative_eq!(r_squared, -3.076923, epsilon = EPSILON);
+
+        // Accelerating overestimation.
+        let actual = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let predicted = vec![1.9, 3.7, 5.8, 8.0, 9.6];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        // Result shows a poor fit due to the increasing error.
+        assert_relative_eq!(r_squared, -3.87, epsilon = EPSILON);
+
+        // All actual values same but predictions differ (should error).
+        let actual = vec![5.0, 5.0, 5.0];
+        let predicted = vec![5.0, 5.1, 5.0];
+        let result = calc_coefficient_of_determination(&actual, &predicted);
+        assert!(matches!(result, Err(_)));
+
+        // Test: NaN in actual.
+        let actual = vec![1.0, f64::NAN, 3.0];
+        let predicted = vec![1.0, 2.0, 3.0];
+        let result = calc_coefficient_of_determination(&actual, &predicted);
+        assert!(matches!(result, Err(_)));
+
+        // Infinity in predicted.
+        let actual = vec![1.0, 2.0, 3.0];
+        let predicted = vec![1.0, f64::INFINITY, 3.0];
+        let result = calc_coefficient_of_determination(&actual, &predicted);
+        assert!(matches!(result, Err(_)));
+
+        // Very small differences (numerical stability).
+        let actual = vec![1.0, 1.0 + 1e-10, 1.0 + 2e-10];
+        let predicted = vec![1.0, 1.0 + 1e-10, 1.0 + 2e-10];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        assert_relative_eq!(r_squared, 1.0, epsilon = EPSILON);
+
+        // Predictions that oscillate around actual values.
+        let actual = vec![0.0, 1.0, 2.0, 3.0, 4.0];
+        let predicted = vec![0.5, 0.5, 2.5, 2.5, 4.5];
+        let r_squared = calc_coefficient_of_determination(&actual, &predicted)?;
+        // Should be positive but less than 1.
+        assert!(r_squared > 0.0 && r_squared < 1.0);
+
+        // Empty arrays.
+        let actual: Vec<f64> = vec![];
+        let predicted: Vec<f64> = vec![];
+        let result = calc_coefficient_of_determination(&actual, &predicted);
+        assert!(matches!(result, Err(_)));
+
+        // Different lengths.
+        let actual = vec![1.0, 2.0, 3.0];
+        let predicted = vec![1.0, 2.0];
+        let result = calc_coefficient_of_determination(&actual, &predicted);
+        assert!(matches!(result, Err(_)));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_error_conditions() {
+        // Empty slices.
+        let empty: Vec<Real> = vec![];
+        let data = vec![1.0, 2.0];
+        assert!(calc_mean_absolute_error(&empty, &data).is_err());
+
+        // Mismatched lengths.
+        let actual = vec![1.0, 2.0, 3.0];
+        let predicted = vec![1.0, 2.0];
+        assert!(calc_mean_absolute_error(&actual, &predicted).is_err());
     }
 }

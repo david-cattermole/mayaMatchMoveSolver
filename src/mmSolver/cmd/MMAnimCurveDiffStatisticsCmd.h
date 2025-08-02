@@ -25,10 +25,12 @@
 
 // STL
 #include <limits>
+#include <vector>
 
 // Maya
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
+#include <maya/MDoubleArray.h>
 #include <maya/MFnAnimCurve.h>
 #include <maya/MObject.h>
 #include <maya/MPxCommand.h>
@@ -53,7 +55,8 @@ public:
         , m_calculateVariance(false)
         , m_calculateStdDev(false)
         , m_calculatePeakToPeak(false)
-        , m_calculateSNR(false){};
+        , m_calculateSNR(false)
+        , m_useListInput(false){};
     virtual ~MMAnimCurveDiffStatisticsCmd();
 
     virtual bool hasSyntax() const;
@@ -88,6 +91,12 @@ private:
     MObject m_animCurveObj2;
     MFnAnimCurve m_animCurveFn1;
     MFnAnimCurve m_animCurveFn2;
+
+    // List input mode
+    bool m_useListInput;
+    std::vector<double> m_xValues;
+    std::vector<double> m_yValuesA;
+    std::vector<double> m_yValuesB;
 };
 
 }  // namespace mmsolver

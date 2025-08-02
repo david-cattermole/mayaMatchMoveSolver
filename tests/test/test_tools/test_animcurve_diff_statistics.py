@@ -487,6 +487,99 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             parsed[STAT_NAME_STD_POPULATION_DEV], expected_stddev, places=5
         )
 
+    def test_diff_statistics_with_list_inputs(self):
+        """Test diff statistics with Python list inputs."""
+        x_values = list(range(1, 11))
+        y_values1 = [x * 2 for x in x_values]  # Linear.
+        y_values2 = [x * 2 + 5 for x in x_values]  # Linear with offset.
+
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            xValues=x_values,
+            yValuesA=y_values1,
+            yValuesB=y_values2,
+            meanAbsoluteDifference=True,
+            meanDifference=True,
+            variance=True,
+        )
+
+        stats = self._parse_diff_statistics_result(result)
+
+        # For constant offset of 5:
+        self.assertAlmostEqual(stats[STAT_NAME_MEAN_DIFF], -5.0, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_MEAN_ABS_DIFF], 5.0, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_POPULATION_VARIANCE], 0.0, places=5)
+
+    def test_diff_statistics_invalid_list_inputs(self):
+        """Test error handling for invalid list inputs."""
+        # Test with incomplete list inputs.
+        with self.assertRaises(RuntimeError):
+            maya.cmds.mmAnimCurveDiffStatistics(
+                xValues=[1, 2, 3],
+                yValuesA=[1, 4, 9],
+                # Missing yValuesB.
+                meanDifference=True,
+            )
+
+        with self.assertRaises(RuntimeError):
+            maya.cmds.mmAnimCurveDiffStatistics(
+                xValues=[1, 2, 3],
+                # Missing yValuesA.
+                yValuesB=[2, 5, 10],
+                meanDifference=True,
+            )
+
+        # Test with mismatched lengths, with yValuesA.
+        with self.assertRaises(RuntimeError):
+            maya.cmds.mmAnimCurveDiffStatistics(
+                xValues=[1, 2, 3],
+                yValuesA=[1, 4],  # Different length.
+                yValuesB=[2, 5, 10],
+                meanDifference=True,
+            )
+
+        # Test with mismatched lengths, with yValuesA.
+        with self.assertRaises(RuntimeError):
+            maya.cmds.mmAnimCurveDiffStatistics(
+                xValues=[1, 2, 3],
+                yValuesA=[1, 4, 9],
+                yValuesB=[2, 5],  # Different length.
+                meanDifference=True,
+            )
+
+        # Test with mismatched lengths, with xValues.
+        with self.assertRaises(RuntimeError):
+            maya.cmds.mmAnimCurveDiffStatistics(
+                xValues=[1, 2],  # Different length.
+                yValuesA=[1, 4, 9],
+                yValuesB=[2, 5, 10],
+                meanDifference=True,
+            )
+
+    def test_diff_statistics_noise_with_lists(self):
+        """Test noise detection with list inputs."""
+        # Create smooth and noisy data
+        random.seed(42)
+        x_values = list(range(1, 51))
+        smooth_values = [math.sin(x * 0.1) * 10.0 for x in x_values]
+        noisy_values = [v + random.uniform(-0.5, 0.5) for v in smooth_values]
+
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            xValues=x_values,
+            yValuesA=smooth_values,
+            yValuesB=noisy_values,
+            standardDeviation=True,
+            rootMeanSquareDifference=True,
+            meanDifference=True,
+        )
+
+        stats = self._parse_diff_statistics_result(result)
+
+        # Verify noise is detected
+        self.assertGreater(stats[STAT_NAME_STD_POPULATION_DEV], 0.1)
+        self.assertGreater(stats[STAT_NAME_RMS_DIFF], 0.1)
+        # Mean difference should be close to zero for random noise
+        self.assertLess(abs(stats[STAT_NAME_MEAN_DIFF]), 0.2)
+
 
 if __name__ == "__main__":
     prog = unittest.main()

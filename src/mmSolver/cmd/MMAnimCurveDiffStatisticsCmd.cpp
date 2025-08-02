@@ -47,6 +47,7 @@
 
 // MM Solver
 #include "mmSolver/cmd/anim_curve_cmd_utils.h"
+#include "mmSolver/core/types.h"
 #include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
@@ -83,6 +84,15 @@
 
 #define SIGNAL_TO_NOISE_RATIO_FLAG_SHORT "-snr"
 #define SIGNAL_TO_NOISE_RATIO_FLAG_LONG "-signalToNoiseRatio"
+
+#define X_VALUES_FLAG_SHORT "-xv"
+#define X_VALUES_FLAG_LONG "-xValues"
+
+#define Y_VALUES_A_FLAG_SHORT "-yva"
+#define Y_VALUES_A_FLAG_LONG "-yValuesA"
+
+#define Y_VALUES_B_FLAG_SHORT "-yvb"
+#define Y_VALUES_B_FLAG_LONG "-yValuesB"
 
 #define CMD_NAME "mmAnimCurveDiffStatistics"
 
@@ -141,8 +151,18 @@ MSyntax MMAnimCurveDiffStatisticsCmd::newSyntax() {
     syntax.addFlag(SIGNAL_TO_NOISE_RATIO_FLAG_SHORT,
                    SIGNAL_TO_NOISE_RATIO_FLAG_LONG, MSyntax::kBoolean);
 
-    // Require exactly 2 animation curves
-    const unsigned int min_curves = 2;
+    // List input flags
+    syntax.addFlag(X_VALUES_FLAG_SHORT, X_VALUES_FLAG_LONG, MSyntax::kDouble);
+    syntax.addFlag(Y_VALUES_A_FLAG_SHORT, Y_VALUES_A_FLAG_LONG,
+                   MSyntax::kDouble);
+    syntax.addFlag(Y_VALUES_B_FLAG_SHORT, Y_VALUES_B_FLAG_LONG,
+                   MSyntax::kDouble);
+    syntax.makeFlagMultiUse(X_VALUES_FLAG_SHORT);
+    syntax.makeFlagMultiUse(Y_VALUES_A_FLAG_SHORT);
+    syntax.makeFlagMultiUse(Y_VALUES_B_FLAG_SHORT);
+
+    // Require 0 to 2 animation curves (0 when using list inputs)
+    const unsigned int min_curves = 0;
     const unsigned int max_curves = 2;
     syntax.setObjectType(MSyntax::kSelectionList, min_curves, max_curves);
     syntax.useSelectionAsDefault(true);
@@ -158,21 +178,104 @@ MStatus MMAnimCurveDiffStatisticsCmd::parseArgs(const MArgList &args) {
     MArgDatabase argData(syntax(), args, &status);
     MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // Get animation curves from selection.
-    status = argData.getObjects(m_selection);
-    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    // Check if list inputs are provided
+    bool hasSomeListInputs = argData.isFlagSet(X_VALUES_FLAG_SHORT) ||
+                             argData.isFlagSet(Y_VALUES_A_FLAG_SHORT) ||
+                             argData.isFlagSet(Y_VALUES_B_FLAG_SHORT);
+    bool hasAllListInputs = argData.isFlagSet(X_VALUES_FLAG_SHORT) &&
+                            argData.isFlagSet(Y_VALUES_A_FLAG_SHORT) &&
+                            argData.isFlagSet(Y_VALUES_B_FLAG_SHORT);
 
-    if (m_selection.length() != 2) {
-        MGlobal::displayError(CMD_NAME
-                              ": Please select exactly two animation curves.");
+    // All four list flags must be provided, or none at all.
+    if (hasAllListInputs && !hasAllListInputs) {
+        MGlobal::displayError(
+            CMD_NAME
+            ": All list value flags (xValues, yValuesA, yValuesB) must be "
+            "provided together, or none at all.");
         return MS::kFailure;
     }
 
-    // Validate both curves.
-    status = m_selection.getDependNode(0, m_animCurveObj1);
-    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
-    status = m_selection.getDependNode(1, m_animCurveObj2);
-    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    m_useListInput = false;
+    if (hasAllListInputs) {
+        m_useListInput = true;
+
+        Count32 xCount = argData.numberOfFlagUses(X_VALUES_FLAG_SHORT);
+        Count32 yCount1 = argData.numberOfFlagUses(Y_VALUES_A_FLAG_SHORT);
+        Count32 yCount2 = argData.numberOfFlagUses(Y_VALUES_A_FLAG_SHORT);
+
+        // Validate list lengths
+        if (xCount != yCount1) {
+            MGlobal::displayError(
+                CMD_NAME
+                ": X and Y value lists for curve 1 must have the same length.");
+            return MS::kFailure;
+        }
+
+        if (xCount != yCount2) {
+            MGlobal::displayError(
+                CMD_NAME
+                ": X and Y value lists for curve 2 must have the same length.");
+            return MS::kFailure;
+        }
+
+        if (xCount < 2) {
+            MGlobal::displayError(
+                CMD_NAME ": Value lists must contain at least 2 values.");
+            return MS::kFailure;
+        }
+
+        m_xValues.clear();
+        m_yValuesA.clear();
+        m_yValuesB.clear();
+
+        for (Count32 i = 0; i < xCount; ++i) {
+            MArgList xArgList;
+            status =
+                argData.getFlagArgumentList(X_VALUES_FLAG_SHORT, i, xArgList);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+            const double value = xArgList.asDouble(0, &status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+            m_xValues.push_back(value);
+        }
+
+        for (Count32 i = 0; i < xCount; ++i) {
+            MArgList yArgList1;
+            status = argData.getFlagArgumentList(Y_VALUES_A_FLAG_SHORT, i,
+                                                 yArgList1);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+            const double value = yArgList1.asDouble(0, &status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+            m_yValuesA.push_back(value);
+        }
+
+        for (Count32 i = 0; i < xCount; ++i) {
+            MArgList yArgList2;
+            status = argData.getFlagArgumentList(Y_VALUES_B_FLAG_SHORT, i,
+                                                 yArgList2);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+            const double value = yArgList2.asDouble(0, &status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+            m_yValuesB.push_back(value);
+        }
+
+    } else {
+        // Get animation curves from selection.
+        status = argData.getObjects(m_selection);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        if (m_selection.length() != 2) {
+            MGlobal::displayError(CMD_NAME
+                                  ": Please select exactly two animation "
+                                  "curves or provide list values.");
+            return MS::kFailure;
+        }
+
+        // Validate both curves.
+        status = m_selection.getDependNode(0, m_animCurveObj1);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = m_selection.getDependNode(1, m_animCurveObj2);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
 
     // Parse optional frame range arguments.
     m_startFrame = std::numeric_limits<FrameNumber>::max();
@@ -264,6 +367,7 @@ MStatus MMAnimCurveDiffStatisticsCmd::parseArgs(const MArgList &args) {
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculatePeakToPeak="
                                << m_calculatePeakToPeak);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateSNR=" << m_calculateSNR);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_useListInput=" << m_useListInput);
 
     return status;
 }
@@ -274,85 +378,116 @@ MStatus MMAnimCurveDiffStatisticsCmd::doIt(const MArgList &args) {
     MStatus status = parseArgs(args);
     MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // Set up the animation curve function objects.
-    status = m_animCurveFn1.setObject(m_animCurveObj1);
-    if (status != MS::kSuccess) {
-        MGlobal::displayError(
-            CMD_NAME ": First selected object is not an animation curve.");
-        return status;
-    }
-
-    status = m_animCurveFn2.setObject(m_animCurveObj2);
-    if (status != MS::kSuccess) {
-        MGlobal::displayError(
-            CMD_NAME ": Second selected object is not an animation curve.");
-        return status;
-    }
-
-    // Validate both curves and determine frame ranges.
-    FrameNumber start_frame1 = 0;
-    FrameNumber end_frame1 = 0;
-    FrameNumber start_frame2 = 0;
-    FrameNumber end_frame2 = 0;
-    const FrameCount min_keyframe_count = 2;
-    const FrameCount min_frame_count = 2;
-    const char *cmd_name = CMD_NAME;
-
-    bool success1 = validate_anim_curve(
-        cmd_name, m_startFrame, m_endFrame, min_keyframe_count, min_frame_count,
-        m_animCurveFn1, start_frame1, end_frame1);
-    if (!success1) {
-        MGlobal::displayError(CMD_NAME
-                              ": Failed to validate first animation curve.");
-        return MS::kFailure;
-    }
-
-    bool success2 = validate_anim_curve(
-        cmd_name, m_startFrame, m_endFrame, min_keyframe_count, min_frame_count,
-        m_animCurveFn2, start_frame2, end_frame2);
-    if (!success2) {
-        MGlobal::displayError(CMD_NAME
-                              ": Failed to validate second animation curve.");
-        return MS::kFailure;
-    }
-
-    // Use the intersection of both frame ranges.
-    FrameNumber start_frame = std::max(start_frame1, start_frame2);
-    FrameNumber end_frame = std::min(end_frame1, end_frame2);
-    if (start_frame > end_frame) {
-        MGlobal::displayError(
-            CMD_NAME ": Animation curves have no overlapping frame range.");
-        return MS::kFailure;
-    }
-
-    MMSOLVER_MAYA_VRB(CMD_NAME << ": start_frame=" << start_frame);
-    MMSOLVER_MAYA_VRB(CMD_NAME << ": end_frame=" << end_frame);
-
-    auto time_unit = MTime::uiUnit();
-    auto frame_count = static_cast<size_t>(end_frame - start_frame) + 1;
-
     // Evaluate both curves.
-    rust::Vec<mmsg::Real> values_x1, values_y1;
-    rust::Vec<mmsg::Real> values_x2, values_y2;
-    values_x1.reserve(frame_count);
-    values_y1.reserve(frame_count);
-    values_x2.reserve(frame_count);
-    values_y2.reserve(frame_count);
+    rust::Vec<mmsg::Real> values_x1;
+    rust::Vec<mmsg::Real> values_y1;
+    rust::Vec<mmsg::Real> values_x2;
+    rust::Vec<mmsg::Real> values_y2;
 
-    status = evaluate_curve(start_frame, end_frame, time_unit, m_animCurveFn1,
-                            values_x1, values_y1);
-    if (status != MS::kSuccess) {
-        MGlobal::displayError(CMD_NAME
-                              ": Failed to evaluate first animation curve.");
-        return status;
-    }
+    if (m_useListInput) {
+        // Use provided list values with interpolation for matching X
+        // values.
+        values_x1.reserve(m_xValues.size());
+        values_y1.reserve(m_xValues.size());
+        values_x2.reserve(m_xValues.size());
+        values_y2.reserve(m_xValues.size());
 
-    status = evaluate_curve(start_frame, end_frame, time_unit, m_animCurveFn2,
-                            values_x2, values_y2);
-    if (status != MS::kSuccess) {
-        MGlobal::displayError(CMD_NAME
-                              ": Failed to evaluate second animation curve.");
-        return status;
+        for (auto i = 0; i < m_xValues.size(); i++) {
+            values_x1.push_back(m_xValues[i]);
+        }
+
+        for (auto i = 0; i < m_yValuesA.size(); i++) {
+            values_y1.push_back(m_yValuesA[i]);
+        }
+
+        for (auto i = 0; i < m_xValues.size(); i++) {
+            values_x2.push_back(m_xValues[i]);
+        }
+
+        for (auto i = 0; i < m_yValuesB.size(); i++) {
+            values_y2.push_back(m_yValuesB[i]);
+        }
+
+    } else {
+        // Use animation curves
+
+        // Set up the animation curve function objects.
+        status = m_animCurveFn1.setObject(m_animCurveObj1);
+        if (status != MS::kSuccess) {
+            MGlobal::displayError(
+                CMD_NAME ": First selected object is not an animation curve.");
+            return status;
+        }
+
+        status = m_animCurveFn2.setObject(m_animCurveObj2);
+        if (status != MS::kSuccess) {
+            MGlobal::displayError(
+                CMD_NAME ": Second selected object is not an animation curve.");
+            return status;
+        }
+
+        // Validate both curves and determine frame ranges.
+        FrameNumber start_frame1 = 0;
+        FrameNumber end_frame1 = 0;
+        FrameNumber start_frame2 = 0;
+        FrameNumber end_frame2 = 0;
+        const FrameCount min_keyframe_count = 2;
+        const FrameCount min_frame_count = 2;
+        const char *cmd_name = CMD_NAME;
+
+        bool success1 = validate_anim_curve(
+            cmd_name, m_startFrame, m_endFrame, min_keyframe_count,
+            min_frame_count, m_animCurveFn1, start_frame1, end_frame1);
+        if (!success1) {
+            MGlobal::displayError(
+                CMD_NAME ": Failed to validate first animation curve.");
+            return MS::kFailure;
+        }
+
+        bool success2 = validate_anim_curve(
+            cmd_name, m_startFrame, m_endFrame, min_keyframe_count,
+            min_frame_count, m_animCurveFn2, start_frame2, end_frame2);
+        if (!success2) {
+            MGlobal::displayError(
+                CMD_NAME ": Failed to validate second animation curve.");
+            return MS::kFailure;
+        }
+
+        // Use the intersection of both frame ranges.
+        FrameNumber start_frame = std::max(start_frame1, start_frame2);
+        FrameNumber end_frame = std::min(end_frame1, end_frame2);
+        if (start_frame > end_frame) {
+            MGlobal::displayError(
+                CMD_NAME ": Animation curves have no overlapping frame range.");
+            return MS::kFailure;
+        }
+
+        MMSOLVER_MAYA_VRB(CMD_NAME << ": start_frame=" << start_frame);
+        MMSOLVER_MAYA_VRB(CMD_NAME << ": end_frame=" << end_frame);
+
+        auto time_unit = MTime::uiUnit();
+        auto frame_count = static_cast<size_t>(end_frame - start_frame) + 1;
+
+        values_x1.reserve(frame_count);
+        values_y1.reserve(frame_count);
+        values_x2.reserve(frame_count);
+        values_y2.reserve(frame_count);
+
+        status = evaluate_curve(start_frame, end_frame, time_unit,
+                                m_animCurveFn1, values_x1, values_y1);
+        if (status != MS::kSuccess) {
+            MGlobal::displayError(
+                CMD_NAME ": Failed to evaluate first animation curve.");
+            return status;
+        }
+
+        status = evaluate_curve(start_frame, end_frame, time_unit,
+                                m_animCurveFn2, values_x2, values_y2);
+        if (status != MS::kSuccess) {
+            MGlobal::displayError(
+                CMD_NAME ": Failed to evaluate second animation curve.");
+            return status;
+        }
     }
 
     // Verify we have the same number of values.

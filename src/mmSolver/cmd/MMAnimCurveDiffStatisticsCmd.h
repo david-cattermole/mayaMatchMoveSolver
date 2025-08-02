@@ -52,10 +52,14 @@ public:
         , m_calculateRmsDiff(false)
         , m_calculateMeanDiff(false)
         , m_calculateMedianDiff(false)
-        , m_calculateVariance(false)
-        , m_calculateStdDev(false)
+        , m_calculatePopVariance(false)
+        , m_calculatePopStdDev(false)
         , m_calculatePeakToPeak(false)
         , m_calculateSNR(false)
+        , m_calculateMAE(false)
+        , m_calculateRMSE(false)
+        , m_calculateNRMSE(false)
+        , m_calculateR2(false)
         , m_useListInput(false){};
     virtual ~MMAnimCurveDiffStatisticsCmd();
 
@@ -80,10 +84,14 @@ private:
     bool m_calculateRmsDiff;
     bool m_calculateMeanDiff;
     bool m_calculateMedianDiff;
-    bool m_calculateVariance;
-    bool m_calculateStdDev;
+    bool m_calculatePopVariance;
+    bool m_calculatePopStdDev;
     bool m_calculatePeakToPeak;
     bool m_calculateSNR;
+    bool m_calculateMAE;
+    bool m_calculateRMSE;
+    bool m_calculateNRMSE;
+    bool m_calculateR2;
 
     // The two animation curves to compare.
     MSelectionList m_selection;

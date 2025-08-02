@@ -64,26 +64,38 @@
 #define MEAN_ABSOLUTE_DIFF_FLAG_SHORT "-mad"
 #define MEAN_ABSOLUTE_DIFF_FLAG_LONG "-meanAbsoluteDifference"
 
-#define RMS_DIFF_FLAG_SHORT "-rms"
+#define RMS_DIFF_FLAG_SHORT "-rsd"
 #define RMS_DIFF_FLAG_LONG "-rootMeanSquareDifference"
 
-#define MEAN_DIFF_FLAG_SHORT "-md"
+#define MEAN_DIFF_FLAG_SHORT "-mnf"
 #define MEAN_DIFF_FLAG_LONG "-meanDifference"
 
-#define MEDIAN_DIFF_FLAG_SHORT "-mdd"
+#define MEDIAN_DIFF_FLAG_SHORT "-mdf"
 #define MEDIAN_DIFF_FLAG_LONG "-medianDifference"
 
-#define VARIANCE_FLAG_SHORT "-var"
-#define VARIANCE_FLAG_LONG "-variance"
+#define POPULATION_VARIANCE_FLAG_SHORT "-pvr"
+#define POPULATION_VARIANCE_FLAG_LONG "-populationVariance"
 
-#define STANDARD_DEVIATION_FLAG_SHORT "-sd"
-#define STANDARD_DEVIATION_FLAG_LONG "-standardDeviation"
+#define POPULATION_STANDARD_DEVIATION_FLAG_SHORT "-psd"
+#define POPULATION_STANDARD_DEVIATION_FLAG_LONG "-populationStandardDeviation"
 
 #define PEAK_TO_PEAK_FLAG_SHORT "-ptp"
 #define PEAK_TO_PEAK_FLAG_LONG "-peakToPeak"
 
 #define SIGNAL_TO_NOISE_RATIO_FLAG_SHORT "-snr"
 #define SIGNAL_TO_NOISE_RATIO_FLAG_LONG "-signalToNoiseRatio"
+
+#define MEAN_ABSOLUTE_ERROR_FLAG_SHORT "-mae"
+#define MEAN_ABSOLUTE_ERROR_FLAG_LONG "-meanAbsoluteError"
+
+#define ROOT_MEAN_SQUARE_ERROR_FLAG_SHORT "-rme"
+#define ROOT_MEAN_SQUARE_ERROR_FLAG_LONG "-rootMeanSquareError"
+
+#define NORMALIZED_RMSE_FLAG_SHORT "-nse"
+#define NORMALIZED_RMSE_FLAG_LONG "-normalizedRootMeanSquareError"
+
+#define R_SQUARED_FLAG_SHORT "-r2"
+#define R_SQUARED_FLAG_LONG "-rSquared"
 
 #define X_VALUES_FLAG_SHORT "-xv"
 #define X_VALUES_FLAG_LONG "-xValues"
@@ -105,6 +117,10 @@
 #define STAT_TYPE_POPULATION_VARIANCE 5.0
 #define STAT_TYPE_MEAN_DIFF 6.0
 #define STAT_TYPE_MEDIAN_DIFF 7.0
+#define STAT_TYPE_MEAN_ABSOLUTE_ERROR 8.0
+#define STAT_TYPE_ROOT_MEAN_SQUARE_ERROR 9.0
+#define STAT_TYPE_NORMALIZED_RMSE 10.0
+#define STAT_TYPE_R_SQUARED 11.0
 
 namespace mmsg = mmscenegraph;
 
@@ -143,13 +159,22 @@ MSyntax MMAnimCurveDiffStatisticsCmd::newSyntax() {
                    MSyntax::kBoolean);
     syntax.addFlag(MEDIAN_DIFF_FLAG_SHORT, MEDIAN_DIFF_FLAG_LONG,
                    MSyntax::kBoolean);
-    syntax.addFlag(VARIANCE_FLAG_SHORT, VARIANCE_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(STANDARD_DEVIATION_FLAG_SHORT, STANDARD_DEVIATION_FLAG_LONG,
-                   MSyntax::kBoolean);
+    syntax.addFlag(POPULATION_VARIANCE_FLAG_SHORT,
+                   POPULATION_VARIANCE_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(POPULATION_STANDARD_DEVIATION_FLAG_SHORT,
+                   POPULATION_STANDARD_DEVIATION_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(PEAK_TO_PEAK_FLAG_SHORT, PEAK_TO_PEAK_FLAG_LONG,
                    MSyntax::kBoolean);
     syntax.addFlag(SIGNAL_TO_NOISE_RATIO_FLAG_SHORT,
                    SIGNAL_TO_NOISE_RATIO_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(MEAN_ABSOLUTE_ERROR_FLAG_SHORT,
+                   MEAN_ABSOLUTE_ERROR_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(ROOT_MEAN_SQUARE_ERROR_FLAG_SHORT,
+                   ROOT_MEAN_SQUARE_ERROR_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(NORMALIZED_RMSE_FLAG_SHORT, NORMALIZED_RMSE_FLAG_LONG,
+                   MSyntax::kBoolean);
+    syntax.addFlag(R_SQUARED_FLAG_SHORT, R_SQUARED_FLAG_LONG,
+                   MSyntax::kBoolean);
 
     // List input flags
     syntax.addFlag(X_VALUES_FLAG_SHORT, X_VALUES_FLAG_LONG, MSyntax::kDouble);
@@ -295,10 +320,14 @@ MStatus MMAnimCurveDiffStatisticsCmd::parseArgs(const MArgList &args) {
     m_calculateRmsDiff = false;
     m_calculateMeanDiff = false;
     m_calculateMedianDiff = false;
-    m_calculateVariance = false;
-    m_calculateStdDev = false;
+    m_calculatePopVariance = false;
+    m_calculatePopStdDev = false;
     m_calculatePeakToPeak = false;
     m_calculateSNR = false;
+    m_calculateMAE = false;
+    m_calculateRMSE = false;
+    m_calculateNRMSE = false;
+    m_calculateR2 = false;
 
     if (argData.isFlagSet(MEAN_ABSOLUTE_DIFF_FLAG_SHORT)) {
         status = argData.getFlagArgument(MEAN_ABSOLUTE_DIFF_FLAG_SHORT, 0,
@@ -320,14 +349,14 @@ MStatus MMAnimCurveDiffStatisticsCmd::parseArgs(const MArgList &args) {
                                          m_calculateMedianDiff);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
-    if (argData.isFlagSet(VARIANCE_FLAG_SHORT)) {
-        status = argData.getFlagArgument(VARIANCE_FLAG_SHORT, 0,
-                                         m_calculateVariance);
+    if (argData.isFlagSet(POPULATION_VARIANCE_FLAG_SHORT)) {
+        status = argData.getFlagArgument(POPULATION_VARIANCE_FLAG_SHORT, 0,
+                                         m_calculatePopVariance);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
-    if (argData.isFlagSet(STANDARD_DEVIATION_FLAG_SHORT)) {
-        status = argData.getFlagArgument(STANDARD_DEVIATION_FLAG_SHORT, 0,
-                                         m_calculateStdDev);
+    if (argData.isFlagSet(POPULATION_STANDARD_DEVIATION_FLAG_SHORT)) {
+        status = argData.getFlagArgument(
+            POPULATION_STANDARD_DEVIATION_FLAG_SHORT, 0, m_calculatePopStdDev);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     if (argData.isFlagSet(PEAK_TO_PEAK_FLAG_SHORT)) {
@@ -340,12 +369,33 @@ MStatus MMAnimCurveDiffStatisticsCmd::parseArgs(const MArgList &args) {
                                          m_calculateSNR);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
+    if (argData.isFlagSet(MEAN_ABSOLUTE_ERROR_FLAG_SHORT)) {
+        status = argData.getFlagArgument(MEAN_ABSOLUTE_ERROR_FLAG_SHORT, 0,
+                                         m_calculateMAE);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    if (argData.isFlagSet(ROOT_MEAN_SQUARE_ERROR_FLAG_SHORT)) {
+        status = argData.getFlagArgument(ROOT_MEAN_SQUARE_ERROR_FLAG_SHORT, 0,
+                                         m_calculateRMSE);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    if (argData.isFlagSet(NORMALIZED_RMSE_FLAG_SHORT)) {
+        status = argData.getFlagArgument(NORMALIZED_RMSE_FLAG_SHORT, 0,
+                                         m_calculateNRMSE);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    if (argData.isFlagSet(R_SQUARED_FLAG_SHORT)) {
+        status =
+            argData.getFlagArgument(R_SQUARED_FLAG_SHORT, 0, m_calculateR2);
+        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
 
     // If no flags are set, calculate all statistics by default
     if (!m_calculateMeanAbsDiff && !m_calculateRmsDiff &&
         !m_calculateMeanDiff && !m_calculateMedianDiff &&
-        !m_calculateVariance && !m_calculateStdDev && !m_calculatePeakToPeak &&
-        !m_calculateSNR) {
+        !m_calculatePopVariance && !m_calculatePopStdDev &&
+        !m_calculatePeakToPeak && !m_calculateSNR && !m_calculateMAE &&
+        !m_calculateRMSE && !m_calculateNRMSE && !m_calculateR2) {
         MGlobal::displayError(CMD_NAME
                               ": At least one statistic must be enabled.");
         return MS::kFailure;
@@ -361,12 +411,17 @@ MStatus MMAnimCurveDiffStatisticsCmd::parseArgs(const MArgList &args) {
                                << m_calculateMeanDiff);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateMedianDiff="
                                << m_calculateMedianDiff);
-    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateVariance="
-                               << m_calculateVariance);
-    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateStdDev=" << m_calculateStdDev);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculatePopVariance="
+                               << m_calculatePopVariance);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculatePopStdDev="
+                               << m_calculatePopStdDev);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculatePeakToPeak="
                                << m_calculatePeakToPeak);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateSNR=" << m_calculateSNR);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateMAE=" << m_calculateMAE);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateRMSE=" << m_calculateRMSE);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateNRMSE=" << m_calculateNRMSE);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateR2=" << m_calculateR2);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_useListInput=" << m_useListInput);
 
     return status;
@@ -517,6 +572,10 @@ MStatus MMAnimCurveDiffStatisticsCmd::doIt(const MArgList &args) {
                                              differences.size()};
     rust::Slice<const mmsg::Real> abs_diff_slice{absolute_differences.data(),
                                                  absolute_differences.size()};
+    rust::Slice<const mmsg::Real> values_y1_slice{values_y1.data(),
+                                                  values_y1.size()};
+    rust::Slice<const mmsg::Real> values_y2_slice{values_y2.data(),
+                                                  values_y2.size()};
 
     // Output format:
     // [stat_count, statType1, statValue1, statType2, statValue2, ...]
@@ -546,7 +605,7 @@ MStatus MMAnimCurveDiffStatisticsCmd::doIt(const MArgList &args) {
     }
 
     // Calculate mean and variance if needed (they come together)
-    if (m_calculateMeanDiff || m_calculateVariance) {
+    if (m_calculateMeanDiff || m_calculatePopVariance) {
         if (mmsg::calc_population_variance(diff_slice, mean_diff,
                                            variance_diff)) {
             meanCalculated = true;
@@ -556,7 +615,7 @@ MStatus MMAnimCurveDiffStatisticsCmd::doIt(const MArgList &args) {
                 statsResults.push_back({STAT_TYPE_MEAN_DIFF, mean_diff});
                 MMSOLVER_MAYA_VRB(CMD_NAME << ": mean_diff=" << mean_diff);
             }
-            if (m_calculateVariance) {
+            if (m_calculatePopVariance) {
                 statsResults.push_back(
                     {STAT_TYPE_POPULATION_VARIANCE, variance_diff});
                 MMSOLVER_MAYA_VRB(CMD_NAME << ": population_variance="
@@ -570,7 +629,7 @@ MStatus MMAnimCurveDiffStatisticsCmd::doIt(const MArgList &args) {
     }
 
     // Calculate population standard deviation.
-    if (m_calculateStdDev) {
+    if (m_calculatePopStdDev) {
         if (varianceCalculated) {
             // We already have variance, just calculate std dev from it
             mmsg::Real std_dev_diff = std::sqrt(variance_diff);
@@ -663,6 +722,62 @@ MStatus MMAnimCurveDiffStatisticsCmd::doIt(const MArgList &args) {
         } else {
             MGlobal::displayWarning(CMD_NAME
                                     ": Failed to calculate median difference.");
+        }
+    }
+
+    // Calculate Mean Absolute Error (MAE).
+    if (m_calculateMAE) {
+        mmsg::Real mae = 0.0;
+        if (mmsg::calc_mean_absolute_error(values_y2_slice, values_y1_slice,
+                                           mae)) {
+            statsResults.push_back({STAT_TYPE_MEAN_ABSOLUTE_ERROR, mae});
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": mean_absolute_error=" << mae);
+        } else {
+            MGlobal::displayWarning(
+                CMD_NAME ": Failed to calculate mean absolute error.");
+        }
+    }
+
+    // Calculate Root Mean Square Error (RMSE).
+    if (m_calculateRMSE) {
+        mmsg::Real rmse = 0.0;
+        if (mmsg::calc_root_mean_square_error(values_y2_slice, values_y1_slice,
+                                              rmse)) {
+            statsResults.push_back({STAT_TYPE_ROOT_MEAN_SQUARE_ERROR, rmse});
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": root_mean_square_error=" << rmse);
+        } else {
+            MGlobal::displayWarning(
+                CMD_NAME ": Failed to calculate root mean square error.");
+        }
+    }
+
+    // Calculate Normalized Root Mean Square Error (NRMSE).
+    if (m_calculateNRMSE) {
+        mmsg::Real nrmse = 0.0;
+        if (mmsg::calc_normalized_root_mean_square_error(
+                values_y2_slice, values_y1_slice, nrmse)) {
+            statsResults.push_back({STAT_TYPE_NORMALIZED_RMSE, nrmse});
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": normalized_root_mean_square_error="
+                                       << nrmse);
+        } else {
+            MGlobal::displayWarning(
+                CMD_NAME
+                ": Failed to calculate normalized root mean square error.");
+        }
+    }
+
+    // Calculate Coefficient of Determination (R^2 also known as "R-squared").
+    if (m_calculateR2) {
+        mmsg::Real r_squared = 0.0;
+        // Note: For R^2, we treat the first curve as "actual" and
+        // second as "predicted".
+        if (mmsg::calc_coefficient_of_determination(
+                values_y1_slice, values_y2_slice, r_squared)) {
+            statsResults.push_back({STAT_TYPE_R_SQUARED, r_squared});
+            MMSOLVER_MAYA_VRB(CMD_NAME << ": r_squared=" << r_squared);
+        } else {
+            MGlobal::displayWarning(
+                CMD_NAME ": Failed to calculate coefficient of determination.");
         }
     }
 

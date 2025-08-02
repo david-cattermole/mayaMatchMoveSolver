@@ -41,6 +41,10 @@ STAT_TYPE_SIGNAL_TO_NOISE_RATIO = 4
 STAT_TYPE_POPULATION_VARIANCE = 5
 STAT_TYPE_MEAN_DIFF = 6
 STAT_TYPE_MEDIAN_DIFF = 7
+STAT_TYPE_MEAN_ABSOLUTE_ERROR = 8
+STAT_TYPE_ROOT_MEAN_SQUARE_ERROR = 9
+STAT_TYPE_NORMALIZED_RMSE = 10
+STAT_TYPE_R_SQUARED = 11
 
 
 # Names for each statistic identifier defined in this module.
@@ -52,6 +56,11 @@ STAT_NAME_PEAK_TO_PEAK_DIFF = "peak_to_peak_diff"
 STAT_NAME_SIGNAL_TO_NOISE_RATIO = "signal_to_noise_ratio"
 STAT_NAME_MEAN_DIFF = "mean_diff"
 STAT_NAME_MEDIAN_DIFF = "median_diff"
+STAT_NAME_MEAN_ABSOLUTE_ERROR = "mean_absolute_error"
+STAT_NAME_ROOT_MEAN_SQUARE_ERROR = "root_mean_square_error"
+STAT_NAME_NORMALIZED_RMSE = "normalized_rmse"
+STAT_NAME_R_SQUARED = "r_squared"
+
 STAT_NAME_LIST = [
     STAT_NAME_MEAN_ABS_DIFF,
     STAT_NAME_RMS_DIFF,
@@ -61,6 +70,10 @@ STAT_NAME_LIST = [
     STAT_NAME_SIGNAL_TO_NOISE_RATIO,
     STAT_NAME_MEAN_DIFF,
     STAT_NAME_MEDIAN_DIFF,
+    STAT_NAME_MEAN_ABSOLUTE_ERROR,
+    STAT_NAME_ROOT_MEAN_SQUARE_ERROR,
+    STAT_NAME_NORMALIZED_RMSE,
+    STAT_NAME_R_SQUARED,
 ]
 
 
@@ -92,6 +105,14 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
                 stats[STAT_NAME_MEAN_DIFF] = stat_value
             elif stat_type == STAT_TYPE_MEDIAN_DIFF:
                 stats[STAT_NAME_MEDIAN_DIFF] = stat_value
+            elif stat_type == STAT_TYPE_MEAN_ABSOLUTE_ERROR:
+                stats[STAT_NAME_MEAN_ABSOLUTE_ERROR] = stat_value
+            elif stat_type == STAT_TYPE_ROOT_MEAN_SQUARE_ERROR:
+                stats[STAT_NAME_ROOT_MEAN_SQUARE_ERROR] = stat_value
+            elif stat_type == STAT_TYPE_NORMALIZED_RMSE:
+                stats[STAT_NAME_NORMALIZED_RMSE] = stat_value
+            elif stat_type == STAT_TYPE_R_SQUARED:
+                stats[STAT_NAME_R_SQUARED] = stat_value
 
             i += 2
 
@@ -120,10 +141,14 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             rootMeanSquareDifference=True,
             meanDifference=True,
             medianDifference=True,
-            variance=True,
-            standardDeviation=True,
+            populationVariance=True,
+            populationStandardDeviation=True,
             peakToPeak=True,
             signalToNoiseRatio=True,
+            meanAbsoluteError=True,
+            rootMeanSquareError=True,
+            normalizedRootMeanSquareError=True,
+            rSquared=True,
         )
 
         stats = self._parse_diff_statistics_result(result)
@@ -153,9 +178,20 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         # Peak-to-peak should be >= 0.
         self.assertGreaterEqual(stats[STAT_NAME_PEAK_TO_PEAK_DIFF], 0.0)
 
+        # MAE should be >= 0.
+        self.assertGreaterEqual(stats[STAT_NAME_MEAN_ABSOLUTE_ERROR], 0.0)
+
+        # RMSE should be >= 0.
+        self.assertGreaterEqual(stats[STAT_NAME_ROOT_MEAN_SQUARE_ERROR], 0.0)
+
+        # NRMSE should be >= 0.
+        self.assertGreaterEqual(stats[STAT_NAME_NORMALIZED_RMSE], 0.0)
+
+        # R-squared should be between -infinity and 1.
+        self.assertLessEqual(stats[STAT_NAME_R_SQUARED], 1.0)
+
     def test_diff_statistics_identical_curves(self):
         """Test statistics when comparing identical curves."""
-        maya.cmds.file(new=True, force=True)
         transform = maya.cmds.createNode("transform", name="testTransform")
 
         # Create identical animation curves.
@@ -181,22 +217,37 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             rootMeanSquareDifference=True,
             meanDifference=True,
             medianDifference=True,
-            variance=True,
-            standardDeviation=True,
+            populationVariance=True,
+            populationStandardDeviation=True,
             peakToPeak=True,
+            meanAbsoluteError=True,
+            rootMeanSquareError=True,
+            normalizedRootMeanSquareError=True,
+            rSquared=True,
         )
 
         stats = self._parse_diff_statistics_result(result)
 
         # For identical curves, all differences should be zero.
-        for stat_name in STAT_NAME_LIST:
-            stat = stats[stat_name]
-            self.assertAlmostEqual(stat, 0.0, places=5)
-        self.assertEquals(len(stats.keys()), len(STAT_NAME_LIST))
+        for stat_name in [
+            STAT_NAME_MEAN_ABS_DIFF,
+            STAT_NAME_RMS_DIFF,
+            STAT_NAME_STD_POPULATION_DEV,
+            STAT_NAME_POPULATION_VARIANCE,
+            STAT_NAME_PEAK_TO_PEAK_DIFF,
+            STAT_NAME_MEAN_DIFF,
+            STAT_NAME_MEDIAN_DIFF,
+            STAT_NAME_MEAN_ABSOLUTE_ERROR,
+            STAT_NAME_ROOT_MEAN_SQUARE_ERROR,
+            STAT_NAME_NORMALIZED_RMSE,
+        ]:
+            self.assertAlmostEqual(stats[stat_name], 0.0, places=5)
+
+        # R-squared should be 1.0 for identical curves (perfect correlation).
+        self.assertAlmostEqual(stats[STAT_NAME_R_SQUARED], 1.0, places=5)
 
     def test_diff_statistics_constant_offset(self):
         """Test statistics with curves that have a constant offset."""
-        maya.cmds.file(new=True, force=True)
         transform = maya.cmds.createNode("transform", name="testTransform")
 
         # Create two curves with constant offset.
@@ -223,8 +274,10 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             meanAbsoluteDifference=True,
             meanDifference=True,
             medianDifference=True,
-            variance=True,
+            populationVariance=True,
             peakToPeak=True,
+            meanAbsoluteError=True,
+            rootMeanSquareError=True,
         )
 
         stats = self._parse_diff_statistics_result(result)
@@ -240,6 +293,14 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         self.assertAlmostEqual(stats[STAT_NAME_POPULATION_VARIANCE], 0.0, places=5)
         # - Peak-to-peak should be 0.
         self.assertAlmostEqual(stats[STAT_NAME_PEAK_TO_PEAK_DIFF], 0.0, places=5)
+        # - MAE should equal abs(offset).
+        self.assertAlmostEqual(
+            stats[STAT_NAME_MEAN_ABSOLUTE_ERROR], abs(offset), places=5
+        )
+        # - RMSE should equal abs(offset).
+        self.assertAlmostEqual(
+            stats[STAT_NAME_ROOT_MEAN_SQUARE_ERROR], abs(offset), places=5
+        )
 
     def test_diff_statistics_frame_range(self):
         """Test statistics with different frame ranges."""
@@ -261,6 +322,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             startFrame=1,
             endFrame=200,
             meanAbsoluteDifference=True,
+            meanAbsoluteError=True,
         )
         stats_full = self._parse_diff_statistics_result(result_full)
 
@@ -271,6 +333,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             startFrame=50,
             endFrame=150,
             meanAbsoluteDifference=True,
+            meanAbsoluteError=True,
         )
         stats_partial = self._parse_diff_statistics_result(result_partial)
 
@@ -280,10 +343,14 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             stats_partial[STAT_NAME_MEAN_ABS_DIFF],
             places=2,
         )
+        self.assertNotAlmostEqual(
+            stats_full[STAT_NAME_MEAN_ABSOLUTE_ERROR],
+            stats_partial[STAT_NAME_MEAN_ABSOLUTE_ERROR],
+            places=2,
+        )
 
     def test_diff_statistics_noise_detection(self):
         """Test statistics on curves with added noise."""
-        maya.cmds.file(new=True, force=True)
         transform1 = maya.cmds.createNode("transform", name="testTransform1")
         transform2 = maya.cmds.createNode("transform", name="testTransform2")
 
@@ -310,22 +377,28 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         result = maya.cmds.mmAnimCurveDiffStatistics(
             animCurve1,
             animCurve2,
-            standardDeviation=True,
+            populationStandardDeviation=True,
             rootMeanSquareDifference=True,
             meanDifference=True,
+            meanAbsoluteError=True,
+            rootMeanSquareError=True,
+            rSquared=True,
         )
         stats = self._parse_diff_statistics_result(result)
 
         # Verify noise is detected.
         self.assertGreater(stats[STAT_NAME_STD_POPULATION_DEV], 0.1)
         self.assertGreater(stats[STAT_NAME_RMS_DIFF], 0.1)
+        self.assertGreater(stats[STAT_NAME_MEAN_ABSOLUTE_ERROR], 0.1)
+        self.assertGreater(stats[STAT_NAME_ROOT_MEAN_SQUARE_ERROR], 0.1)
         # Mean difference should be close to zero for random noise.
         self.assertLess(abs(stats[STAT_NAME_MEAN_DIFF]), 0.2)
+        # R-squared should be high but not perfect due to noise.
+        self.assertGreater(stats[STAT_NAME_R_SQUARED], 0.9)
+        self.assertLess(stats[STAT_NAME_R_SQUARED], 1.0)
 
     def test_diff_statistics_error_handling(self):
         """Test error handling for invalid inputs."""
-        maya.cmds.file(new=True, force=True)
-
         transform = maya.cmds.createNode("transform", name="testTransform")
         maya.cmds.setKeyframe(transform, attribute="translateX", time=1, value=0)
         animCurve = maya.cmds.listConnections(
@@ -363,7 +436,6 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
     def test_diff_statistics_non_overlapping_ranges(self):
         """Test with curves that have non-overlapping frame ranges."""
-        maya.cmds.file(new=True, force=True)
         transform = maya.cmds.createNode("transform", name="testTransform")
 
         # Create curve 1 from frames 1-10.
@@ -393,7 +465,6 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
     def test_diff_statistics_single_keyframe(self):
         """Test with curves that have only one keyframe."""
-        maya.cmds.file(new=True, force=True)
         transform = maya.cmds.createNode("transform", name="testTransform")
 
         # Create curves with single keyframe.
@@ -450,6 +521,38 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         self.assertEqual(len(parsed), 1)
         self.assertIn(STAT_NAME_MEDIAN_DIFF, parsed)
 
+        # Test MAE only.
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx, animCurve_ty, meanAbsoluteError=True
+        )
+        parsed = self._parse_diff_statistics_result(result)
+        self.assertEqual(len(parsed), 1)
+        self.assertIn(STAT_NAME_MEAN_ABSOLUTE_ERROR, parsed)
+
+        # Test RMSE only.
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx, animCurve_ty, rootMeanSquareError=True
+        )
+        parsed = self._parse_diff_statistics_result(result)
+        self.assertEqual(len(parsed), 1)
+        self.assertIn(STAT_NAME_ROOT_MEAN_SQUARE_ERROR, parsed)
+
+        # Test NRMSE only.
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx, animCurve_ty, normalizedRootMeanSquareError=True
+        )
+        parsed = self._parse_diff_statistics_result(result)
+        self.assertEqual(len(parsed), 1)
+        self.assertIn(STAT_NAME_NORMALIZED_RMSE, parsed)
+
+        # Test R-squared only.
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx, animCurve_ty, rSquared=True
+        )
+        parsed = self._parse_diff_statistics_result(result)
+        self.assertEqual(len(parsed), 1)
+        self.assertIn(STAT_NAME_R_SQUARED, parsed)
+
     def test_diff_statistics_combined_flags(self):
         """Test various combinations of statistics flags."""
         name = "anim_curves1.ma"
@@ -465,7 +568,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
         # Test mean + variance.
         result = maya.cmds.mmAnimCurveDiffStatistics(
-            animCurve_tx, animCurve_ty, meanDifference=True, variance=True
+            animCurve_tx, animCurve_ty, meanDifference=True, populationVariance=True
         )
         parsed = self._parse_diff_statistics_result(result)
         self.assertEqual(len(parsed), 2)
@@ -474,7 +577,10 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
         # Test variance + stddev.
         result = maya.cmds.mmAnimCurveDiffStatistics(
-            animCurve_tx, animCurve_ty, variance=True, standardDeviation=True
+            animCurve_tx,
+            animCurve_ty,
+            populationVariance=True,
+            populationStandardDeviation=True,
         )
         parsed = self._parse_diff_statistics_result(result)
         self.assertEqual(len(parsed), 2)
@@ -486,6 +592,21 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         self.assertAlmostEqual(
             parsed[STAT_NAME_STD_POPULATION_DEV], expected_stddev, places=5
         )
+
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx,
+            animCurve_ty,
+            meanAbsoluteError=True,
+            rootMeanSquareError=True,
+            normalizedRootMeanSquareError=True,
+            rSquared=True,
+        )
+        parsed = self._parse_diff_statistics_result(result)
+        self.assertEqual(len(parsed), 4)
+        self.assertIn(STAT_NAME_MEAN_ABSOLUTE_ERROR, parsed)
+        self.assertIn(STAT_NAME_ROOT_MEAN_SQUARE_ERROR, parsed)
+        self.assertIn(STAT_NAME_NORMALIZED_RMSE, parsed)
+        self.assertIn(STAT_NAME_R_SQUARED, parsed)
 
     def test_diff_statistics_with_list_inputs(self):
         """Test diff statistics with Python list inputs."""
@@ -499,7 +620,9 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             yValuesB=y_values2,
             meanAbsoluteDifference=True,
             meanDifference=True,
-            variance=True,
+            populationVariance=True,
+            meanAbsoluteError=True,
+            rootMeanSquareError=True,
         )
 
         stats = self._parse_diff_statistics_result(result)
@@ -508,6 +631,8 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         self.assertAlmostEqual(stats[STAT_NAME_MEAN_DIFF], -5.0, places=5)
         self.assertAlmostEqual(stats[STAT_NAME_MEAN_ABS_DIFF], 5.0, places=5)
         self.assertAlmostEqual(stats[STAT_NAME_POPULATION_VARIANCE], 0.0, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_MEAN_ABSOLUTE_ERROR], 5.0, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_ROOT_MEAN_SQUARE_ERROR], 5.0, places=5)
 
     def test_diff_statistics_invalid_list_inputs(self):
         """Test error handling for invalid list inputs."""
@@ -567,9 +692,12 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             xValues=x_values,
             yValuesA=smooth_values,
             yValuesB=noisy_values,
-            standardDeviation=True,
+            populationStandardDeviation=True,
             rootMeanSquareDifference=True,
             meanDifference=True,
+            meanAbsoluteError=True,
+            rootMeanSquareError=True,
+            rSquared=True,
         )
 
         stats = self._parse_diff_statistics_result(result)
@@ -577,8 +705,75 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         # Verify noise is detected
         self.assertGreater(stats[STAT_NAME_STD_POPULATION_DEV], 0.1)
         self.assertGreater(stats[STAT_NAME_RMS_DIFF], 0.1)
+        self.assertGreater(stats[STAT_NAME_MEAN_ABSOLUTE_ERROR], 0.1)
+        self.assertGreater(stats[STAT_NAME_ROOT_MEAN_SQUARE_ERROR], 0.1)
         # Mean difference should be close to zero for random noise
         self.assertLess(abs(stats[STAT_NAME_MEAN_DIFF]), 0.2)
+        # R-squared should be high but not perfect due to noise
+        self.assertGreater(stats[STAT_NAME_R_SQUARED], 0.9)
+        self.assertLess(stats[STAT_NAME_R_SQUARED], 1.0)
+
+    def test_diff_statistics_perfect_correlation(self):
+        """Test R-squared with perfect correlation (scaled curves)."""
+        transform = maya.cmds.createNode("transform", name="testTransform")
+
+        # Create two curves where one is a scaled version of the other.
+        scale_factor = 2.0
+        for frame in range(1, 21):
+            value1 = math.sin(frame * 0.3) * 10.0
+            value2 = value1 * scale_factor
+
+            maya.cmds.setKeyframe(
+                transform, attribute="translateX", time=frame, value=value1
+            )
+            maya.cmds.setKeyframe(
+                transform, attribute="translateY", time=frame, value=value2
+            )
+
+        animCurve_tx = maya.cmds.listConnections(
+            "{}.translateX".format(transform), type="animCurve"
+        )[0]
+        animCurve_ty = maya.cmds.listConnections(
+            "{}.translateY".format(transform), type="animCurve"
+        )[0]
+
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx, animCurve_ty, rSquared=True
+        )
+
+        stats = self._parse_diff_statistics_result(result)
+        self.assertAlmostEqual(stats[STAT_NAME_R_SQUARED], -3.01e-07, places=5)
+
+    def test_diff_statistics_negative_correlation(self):
+        """Test R-squared with negative correlation."""
+        transform = maya.cmds.createNode("transform", name="testTransform")
+
+        # Create two curves where one is the negative of the other.
+        for frame in range(1, 21):
+            value1 = math.sin(frame * 0.3) * 10.0
+            value2 = -value1  # Negative correlation.
+
+            maya.cmds.setKeyframe(
+                transform, attribute="translateX", time=frame, value=value1
+            )
+            maya.cmds.setKeyframe(
+                transform, attribute="translateY", time=frame, value=value2
+            )
+
+        animCurve_tx = maya.cmds.listConnections(
+            "{}.translateX".format(transform), type="animCurve"
+        )[0]
+        animCurve_ty = maya.cmds.listConnections(
+            "{}.translateY".format(transform), type="animCurve"
+        )[0]
+
+        result = maya.cmds.mmAnimCurveDiffStatistics(
+            animCurve_tx, animCurve_ty, rSquared=True
+        )
+
+        stats = self._parse_diff_statistics_result(result)
+
+        self.assertAlmostEqual(stats[STAT_NAME_R_SQUARED], -3.000001, places=5)
 
 
 if __name__ == "__main__":

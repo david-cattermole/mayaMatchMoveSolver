@@ -187,7 +187,7 @@ MStatus MMAnimCurveDiffStatisticsCmd::parseArgs(const MArgList &args) {
                             argData.isFlagSet(Y_VALUES_B_FLAG_SHORT);
 
     // All four list flags must be provided, or none at all.
-    if (hasAllListInputs && !hasAllListInputs) {
+    if (hasSomeListInputs && !hasAllListInputs) {
         MGlobal::displayError(
             CMD_NAME
             ": All list value flags (xValues, yValuesA, yValuesB) must be "
@@ -201,7 +201,7 @@ MStatus MMAnimCurveDiffStatisticsCmd::parseArgs(const MArgList &args) {
 
         Count32 xCount = argData.numberOfFlagUses(X_VALUES_FLAG_SHORT);
         Count32 yCount1 = argData.numberOfFlagUses(Y_VALUES_A_FLAG_SHORT);
-        Count32 yCount2 = argData.numberOfFlagUses(Y_VALUES_A_FLAG_SHORT);
+        Count32 yCount2 = argData.numberOfFlagUses(Y_VALUES_B_FLAG_SHORT);
 
         // Validate list lengths
         if (xCount != yCount1) {

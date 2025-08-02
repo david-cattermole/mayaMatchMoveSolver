@@ -25,6 +25,7 @@
 
 // STL
 #include <limits>
+#include <vector>
 
 // Maya
 #include <maya/MArgDatabase.h>
@@ -50,7 +51,8 @@ public:
         , m_calculateMedian(false)
         , m_calculateVariance(false)
         , m_calculateStdDev(false)
-        , m_calculateSNR(false){};
+        , m_calculateSNR(false)
+        , m_useListInput(false){};
     virtual ~MMAnimCurveStatisticsCmd();
 
     virtual bool hasSyntax() const;
@@ -80,6 +82,11 @@ private:
     MSelectionList m_selection;
     MObject m_animCurveObj;
     MFnAnimCurve m_animCurveFn;
+
+    // List input mode.
+    bool m_useListInput;
+    std::vector<double> m_xValues;
+    std::vector<double> m_yValues;
 };
 
 }  // namespace mmsolver

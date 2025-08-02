@@ -45,6 +45,7 @@
 
 // MM Solver
 #include "mmSolver/cmd/anim_curve_cmd_utils.h"
+#include "mmSolver/core/types.h"
 #include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
@@ -72,6 +73,12 @@
 
 #define SIGNAL_TO_NOISE_RATIO_FLAG_SHORT "-snr"
 #define SIGNAL_TO_NOISE_RATIO_FLAG_LONG "-signalToNoiseRatio"
+
+#define X_VALUES_FLAG_SHORT "-xv"
+#define X_VALUES_FLAG_LONG "-xValues"
+
+#define Y_VALUES_FLAG_SHORT "-yv"
+#define Y_VALUES_FLAG_LONG "-yValues"
 
 #define CMD_NAME "mmAnimCurveStatistics"
 
@@ -120,8 +127,14 @@ MSyntax MMAnimCurveStatisticsCmd::newSyntax() {
     syntax.addFlag(SIGNAL_TO_NOISE_RATIO_FLAG_SHORT,
                    SIGNAL_TO_NOISE_RATIO_FLAG_LONG, MSyntax::kBoolean);
 
+    // List input flags.
+    syntax.addFlag(X_VALUES_FLAG_SHORT, X_VALUES_FLAG_LONG, MSyntax::kDouble);
+    syntax.makeFlagMultiUse(X_VALUES_FLAG_SHORT);
+    syntax.addFlag(Y_VALUES_FLAG_SHORT, Y_VALUES_FLAG_LONG, MSyntax::kDouble);
+    syntax.makeFlagMultiUse(Y_VALUES_FLAG_SHORT);
+
     // Add object argument for animation curve.
-    const unsigned int min_curves = 1;
+    const Count32 min_curves = 0;
     syntax.setObjectType(MSyntax::kSelectionList, min_curves);
     syntax.useSelectionAsDefault(true);
 
@@ -136,21 +149,81 @@ MStatus MMAnimCurveStatisticsCmd::parseArgs(const MArgList &args) {
     MArgDatabase argData(syntax(), args, &status);
     MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // Get animation curve from selection.
-    status = argData.getObjects(m_selection);
-    MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+    // Check if list inputs are provided.
+    m_useListInput = false;
+    if (argData.isFlagSet(X_VALUES_FLAG_SHORT) ||
+        argData.isFlagSet(Y_VALUES_FLAG_SHORT)) {
+        m_useListInput = true;
 
-    if (m_selection.length() == 0) {
-        MGlobal::displayError(CMD_NAME
-                              ": Please select at least one animation curve.");
-        return MS::kFailure;
-    }
+        // Both X and Y values must be provided together.
+        if (!argData.isFlagSet(X_VALUES_FLAG_SHORT) ||
+            !argData.isFlagSet(Y_VALUES_FLAG_SHORT)) {
+            MGlobal::displayError(
+                CMD_NAME
+                ": Both xValues and yValues must be provided together.");
+            return MS::kFailure;
+        }
 
-    // To make sure that if any node is invalid, we catch it here, and
-    // not during 'doIt'.
-    for (auto i = 0; i < m_selection.length(); i++) {
-        status = m_selection.getDependNode(i, m_animCurveObj);
+        Count32 xCount = argData.numberOfFlagUses(X_VALUES_FLAG_SHORT);
+        Count32 yCount = argData.numberOfFlagUses(Y_VALUES_FLAG_SHORT);
+
+        if (xCount < 2) {
+            MGlobal::displayError(CMD_NAME
+                                  ": xValues must have 2 or more values.");
+            return MS::kFailure;
+        }
+
+        if (yCount < 2) {
+            MGlobal::displayError(CMD_NAME
+                                  ": yValues must have 2 or more values.");
+            return MS::kFailure;
+        }
+
+        if (xCount != yCount) {
+            MGlobal::displayError(
+                CMD_NAME ": Number of xValues must match number of yValues.");
+            return MS::kFailure;
+        }
+
+        // Parse the list values for each curve.
+        m_xValues.clear();
+        m_yValues.clear();
+
+        for (Count32 i = 0; i < xCount; ++i) {
+            MArgList args;
+            status = argData.getFlagArgumentList(X_VALUES_FLAG_SHORT, i, args);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+            const double value = args.asDouble(0, &status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+            m_xValues.push_back(value);
+        }
+
+        for (Count32 i = 0; i < xCount; ++i) {
+            MArgList args;
+            status = argData.getFlagArgumentList(Y_VALUES_FLAG_SHORT, i, args);
+            const double value = args.asDouble(0, &status);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+            m_yValues.push_back(value);
+        }
+
+    } else {
+        // Get animation curve from selection.
+        status = argData.getObjects(m_selection);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        if (m_selection.length() == 0) {
+            MGlobal::displayError(CMD_NAME
+                                  ": Please select at least one animation "
+                                  "curve or provide list values.");
+            return MS::kFailure;
+        }
+
+        // To make sure that if any node is invalid, we catch it here, and
+        // not during 'doIt'.
+        for (auto i = 0; i < m_selection.length(); i++) {
+            status = m_selection.getDependNode(i, m_animCurveObj);
+            MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+        }
     }
 
     // Parse optional frame range arguments.
@@ -214,6 +287,7 @@ MStatus MMAnimCurveStatisticsCmd::parseArgs(const MArgList &args) {
                                << m_calculateVariance);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateStdDev=" << m_calculateStdDev);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_calculateSNR=" << m_calculateSNR);
+    MMSOLVER_MAYA_VRB(CMD_NAME << ": m_useListInput=" << m_useListInput);
 
     return status;
 }
@@ -234,53 +308,80 @@ MStatus MMAnimCurveStatisticsCmd::doIt(const MArgList &args) {
     // Where statType: 0=mean, 1=median, 2=variance, 3=stdDev, 4=SNR
 
     auto time_unit = MTime::uiUnit();
-    uint32_t success_count = 0;
-    uint32_t failure_count = 0;
+    Count32 success_count = 0;
+    Count32 failure_count = 0;
 
-    for (auto i = 0; i < m_selection.length(); i++) {
-        status = m_selection.getDependNode(i, m_animCurveObj);
-        if (status != MS::kSuccess) {
-            MGlobal::displayWarning(CMD_NAME
-                                    ": Selected object is not DG node.");
-            failure_count++;
-            continue;
-        }
+    // Determine the number of curves to process.
+    Count32 numCurves = m_selection.length();
+    if (m_useListInput) {
+        numCurves = 1;
+    }
 
-        status = m_animCurveFn.setObject(m_animCurveObj);
-        if (status != MS::kSuccess) {
-            MGlobal::displayWarning(
-                CMD_NAME ": Failed to set animation curve function set.");
-            failure_count++;
-            continue;
-        }
+    rust::Vec<mmsg::Real> values_x;
+    rust::Vec<mmsg::Real> values_y;
+    for (auto i = 0; i < numCurves; i++) {
+        values_x.clear();
+        values_y.clear();
 
-        FrameNumber start_frame = 0;
-        FrameNumber end_frame = 0;
-        const FrameCount min_keyframe_count = 2;
-        const FrameCount min_frame_count = 2;
-        const char *cmd_name = CMD_NAME;
-        bool success = validate_anim_curve(
-            cmd_name, m_startFrame, m_endFrame, min_keyframe_count,
-            min_frame_count, m_animCurveFn, start_frame, end_frame);
-        if (!success) {
-            MGlobal::displayWarning(CMD_NAME
-                                    ": Failed to validate animation curve.");
-            failure_count++;
-            continue;
-        }
+        if (m_useListInput) {
+            const auto count = m_xValues.size();
+            values_x.reserve(count);
+            values_y.reserve(count);
 
-        rust::Vec<mmsg::Real> values_x;
-        rust::Vec<mmsg::Real> values_y;
-        auto frame_count = static_cast<size_t>(end_frame - start_frame) + 1;
-        values_x.reserve(frame_count);
-        values_y.reserve(frame_count);
-        status = evaluate_curve(start_frame, end_frame, time_unit,
-                                m_animCurveFn, values_x, values_y);
-        if (status != MS::kSuccess) {
-            MGlobal::displayWarning(CMD_NAME
-                                    ": Failed to evaluate animation curve.");
-            failure_count++;
-            continue;
+            for (Count32 j = 0; j < count; ++j) {
+                const double x = m_xValues[j];
+                values_x.push_back(x);
+            }
+
+            for (Count32 j = 0; j < count; ++j) {
+                const double y = m_yValues[j];
+                values_y.push_back(y);
+            }
+
+        } else {
+            // Use animation curve.
+            status = m_selection.getDependNode(i, m_animCurveObj);
+            if (status != MS::kSuccess) {
+                MGlobal::displayWarning(CMD_NAME
+                                        ": Selected object is not DG node.");
+                failure_count++;
+                continue;
+            }
+
+            status = m_animCurveFn.setObject(m_animCurveObj);
+            if (status != MS::kSuccess) {
+                MGlobal::displayWarning(
+                    CMD_NAME ": Failed to set animation curve function set.");
+                failure_count++;
+                continue;
+            }
+
+            FrameNumber start_frame = 0;
+            FrameNumber end_frame = 0;
+            const FrameCount min_keyframe_count = 2;
+            const FrameCount min_frame_count = 2;
+            const char *cmd_name = CMD_NAME;
+            bool success = validate_anim_curve(
+                cmd_name, m_startFrame, m_endFrame, min_keyframe_count,
+                min_frame_count, m_animCurveFn, start_frame, end_frame);
+            if (!success) {
+                MGlobal::displayWarning(
+                    CMD_NAME ": Failed to validate animation curve.");
+                failure_count++;
+                continue;
+            }
+
+            auto frame_count = static_cast<size_t>(end_frame - start_frame) + 1;
+            values_x.reserve(frame_count);
+            values_y.reserve(frame_count);
+            status = evaluate_curve(start_frame, end_frame, time_unit,
+                                    m_animCurveFn, values_x, values_y);
+            if (status != MS::kSuccess) {
+                MGlobal::displayWarning(
+                    CMD_NAME ": Failed to evaluate animation curve.");
+                failure_count++;
+                continue;
+            }
         }
 
         MMSOLVER_MAYA_VRB(CMD_NAME << ": Input curve size:"
@@ -415,13 +516,11 @@ MStatus MMAnimCurveStatisticsCmd::doIt(const MArgList &args) {
 
     if (failure_count > 0) {
         MGlobal::displayWarning(
-            CMD_NAME
-            ": Failed to calculate statistics for some animation curves.");
+            CMD_NAME ": Failed to calculate statistics for some curves.");
     }
     if (success_count == 0) {
         MGlobal::displayError(
-            CMD_NAME
-            ": Failed to calculate statistics for all animation curves.");
+            CMD_NAME ": Failed to calculate statistics for all curves.");
         return MS::kFailure;
     }
 

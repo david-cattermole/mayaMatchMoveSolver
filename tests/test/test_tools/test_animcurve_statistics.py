@@ -329,6 +329,106 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         expected_stddev = math.sqrt(stats["variance"])
         self.assertAlmostEqual(stats["stddev"], expected_stddev, places=5)
 
+    def test_statistics_with_list_input(self):
+        """Test statistics with Python list inputs."""
+        x_values = [x for x in range(1, 11)]  # 1 to 10
+        y_values = [math.sin(x * 0.5) * 10.0 for x in x_values]
+
+        # Test with all statistics.
+        result = maya.cmds.mmAnimCurveStatistics(
+            xValues=x_values,
+            yValues=y_values,
+            mean=True,
+            median=True,
+            variance=True,
+            standardDeviation=True,
+            signalToNoiseRatio=True,
+        )
+
+        parsed = self._parse_statistics_result(result)
+        self.assertEqual(len(parsed), 1)
+
+        stats = parsed[0]["stats"]
+        # Verify all statistics are present
+        self.assertIn("mean", stats)
+        self.assertIn("median", stats)
+        self.assertIn("variance", stats)
+        self.assertIn("stddev", stats)
+        self.assertIn("snr", stats)
+
+        # Verify relationships between statistics
+        expected_stddev = math.sqrt(stats["variance"])
+        self.assertAlmostEqual(stats["stddev"], expected_stddev, places=5)
+
+        expected_mean = sum(y_values) / len(y_values)
+        self.assertAlmostEqual(stats["mean"], expected_mean, places=5)
+
+    def test_statistics_mixed_curves_and_lists_error(self):
+        """Test that mixing animation curves and list inputs produces an error."""
+        name = "anim_curves1.ma"
+        path = self.get_data_path("anim_curves", name)
+        maya.cmds.file(path, open=True, force=True)
+
+        tfm = "transform1"
+        tfm_attr_tx = "{}.translateX".format(tfm)
+        animCurve_tx = maya.cmds.listConnections(tfm_attr_tx, type="animCurve")[0]
+
+        x_values = [1.0, 2.0, 3.0, 4.0, 5.0]
+        y_values = [1.0, 4.0, 9.0, 16.0, 25.0]
+
+        # This should work - using only list input.
+        result = maya.cmds.mmAnimCurveStatistics(
+            xValues=x_values,
+            yValues=y_values,
+            mean=True,
+        )
+        self.assertIsNotNone(result)
+
+        # This should also work - using only curve input.
+        maya.cmds.select(animCurve_tx)
+        result = maya.cmds.mmAnimCurveStatistics(mean=True)
+        self.assertIsNotNone(result)
+
+    def test_statistics_invalid_list_inputs(self):
+        """Test error handling for invalid list inputs."""
+        # Test with mismatched list lengths.
+        with self.assertRaises(RuntimeError):
+            maya.cmds.mmAnimCurveStatistics(
+                xValues=[1.0, 2.0, 3.0],
+                yValues=[1.0, 4.0],  # Different length
+                mean=True,
+            )
+
+        # Test with only X values.
+        with self.assertRaises(RuntimeError):
+            maya.cmds.mmAnimCurveStatistics(
+                xValues=[1.0, 2.0, 3.0],
+                mean=True,
+            )
+
+        # Test with only Y values.
+        with self.assertRaises(RuntimeError):
+            maya.cmds.mmAnimCurveStatistics(
+                yValues=[1.0, 2.0, 3.0],
+                mean=True,
+            )
+
+        # Test with empty lists.
+        with self.assertRaises(RuntimeError):
+            maya.cmds.mmAnimCurveStatistics(
+                xValues=[],
+                yValues=[],
+                mean=True,
+            )
+
+        # Test with single value.
+        with self.assertRaises(RuntimeError):
+            maya.cmds.mmAnimCurveStatistics(
+                xValues=[1.0],
+                yValues=[1.0],
+                mean=True,
+            )
+
 
 if __name__ == "__main__":
     prog = unittest.main()

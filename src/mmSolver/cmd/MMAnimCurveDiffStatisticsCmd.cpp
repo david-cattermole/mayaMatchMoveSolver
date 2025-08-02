@@ -64,8 +64,8 @@
 #define MEAN_ABSOLUTE_DIFF_FLAG_SHORT "-mad"
 #define MEAN_ABSOLUTE_DIFF_FLAG_LONG "-meanAbsoluteDifference"
 
-#define RMS_DIFF_FLAG_SHORT "-rsd"
-#define RMS_DIFF_FLAG_LONG "-rootMeanSquareDifference"
+#define ROOT_MEAN_SQUARE_DIFF_FLAG_SHORT "-rsd"
+#define ROOT_MEAN_SQUARE_DIFF_FLAG_LONG "-rootMeanSquareDifference"
 
 #define MEAN_DIFF_FLAG_SHORT "-mnf"
 #define MEAN_DIFF_FLAG_LONG "-meanDifference"
@@ -91,8 +91,9 @@
 #define ROOT_MEAN_SQUARE_ERROR_FLAG_SHORT "-rme"
 #define ROOT_MEAN_SQUARE_ERROR_FLAG_LONG "-rootMeanSquareError"
 
-#define NORMALIZED_RMSE_FLAG_SHORT "-nse"
-#define NORMALIZED_RMSE_FLAG_LONG "-normalizedRootMeanSquareError"
+#define NORMALIZED_ROOT_MEAN_SQUARE_ERROR_FLAG_SHORT "-nse"
+#define NORMALIZED_ROOT_MEAN_SQUARE_ERROR_FLAG_LONG \
+    "-normalizedRootMeanSquareError"
 
 #define R_SQUARED_FLAG_SHORT "-r2"
 #define R_SQUARED_FLAG_LONG "-rSquared"
@@ -110,7 +111,7 @@
 
 // Statistic type identifiers for output
 #define STAT_TYPE_MEAN_ABSOLUTE_DIFF 0.0
-#define STAT_TYPE_RMS_DIFF 1.0
+#define STAT_TYPE_ROOT_MEAN_SQUARE_DIFF 1.0
 #define STAT_TYPE_POPULATION_STD_DEV 2.0
 #define STAT_TYPE_PEAK_TO_PEAK_DIFF 3.0
 #define STAT_TYPE_SIGNAL_TO_NOISE_RATIO 4.0
@@ -119,7 +120,7 @@
 #define STAT_TYPE_MEDIAN_DIFF 7.0
 #define STAT_TYPE_MEAN_ABSOLUTE_ERROR 8.0
 #define STAT_TYPE_ROOT_MEAN_SQUARE_ERROR 9.0
-#define STAT_TYPE_NORMALIZED_RMSE 10.0
+#define STAT_TYPE_NORMALIZED_ROOT_MEAN_SQUARE_ERROR 10.0
 #define STAT_TYPE_R_SQUARED 11.0
 
 namespace mmsg = mmscenegraph;
@@ -154,7 +155,8 @@ MSyntax MMAnimCurveDiffStatisticsCmd::newSyntax() {
     // Statistics flags
     syntax.addFlag(MEAN_ABSOLUTE_DIFF_FLAG_SHORT, MEAN_ABSOLUTE_DIFF_FLAG_LONG,
                    MSyntax::kBoolean);
-    syntax.addFlag(RMS_DIFF_FLAG_SHORT, RMS_DIFF_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(ROOT_MEAN_SQUARE_DIFF_FLAG_SHORT,
+                   ROOT_MEAN_SQUARE_DIFF_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(MEAN_DIFF_FLAG_SHORT, MEAN_DIFF_FLAG_LONG,
                    MSyntax::kBoolean);
     syntax.addFlag(MEDIAN_DIFF_FLAG_SHORT, MEDIAN_DIFF_FLAG_LONG,
@@ -171,7 +173,8 @@ MSyntax MMAnimCurveDiffStatisticsCmd::newSyntax() {
                    MEAN_ABSOLUTE_ERROR_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(ROOT_MEAN_SQUARE_ERROR_FLAG_SHORT,
                    ROOT_MEAN_SQUARE_ERROR_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(NORMALIZED_RMSE_FLAG_SHORT, NORMALIZED_RMSE_FLAG_LONG,
+    syntax.addFlag(NORMALIZED_ROOT_MEAN_SQUARE_ERROR_FLAG_SHORT,
+                   NORMALIZED_ROOT_MEAN_SQUARE_ERROR_FLAG_LONG,
                    MSyntax::kBoolean);
     syntax.addFlag(R_SQUARED_FLAG_SHORT, R_SQUARED_FLAG_LONG,
                    MSyntax::kBoolean);
@@ -334,9 +337,9 @@ MStatus MMAnimCurveDiffStatisticsCmd::parseArgs(const MArgList &args) {
                                          m_calculateMeanAbsDiff);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
-    if (argData.isFlagSet(RMS_DIFF_FLAG_SHORT)) {
-        status =
-            argData.getFlagArgument(RMS_DIFF_FLAG_SHORT, 0, m_calculateRmsDiff);
+    if (argData.isFlagSet(ROOT_MEAN_SQUARE_DIFF_FLAG_SHORT)) {
+        status = argData.getFlagArgument(ROOT_MEAN_SQUARE_DIFF_FLAG_SHORT, 0,
+                                         m_calculateRmsDiff);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     if (argData.isFlagSet(MEAN_DIFF_FLAG_SHORT)) {
@@ -379,9 +382,9 @@ MStatus MMAnimCurveDiffStatisticsCmd::parseArgs(const MArgList &args) {
                                          m_calculateRMSE);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
-    if (argData.isFlagSet(NORMALIZED_RMSE_FLAG_SHORT)) {
-        status = argData.getFlagArgument(NORMALIZED_RMSE_FLAG_SHORT, 0,
-                                         m_calculateNRMSE);
+    if (argData.isFlagSet(NORMALIZED_ROOT_MEAN_SQUARE_ERROR_FLAG_SHORT)) {
+        status = argData.getFlagArgument(
+            NORMALIZED_ROOT_MEAN_SQUARE_ERROR_FLAG_SHORT, 0, m_calculateNRMSE);
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     if (argData.isFlagSet(R_SQUARED_FLAG_SHORT)) {
@@ -674,7 +677,7 @@ MStatus MMAnimCurveDiffStatisticsCmd::doIt(const MArgList &args) {
         if (mmsg::calc_population_variance(squared_diff_slice, mean_squared,
                                            variance_squared)) {
             rms_diff = std::sqrt(mean_squared);
-            statsResults.push_back({STAT_TYPE_RMS_DIFF, rms_diff});
+            statsResults.push_back({STAT_TYPE_ROOT_MEAN_SQUARE_DIFF, rms_diff});
             MMSOLVER_MAYA_VRB(CMD_NAME << ": rms_diff=" << rms_diff);
         } else {
             MGlobal::displayWarning(CMD_NAME
@@ -756,7 +759,8 @@ MStatus MMAnimCurveDiffStatisticsCmd::doIt(const MArgList &args) {
         mmsg::Real nrmse = 0.0;
         if (mmsg::calc_normalized_root_mean_square_error(
                 values_y2_slice, values_y1_slice, nrmse)) {
-            statsResults.push_back({STAT_TYPE_NORMALIZED_RMSE, nrmse});
+            statsResults.push_back(
+                {STAT_TYPE_NORMALIZED_ROOT_MEAN_SQUARE_ERROR, nrmse});
             MMSOLVER_MAYA_VRB(CMD_NAME << ": normalized_root_mean_square_error="
                                        << nrmse);
         } else {

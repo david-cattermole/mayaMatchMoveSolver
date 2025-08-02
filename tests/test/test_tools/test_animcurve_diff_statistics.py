@@ -34,7 +34,7 @@ import test.test_tools.toolsutils as test_tools_utils
 
 # Statistic type identifiers from the C++ code.
 STAT_TYPE_MEAN_ABSOLUTE_DIFF = 0
-STAT_TYPE_RMS_DIFF = 1
+STAT_TYPE_ROOT_MEAN_SQUARE_DIFF = 1
 STAT_TYPE_POPULATION_STD_DEV = 2
 STAT_TYPE_PEAK_TO_PEAK_DIFF = 3
 STAT_TYPE_SIGNAL_TO_NOISE_RATIO = 4
@@ -43,37 +43,37 @@ STAT_TYPE_MEAN_DIFF = 6
 STAT_TYPE_MEDIAN_DIFF = 7
 STAT_TYPE_MEAN_ABSOLUTE_ERROR = 8
 STAT_TYPE_ROOT_MEAN_SQUARE_ERROR = 9
-STAT_TYPE_NORMALIZED_RMSE = 10
+STAT_TYPE_NORMALIZED_ROOT_MEAN_SQUARE_ERROR = 10
 STAT_TYPE_R_SQUARED = 11
 
 
 # Names for each statistic identifier defined in this module.
-STAT_NAME_MEAN_ABS_DIFF = "mean_absolute_diff"
-STAT_NAME_RMS_DIFF = "root_mean_square_diff"
-STAT_NAME_STD_POPULATION_DEV = "population_std_dev"
-STAT_NAME_POPULATION_VARIANCE = "population_variance"
-STAT_NAME_PEAK_TO_PEAK_DIFF = "peak_to_peak_diff"
-STAT_NAME_SIGNAL_TO_NOISE_RATIO = "signal_to_noise_ratio"
+STAT_NAME_MEAN_ABSOLUTE_DIFF = "mean_absolute_diff"
+STAT_NAME_MEAN_ABSOLUTE_ERROR = "mean_absolute_error"
 STAT_NAME_MEAN_DIFF = "mean_diff"
 STAT_NAME_MEDIAN_DIFF = "median_diff"
-STAT_NAME_MEAN_ABSOLUTE_ERROR = "mean_absolute_error"
+STAT_NAME_NORMALIZED_ROOT_MEAN_SQUARE_ERROR = "normalized_root_mean_square_error"
+STAT_NAME_PEAK_TO_PEAK_DIFF = "peak_to_peak_diff"
+STAT_NAME_POPULATION_STD_DEV = "population_std_dev"
+STAT_NAME_POPULATION_VARIANCE = "population_variance"
+STAT_NAME_ROOT_MEAN_SQUARE_DIFF = "root_mean_square_diff"
 STAT_NAME_ROOT_MEAN_SQUARE_ERROR = "root_mean_square_error"
-STAT_NAME_NORMALIZED_RMSE = "normalized_rmse"
 STAT_NAME_R_SQUARED = "r_squared"
+STAT_NAME_SIGNAL_TO_NOISE_RATIO = "signal_to_noise_ratio"
 
 STAT_NAME_LIST = [
-    STAT_NAME_MEAN_ABS_DIFF,
-    STAT_NAME_RMS_DIFF,
-    STAT_NAME_STD_POPULATION_DEV,
-    STAT_NAME_POPULATION_VARIANCE,
-    STAT_NAME_PEAK_TO_PEAK_DIFF,
-    STAT_NAME_SIGNAL_TO_NOISE_RATIO,
+    STAT_NAME_MEAN_ABSOLUTE_DIFF,
+    STAT_NAME_MEAN_ABSOLUTE_ERROR,
     STAT_NAME_MEAN_DIFF,
     STAT_NAME_MEDIAN_DIFF,
-    STAT_NAME_MEAN_ABSOLUTE_ERROR,
+    STAT_NAME_NORMALIZED_ROOT_MEAN_SQUARE_ERROR,
+    STAT_NAME_PEAK_TO_PEAK_DIFF,
+    STAT_NAME_POPULATION_STD_DEV,
+    STAT_NAME_POPULATION_VARIANCE,
+    STAT_NAME_ROOT_MEAN_SQUARE_DIFF,
     STAT_NAME_ROOT_MEAN_SQUARE_ERROR,
-    STAT_NAME_NORMALIZED_RMSE,
     STAT_NAME_R_SQUARED,
+    STAT_NAME_SIGNAL_TO_NOISE_RATIO,
 ]
 
 
@@ -90,11 +90,11 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
             stat_value = result[i + 1]
 
             if stat_type == STAT_TYPE_MEAN_ABSOLUTE_DIFF:
-                stats[STAT_NAME_MEAN_ABS_DIFF] = stat_value
-            elif stat_type == STAT_TYPE_RMS_DIFF:
-                stats[STAT_NAME_RMS_DIFF] = stat_value
+                stats[STAT_NAME_MEAN_ABSOLUTE_DIFF] = stat_value
+            elif stat_type == STAT_TYPE_ROOT_MEAN_SQUARE_DIFF:
+                stats[STAT_NAME_ROOT_MEAN_SQUARE_DIFF] = stat_value
             elif stat_type == STAT_TYPE_POPULATION_STD_DEV:
-                stats[STAT_NAME_STD_POPULATION_DEV] = stat_value
+                stats[STAT_NAME_POPULATION_STD_DEV] = stat_value
             elif stat_type == STAT_TYPE_PEAK_TO_PEAK_DIFF:
                 stats[STAT_NAME_PEAK_TO_PEAK_DIFF] = stat_value
             elif stat_type == STAT_TYPE_SIGNAL_TO_NOISE_RATIO:
@@ -109,8 +109,8 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
                 stats[STAT_NAME_MEAN_ABSOLUTE_ERROR] = stat_value
             elif stat_type == STAT_TYPE_ROOT_MEAN_SQUARE_ERROR:
                 stats[STAT_NAME_ROOT_MEAN_SQUARE_ERROR] = stat_value
-            elif stat_type == STAT_TYPE_NORMALIZED_RMSE:
-                stats[STAT_NAME_NORMALIZED_RMSE] = stat_value
+            elif stat_type == STAT_TYPE_NORMALIZED_ROOT_MEAN_SQUARE_ERROR:
+                stats[STAT_NAME_NORMALIZED_ROOT_MEAN_SQUARE_ERROR] = stat_value
             elif stat_type == STAT_TYPE_R_SQUARED:
                 stats[STAT_NAME_R_SQUARED] = stat_value
 
@@ -166,14 +166,14 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         # Standard deviation should be sqrt(variance).
         expected_std = math.sqrt(stats[STAT_NAME_POPULATION_VARIANCE])
         self.assertAlmostEqual(
-            stats[STAT_NAME_STD_POPULATION_DEV], expected_std, places=5
+            stats[STAT_NAME_POPULATION_STD_DEV], expected_std, places=5
         )
 
         # Mean absolute diff should be >= 0.
-        self.assertGreaterEqual(stats[STAT_NAME_MEAN_ABS_DIFF], 0.0)
+        self.assertGreaterEqual(stats[STAT_NAME_MEAN_ABSOLUTE_DIFF], 0.0)
 
         # RMS should be >= 0.
-        self.assertGreaterEqual(stats[STAT_NAME_RMS_DIFF], 0.0)
+        self.assertGreaterEqual(stats[STAT_NAME_ROOT_MEAN_SQUARE_DIFF], 0.0)
 
         # Peak-to-peak should be >= 0.
         self.assertGreaterEqual(stats[STAT_NAME_PEAK_TO_PEAK_DIFF], 0.0)
@@ -185,7 +185,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         self.assertGreaterEqual(stats[STAT_NAME_ROOT_MEAN_SQUARE_ERROR], 0.0)
 
         # NRMSE should be >= 0.
-        self.assertGreaterEqual(stats[STAT_NAME_NORMALIZED_RMSE], 0.0)
+        self.assertGreaterEqual(stats[STAT_NAME_NORMALIZED_ROOT_MEAN_SQUARE_ERROR], 0.0)
 
         # R-squared should be between -infinity and 1.
         self.assertLessEqual(stats[STAT_NAME_R_SQUARED], 1.0)
@@ -230,16 +230,16 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
         # For identical curves, all differences should be zero.
         for stat_name in [
-            STAT_NAME_MEAN_ABS_DIFF,
-            STAT_NAME_RMS_DIFF,
-            STAT_NAME_STD_POPULATION_DEV,
+            STAT_NAME_MEAN_ABSOLUTE_DIFF,
+            STAT_NAME_ROOT_MEAN_SQUARE_DIFF,
+            STAT_NAME_POPULATION_STD_DEV,
             STAT_NAME_POPULATION_VARIANCE,
             STAT_NAME_PEAK_TO_PEAK_DIFF,
             STAT_NAME_MEAN_DIFF,
             STAT_NAME_MEDIAN_DIFF,
             STAT_NAME_MEAN_ABSOLUTE_ERROR,
             STAT_NAME_ROOT_MEAN_SQUARE_ERROR,
-            STAT_NAME_NORMALIZED_RMSE,
+            STAT_NAME_NORMALIZED_ROOT_MEAN_SQUARE_ERROR,
         ]:
             self.assertAlmostEqual(stats[stat_name], 0.0, places=5)
 
@@ -286,7 +286,9 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         # - Mean diff should equal the offset.
         self.assertAlmostEqual(stats[STAT_NAME_MEAN_DIFF], -offset, places=5)
         # - Mean absolute diff should equal abs(offset).
-        self.assertAlmostEqual(stats[STAT_NAME_MEAN_ABS_DIFF], abs(offset), places=5)
+        self.assertAlmostEqual(
+            stats[STAT_NAME_MEAN_ABSOLUTE_DIFF], abs(offset), places=5
+        )
         # - Median diff should equal the offset.
         self.assertAlmostEqual(stats[STAT_NAME_MEDIAN_DIFF], -offset, places=5)
         # - Variance should be 0 (no variation in differences).
@@ -339,8 +341,8 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
         # Statistics should be different for different ranges.
         self.assertNotAlmostEqual(
-            stats_full[STAT_NAME_MEAN_ABS_DIFF],
-            stats_partial[STAT_NAME_MEAN_ABS_DIFF],
+            stats_full[STAT_NAME_MEAN_ABSOLUTE_DIFF],
+            stats_partial[STAT_NAME_MEAN_ABSOLUTE_DIFF],
             places=2,
         )
         self.assertNotAlmostEqual(
@@ -387,8 +389,8 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         stats = self._parse_diff_statistics_result(result)
 
         # Verify noise is detected.
-        self.assertGreater(stats[STAT_NAME_STD_POPULATION_DEV], 0.1)
-        self.assertGreater(stats[STAT_NAME_RMS_DIFF], 0.1)
+        self.assertGreater(stats[STAT_NAME_POPULATION_STD_DEV], 0.1)
+        self.assertGreater(stats[STAT_NAME_ROOT_MEAN_SQUARE_DIFF], 0.1)
         self.assertGreater(stats[STAT_NAME_MEAN_ABSOLUTE_ERROR], 0.1)
         self.assertGreater(stats[STAT_NAME_ROOT_MEAN_SQUARE_ERROR], 0.1)
         # Mean difference should be close to zero for random noise.
@@ -503,7 +505,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         )
         parsed = self._parse_diff_statistics_result(result)
         self.assertEqual(len(parsed), 1)
-        self.assertIn(STAT_NAME_MEAN_ABS_DIFF, parsed)
+        self.assertIn(STAT_NAME_MEAN_ABSOLUTE_DIFF, parsed)
 
         # Test RMS only.
         result = maya.cmds.mmAnimCurveDiffStatistics(
@@ -511,7 +513,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         )
         parsed = self._parse_diff_statistics_result(result)
         self.assertEqual(len(parsed), 1)
-        self.assertIn(STAT_NAME_RMS_DIFF, parsed)
+        self.assertIn(STAT_NAME_ROOT_MEAN_SQUARE_DIFF, parsed)
 
         # Test median difference only.
         result = maya.cmds.mmAnimCurveDiffStatistics(
@@ -543,7 +545,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         )
         parsed = self._parse_diff_statistics_result(result)
         self.assertEqual(len(parsed), 1)
-        self.assertIn(STAT_NAME_NORMALIZED_RMSE, parsed)
+        self.assertIn(STAT_NAME_NORMALIZED_ROOT_MEAN_SQUARE_ERROR, parsed)
 
         # Test R-squared only.
         result = maya.cmds.mmAnimCurveDiffStatistics(
@@ -585,12 +587,12 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         parsed = self._parse_diff_statistics_result(result)
         self.assertEqual(len(parsed), 2)
         self.assertIn(STAT_NAME_POPULATION_VARIANCE, parsed)
-        self.assertIn(STAT_NAME_STD_POPULATION_DEV, parsed)
+        self.assertIn(STAT_NAME_POPULATION_STD_DEV, parsed)
 
         # Verify stddev = sqrt(variance).
         expected_stddev = math.sqrt(parsed[STAT_NAME_POPULATION_VARIANCE])
         self.assertAlmostEqual(
-            parsed[STAT_NAME_STD_POPULATION_DEV], expected_stddev, places=5
+            parsed[STAT_NAME_POPULATION_STD_DEV], expected_stddev, places=5
         )
 
         result = maya.cmds.mmAnimCurveDiffStatistics(
@@ -605,7 +607,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         self.assertEqual(len(parsed), 4)
         self.assertIn(STAT_NAME_MEAN_ABSOLUTE_ERROR, parsed)
         self.assertIn(STAT_NAME_ROOT_MEAN_SQUARE_ERROR, parsed)
-        self.assertIn(STAT_NAME_NORMALIZED_RMSE, parsed)
+        self.assertIn(STAT_NAME_NORMALIZED_ROOT_MEAN_SQUARE_ERROR, parsed)
         self.assertIn(STAT_NAME_R_SQUARED, parsed)
 
     def test_diff_statistics_with_list_inputs(self):
@@ -629,7 +631,7 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
 
         # For constant offset of 5:
         self.assertAlmostEqual(stats[STAT_NAME_MEAN_DIFF], -5.0, places=5)
-        self.assertAlmostEqual(stats[STAT_NAME_MEAN_ABS_DIFF], 5.0, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_MEAN_ABSOLUTE_DIFF], 5.0, places=5)
         self.assertAlmostEqual(stats[STAT_NAME_POPULATION_VARIANCE], 0.0, places=5)
         self.assertAlmostEqual(stats[STAT_NAME_MEAN_ABSOLUTE_ERROR], 5.0, places=5)
         self.assertAlmostEqual(stats[STAT_NAME_ROOT_MEAN_SQUARE_ERROR], 5.0, places=5)
@@ -703,8 +705,8 @@ class TestAnimCurveDiffStatistics(test_tools_utils.ToolsTestCase):
         stats = self._parse_diff_statistics_result(result)
 
         # Verify noise is detected
-        self.assertGreater(stats[STAT_NAME_STD_POPULATION_DEV], 0.1)
-        self.assertGreater(stats[STAT_NAME_RMS_DIFF], 0.1)
+        self.assertGreater(stats[STAT_NAME_POPULATION_STD_DEV], 0.1)
+        self.assertGreater(stats[STAT_NAME_ROOT_MEAN_SQUARE_DIFF], 0.1)
         self.assertGreater(stats[STAT_NAME_MEAN_ABSOLUTE_ERROR], 0.1)
         self.assertGreater(stats[STAT_NAME_ROOT_MEAN_SQUARE_ERROR], 0.1)
         # Mean difference should be close to zero for random noise

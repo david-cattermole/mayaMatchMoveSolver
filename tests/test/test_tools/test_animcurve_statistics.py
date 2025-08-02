@@ -261,7 +261,6 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
     def test_statistics_linear_curve(self):
         """Test statistics on a linear animation curve."""
         # Create a linear animation curve.
-        maya.cmds.file(new=True, force=True)
         transform = maya.cmds.createNode("transform", name="testTransform")
 
         # Set linear keyframes from 0 to 10.
@@ -294,10 +293,7 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
 
     def test_statistics_error_handling(self):
         """Test error handling for invalid inputs."""
-        maya.cmds.file(new=True, force=True)
-
         transform = maya.cmds.createNode("transform", name="testTransform")
-
         with self.assertRaises(RuntimeError):
             maya.cmds.mmAnimCurveStatistics(transform, mean=True)
         return

@@ -38,6 +38,20 @@ STAT_TYPE_VARIANCE = 2
 STAT_TYPE_STDDEV = 3
 STAT_TYPE_SNR = 4
 
+# Names for each statistic identifier defined in this module.
+STAT_NAME_MEAN = "mean"
+STAT_NAME_MEDIAN = "median"
+STAT_NAME_VARIANCE = "variance"
+STAT_NAME_STD_DEV = "stddev"
+STAT_NAME_SNR = "snr"
+STAT_NAME_LIST = [
+    STAT_NAME_MEAN,
+    STAT_NAME_MEDIAN,
+    STAT_NAME_VARIANCE,
+    STAT_NAME_STD_DEV,
+    STAT_NAME_SNR,
+]
+
 
 # @unittest.skip
 class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
@@ -56,15 +70,15 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
                 stat_value = result[i + 1]
 
                 if stat_type == STAT_TYPE_MEAN:
-                    stats["mean"] = stat_value
+                    stats[STAT_NAME_MEAN] = stat_value
                 elif stat_type == STAT_TYPE_MEDIAN:
-                    stats["median"] = stat_value
+                    stats[STAT_NAME_MEDIAN] = stat_value
                 elif stat_type == STAT_TYPE_VARIANCE:
-                    stats["variance"] = stat_value
+                    stats[STAT_NAME_VARIANCE] = stat_value
                 elif stat_type == STAT_TYPE_STDDEV:
-                    stats["stddev"] = stat_value
+                    stats[STAT_NAME_STD_DEV] = stat_value
                 elif stat_type == STAT_TYPE_SNR:
-                    stats["snr"] = stat_value
+                    stats[STAT_NAME_SNR] = stat_value
 
                 i += 2
 
@@ -109,18 +123,16 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         for curve_data in parsed:
             stats = curve_data["stats"]
             # Verify all statistics are present.
-            self.assertIn("mean", stats)
-            self.assertIn("median", stats)
-            self.assertIn("variance", stats)
-            self.assertIn("stddev", stats)
-            self.assertIn("snr", stats)
+            for stat_name in STAT_NAME_LIST:
+                self.assertIn(stat_name, stats)
+            self.assertEqual(len(stats.keys()), len(STAT_NAME_LIST))
 
             # Verify relationships between statistics.
             # Standard deviation should be sqrt(variance).
-            expected_stddev = math.sqrt(stats["variance"])
-            self.assertAlmostEqual(stats["stddev"], expected_stddev, places=5)
+            expected_stddev = math.sqrt(stats[STAT_NAME_VARIANCE])
+            self.assertAlmostEqual(stats[STAT_NAME_STD_DEV], expected_stddev, places=5)
 
-            # All values should be finite
+            # All values should be finite.
             for stat_name, stat_value in stats.items():
                 self.assertTrue(
                     math.isfinite(stat_value),
@@ -142,21 +154,21 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         parsed = self._parse_statistics_result(result)
         self.assertEqual(len(parsed), 1)
         self.assertEqual(len(parsed[0]["stats"]), 1)
-        self.assertIn("mean", parsed[0]["stats"])
+        self.assertIn(STAT_NAME_MEAN, parsed[0]["stats"])
 
         # Test median only.
         result = maya.cmds.mmAnimCurveStatistics(animCurve_tx, median=True)
         parsed = self._parse_statistics_result(result)
         self.assertEqual(len(parsed), 1)
         self.assertEqual(len(parsed[0]["stats"]), 1)
-        self.assertIn("median", parsed[0]["stats"])
+        self.assertIn(STAT_NAME_MEDIAN, parsed[0]["stats"])
 
         # Test variance only.
         result = maya.cmds.mmAnimCurveStatistics(animCurve_tx, variance=True)
         parsed = self._parse_statistics_result(result)
         self.assertEqual(len(parsed), 1)
         self.assertEqual(len(parsed[0]["stats"]), 1)
-        self.assertIn("variance", parsed[0]["stats"])
+        self.assertIn(STAT_NAME_VARIANCE, parsed[0]["stats"])
 
     def test_statistics_frame_range(self):
         """Test statistics with different frame ranges."""
@@ -182,8 +194,8 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
 
         # Statistics should be different for different ranges.
         self.assertNotAlmostEqual(
-            parsed_full[0]["stats"]["mean"],
-            parsed_partial[0]["stats"]["mean"],
+            parsed_full[0]["stats"][STAT_NAME_MEAN],
+            parsed_partial[0]["stats"][STAT_NAME_MEAN],
             places=2,
         )
 
@@ -212,8 +224,8 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         for i, curve_data in enumerate(parsed):
             self.assertEqual(curve_data["index"], i)
             self.assertEqual(len(curve_data["stats"]), 2)
-            self.assertIn("mean", curve_data["stats"])
-            self.assertIn("stddev", curve_data["stats"])
+            self.assertIn(STAT_NAME_MEAN, curve_data["stats"])
+            self.assertIn(STAT_NAME_STD_DEV, curve_data["stats"])
 
     def test_statistics_constant_curve(self):
         """Test statistics on a constant (flat) animation curve."""
@@ -246,17 +258,19 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
 
         # For a constant curve mean and median should equal the
         # constant value.
-        self.assertAlmostEqual(stats["mean"], constant_value, places=5)
-        self.assertAlmostEqual(stats["median"], constant_value, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_MEAN], constant_value, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_MEDIAN], constant_value, places=5)
 
         # For a constant curve variance and standard deviation should
         # be zero.
-        self.assertAlmostEqual(stats["variance"], 0.0, places=5)
-        self.assertAlmostEqual(stats["stddev"], 0.0, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_VARIANCE], 0.0, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_STD_DEV], 0.0, places=5)
 
         # For a constant curve SNR should be infinity (but might be
         # represented as a large value).
-        self.assertTrue(stats["snr"] > 1000.0 or math.isinf(stats["snr"]))
+        self.assertTrue(
+            stats[STAT_NAME_SNR] > 1000.0 or math.isinf(stats[STAT_NAME_SNR])
+        )
 
     def test_statistics_linear_curve(self):
         """Test statistics on a linear animation curve."""
@@ -283,13 +297,13 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
 
         # For a linear curve from 0 to 9:
         # - Mean should be 4.5.
-        self.assertAlmostEqual(stats["mean"], 4.5, places=2)
+        self.assertAlmostEqual(stats[STAT_NAME_MEAN], 4.5, places=2)
 
         # - Median should also be 4.5.
-        self.assertAlmostEqual(stats["median"], 4.5, places=2)
+        self.assertAlmostEqual(stats[STAT_NAME_MEDIAN], 4.5, places=2)
 
         # - Variance should be > 0 (approximately 8.25 for 0-9 range).
-        self.assertGreater(stats["variance"], 0)
+        self.assertGreater(stats[STAT_NAME_VARIANCE], 0)
 
     def test_statistics_error_handling(self):
         """Test error handling for invalid inputs."""
@@ -322,8 +336,8 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
 
         # Verify stddev = sqrt(variance).
         stats = parsed[0]["stats"]
-        expected_stddev = math.sqrt(stats["variance"])
-        self.assertAlmostEqual(stats["stddev"], expected_stddev, places=5)
+        expected_stddev = math.sqrt(stats[STAT_NAME_VARIANCE])
+        self.assertAlmostEqual(stats[STAT_NAME_STD_DEV], expected_stddev, places=5)
 
     def test_statistics_with_list_input(self):
         """Test statistics with Python list inputs."""
@@ -345,19 +359,17 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         self.assertEqual(len(parsed), 1)
 
         stats = parsed[0]["stats"]
-        # Verify all statistics are present
-        self.assertIn("mean", stats)
-        self.assertIn("median", stats)
-        self.assertIn("variance", stats)
-        self.assertIn("stddev", stats)
-        self.assertIn("snr", stats)
+        # Verify all statistics are present.
+        for stat_name in STAT_NAME_LIST:
+            self.assertIn(stat_name, stats)
+        self.assertEqual(len(stats.keys()), len(STAT_NAME_LIST))
 
         # Verify relationships between statistics
-        expected_stddev = math.sqrt(stats["variance"])
-        self.assertAlmostEqual(stats["stddev"], expected_stddev, places=5)
+        expected_stddev = math.sqrt(stats[STAT_NAME_VARIANCE])
+        self.assertAlmostEqual(stats[STAT_NAME_STD_DEV], expected_stddev, places=5)
 
         expected_mean = sum(y_values) / len(y_values)
-        self.assertAlmostEqual(stats["mean"], expected_mean, places=5)
+        self.assertAlmostEqual(stats[STAT_NAME_MEAN], expected_mean, places=5)
 
     def test_statistics_mixed_curves_and_lists_error(self):
         """Test that mixing animation curves and list inputs produces an error."""

@@ -43,13 +43,13 @@ STAT_NAME_MEAN = "mean"
 STAT_NAME_MEDIAN = "median"
 STAT_NAME_VARIANCE = "variance"
 STAT_NAME_STD_DEV = "stddev"
-STAT_NAME_SNR = "snr"
+STAT_NAME_SIGNAL_TO_NOISE_RATIO = "signal_to_noise_ratio"
 STAT_NAME_LIST = [
     STAT_NAME_MEAN,
     STAT_NAME_MEDIAN,
     STAT_NAME_VARIANCE,
     STAT_NAME_STD_DEV,
-    STAT_NAME_SNR,
+    STAT_NAME_SIGNAL_TO_NOISE_RATIO,
 ]
 
 
@@ -78,7 +78,7 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
                 elif stat_type == STAT_TYPE_STDDEV:
                     stats[STAT_NAME_STD_DEV] = stat_value
                 elif stat_type == STAT_TYPE_SNR:
-                    stats[STAT_NAME_SNR] = stat_value
+                    stats[STAT_NAME_SIGNAL_TO_NOISE_RATIO] = stat_value
 
                 i += 2
 
@@ -269,7 +269,8 @@ class TestAnimCurveStatistics(test_tools_utils.ToolsTestCase):
         # For a constant curve SNR should be infinity (but might be
         # represented as a large value).
         self.assertTrue(
-            stats[STAT_NAME_SNR] > 1000.0 or math.isinf(stats[STAT_NAME_SNR])
+            stats[STAT_NAME_SIGNAL_TO_NOISE_RATIO] > 1000.0
+            or math.isinf(stats[STAT_NAME_SIGNAL_TO_NOISE_RATIO])
         )
 
     def test_statistics_linear_curve(self):

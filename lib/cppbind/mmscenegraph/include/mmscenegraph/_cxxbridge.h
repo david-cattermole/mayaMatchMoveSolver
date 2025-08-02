@@ -1280,4 +1280,12 @@ MMSCENEGRAPH_API_EXPORT bool shim_calc_quartiles(::rust::Slice<const double> sor
 MMSCENEGRAPH_API_EXPORT bool shim_calc_interquartile_range(::rust::Slice<const double> sorted_data, double &out_median, double &out_iqr) noexcept;
 
 MMSCENEGRAPH_API_EXPORT bool shim_calc_percentile_rank(::rust::Slice<const double> sorted_data, double value, double &out_rank) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_mean_absolute_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_mae) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_root_mean_square_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_rmse) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_normalized_root_mean_square_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_nrmse) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_coefficient_of_determination(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_r_squared) noexcept;
 } // namespace mmscenegraph

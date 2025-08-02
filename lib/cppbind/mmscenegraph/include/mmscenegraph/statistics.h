@@ -132,7 +132,7 @@ bool calc_quantile(rust::Slice<const Real> &sorted_data, const Real probability,
 MMSCENEGRAPH_API_EXPORT
 bool calc_quartiles(rust::Slice<const Real> &sorted_data, Real &out_q1,
                     Real &out_q2, Real &out_q3) noexcept;
-    
+
 MMSCENEGRAPH_API_EXPORT
 bool calc_interquartile_range(rust::Slice<const Real> &sorted_data,
                               Real &out_median, Real &out_iqr) noexcept;
@@ -140,6 +140,26 @@ bool calc_interquartile_range(rust::Slice<const Real> &sorted_data,
 MMSCENEGRAPH_API_EXPORT
 bool calc_percentile_rank(rust::Slice<const Real> &sorted_data,
                           const Real value, Real &out_rank) noexcept;
+
+MMSCENEGRAPH_API_EXPORT
+bool calc_mean_absolute_error(rust::Slice<const Real> &actual,
+                              rust::Slice<const Real> &predicted,
+                              Real &out_mae) noexcept;
+
+MMSCENEGRAPH_API_EXPORT
+bool calc_root_mean_square_error(rust::Slice<const Real> &actual,
+                                 rust::Slice<const Real> &predicted,
+                                 Real &out_rmse) noexcept;
+
+MMSCENEGRAPH_API_EXPORT
+bool calc_normalized_root_mean_square_error(rust::Slice<const Real> &actual,
+                                            rust::Slice<const Real> &predicted,
+                                            Real &out_nrmse) noexcept;
+
+MMSCENEGRAPH_API_EXPORT
+bool calc_coefficient_of_determination(rust::Slice<const Real> &actual,
+                                       rust::Slice<const Real> &predicted,
+                                       Real &out_r_squared) noexcept;
 
 }  // namespace mmscenegraph
 

@@ -20,11 +20,14 @@
 
 use mmscenegraph_rust::constant::Real as CoreReal;
 use mmscenegraph_rust::math::statistics::{
+    calc_coefficient_of_determination as core_calc_coefficient_of_determination,
     calc_interquartile_range as core_calc_interquartile_range,
     calc_local_minima_maxima as core_calc_local_minima_maxima,
     calc_mean_absolute_deviation as core_calc_mean_absolute_deviation,
+    calc_mean_absolute_error as core_calc_mean_absolute_error,
     calc_median_absolute_deviation as core_calc_median_absolute_deviation,
     calc_median_absolute_deviation_sigma as core_calc_median_absolute_deviation_sigma,
+    calc_normalized_root_mean_square_error as core_calc_normalized_root_mean_square_error,
     calc_peak_to_peak as core_calc_peak_to_peak,
     calc_percentile_rank as core_calc_percentile_rank,
     calc_population_coefficient_of_variation as core_calc_population_coefficient_of_variation,
@@ -33,6 +36,7 @@ use mmscenegraph_rust::math::statistics::{
     calc_population_standard_deviation as core_calc_population_standard_deviation,
     calc_population_variance as core_calc_population_variance,
     calc_quantile as core_calc_quantile, calc_quartiles as core_calc_quartiles,
+    calc_root_mean_square_error as core_calc_root_mean_square_error,
     calc_sample_coefficient_of_variation as core_calc_sample_coefficient_of_variation,
     calc_sample_kurtosis_excess as core_calc_sample_kurtosis_excess,
     calc_sample_relative_standard_deviation as core_calc_sample_relative_standard_deviation,
@@ -498,6 +502,62 @@ pub fn shim_calc_percentile_rank(
             }
             Err(_) => false,
         },
+        Err(_) => false,
+    }
+}
+
+pub fn shim_calc_mean_absolute_error(
+    actual: &[CoreReal],
+    predicted: &[CoreReal],
+    out_mae: &mut CoreReal,
+) -> bool {
+    match core_calc_mean_absolute_error(actual, predicted) {
+        Ok(mae) => {
+            *out_mae = mae;
+            true
+        }
+        Err(_) => false,
+    }
+}
+
+pub fn shim_calc_root_mean_square_error(
+    actual: &[CoreReal],
+    predicted: &[CoreReal],
+    out_rmse: &mut CoreReal,
+) -> bool {
+    match core_calc_root_mean_square_error(actual, predicted) {
+        Ok(rmse) => {
+            *out_rmse = rmse;
+            true
+        }
+        Err(_) => false,
+    }
+}
+
+pub fn shim_calc_normalized_root_mean_square_error(
+    actual: &[CoreReal],
+    predicted: &[CoreReal],
+    out_nrmse: &mut CoreReal,
+) -> bool {
+    match core_calc_normalized_root_mean_square_error(actual, predicted) {
+        Ok(nrmse) => {
+            *out_nrmse = nrmse;
+            true
+        }
+        Err(_) => false,
+    }
+}
+
+pub fn shim_calc_coefficient_of_determination(
+    actual: &[CoreReal],
+    predicted: &[CoreReal],
+    out_r_squared: &mut CoreReal,
+) -> bool {
+    match core_calc_coefficient_of_determination(actual, predicted) {
+        Ok(r_squared) => {
+            *out_r_squared = r_squared;
+            true
+        }
         Err(_) => false,
     }
 }

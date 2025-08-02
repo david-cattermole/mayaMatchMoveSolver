@@ -190,4 +190,34 @@ bool calc_percentile_rank(rust::Slice<const Real> &sorted_data,
     return shim_calc_percentile_rank(sorted_data, value, out_rank);
 }
 
+MMSCENEGRAPH_API_EXPORT
+bool calc_mean_absolute_error(rust::Slice<const Real> &actual,
+                              rust::Slice<const Real> &predicted,
+                              Real &out_mae) noexcept {
+    return shim_calc_mean_absolute_error(actual, predicted, out_mae);
+}
+
+MMSCENEGRAPH_API_EXPORT
+bool calc_root_mean_square_error(rust::Slice<const Real> &actual,
+                                 rust::Slice<const Real> &predicted,
+                                 Real &out_rmse) noexcept {
+    return shim_calc_root_mean_square_error(actual, predicted, out_rmse);
+}
+
+MMSCENEGRAPH_API_EXPORT
+bool calc_normalized_root_mean_square_error(rust::Slice<const Real> &actual,
+                                            rust::Slice<const Real> &predicted,
+                                            Real &out_nrmse) noexcept {
+    return shim_calc_normalized_root_mean_square_error(actual, predicted,
+                                                       out_nrmse);
+}
+
+MMSCENEGRAPH_API_EXPORT
+bool calc_coefficient_of_determination(rust::Slice<const Real> &actual,
+                                       rust::Slice<const Real> &predicted,
+                                       Real &out_r_squared) noexcept {
+    return shim_calc_coefficient_of_determination(actual, predicted,
+                                                  out_r_squared);
+}
+
 }  // namespace mmscenegraph

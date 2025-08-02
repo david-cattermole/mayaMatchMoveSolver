@@ -1418,6 +1418,14 @@ bool mmscenegraph$cxxbridge1$shim_calc_quartiles(::rust::Slice<const double> sor
 bool mmscenegraph$cxxbridge1$shim_calc_interquartile_range(::rust::Slice<const double> sorted_data, double &out_median, double &out_iqr) noexcept;
 
 bool mmscenegraph$cxxbridge1$shim_calc_percentile_rank(::rust::Slice<const double> sorted_data, double value, double &out_rank) noexcept;
+
+bool mmscenegraph$cxxbridge1$shim_calc_mean_absolute_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_mae) noexcept;
+
+bool mmscenegraph$cxxbridge1$shim_calc_root_mean_square_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_rmse) noexcept;
+
+bool mmscenegraph$cxxbridge1$shim_calc_normalized_root_mean_square_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_nrmse) noexcept;
+
+bool mmscenegraph$cxxbridge1$shim_calc_coefficient_of_determination(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_r_squared) noexcept;
 } // extern "C"
 } // namespace mmscenegraph
 
@@ -1963,6 +1971,22 @@ MMSCENEGRAPH_API_EXPORT bool shim_calc_interquartile_range(::rust::Slice<const d
 
 MMSCENEGRAPH_API_EXPORT bool shim_calc_percentile_rank(::rust::Slice<const double> sorted_data, double value, double &out_rank) noexcept {
   return mmscenegraph$cxxbridge1$shim_calc_percentile_rank(sorted_data, value, out_rank);
+}
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_mean_absolute_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_mae) noexcept {
+  return mmscenegraph$cxxbridge1$shim_calc_mean_absolute_error(actual, predicted, out_mae);
+}
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_root_mean_square_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_rmse) noexcept {
+  return mmscenegraph$cxxbridge1$shim_calc_root_mean_square_error(actual, predicted, out_rmse);
+}
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_normalized_root_mean_square_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_nrmse) noexcept {
+  return mmscenegraph$cxxbridge1$shim_calc_normalized_root_mean_square_error(actual, predicted, out_nrmse);
+}
+
+MMSCENEGRAPH_API_EXPORT bool shim_calc_coefficient_of_determination(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_r_squared) noexcept {
+  return mmscenegraph$cxxbridge1$shim_calc_coefficient_of_determination(actual, predicted, out_r_squared);
 }
 } // namespace mmscenegraph
 

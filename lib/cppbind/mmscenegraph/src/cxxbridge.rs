@@ -35,11 +35,14 @@ use crate::scenebake::shim_bake_scene_graph;
 use crate::scenegraph::shim_create_scene_graph_box;
 use crate::scenegraph::ShimSceneGraph;
 use crate::statistics::{
+    shim_calc_coefficient_of_determination,
     shim_calc_interquartile_range,
     shim_calc_local_minima_maxima,
     shim_calc_mean_absolute_deviation,
+    shim_calc_mean_absolute_error,
     shim_calc_median_absolute_deviation,
     shim_calc_median_absolute_deviation_sigma,
+    shim_calc_normalized_root_mean_square_error,
     shim_calc_peak_to_peak,
     shim_calc_percentile_rank,
     shim_calc_population_coefficient_of_variation,
@@ -49,6 +52,7 @@ use crate::statistics::{
     shim_calc_population_variance,
     shim_calc_quantile,
     shim_calc_quartiles,
+    shim_calc_root_mean_square_error,
     shim_calc_sample_coefficient_of_variation,
     shim_calc_sample_kurtosis_excess,
     shim_calc_sample_relative_standard_deviation,
@@ -666,6 +670,30 @@ pub mod ffi {
             sorted_data: &[f64],
             value: f64,
             out_rank: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_mean_absolute_error(
+            actual: &[f64],
+            predicted: &[f64],
+            out_mae: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_root_mean_square_error(
+            actual: &[f64],
+            predicted: &[f64],
+            out_rmse: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_normalized_root_mean_square_error(
+            actual: &[f64],
+            predicted: &[f64],
+            out_nrmse: &mut f64,
+        ) -> bool;
+
+        fn shim_calc_coefficient_of_determination(
+            actual: &[f64],
+            predicted: &[f64],
+            out_r_squared: &mut f64,
         ) -> bool;
     }
 }

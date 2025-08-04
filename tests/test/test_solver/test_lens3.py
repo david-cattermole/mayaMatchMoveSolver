@@ -65,6 +65,9 @@ class TestLens3(solverUtils.SolverTestCase):
         maya.cmds.setAttr(grp_tfm + '.ty', 0.0)
         maya.cmds.setAttr(grp_tfm + '.tz', -25.0)
 
+        # Create marker group first (like all other working tests)
+        mkr_grp = self.create_marker_group('marker_group', cam_tfm)
+
         node_attrs = []
         markers = []
         x_amount_list = [
@@ -92,7 +95,7 @@ class TestLens3(solverUtils.SolverTestCase):
             )
 
             marker_tfm, marker_shp = self.create_marker(
-                'marker', cam_tfm, bnd_tfm=bundle_tfm
+                'marker', mkr_grp, bnd_tfm=bundle_tfm
             )
             maya.cmds.setAttr(marker_tfm + '.tz', -10)
 

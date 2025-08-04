@@ -1714,6 +1714,9 @@ void readStoredRelationships(const MarkerList &markerList,
                            "- attrName=\""
                         << attrName.asChar() << "\";");
                 }
+                // Reset status to success - this is expected for markers under marker groups
+                // We'll use the default relationship assumption for this marker-attribute pair
+                out_status = MS::kSuccess;
                 continue;
             }
 

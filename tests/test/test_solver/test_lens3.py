@@ -68,6 +68,8 @@ class TestLens3(solverUtils.SolverTestCase):
         # Create marker group first (like all other working tests)
         mkr_grp = self.create_marker_group('marker_group', cam_tfm)
 
+        # Lens model is connected to markers via mmLensEvaluate nodes
+        # below.
         node_attrs = []
         markers = []
         x_amount_list = [
@@ -137,10 +139,26 @@ class TestLens3(solverUtils.SolverTestCase):
             (1),
         ]
 
+        # Get initial lens distortion values
+        initial_distortion = maya.cmds.getAttr(lens_node + '.tdeClassic_distortion')
+        initial_quartic = maya.cmds.getAttr(lens_node + '.tdeClassic_quarticDistortion')
+        print(f'Initial lens distortion: {initial_distortion}')
+        print(f'Initial quartic distortion: {initial_quartic}')
+
         # save the output
         path = self.get_data_path('lens3_%s_before.ma' % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        # Run SolverAffects to create relationship attributes on markers
+        kwargs = {
+            'camera': cameras,
+            'marker': markers,
+            'attr': node_attrs,
+            'frame': frames,
+        }
+        affects_mode = 'addAttrsToMarkers'
+        self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
         s = time.time()
@@ -155,6 +173,41 @@ class TestLens3(solverUtils.SolverTestCase):
         )
         e = time.time()
         print('total time:', e - s)
+
+        # Get final lens distortion values.
+        final_distortion = maya.cmds.getAttr(lens_node + '.tdeClassic_distortion')
+        final_quartic = maya.cmds.getAttr(lens_node + '.tdeClassic_quarticDistortion')
+        print(f'Final lens distortion: {final_distortion}')
+        print(f'Final quartic distortion: {final_quartic}')
+
+        # Calculate changes.
+        distortion_change = abs(final_distortion - initial_distortion)
+        quartic_change = abs(final_quartic - initial_quartic)
+        print(f'Distortion change: {distortion_change}')
+        print(f'Quartic change: {quartic_change}')
+
+        # Lens distortion parameters should change during solving, if
+        # they don't change, it means the solver is not working on
+        # lens distortion.
+        min_expected_change = 1e-6
+        lens_params_changed = (distortion_change > min_expected_change) or (
+            quartic_change > min_expected_change
+        )
+
+        # This assertion will fail if lens distortion is not being
+        # solved.
+        self.assertTrue(
+            lens_params_changed,
+            (
+                "Lens distortion not being solved! "
+                "Expected parameter changes > {min_expected_change}, "
+                "but got distortion_change={distortion_change}, quartic_change={quartic_change}"
+            ).format(
+                min_expected_change=min_expected_change,
+                distortion_change=distortion_change,
+                quartic_change=quartic_change,
+            ),
+        )
 
         # save the output
         path = self.get_data_path('lens3_%s_after.ma' % solver_name)

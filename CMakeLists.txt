@@ -92,7 +92,7 @@ option(MMSOLVER_BUILD_ICONS "Build and install the icons?" ON)
 option(MMSOLVER_BUILD_CONFIG "Build and install the config files?" ON)
 option(MMSOLVER_BUILD_TESTS "Build the test files?" OFF)
 option(MMSOLVER_DOWNLOAD_DEPENDENCIES "Automatically download and build missing dependencies?" ON)
-option(MMSOLVER_USE_GLOG "Use Google glog (for Ceres Solver)? Otherwise, we will use the Ceres embedded miniglog." OFF)
+option(MMSOLVER_DEBUG "Enable mmSolver debug mode; prints details and enables debug assertions." OFF)
 
 
 # Maya SDK
@@ -130,8 +130,9 @@ add_subdirectory(share)
 
 if (MMSOLVER_BUILD_PLUGIN)
   # Finds and builds external (third-party) dependencies.
+  #
+  # NOTE: Dependencies are handled in mmsolverlibs sub-project.
   include(FindAndBuildExternalPackages)
-  add_subdirectory(lib/thirdparty)
 
   add_subdirectory(src)
 endif ()

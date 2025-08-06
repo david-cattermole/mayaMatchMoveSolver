@@ -44,6 +44,8 @@ configure_file(
 # C++ Source Code
 set(lib_source_files
   ${main_build_constant_output_file}
+  ${CMAKE_CURRENT_SOURCE_DIR}/cminpack_wrapper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/openmvg_wrapper.cpp
 
   ${mmcolorio_source_dir}/lib.cpp
 
@@ -117,6 +119,16 @@ target_link_libraries(${cpp_lib_name}
 # We must force this target ('cpp_lib_name') to wait for
 # ldpk to be installed so we have the 'ldpk_INCLUDE_DIR' variable.
 add_dependencies(${cpp_lib_name} ldpk::ldpk)
+
+# Link cminpack dependency
+target_link_libraries(${cpp_lib_name}
+  PUBLIC cminpack::cminpack
+)
+
+# Link OpenMVG dependency for SFM functions
+target_link_libraries(${cpp_lib_name}
+  PUBLIC openMVG
+)
 
 # MM Color IO dependencies
 include(MMColorIOUtils)

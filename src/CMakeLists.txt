@@ -186,7 +186,12 @@ set_target_maya_plugin_compile_options(mmSolver)
 target_include_directories(mmSolver
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../external/openMVG/src/
+)
+
+# This allows the main project's Ceres (which uses miniglog) to find
+# glog headers.
+target_include_directories(mmSolver
+  PRIVATE ${_EXTERNAL_INSTALL_DIR}/ceres/include/ceres/internal/miniglog
 )
 
 # On Linux the 'm' library is required.
@@ -198,7 +203,7 @@ endif ()
 # plug-in. See 'MMSolverUtils' CMake module for more information.
 include(MMCommonUtils)
 mm_common_set_global_treat_warnings_as_errors()
-option(MMSOLVER_DEBUG "Enable mmSolver debug mode; prints details and enables debug assertions." OFF)
+# MMSOLVER_DEBUG option is inherited from parent scope.
 mm_common_set_global_compile_options(MMSOLVER_DEBUG)
 
 # MM Solver standalone libraries.
@@ -222,6 +227,7 @@ target_link_libraries(mmSolver
   PUBLIC mmsolverlibs_cpp::mmsolverlibs_cpp
 )
 
+
 find_package(Maya REQUIRED)
 message(STATUS "Maya: Found=${MAYA_FOUND}")
 message(STATUS "Maya: Root=${MAYA_LOCATION}")
@@ -244,29 +250,16 @@ if(MAYA_FOUND)
     )
 endif()
 
-# MM Color IO dependencies
+# NOTE: All third-party dependencies (cminpack, glog, Eigen3, Ceres, OpenMVG)
+# are now handled through mmsolverlibs packages.
+
+# MM Color IO dependencies (handled through mmsolverlibs)
 include(MMColorIOUtils)
 mmcolorio_find_packages()
 mmcolorio_target_link_packages(mmSolver)
 
-# Google glog is required for Ceres, but can be disabled in favour of
-# the Ceres embedded 'miniglog'.
-if (MMSOLVER_USE_GLOG)
-  target_link_libraries(mmSolver
-    PRIVATE glog::glog
-  )
-else()
-  find_ceres_miniglog_include_dir(miniglog_include_dir)
-  target_include_directories(mmSolver PRIVATE "${miniglog_include_dir}")
-endif()
-
-# Link all libraries.
-target_link_libraries(mmSolver
-  PRIVATE cminpack::cminpack
-  PRIVATE Eigen3::Eigen
-  PRIVATE ceres
-  PRIVATE openMVG
-)
+# All dependencies are provided transitively through mmsolverlibs packages.
+# No direct linking to third-party libraries is needed here.
 
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CMINPACK)
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_OPENMVG)

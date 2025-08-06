@@ -31,7 +31,7 @@
 # - glog_INCLUDE_DIRS
 #
 
-function(find_glog_find_with_paths glog_root glog_include_path glog_lib_path)
+function(find_glog_find_with_paths glog_root glog_include_path glog_lib_path out_glog_include_dirs out_glog_libraries)
 
     find_path(glog_include_dir glog.h
       HINTS
@@ -115,7 +115,24 @@ if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT glog_ALLOW_DOWNLOAD)
     message(STATUS "glog: Include=${glog_INCLUDE_DIRS}")
     message(STATUS "glog: Library=${glog_LIBRARIES}")
   else()
-    message(FATAL_ERROR "Not Implemented. glog has not been found from the glog-config.cmake file")
+    # Fallback to manual search when glog-config.cmake is not found
+    find_glog_find_with_paths(
+      ${glog_ROOT}
+      ${glog_INCLUDE_PATH}
+      ${glog_LIB_PATH}
+      glog_INCLUDE_DIRS
+      glog_LIBRARIES
+      )
+
+    if(glog_INCLUDE_DIRS AND glog_LIBRARIES)
+      set(glog_FOUND TRUE)
+      # Convert to singular form expected by find_glog_set_target
+      set(glog_INCLUDE_DIR ${glog_INCLUDE_DIRS})
+      set(glog_LIBRARY ${glog_LIBRARIES})
+      message(STATUS "glog: Found=${glog_FOUND} (manual search)")
+      message(STATUS "glog: Include=${glog_INCLUDE_DIR}")
+      message(STATUS "glog: Library=${glog_LIBRARY}")
+    endif()
   endif()
 
 endif()
@@ -166,6 +183,9 @@ if(NOT glog_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND glog_ALLOW_DOWNLOAD)
   set(glog_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/glog)
   set(glog_PREFIX ${_EXTERNAL_BUILD_DIR}/glog)
   set(glog_SOURCE_DIR ${_EXTERNAL_BUILD_DIR}/glog/src/glog)
+
+  # Find Threads in parent context to get the variables we need
+  find_package(Threads REQUIRED)
 
   set(glog_CMAKE_ARGS
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}

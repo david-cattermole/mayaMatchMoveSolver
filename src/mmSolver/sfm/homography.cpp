@@ -63,13 +63,18 @@ using KernelType = openMVG::robust::ACKernelAdaptor<
     openMVG::homography::kernel::AsymmetricError, openMVG::UnnormalizerI,
     openMVG::Mat3>;
 
-bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
-                       openMVG::Mat3 &homography_matrix,
+bool robust_homography(const std::vector<std::pair<double, double>> &points1,
+                       const std::vector<std::pair<double, double>> &points2,
+                       HomographyMatrix &homography_matrix,
                        const std::pair<uint32_t, uint32_t> &size_ima1,
                        const std::pair<uint32_t, uint32_t> &size_ima2,
                        const uint32_t max_iteration_count) {
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
+
+    // Convert input vectors to OpenMVG matrices
+    openMVG::Mat x1 = convert_marker_coords_to_matrix(points1);
+    openMVG::Mat x2 = convert_marker_coords_to_matrix(points2);
 
     // Upper bound pixel tolerance for residual errors.
     const double error_max = std::numeric_limits<double>::infinity();
@@ -100,8 +105,9 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
     // Robustly estimate the Homography matrix with A Contrario (AC)
     // RANSAC.
     std::vector<uint32_t> vec_inliers;
+    openMVG::Mat3 openmvg_homography_matrix;
     const auto ac_ransac_output = openMVG::robust::ACRANSAC(
-        kernel, vec_inliers, max_iteration_count, &homography_matrix,
+        kernel, vec_inliers, max_iteration_count, &openmvg_homography_matrix,
         error_upper_bound, verbose);
     out_error_max = ac_ransac_output.first;
 
@@ -120,12 +126,20 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
     // TODO: Confirm this works correctly. Ideally this matrix should
     // be image independent, and so we want to remove the image
     // resolution from the matrix.
-    homography_matrix.row(0)[2] = homography_matrix.row(0)[2] / size_ima2.first;
-    homography_matrix.row(1)[2] =
-        homography_matrix.row(0)[2] / size_ima2.second;
+    openmvg_homography_matrix.row(0)[2] =
+        openmvg_homography_matrix.row(0)[2] / size_ima2.first;
+    openmvg_homography_matrix.row(1)[2] =
+        openmvg_homography_matrix.row(1)[2] / size_ima2.second;
+
+    // Copy the OpenMVG matrix to our HomographyMatrix
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            homography_matrix(i, j) = openmvg_homography_matrix(i, j);
+        }
+    }
 
     MMSOLVER_MAYA_VRB("Found a Homography matrix:");
-    MMSOLVER_MAYA_VRB("- matrix: " << homography_matrix);
+    MMSOLVER_MAYA_VRB("- matrix: " << openmvg_homography_matrix);
     MMSOLVER_MAYA_VRB("- error: " << out_error_max << " pixels");
 
     MMSOLVER_MAYA_VRB("- #matches: " << x1.size());
@@ -148,12 +162,7 @@ bool compute_homography(
     const int32_t image_height_a, const int32_t image_height_b,
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
-    openMVG::Mat3 &homography_matrix) {
-    openMVG::Mat marker_coords_matrix_a =
-        convert_marker_coords_to_matrix(marker_coords_a);
-    openMVG::Mat marker_coords_matrix_b =
-        convert_marker_coords_to_matrix(marker_coords_b);
-
+    HomographyMatrix &homography_matrix) {
     const std::pair<uint32_t, uint32_t> image_size_a(
         static_cast<uint32_t>(image_width_a),
         static_cast<uint32_t>(image_height_a));
@@ -162,9 +171,9 @@ bool compute_homography(
         static_cast<uint32_t>(image_height_b));
 
     const auto num_max_iter = 4096;
-    bool robust_pose_ok = robust_homography(
-        marker_coords_matrix_a, marker_coords_matrix_b, homography_matrix,
-        image_size_a, image_size_b, num_max_iter);
+    bool robust_pose_ok =
+        robust_homography(marker_coords_a, marker_coords_b, homography_matrix,
+                          image_size_a, image_size_b, num_max_iter);
     if (!robust_pose_ok) {
         MMSOLVER_MAYA_ERR("Robust homography estimation failure.");
         return false;

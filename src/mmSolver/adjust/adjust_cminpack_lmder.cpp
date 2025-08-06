@@ -47,8 +47,8 @@
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 
-// CMinpack
-#include <cminpack.h>
+// CMinpack wrapper from mmsolverlibs
+#include <mmsolverlibs/cminpack_wrapper.h>
 
 // Maya
 #include <maya/MAnimCurveChange.h>
@@ -126,7 +126,7 @@ bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
     int calls = 0;
     int njev = 0;
     double error_norm_value = 0.0;
-    int info = __cminpack_func__(lmder)(
+    int info = mmsolverlibs::cminpack::lmder(
         // Function to call
         solveFunc_cminpack_lmder,
 
@@ -197,7 +197,8 @@ bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
 
         // Working memory arrays
         &wa1List[0], &wa2List[0], &wa3List[0], &wa4List[0]);
-    error_norm_value = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
+    error_norm_value =
+        mmsolverlibs::cminpack::enorm(numberOfErrors, &errorList[0]);
     ret = userData.iterNum;
 
     const int reason_number = info;

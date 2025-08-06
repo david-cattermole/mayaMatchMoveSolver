@@ -378,7 +378,7 @@ MStatus MMMarkerHomographyCmd::doIt(const MArgList &args) {
     // user that something failed.
     const MDoubleArray emptyResult;
 
-    openMVG::Mat3 homography_matrix;
+    ::mmsolver::sfm::HomographyMatrix homography_matrix;
     auto relative_pose_ok = ::mmsolver::sfm::compute_homography(
         m_image_width_a, m_image_width_b, m_image_height_a, m_image_height_b,
         m_marker_coords_a, m_marker_coords_b, homography_matrix);
@@ -390,10 +390,9 @@ MStatus MMMarkerHomographyCmd::doIt(const MArgList &args) {
 
     // Output 3x3 Matrix to Maya command result.
     for (auto i = 0; i < 3; i++) {
-        auto row = homography_matrix.row(i);
-        outResult.append(row[0]);
-        outResult.append(row[1]);
-        outResult.append(row[2]);
+        outResult.append(homography_matrix(i, 0));
+        outResult.append(homography_matrix(i, 1));
+        outResult.append(homography_matrix(i, 2));
     }
 
     MMMarkerHomographyCmd::setResult(outResult);

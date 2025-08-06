@@ -48,8 +48,8 @@
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 
-// CMinpack
-#include <cminpack.h>
+// CMinpack wrapper from mmsolverlibs
+#include <mmsolverlibs/cminpack_wrapper.h>
 
 // MM Solver
 #include "adjust_cminpack_base.h"
@@ -123,7 +123,7 @@ bool solve_3d_cminpack_lmdif(SolverOptions &solverOptions,
     int calls = 0;
     double error_norm_value = 0.0;
 
-    cminpack_info = __cminpack_func__(lmdif)(
+    cminpack_info = mmsolverlibs::cminpack::lmdif(
         // Function to call
         solveFunc_cminpack_lmdif,
 
@@ -195,7 +195,8 @@ bool solve_3d_cminpack_lmdif(SolverOptions &solverOptions,
 
         // Working memory arrays
         &wa1List[0], &wa2List[0], &wa3List[0], &wa4List[0]);
-    error_norm_value = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
+    error_norm_value =
+        mmsolverlibs::cminpack::enorm(numberOfErrors, &errorList[0]);
     ret = userData.iterNum;
 
     int reason_number = cminpack_info;

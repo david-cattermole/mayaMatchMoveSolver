@@ -58,23 +58,33 @@ find_package(Threads REQUIRED)
 
 add_library(openMVG ${OPENMVG_SOURCE_FILES})
 
-if (MMSOLVER_USE_GLOG)
-  target_link_libraries(openMVG PRIVATE
-    glog::glog
-  )
-else()
-  include(MMSolverUtils)
-  find_ceres_miniglog_include_dir(miniglog_include_dir)
-  target_include_directories(openMVG PRIVATE "${miniglog_include_dir}")
-endif()
-
 target_link_libraries(openMVG PRIVATE
+  glog::glog
+)
+
+target_link_libraries(openMVG PUBLIC
   Eigen3::Eigen
   ceres
 )
 
 set(include_dir "${CMAKE_CURRENT_SOURCE_DIR}/../")
-target_include_directories(openMVG PUBLIC "${include_dir}")
+target_include_directories(openMVG PUBLIC
+  $<BUILD_INTERFACE:${include_dir}>
+  $<INSTALL_INTERFACE:include/>)
+
+# Add miniglog include directory for Ceres builds with miniglog.
+if(TARGET ceres)
+  get_target_property(CERES_INCLUDE_DIR ceres INTERFACE_INCLUDE_DIRECTORIES)
+  if(NOT CERES_INCLUDE_DIR)
+    # If Ceres doesn't have INTERFACE_INCLUDE_DIRECTORIES, find the
+    # Ceres headers manually.
+    find_path(CERES_INCLUDE_DIR ceres/ceres.h)
+  endif()
+  if(CERES_INCLUDE_DIR)
+    target_include_directories(openMVG PRIVATE
+      ${CERES_INCLUDE_DIR}/ceres/internal/miniglog)
+  endif()
+endif()
 
 if (openMVG_USE_AVX2)
   target_compile_options(openMVG PUBLIC "-DOPENMVG_USE_AVX2")
@@ -95,3 +105,17 @@ if(MSVC)
   set_target_properties(openMVG PROPERTIES COMPILE_FLAGS "/bigobj")
   target_compile_options(openMVG PUBLIC "-D_USE_MATH_DEFINES")
 endif()
+
+# Install OpenMVG headers and template implementation files.
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../openMVG/
+        DESTINATION include/openMVG
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.cpp")
+
+# Install OpenMVG third_party dependencies.
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/
+        DESTINATION include/third_party
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.cpp")
+
+# Install OpenMVG as part of mmsolverlibs.
+include(MMCommonUtils)
+mm_common_install_target_library("mmsolverlibs_cpp" openMVG)

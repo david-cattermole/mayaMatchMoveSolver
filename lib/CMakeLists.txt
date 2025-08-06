@@ -61,7 +61,8 @@ set(MMSOLVERLIBS_LIB_DIR "/path/to/rust/build/directory/" CACHE PATH
 
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../share/cmake/modules)
+  ${CMAKE_CURRENT_SOURCE_DIR}/../share/cmake/modules
+  ${CMAKE_CURRENT_SOURCE_DIR}/share/cmake/modules)
 
 set(cpp_lib_name "mmsolverlibs_cpp")
 set(rust_lib_name "mmsolverlibs_rust")
@@ -92,10 +93,17 @@ set(rust_depend_on_libraries "NOT-FOUND")
 mm_rust_get_depend_on_libraries(rust_depend_on_libraries)
 message(STATUS "Rust Depend On Libraries: ${rust_depend_on_libraries}")
 
+# Build options for mmsolverlibs dependencies are inherited from
+# parent scope.
+
+# Finds and builds external (third-party) dependencies for
+# mmsolverlibs.
+include(FindAndBuildMmsolverDependencies)
+
 # Finds and builds external (third-party) LDPK dependencies.
-option(MMSOLVER_DOWNLOAD_DEPENDENCIES "Automatically download and build missing dependencies?" ON)
 include(FindAndBuildLdpkPackages)
 
+add_subdirectory(thirdparty)
 add_subdirectory(mmsolverlibs/src)
 
 option(MMSOLVERLIBS_BUILD_TESTS "Do you want to build the test files for mmsolverlibs?" OFF)

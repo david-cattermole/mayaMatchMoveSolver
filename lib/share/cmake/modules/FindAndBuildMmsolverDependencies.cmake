@@ -1,4 +1,4 @@
-# Copyright (C) 2019, 2021, 2022 David Cattermole.
+# Copyright (C) 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -17,11 +17,7 @@
 # ---------------------------------------------------------------------
 #
 # This CMake script is for building the 'external' dependencies for
-# Maya MatchMove Solver - Maya-specific dependencies only.
-#
-# NOTE: All third-party dependencies (cminpack, glog, Eigen3, Ceres,
-# OpenMVG) are handled through the mmsolverlibs sub-project and its
-# Config.cmake.
+# mmsolverlibs - all third-party dependencies except Maya.
 
 
 # Disable Package Registries.
@@ -39,19 +35,42 @@ set(CMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY ON CACHE BOOL
 set(CMAKE_FIND_USE_PACKAGE_REGISTRY OFF CACHE BOOL
   "Disable CMake Package Registery entirely (used in CMake 3.16+)")
 
-# Find/build packages - these are required before mmsolverlibs_cpp
-# import.
+# Google Log (glog)
 #
-# BOOTSTRAP REQUIREMENT: mmsolverlibs handles building all third-party
-# dependencies internally. However, the main build must ensure these
-# dependencies exist BEFORE importing mmsolverlibs_cpp, since the
-# Config.cmake needs to find them transitively. This bootstrap step
-# ensures targets exist for the mmsolverlibs Config.cmake to
-# reference.
+# glog is required by Ceres Solver to build and is reponsible for
+# logging messages to the terminal. glog is is not used inside
+# mmSolver at all.
 #
-# Without this bootstrap, mmsolverlibs_cpp import would fail because
-# its Config.cmake cannot find the required dependency targets.
-find_package(Eigen3 3.4.0 REQUIRED)
-find_package(cminpack 1.3.8 REQUIRED)
+# https://github.com/google/glog
 find_package(glog 0.7.1 REQUIRED)
+
+# CMinpack - Minimizer Package (for C)
+#
+# CMinpack a dense minimizing solver and is the primary minimization
+# library used by mmSolver. This is required.
+#
+# https://github.com/devernay/cminpack
+find_package(cminpack 1.3.8 REQUIRED)
+
+# Eigen - Linear Algebra library
+#
+# https://gitlab.com/libeigen/eigen
+#
+# Eigen is used by both Ceres and OpenMVG and provides data types
+# shared across the ABI boundary and is also used in mmSolver. Eigen
+# also supplies a sparse-matrix that is used by Ceres.
+#
+# v3.4.0 is also the version used by OpenMVG.
+find_package(Eigen3 3.4.0 REQUIRED)
+
+# Ceres Solver - Non-Linear Least-Squares Fits solver
+#
+# Ceres Solver is used by OpenMVG for various least-squares
+# minimization solving, with both dense and sparse matrices.
+#
+# Ceres is not directly used by mmSolver, but is used by OpenMVG,
+# which is used by mmSolver. In the future the intention is to use
+# Ceres Solver inside mmSolver more.
+#
+# https://github.com/ceres-solver/ceres-solver
 find_package(Ceres 1.14.0 REQUIRED)

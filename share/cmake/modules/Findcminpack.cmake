@@ -31,7 +31,12 @@
 # - cminpack_INCLUDE_DIRS
 #
 
-function(find_cminpack_find_with_paths cminpack_root cminpack_include_path cminpack_lib_path)
+function(find_cminpack_find_with_paths
+  cminpack_root
+  cminpack_include_path
+  cminpack_lib_path
+  out_cminpack_include_dirs
+  out_cminpack_libraries)
 
     find_path(cminpack_include_dir cminpack.h
       HINTS
@@ -113,9 +118,9 @@ if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT cminpack_ALLOW_DOWNLOAD)
   else()
     # Fallback and try to find the package.
     find_cminpack_find_with_paths(
-      ${cminpack_ROOT}
-      ${cminpack_INCLUDE_PATH}
-      ${cminpack_LIB_PATH}
+      "${cminpack_ROOT}"
+      "${cminpack_INCLUDE_PATH}"
+      "${cminpack_LIB_PATH}"
       cminpack_INCLUDE_DIRS
       cminpack_LIBRARIES
       )

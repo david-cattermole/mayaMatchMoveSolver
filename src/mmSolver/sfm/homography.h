@@ -28,21 +28,32 @@
 #include <cmath>
 #include <vector>
 
-// OpenMVG
-#ifdef MMSOLVER_USE_OPENMVG
-
-#include <openMVG/numeric/numeric.h>
-
-#include <openMVG/numeric/eigen_alias_definition.hpp>
-#include <openMVG/types.hpp>
-
-#endif  // MMSOLVER_USE_OPENMVG
+// mmsolverlibs
+#include <mmsolverlibs/openmvg_wrapper.h>
 
 namespace mmsolver {
 namespace sfm {
 
-bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
-                       openMVG::Mat3 &homography_matrix,
+// 3x3 homography matrix representation
+struct HomographyMatrix {
+    double data[9];
+
+    HomographyMatrix() {
+        for (int i = 0; i < 9; ++i) {
+            data[i] = 0.0;
+        }
+    }
+
+    double &operator()(int row, int col) { return data[row * 3 + col]; }
+
+    const double &operator()(int row, int col) const {
+        return data[row * 3 + col];
+    }
+};
+
+bool robust_homography(const std::vector<std::pair<double, double>> &points1,
+                       const std::vector<std::pair<double, double>> &points2,
+                       HomographyMatrix &homography_matrix,
                        const std::pair<uint32_t, uint32_t> &size_ima1,
                        const std::pair<uint32_t, uint32_t> &size_ima2,
                        const uint32_t max_iteration_count);
@@ -52,7 +63,7 @@ bool compute_homography(
     const int32_t image_height_a, const int32_t image_height_b,
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
-    openMVG::Mat3 &homography_matrix);
+    HomographyMatrix &homography_matrix);
 
 }  // namespace sfm
 }  // namespace mmsolver

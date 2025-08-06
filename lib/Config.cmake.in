@@ -1,3 +1,49 @@
 @PACKAGE_INIT@
 
+# Find dependencies needed by mmsolverlibs_cpp targets only if they
+# don't already exist. This prevents conflicts when the main build
+# has already created these targets and avoids redundant find operations.
+
+# Only include CMakeFindDependencyMacro if we actually need to find dependencies
+set(_need_find_dependencies FALSE)
+
+if(NOT TARGET Eigen3::Eigen AND NOT TARGET Eigen3)
+  set(_need_find_dependencies TRUE)
+endif()
+
+if(NOT TARGET cminpack::cminpack AND NOT TARGET cminpack)
+  set(_need_find_dependencies TRUE)
+endif()
+
+if(NOT TARGET Ceres::ceres AND NOT TARGET ceres)
+  set(_need_find_dependencies TRUE)
+endif()
+
+if(NOT TARGET glog::glog AND NOT TARGET glog)
+  set(_need_find_dependencies TRUE)
+endif()
+
+# Only include the find macro and run find operations if needed
+if(_need_find_dependencies)
+  include(CMakeFindDependencyMacro)
+
+  if(NOT TARGET Eigen3::Eigen AND NOT TARGET Eigen3)
+    find_dependency(Eigen3 3.4.0)
+  endif()
+
+  if(NOT TARGET cminpack::cminpack AND NOT TARGET cminpack)
+    find_dependency(cminpack 1.3.8)
+  endif()
+
+  if(NOT TARGET Ceres::ceres AND NOT TARGET ceres)
+    find_dependency(Ceres 1.14.0)
+  endif()
+
+  if(NOT TARGET glog::glog AND NOT TARGET glog)
+    find_dependency(glog 0.7.1)
+  endif()
+endif()
+
+unset(_need_find_dependencies)
+
 include("${CMAKE_CURRENT_LIST_DIR}/mmsolverlibs_cppTargets.cmake")

@@ -91,11 +91,6 @@ SET MMSOLVER_BUILD_ICONS=1
 SET MMSOLVER_BUILD_CONFIG=1
 SET MMSOLVER_BUILD_TESTS=0
 
-:: 'miniglog' is disabled on Windows because of build errors on MSVC
-:: with a conflict of the 'ERROR' severity identifer clashing with
-:: something else in mmSolver.
-SET MMSOLVER_USE_GLOG=1
-
 :: Allows you to see the build command lines, to help debugging build
 :: problems. Set to ON to enable, and OFF to disable.
 SET MMSOLVER_BUILD_VERBOSE=OFF
@@ -218,7 +213,6 @@ CHDIR "%BUILD_DIR%"
     -DMMSOLVER_BUILD_ICONS=%MMSOLVER_BUILD_ICONS% ^
     -DMMSOLVER_BUILD_CONFIG=%MMSOLVER_BUILD_CONFIG% ^
     -DMMSOLVER_BUILD_TESTS=%MMSOLVER_BUILD_TESTS% ^
-    -DMMSOLVER_USE_GLOG=%MMSOLVER_USE_GLOG% ^
     -DMAYA_LOCATION=%MAYA_LOCATION% ^
     -DMAYA_VERSION=%MAYA_VERSION% ^
     -Dmmsolverlibs_rust_DIR=%MMSOLVERLIBS_RUST_DIR% ^

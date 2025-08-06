@@ -30,6 +30,17 @@
 # a non-zero exit code.
 set -ev
 
+# Validate required environment variables.
+echo "Validating required environment variables..."
+for var in MAYA_VERSION CMAKE_EXE RUST_CARGO_EXE VFX_PLATFORM CXX_STANDARD; do
+    if [ -z "${!var}" ]; then
+        echo "ERROR: Required environment variable '$var' is not set."
+        echo "This script must be called by a parent build script that sets all required variables."
+        exit 1
+    fi
+done
+echo "All required environment variables are set."
+
 # Store the current working directory, to return to.
 CWD=`pwd`
 

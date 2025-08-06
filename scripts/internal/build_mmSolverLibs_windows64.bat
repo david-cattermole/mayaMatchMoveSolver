@@ -26,6 +26,35 @@
 :: This file assumes the variables MAYA_VERSION and RUST_CARGO_EXE
 :: have been set.
 
+:: Validate required environment variables.
+ECHO Validating required environment variables...
+IF "%MAYA_VERSION%"=="" (
+    ECHO ERROR: Required environment variable MAYA_VERSION is not set.
+    ECHO This script must be called by a parent build script that sets all required variables.
+    EXIT /B 1
+)
+IF "%CMAKE_EXE%"=="" (
+    ECHO ERROR: Required environment variable CMAKE_EXE is not set.
+    ECHO This script must be called by a parent build script that sets all required variables.
+    EXIT /B 1
+)
+IF "%RUST_CARGO_EXE%"=="" (
+    ECHO ERROR: Required environment variable RUST_CARGO_EXE is not set.
+    ECHO This script must be called by a parent build script that sets all required variables.
+    EXIT /B 1
+)
+IF "%VFX_PLATFORM%"=="" (
+    ECHO ERROR: Required environment variable VFX_PLATFORM is not set.
+    ECHO This script must be called by a parent build script that sets all required variables.
+    EXIT /B 1
+)
+IF "%CXX_STANDARD%"=="" (
+    ECHO ERROR: Required environment variable CXX_STANDARD is not set.
+    ECHO This script must be called by a parent build script that sets all required variables.
+    EXIT /B 1
+)
+ECHO All required environment variables are set.
+
 :: The root of this project.
 SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%

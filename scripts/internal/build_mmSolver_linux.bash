@@ -35,10 +35,6 @@ set -ev
 # Store the current working directory, to return to.
 CWD=`pwd`
 
-# Clear all build information before re-compiling.
-# Turn this off when wanting to make small changes and recompile.
-FRESH_BUILD=1
-
 # Run the Python API and Solver tests inside Maya, after a
 # successfully build an install process.
 RUN_TESTS=0

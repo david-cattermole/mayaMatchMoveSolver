@@ -19,5 +19,6 @@
 # Building third-party projects.
 #
 
+add_subdirectory(cminpack)
 add_subdirectory(eigen)
 add_subdirectory(openMVG)

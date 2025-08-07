@@ -142,105 +142,16 @@ if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT cminpack_ALLOW_DOWNLOAD)
 endif()
 
 
-# Ensure a target for cminpack is created.
-if(NOT TARGET cminpack::cminpack)
-  find_cminpack_create_target()
-  if(cminpack_FOUND)
-    find_cminpack_set_target(${cminpack_LIBRARY} ${cminpack_INCLUDE_DIR})
-  else()
-    set(_cminpack_TARGET_CREATE TRUE)
-  endif()
-endif()
+# Use vendored cminpack from lib/thirdparty/cminpack. The vendored
+# cminpack is built as part of the main build process.
+set(cminpack_FOUND TRUE)
+set(cminpack_VERSION ${cminpack_FIND_VERSION})
+message(STATUS "Using vendored cminpack (version \"${cminpack_VERSION}\")")
 
+# Placeholder target that does nothing since vendored cminpack is
+# built as part of the main build process.
+add_custom_target(cminpack)
 
-# Download, Build and Install.
-if(NOT cminpack_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND cminpack_ALLOW_DOWNLOAD)
-  include(ExternalProject)
-  include(GNUInstallDirs)
-
-  set(_EXTERNAL_INSTALL_DIR "${CMAKE_BINARY_DIR}/ext/install")
-  set(_EXTERNAL_BUILD_DIR "${CMAKE_BINARY_DIR}/ext/build")
-
-  # Fill in the expected values/paths that will exist when the build
-  # and install of cminpack actually happens.
-  set(cminpack_FOUND TRUE)
-  set(cminpack_VERSION ${cminpack_FIND_VERSION})
-
-  set(cminpack_INCLUDE_DIR "${_EXTERNAL_INSTALL_DIR}/cminpack/${CMAKE_INSTALL_INCLUDEDIR}/cminpack-1")
-  set(cminpack_LIBRARY_DIR "${_EXTERNAL_INSTALL_DIR}/cminpack/${CMAKE_INSTALL_LIBDIR}")
-
-  set(cminpack_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}cminpack_s${CMAKE_STATIC_LIBRARY_SUFFIX}")
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(cminpack_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}cminpack_s_d${CMAKE_STATIC_LIBRARY_SUFFIX}")
-  endif()
-  set(cminpack_LIBRARY "${cminpack_LIBRARY_DIR}/${cminpack_LIBRARY_NAME}")
-
-  set(cminpack_URL
-    "https://github.com/devernay/cminpack.git"
-    CACHE STRING
-    "The URL for the CMinpack git repository.")
-
-  set(cminpack_GIT_TAG "v${cminpack_VERSION}" CACHE STRING
-    "The Git tag for the CMinpack git repository.")
-
-  set(cminpack_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/cminpack)
-  set(cminpack_PREFIX ${_EXTERNAL_BUILD_DIR}/cminpack)
-  set(cminpack_SOURCE_DIR ${_EXTERNAL_BUILD_DIR}/cminpack/src/cminpack)
-
-  set(cminpack_CMAKE_ARGS
-    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-    -DCMAKE_INSTALL_PREFIX=${cminpack_INSTALL_PATH}
-    -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
-    -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
-    -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
-    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-    -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
-    -DCMAKE_CXX_EXTENSIONS=${CXX_EXTENSIONS}
-    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-    -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY=1
-    -DCMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY=1
-    -DCMAKE_FIND_USE_PACKAGE_REGISTRY=0
-
-    -DCMINPACK_PRECISION=d  # d=double precision, s=single precision
-    -DBUILD_SHARED_LIBS=0
-    -DBUILD_EXAMPLES=0
-    -DUSE_BLAS=0
-  )
-
-  # Hack to let imported target be built from ExternalProject_Add
-  file(MAKE_DIRECTORY ${cminpack_INCLUDE_DIR})
-
-  ExternalProject_Add(cminpack
-    PREFIX ${cminpack_PREFIX}
-    GIT_REPOSITORY ${cminpack_URL}
-    GIT_TAG "${cminpack_GIT_TAG}"
-    INSTALL_DIR ${cminpack_INSTALL_PATH}
-    BUILD_BYPRODUCTS ${cminpack_LIBRARY}
-    CMAKE_ARGS ${cminpack_CMAKE_ARGS}
-    EXCLUDE_FROM_ALL TRUE
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install --parallel
-  )
-
-  add_dependencies(cminpack::cminpack cminpack)
-  message(STATUS "Installing cminpack (version \"${cminpack_VERSION}\")")
-  message(STATUS "cminpack: Include=${cminpack_INCLUDE_DIR}")
-  message(STATUS "cminpack: Library=${cminpack_LIBRARY}")
-
-else()
-
-  # Placeholder target that does nothing.
-  add_custom_target(cminpack)
-
-endif()
-
-
-if(_cminpack_TARGET_CREATE)
-  find_cminpack_set_target(${cminpack_LIBRARY} ${cminpack_INCLUDE_DIR})
-  mark_as_advanced(
-    cminpack_INCLUDE_DIR
-    cminpack_LIBRARY
-    cminpack_VERSION
-  )
-endif()
+# Note: The target cminpack::cminpack is created automatically by the
+# vendored CMakeLists.txt in lib/thirdparty/cminpack, so no additional
+# target creation is needed here.

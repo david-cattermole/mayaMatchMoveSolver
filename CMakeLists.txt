@@ -129,6 +129,16 @@ include(MMSolverUtils)
 add_subdirectory(share)
 
 if (MMSOLVER_BUILD_PLUGIN)
+  # Set up vendored Eigen variables for external dependencies that need them
+  set(eigen_vendored_dir "${CMAKE_CURRENT_SOURCE_DIR}/lib/thirdparty/eigen")
+  if(EXISTS "${eigen_vendored_dir}")
+    set(Eigen3_FOUND TRUE)
+    set(Eigen3_VERSION "3.4.0")
+    set(Eigen3_INCLUDE_DIR "${eigen_vendored_dir}")
+    set(Eigen3_INCLUDE_DIRS "${eigen_vendored_dir}")
+    message(STATUS "Set up vendored Eigen variables for main build dependencies: ${eigen_vendored_dir}")
+  endif()
+
   # Finds and builds external (third-party) dependencies.
   #
   # NOTE: Dependencies are handled in mmsolverlibs sub-project.

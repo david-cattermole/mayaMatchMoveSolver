@@ -19,4 +19,5 @@
 # Building third-party projects.
 #
 
+add_subdirectory(eigen)
 add_subdirectory(openMVG)

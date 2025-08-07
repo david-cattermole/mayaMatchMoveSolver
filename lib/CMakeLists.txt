@@ -96,6 +96,17 @@ message(STATUS "Rust Depend On Libraries: ${rust_depend_on_libraries}")
 # Build options for mmsolverlibs dependencies are inherited from
 # parent scope.
 
+# Set up vendored Eigen variables for external dependencies that need
+# them.
+set(eigen_vendored_dir "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/eigen")
+if(EXISTS "${eigen_vendored_dir}")
+  set(Eigen3_FOUND TRUE)
+  set(Eigen3_VERSION "3.4.0")
+  set(Eigen3_INCLUDE_DIR "${eigen_vendored_dir}")
+  set(Eigen3_INCLUDE_DIRS "${eigen_vendored_dir}")
+  message(STATUS "Set up vendored Eigen variables for dependencies: ${eigen_vendored_dir}")
+endif()
+
 # Finds and builds external (third-party) dependencies for
 # mmsolverlibs.
 include(FindAndBuildMmsolverDependencies)

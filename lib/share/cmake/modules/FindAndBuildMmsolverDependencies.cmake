@@ -52,17 +52,6 @@ find_package(glog 0.7.1 REQUIRED)
 # https://github.com/devernay/cminpack
 find_package(cminpack 1.3.8 REQUIRED)
 
-# Eigen - Linear Algebra library
-#
-# https://gitlab.com/libeigen/eigen
-#
-# Eigen is used by both Ceres and OpenMVG and provides data types
-# shared across the ABI boundary and is also used in mmSolver. Eigen
-# also supplies a sparse-matrix that is used by Ceres.
-#
-# v3.4.0 is also the version used by OpenMVG.
-find_package(Eigen3 3.4.0 REQUIRED)
-
 # Ceres Solver - Non-Linear Least-Squares Fits solver
 #
 # Ceres Solver is used by OpenMVG for various least-squares

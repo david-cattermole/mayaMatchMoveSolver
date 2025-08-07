@@ -93,8 +93,28 @@ endfunction()
 option(Eigen3_ALLOW_DOWNLOAD
   "Allow automatically downloading and building EIGEN3?" ON)
 
+# Check for vendored Eigen first
+if(NOT Eigen3_FOUND)
+  message(STATUS "Looking for vendored Eigen3...")
+  find_path(Eigen3_VENDORED_DIR
+    NAMES Eigen/Core
+    PATHS ${CMAKE_CURRENT_SOURCE_DIR}/lib/thirdparty/eigen
+          ${CMAKE_CURRENT_SOURCE_DIR}/../lib/thirdparty/eigen
+          ${CMAKE_SOURCE_DIR}/lib/thirdparty/eigen
+    NO_DEFAULT_PATH
+  )
 
-if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT Eigen3_ALLOW_DOWNLOAD)
+  if(Eigen3_VENDORED_DIR)
+    set(Eigen3_FOUND TRUE)
+    set(Eigen3_DIR "${Eigen3_VENDORED_DIR}")
+    set(Eigen3_INCLUDE_DIR "${Eigen3_VENDORED_DIR}")
+    set(Eigen3_INCLUDE_DIRS "${Eigen3_VENDORED_DIR}")
+    set(Eigen3_VERSION "3.4.0")
+    message(STATUS "Found vendored Eigen3: ${Eigen3_VENDORED_DIR}")
+  endif()
+endif()
+
+if(NOT Eigen3_FOUND AND (NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT Eigen3_ALLOW_DOWNLOAD))
 
   if(NOT DEFINED Eigen3_ROOT)
     # Search for "Eigen3-config.cmake" given on the command line.

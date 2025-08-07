@@ -19,9 +19,8 @@
 # This CMake script is for building the 'external' dependencies for
 # Maya MatchMove Solver - Maya-specific dependencies only.
 #
-# NOTE: All third-party dependencies (cminpack, glog, Eigen3, Ceres,
-# OpenMVG) are handled through the mmsolverlibs sub-project and its
-# Config.cmake.
+# NOTE: All third-party dependencies (cminpack, glog, Ceres, OpenMVG)
+# are handled through the mmsolverlibs sub-project and its Config.cmake.
 
 
 # Disable Package Registries.
@@ -51,7 +50,6 @@ set(CMAKE_FIND_USE_PACKAGE_REGISTRY OFF CACHE BOOL
 #
 # Without this bootstrap, mmsolverlibs_cpp import would fail because
 # its Config.cmake cannot find the required dependency targets.
-find_package(Eigen3 3.4.0 REQUIRED)
 find_package(cminpack 1.3.8 REQUIRED)
 find_package(glog 0.7.1 REQUIRED)
 find_package(Ceres 1.14.0 REQUIRED)

@@ -150,7 +150,9 @@ message(STATUS "Using vendored cminpack (version \"${cminpack_VERSION}\")")
 
 # Placeholder target that does nothing since vendored cminpack is
 # built as part of the main build process.
-add_custom_target(cminpack)
+if(NOT TARGET cminpack)
+  add_custom_target(cminpack)
+endif()
 
 # Note: The target cminpack::cminpack is created automatically by the
 # vendored CMakeLists.txt in lib/thirdparty/cminpack, so no additional

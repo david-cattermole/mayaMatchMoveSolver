@@ -50,6 +50,7 @@ set(CMAKE_FIND_USE_PACKAGE_REGISTRY OFF CACHE BOOL
 #
 # Without this bootstrap, mmsolverlibs_cpp import would fail because
 # its Config.cmake cannot find the required dependency targets.
+find_package(Threads REQUIRED)
 find_package(cminpack 1.3.8 REQUIRED)
 find_package(glog 0.7.1 REQUIRED)
 find_package(Ceres 1.14.0 REQUIRED)

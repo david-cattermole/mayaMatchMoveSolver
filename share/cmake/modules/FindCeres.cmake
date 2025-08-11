@@ -194,12 +194,6 @@ if(NOT Ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND Ceres_ALLOW_DOWNLOAD)
   set(Ceres_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/ceres)
   set(Ceres_PREFIX ${_EXTERNAL_BUILD_DIR}/ceres)
 
-  # Use miniglog embedded in Ceres to avoid glog dependency conflicts.
-  #
-  # The mmsolverlibs already provides glog, so the main project's
-  # Ceres can use the simpler miniglog to avoid duplicate glog builds.
-  set(Ceres_USE_MINIGLOG 1)
-
   set(Ceres_CMAKE_ARGS
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
@@ -218,10 +212,13 @@ if(NOT Ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND Ceres_ALLOW_DOWNLOAD)
     -DEIGEN_INCLUDE_DIR=${Eigen3_INCLUDE_DIR}
     -DEIGEN_INCLUDE_DIR_HINTS=${Eigen3_INCLUDE_DIR}
 
-    -DGLOG_INCLUDE_DIR=${glog_INCLUDE_DIR}
-    -DGLOG_LIBRARY=${glog_LIBRARY}
-    -DGLOG_INCLUDE_DIR_HINTS=${glog_INCLUDE_DIR}
-    -DGLOG_LIBRARY_DIR_HINTS=${glog_LIBRARY}
+    -DGLOG_INCLUDE_DIR=${CMAKE_BINARY_DIR}/ext/install/glog/include
+    -DGLOG_LIBRARY=${CMAKE_BINARY_DIR}/ext/install/glog/lib/libglog.a
+    -DGLOG_INCLUDE_DIR_HINTS=${CMAKE_BINARY_DIR}/ext/install/glog/include
+    # Also see glog compile flags in:
+    # - "<PROJECT_ROOT>/src/CMakeLists.txt"
+    # - "<PROJECT_ROOT>/lib/thirdparty/glog/CMakeLists.txt"
+    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}\ -DGLOG_STATIC_DEFINE\ -DGLOG_USE_GLOG_EXPORT\ -DGOOGLE_GLOG_DLL_DECL=\ -DGOOGLE_GLOG_DLL_DECL_FOR_UNITTESTS=\ -DGLOG_EXPORT=\ -DGLOG_NO_EXPORT=
 
     -DBUILD_TESTING=0
     -DBUILD_DOCUMENTATION=0
@@ -230,7 +227,11 @@ if(NOT Ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND Ceres_ALLOW_DOWNLOAD)
     -DBUILD_SHARED_LIBS=0
     -DCXX11=ON
 
-    -DMINIGLOG=${Ceres_USE_MINIGLOG}
+    # Because glog is now part of mmSolverLibs, and there are no
+    # longer build issues with glog on Linux, there's no need for
+    # miniglog.
+    -DMINIGLOG=0
+    -DGLOG_PREFER_EXPORTED_GLOG_CMAKE_CONFIGURATION=ON
     # WARNING: Enabling "EIGENSPARSE" results in an LGPL licensed
     # Ceres.
     -DEIGENSPARSE=ON
@@ -257,18 +258,28 @@ if(NOT Ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND Ceres_ALLOW_DOWNLOAD)
   # Hack to let imported target be built from ExternalProject_Add
   file(MAKE_DIRECTORY ${Ceres_INCLUDE_DIR})
 
-  ExternalProject_Add(ceres_install
-    DEPENDS glog
-    PREFIX ${Ceres_PREFIX}
-    GIT_REPOSITORY ${Ceres_URL}
-    GIT_TAG "${Ceres_GIT_TAG}"
-    INSTALL_DIR ${Ceres_INSTALL_PATH}
-    BUILD_BYPRODUCTS ${Ceres_LIBRARY}
-    CMAKE_ARGS ${Ceres_CMAKE_ARGS}
-    EXCLUDE_FROM_ALL TRUE
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install --parallel
-  )
+  # Create a dependency on glog installation to ensure it's available before Ceres
+  if(NOT TARGET ceres_glog_dependency)
+    add_custom_target(ceres_glog_dependency
+      DEPENDS glog_install_for_ceres
+      COMMENT "Ensuring vendored glog is installed and available for Ceres"
+    )
+  endif()
+
+  if(NOT TARGET ceres_install)
+    ExternalProject_Add(ceres_install
+      DEPENDS ceres_glog_dependency
+      PREFIX ${Ceres_PREFIX}
+      GIT_REPOSITORY ${Ceres_URL}
+      GIT_TAG "${Ceres_GIT_TAG}"
+      INSTALL_DIR ${Ceres_INSTALL_PATH}
+      BUILD_BYPRODUCTS ${Ceres_LIBRARY}
+      CMAKE_ARGS ${Ceres_CMAKE_ARGS}
+      EXCLUDE_FROM_ALL TRUE
+      BUILD_COMMAND ""
+      INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install --parallel
+    )
+  endif()
 
   add_dependencies(ceres ceres_install)
   message(STATUS "Installing Ceres (version \"${Ceres_VERSION}\")")

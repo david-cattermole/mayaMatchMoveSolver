@@ -156,8 +156,14 @@ if(NOT ldpk_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ldpk_ALLOW_DOWNLOAD)
 
   # Patches
   #
-  # ${CMAKE_SOURCE_DIR} is expected to be '$PROJECT_ROOT/lib'.
-  set(ldpk_PATCH_DIR ${CMAKE_SOURCE_DIR}/../external/patches/ldpk)
+  # When called from lib subdirectory, CMAKE_SOURCE_DIR points to main
+  # project root.
+  if(EXISTS "${CMAKE_SOURCE_DIR}/external/patches/ldpk")
+    set(ldpk_PATCH_DIR ${CMAKE_SOURCE_DIR}/external/patches/ldpk)
+  else()
+    # Fallback for lib subdirectory context where CMAKE_SOURCE_DIR is lib/.
+    set(ldpk_PATCH_DIR ${CMAKE_SOURCE_DIR}/../external/patches/ldpk)
+  endif()
   set(ldpk_PATCH_SRC_1 ${ldpk_PATCH_DIR}/CMakeLists.txt)
   set(ldpk_PATCH_SRC_2 ${ldpk_PATCH_DIR}/ldpk-config.cmake.in)
   set(ldpk_PATCH_DST_1 ${ldpk_SOURCE_DIR}/CMakeLists.txt)

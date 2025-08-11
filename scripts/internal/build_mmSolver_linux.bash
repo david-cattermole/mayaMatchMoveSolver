@@ -135,6 +135,10 @@ minizip_DIR="${EXTERNAL_BUILD_DIR}/lib64/cmake/minizip-ng"
 # We don't want to find system packages.
 CMAKE_IGNORE_PATH="/lib;/lib64;/usr;/usr/lib;/usr/lib64;/usr/local;/usr/local/lib;/usr/local/lib64;"
 
+# A local copy of LDPK to reduce the amount of downloads to the
+# 3DEqualizer website (LDPK doesn't have a git repo to clone from).
+LDPK_URL="${PROJECT_ROOT}/external/archives/ldpk-2.12.0.tar"
+
 # Build mmSolver project
 cd ${BUILD_DIR_BASE}
 BUILD_DIR_NAME="cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}"
@@ -172,6 +176,7 @@ ${CMAKE_EXE} \
     -DMAYA_VERSION=${MAYA_VERSION} \
     -Dmmsolverlibs_rust_DIR=${MMSOLVERLIBS_RUST_DIR} \
     -Dmmsolverlibs_cpp_DIR=${MMSOLVERLIBS_CMAKE_CONFIG_DIR} \
+    -Dldpk_URL=${LDPK_URL} \
     -DOpenColorIO_DIR=${OCIO_CMAKE_CONFIG_DIR} \
     -DOCIO_INSTALL_EXT_PACKAGES=NONE \
     -DopenMVG_USE_AVX=0 \

@@ -125,11 +125,11 @@ mm_common_setup_clang_tidy_compile_commands(
 
 include(MMSolverUtils)
 
-# Build features
+# Build features.
 add_subdirectory(share)
 
 if (MMSOLVER_BUILD_PLUGIN)
-  # Set up vendored Eigen variables for external dependencies that need them
+  # Set up vendored Eigen variables for external dependencies that need them.
   set(eigen_vendored_dir "${CMAKE_CURRENT_SOURCE_DIR}/lib/thirdparty/eigen")
   if(EXISTS "${eigen_vendored_dir}")
     set(Eigen3_FOUND TRUE)
@@ -138,6 +138,9 @@ if (MMSOLVER_BUILD_PLUGIN)
     set(Eigen3_INCLUDE_DIRS "${eigen_vendored_dir}")
     message(STATUS "Set up vendored Eigen variables for main build dependencies: ${eigen_vendored_dir}")
   endif()
+
+  # Build vendored dependencies first.
+  add_subdirectory(lib)
 
   # Finds and builds external (third-party) dependencies.
   #

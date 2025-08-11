@@ -188,12 +188,6 @@ target_include_directories(mmSolver
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include
 )
 
-# This allows the main project's Ceres (which uses miniglog) to find
-# glog headers.
-target_include_directories(mmSolver
-  PRIVATE ${_EXTERNAL_INSTALL_DIR}/ceres/include/ceres/internal/miniglog
-)
-
 # On Linux the 'm' library is required.
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
   target_link_libraries(mmSolver PRIVATE m)
@@ -225,6 +219,25 @@ target_link_libraries(mmSolver
   # https://stackoverflow.com/questions/45135/why-does-the-order-in-which-libraries-are-linked-sometimes-cause-errors-in-gcc
   PUBLIC mmsolverlibs_rust::mmsolverlibs_rust
   PUBLIC mmsolverlibs_cpp::mmsolverlibs_cpp
+)
+
+target_link_libraries(mmSolver
+  PRIVATE ${_EXTERNAL_INSTALL_DIR}/glog/lib/libglog.a
+)
+
+# Add glog compile definitions to match Ceres configuration.
+#
+# Also see glog compile flags in:
+# - "<PROJECT_ROOT>/share/cmake/modules/FindCeres.cmake"
+# - "<PROJECT_ROOT>/lib/thirdparty/glog/CMakeLists.txt"
+target_compile_definitions(mmSolver
+  PRIVATE
+    GLOG_STATIC_DEFINE
+    GLOG_USE_GLOG_EXPORT
+    GOOGLE_GLOG_DLL_DECL=
+    GOOGLE_GLOG_DLL_DECL_FOR_UNITTESTS=
+    GLOG_EXPORT=
+    GLOG_NO_EXPORT=
 )
 
 

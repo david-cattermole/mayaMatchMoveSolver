@@ -21,4 +21,5 @@
 
 add_subdirectory(cminpack)
 add_subdirectory(eigen)
+add_subdirectory(glog)
 add_subdirectory(openMVG)

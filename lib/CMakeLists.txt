@@ -56,10 +56,13 @@ set(PROJECT_DESCRIPTION "mmSolver libraries.")
 set(PROJECT_AUTHOR "David Cattermole")
 set(PROJECT_COPYRIGHT "2023, 2024, David Cattermole.")
 
-set(MMSOLVERLIBS_LIB_DIR "/path/to/rust/build/directory/" CACHE PATH
+# TODO: This relies on the '${mmsolverlibs_rust_DIR}' variable being set,
+# which is not ideal at all. Instead this should be a default value
+# (such as "/path/to/rust/build/directory/").
+set(MMSOLVERLIBS_LIB_DIR "${mmsolverlibs_rust_DIR}" CACHE PATH
   "The path to the directory containing the compiled library.")
 
-# Add custom modules to the module path
+# Add custom modules to the module path.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/../share/cmake/modules
   ${CMAKE_CURRENT_SOURCE_DIR}/share/cmake/modules)
@@ -70,16 +73,6 @@ set(rust_lib_name "mmsolverlibs_rust")
 include(MMCommonUtils)
 option(MMSOLVER_DEBUG "Enable mmSolver debug mode; prints details and enables debug assertions." OFF)
 mm_common_set_global_compile_options(MMSOLVER_DEBUG)
-
-# Ensure compile_commands.json is generated as part of the build, for
-# clang-tidy to use.
-#
-# We must have CMAKE_EXPORT_COMPILE_COMMANDS set to ON for this to
-# work.
-include(MMCommonUtils)
-mm_common_setup_clang_tidy_compile_commands(
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_CURRENT_LIST_DIR})
 
 include(MMRustUtils)
 set(rust_linktime_file "NOT-FOUND")

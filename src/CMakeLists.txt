@@ -221,9 +221,7 @@ target_link_libraries(mmSolver
   PUBLIC mmsolverlibs_cpp::mmsolverlibs_cpp
 )
 
-target_link_libraries(mmSolver
-  PRIVATE ${_EXTERNAL_INSTALL_DIR}/glog/lib/libglog.a
-)
+# glog is now included through mmsolverlibs_cpp (vendored)
 
 # Add glog compile definitions to match Ceres configuration.
 #

@@ -161,18 +161,4 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/glog
   FILES_MATCHING PATTERN "*.h"
 )
 
-# Create installation target for Ceres ExternalProject to find glog
-# Ceres builds in its own CMake context and needs glog at a filesystem location
-set(GLOG_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/ext/install/glog")
-
-add_custom_target(glog_install_for_ceres ALL
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${GLOG_INSTALL_PREFIX}/lib
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${GLOG_INSTALL_PREFIX}/include
-  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:glog> ${GLOG_INSTALL_PREFIX}/lib/libglog.a
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/glog ${GLOG_INSTALL_PREFIX}/include/glog
-  DEPENDS glog
-  COMMENT "Installing glog files for Ceres ExternalProject to find"
-)
-
 message(STATUS "glog: Version ${GLOG_VERSION} (vendored)")
-message(STATUS "glog: Install prefix for Ceres: ${GLOG_INSTALL_PREFIX}")

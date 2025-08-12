@@ -100,14 +100,14 @@ if(EXISTS "${eigen_vendored_dir}")
   message(STATUS "Set up vendored Eigen variables for dependencies: ${eigen_vendored_dir}")
 endif()
 
+add_subdirectory(thirdparty)
+
 # Finds and builds external (third-party) dependencies for
 # mmsolverlibs.
 include(FindAndBuildMmsolverDependencies)
 
 # Finds and builds external (third-party) LDPK dependencies.
 include(FindAndBuildLdpkPackages)
-
-add_subdirectory(thirdparty)
 add_subdirectory(mmsolverlibs/src)
 
 option(MMSOLVERLIBS_BUILD_TESTS "Do you want to build the test files for mmsolverlibs?" OFF)

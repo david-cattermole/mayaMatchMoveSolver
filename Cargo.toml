@@ -50,7 +50,7 @@ thiserror = "2.0.3"
 # NOTE: When changing this version number ensure to also update the
 # installed 'cxxbridge-cmd' version so it stays in sync; Update it
 # here: './scripts/internal/build_mmSolverLibs_*.*'
-cxx = "=1.0.129"
+cxx = "=1.0.155"
 
 # Crates defined inside this project.
 mmcore_cppbind = { path = "./lib/cppbind/mmcore" }

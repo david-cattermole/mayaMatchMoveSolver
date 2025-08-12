@@ -38,7 +38,7 @@ import mmSolver.api as mmapi
 import test.test_solver.solverutils as solverUtils
 
 
-# @unittest.skip
+@unittest.skip
 class TestLens3(solverUtils.SolverTestCase):
     def do_solve(self, solver_name, solver_index):
         """

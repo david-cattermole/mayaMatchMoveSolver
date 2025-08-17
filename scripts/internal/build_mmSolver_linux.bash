@@ -73,6 +73,11 @@ echo "Build mmSolverLibs directory base: ${BUILD_MMSOLVERLIBS_DIR_BASE}"
 BUILD_TYPE=Release
 MMSOLVER_DEBUG=1
 
+BUILD_TYPE_DIR="debug"
+if [ "${BUILD_TYPE}" = "Release" ]; then
+    BUILD_TYPE_DIR="release"
+fi
+
 # Build options, to allow faster compilation times. (not to be used by
 # users wanting to build this project.)
 MMSOLVER_BUILD_PLUGIN=1
@@ -108,6 +113,14 @@ MMSOLVERLIBS_INSTALL_DIR="${BUILD_MMSOLVERLIBS_DIR_BASE}/install/maya${MAYA_VERS
 MMSOLVERLIBS_CMAKE_CONFIG_DIR="${MMSOLVERLIBS_INSTALL_DIR}/lib64/cmake/mmsolverlibs_cpp"
 MMSOLVERLIBS_RUST_DIR="${BUILD_MMSOLVERLIBS_DIR_BASE}/rust_linux_maya${MAYA_VERSION}/${BUILD_TYPE_DIR}"
 
+# Where to find the mmsolverlibs Rust libraries and headers.
+MMSOLVERLIBS_INSTALL_PATH="${BUILD_MMSOLVERLIBS_DIR_BASE}/install/maya${MAYA_VERSION}_linux/"
+MMSOLVERLIBS_ROOT="${PROJECT_ROOT}/lib"
+MMSOLVERLIBS_RUST_ROOT="${MMSOLVERLIBS_ROOT}/mmsolverlibs"
+MMSOLVERLIBS_CPP_TARGET_DIR="${BUILD_MMSOLVERLIBS_DIR_BASE}/rust_linux_maya${MAYA_VERSION}"
+MMSOLVERLIBS_LIB_DIR="${MMSOLVERLIBS_CPP_TARGET_DIR}/${BUILD_TYPE_DIR}"
+MMSOLVERLIBS_INCLUDE_DIR="${MMSOLVERLIBS_ROOT}/include"
+
 # Paths for dependencies.
 EXTERNAL_BUILD_DIR="${BUILD_OCIO_DIR_BASE}/cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}/ext/dist"
 OCIO_INSTALL_DIR="${BUILD_OCIO_DIR_BASE}/install/maya${MAYA_VERSION}_linux/"
@@ -134,6 +147,26 @@ minizip_DIR="${EXTERNAL_BUILD_DIR}/lib64/cmake/minizip-ng"
 
 # We don't want to find system packages.
 CMAKE_IGNORE_PATH="/lib;/lib64;/usr;/usr/lib;/usr/lib64;/usr/local;/usr/local/lib;/usr/local/lib64;"
+
+# Check if 'cxxbridge' is installed or not, and then install it if
+# not.
+#
+# https://stackoverflow.com/questions/592620/how-can-i-check-if-a-program-exists-from-a-bash-script
+if ! command -v cxxbridge &> /dev/null
+then
+    # Install the needed 'cxxbridge' command.
+    #
+    # NOTE: When changing this version number, make sure to update the
+    # CXX version used in the C++ buildings, and all the build scripts
+    # using this value:
+    # './Cargo.toml'
+    # './scripts/internal/build_mmSolver_windows64.bat'
+    # './scripts/internal/build_mmSolver_linux.bash'
+    # './scripts/internal/build_mmSolverLibs_windows64.bat'
+    # './scripts/internal/build_mmSolverLibs_linux.bash'
+    ${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.129
+fi
+MMSOLVERLIBS_CXXBRIDGE_EXE="${HOME}/.cargo/bin/cxxbridge"
 
 # A local copy of LDPK to reduce the amount of downloads to the
 # 3DEqualizer website (LDPK doesn't have a git repo to clone from).
@@ -174,6 +207,8 @@ ${CMAKE_EXE} \
     -DMMSOLVER_BUILD_TESTS=${MMSOLVER_BUILD_TESTS} \
     -DMAYA_LOCATION=${MAYA_LOCATION} \
     -DMAYA_VERSION=${MAYA_VERSION} \
+    -DMMSOLVERLIBS_CXXBRIDGE_EXE=${MMSOLVERLIBS_CXXBRIDGE_EXE} \
+    -DMMSOLVERLIBS_LIB_DIR=${MMSOLVERLIBS_LIB_DIR} \
     -Dmmsolverlibs_rust_DIR=${MMSOLVERLIBS_RUST_DIR} \
     -Dmmsolverlibs_cpp_DIR=${MMSOLVERLIBS_CMAKE_CONFIG_DIR} \
     -Dldpk_URL=${LDPK_URL} \

@@ -75,6 +75,13 @@ SET BUILD_PACKAGE=1
 SET BUILD_TYPE=Release
 SET MMSOLVER_DEBUG=1
 
+SET RELEASE_FLAG=
+SET BUILD_TYPE_DIR=debug
+IF "%BUILD_TYPE%"=="Release" (
+    SET RELEASE_FLAG=--release
+    SET BUILD_TYPE_DIR=release
+)
+
 :: Build options, to allow faster compilation times. (not to be used by
 :: users wanting to build this project.)
 SET MMSOLVER_BUILD_PLUGIN=1
@@ -107,6 +114,14 @@ SET MMSOLVERLIBS_INSTALL_DIR="%BUILD_MMSOLVERLIBS_DIR_BASE%\install\maya%MAYA_VE
 SET MMSOLVERLIBS_CMAKE_CONFIG_DIR="%MMSOLVERLIBS_INSTALL_DIR%\lib\cmake\mmsolverlibs_cpp"
 SET MMSOLVERLIBS_RUST_DIR="%BUILD_MMSOLVERLIBS_DIR_BASE%\rust_windows64_maya%MAYA_VERSION%\%BUILD_TYPE_DIR%"
 
+:: Where to find the mmsolverlibs Rust libraries and headers.
+SET MMSOLVERLIBS_INSTALL_PATH=%BUILD_MMSOLVERLIBS_DIR_BASE%\install\maya%MAYA_VERSION%_windows64\
+SET MMSOLVERLIBS_ROOT=%PROJECT_ROOT%\lib
+SET MMSOLVERLIBS_RUST_ROOT=%MMSOLVERLIBS_ROOT%\mmsolverlibs
+SET MMSOLVERLIBS_CPP_TARGET_DIR=%BUILD_MMSOLVERLIBS_DIR_BASE%\rust_windows64_maya%MAYA_VERSION%
+SET MMSOLVERLIBS_LIB_DIR=%MMSOLVERLIBS_CPP_TARGET_DIR%\%BUILD_TYPE_DIR%
+SET MMSOLVERLIBS_INCLUDE_DIR=%MMSOLVERLIBS_ROOT%\include
+
 :: Paths for dependencies.
 SET EXTERNAL_OCIO_BUILD_DIR=%BUILD_OCIO_DIR_BASE%\cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%\ext\dist
 SET OCIO_INSTALL_DIR=%BUILD_OCIO_DIR_BASE%\install\maya%MAYA_VERSION%_windows64\
@@ -133,6 +148,29 @@ SET ZLIB_INCLUDE_DIR=%EXTERNAL_OCIO_BUILD_DIR%\include\
 SET ZLIB_LIBRARY=%EXTERNAL_OCIO_BUILD_DIR%\%ZLIB_RELATIVE_LIB_PATH%
 
 SET minizip_DIR=%EXTERNAL_OCIO_BUILD_DIR%\%MINIZIP_RELATIVE_CMAKE_DIR%
+
+:: Check if 'cxxbridge.exe' is installed or not, and then install it if
+:: not.
+::
+:: https://stackoverflow.com/questions/4781772/how-to-test-if-an-executable-exists-in-the-path-from-a-windows-batch-file
+where /Q cxxbridge
+IF %ERRORLEVEL% EQU 1 (
+   :: Install the needed 'cxxbridge.exe' command.
+   ::
+   :: NOTE: When changing this version number, make sure to update the
+   :: CXX version used in the C++ buildings, and all the build scripts
+   :: using this value:
+   :: './Cargo.toml'
+   :: './scripts/internal/build_mmSolver_windows64.bat'
+   :: './scripts/internal/build_mmSolver_linux.bash'
+   :: './scripts/internal/build_mmSolverLibs_windows64.bat'
+   :: './scripts/internal/build_mmSolverLibs_linux.bash'
+   %RUST_CARGO_EXE% install cxxbridge-cmd --version 1.0.129
+)
+SET MMSOLVERLIBS_CXXBRIDGE_EXE="%USERPROFILE%\.cargo\bin\cxxbridge.exe"
+:: Convert back-slashes to forward-slashes.
+:: https://stackoverflow.com/questions/23542453/change-backslash-to-forward-slash-in-windows-batch-file
+SET "MMSOLVERLIBS_CXXBRIDGE_EXE=%MMSOLVERLIBS_CXXBRIDGE_EXE:\=/%"
 
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
@@ -215,6 +253,8 @@ CHDIR "%BUILD_DIR%"
     -DMMSOLVER_BUILD_TESTS=%MMSOLVER_BUILD_TESTS% ^
     -DMAYA_LOCATION=%MAYA_LOCATION% ^
     -DMAYA_VERSION=%MAYA_VERSION% ^
+    -DMMSOLVERLIBS_CXXBRIDGE_EXE=%MMSOLVERLIBS_CXXBRIDGE_EXE% ^
+    -DMMSOLVERLIBS_LIB_DIR=%MMSOLVERLIBS_LIB_DIR% ^
     -Dmmsolverlibs_rust_DIR=%MMSOLVERLIBS_RUST_DIR% ^
     -Dmmsolverlibs_cpp_DIR=%MMSOLVERLIBS_CMAKE_CONFIG_DIR% ^
     -DOpenColorIO_DIR=%OCIO_CMAKE_CONFIG_DIR% ^
@@ -261,17 +301,17 @@ CHDIR "%PROJECT_ROOT%"
 exit /b 0
 
 :failed_to_generate
-echo Failed to generate build files.
+echo Failed to generate build files for mmSolver component.
 exit /b 1
 
 :failed_to_build
-echo Failed to build.
+echo Failed to build mmSolver component.
 exit /b 1
 
 :failed_to_install
-echo Failed to install.
+echo Failed to install mmSolver component.
 exit /b 1
 
 :failed_to_build_zip
-echo Failed to build the ZIP package file.
+echo Failed to build the ZIP package file for mmSolver component.
 exit /b 1

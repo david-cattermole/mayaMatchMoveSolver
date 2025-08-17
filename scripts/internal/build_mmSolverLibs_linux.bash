@@ -132,7 +132,10 @@ then
     # CXX version used in the C++ buildings, and all the build scripts
     # using this value:
     # './Cargo.toml'
+    # './scripts/internal/build_mmSolver_windows64.bat'
+    # './scripts/internal/build_mmSolver_linux.bash'
     # './scripts/internal/build_mmSolverLibs_windows64.bat'
+    # './scripts/internal/build_mmSolverLibs_linux.bash'
     ${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.129
 fi
 MMSOLVERLIBS_CXXBRIDGE_EXE="${HOME}/.cargo/bin/cxxbridge"

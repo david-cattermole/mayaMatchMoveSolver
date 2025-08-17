@@ -142,6 +142,8 @@ IF %ERRORLEVEL% EQU 1 (
    :: CXX version used in the C++ buildings, and all the build scripts
    :: using this value:
    :: './Cargo.toml'
+   :: './scripts/internal/build_mmSolver_windows64.bat'
+   :: './scripts/internal/build_mmSolver_linux.bash'
    :: './scripts/internal/build_mmSolverLibs_windows64.bat'
    :: './scripts/internal/build_mmSolverLibs_linux.bash'
    %RUST_CARGO_EXE% install cxxbridge-cmd --version 1.0.129
@@ -264,21 +266,21 @@ CHDIR "%PROJECT_ROOT%"
 exit /b 0
 
 :failed_to_generate_cpp_header
-echo Failed to Generate C++ header files from Rust.
+echo Failed to Generate C++ header files from Rust for mmSolverLibs.
 exit /b 1
 
 :failed_to_build_rust
-echo Failed to build Rust code.
+echo Failed to build Rust code for mmSolverLibs.
 exit /b 1
 
 :failed_to_generate_cpp
-echo Failed to generate C++ build files.
+echo Failed to generate C++ build files for mmSolverLibs.
 exit /b 1
 
 :failed_to_build_cpp
-echo Failed to build C++ code.
+echo Failed to build C++ code for mmSolverLibs.
 exit /b 1
 
 :failed_to_install_cpp
-echo Failed to install C++ artifacts.
+echo Failed to install C++ artifacts for mmSolverLibs.
 exit /b 1

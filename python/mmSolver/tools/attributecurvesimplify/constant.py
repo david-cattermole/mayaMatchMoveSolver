@@ -1,0 +1,129 @@
+# Copyright (C) 2025 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+#
+"""
+Attribute Curve Filter constants.
+"""
+
+WINDOW_TITLE = "Attribute Curve Simplify"
+
+# Constants for frame range mode.
+FRAME_RANGE_MODE_INPUT_ANIM_CURVE_VALUE = "attrcurvesimplify_input_anim_curve"
+FRAME_RANGE_MODE_TIMELINE_INNER_VALUE = "attrcurvesimplify_timeline_inner"
+FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE = "attrcurvesimplify_timeline_outer"
+FRAME_RANGE_MODE_CUSTOM_VALUE = "attrcurvesimplify_custom"
+FRAME_RANGE_MODE_VALUES = [
+    FRAME_RANGE_MODE_INPUT_ANIM_CURVE_VALUE,
+    FRAME_RANGE_MODE_TIMELINE_INNER_VALUE,
+    FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE,
+    FRAME_RANGE_MODE_CUSTOM_VALUE,
+]
+
+FRAME_RANGE_MODE_INPUT_ANIM_CURVE_LABEL = "Input AnimCurve"
+FRAME_RANGE_MODE_TIMELINE_INNER_LABEL = "Timeline (Inner)"
+FRAME_RANGE_MODE_TIMELINE_OUTER_LABEL = "Timeline (Outer)"
+FRAME_RANGE_MODE_CUSTOM_LABEL = "Custom"
+FRAME_RANGE_MODE_LABELS = [
+    FRAME_RANGE_MODE_INPUT_ANIM_CURVE_LABEL,
+    FRAME_RANGE_MODE_TIMELINE_INNER_LABEL,
+    FRAME_RANGE_MODE_TIMELINE_OUTER_LABEL,
+    FRAME_RANGE_MODE_CUSTOM_LABEL,
+]
+
+FRAME_RANGE_MODE_VALUE_LABEL_MAP = {
+    FRAME_RANGE_MODE_INPUT_ANIM_CURVE_VALUE: FRAME_RANGE_MODE_INPUT_ANIM_CURVE_LABEL,
+    FRAME_RANGE_MODE_TIMELINE_INNER_VALUE: FRAME_RANGE_MODE_TIMELINE_INNER_LABEL,
+    FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE: FRAME_RANGE_MODE_TIMELINE_OUTER_LABEL,
+    FRAME_RANGE_MODE_CUSTOM_VALUE: FRAME_RANGE_MODE_CUSTOM_LABEL,
+}
+
+
+# Constants for distribution.
+#
+# These string values must match up with the values in
+# "./src/mmSolver/cmd/MMAnimCurveSimplifyCmd.cpp".
+DISTRIBUTION_UNIFORM_VALUE = "uniform"
+DISTRIBUTION_AUTO_KEYPOINTS_VALUE = "auto_keypoints"
+DISTRIBUTION_VALUES = [
+    DISTRIBUTION_UNIFORM_VALUE,
+    DISTRIBUTION_AUTO_KEYPOINTS_VALUE,
+]
+
+DISTRIBUTION_UNIFORM_LABEL = "Uniform"
+DISTRIBUTION_AUTO_KEYPOINTS_LABEL = "Auto Keypoints"
+DISTRIBUTION_LABELS = [
+    DISTRIBUTION_UNIFORM_LABEL,
+    DISTRIBUTION_AUTO_KEYPOINTS_LABEL,
+]
+
+DISTRIBUTION_VALUE_LABEL_MAP = {
+    DISTRIBUTION_UNIFORM_VALUE: DISTRIBUTION_UNIFORM_LABEL,
+    DISTRIBUTION_AUTO_KEYPOINTS_VALUE: DISTRIBUTION_AUTO_KEYPOINTS_LABEL,
+}
+
+
+# Constants for interpolation.
+#
+# These string values must match up with the values in
+# "./src/mmSolver/cmd/MMAnimCurveSimplifyCmd.cpp".
+CMD_INTERPOLATION_LINEAR_VALUE = "linear"
+CMD_INTERPOLATION_QUADRATIC_NUBS_VALUE = "quadratic_nubs"
+CMD_INTERPOLATION_CUBIC_NUBS_VALUE = "cubic_nubs"
+CMD_INTERPOLATION_CUBIC_SPLINE_VALUE = "cubic_spline"
+CMD_INTERPOLATION_VALUES = [
+    CMD_INTERPOLATION_LINEAR_VALUE,
+    CMD_INTERPOLATION_QUADRATIC_NUBS_VALUE,
+    CMD_INTERPOLATION_CUBIC_NUBS_VALUE,
+    CMD_INTERPOLATION_CUBIC_SPLINE_VALUE,
+]
+
+# Constants for interpolation.
+INTERPOLATION_LINEAR_VALUE = "linear"
+INTERPOLATION_SMOOTH_VALUE = "smooth"
+INTERPOLATION_VALUES = [
+    INTERPOLATION_LINEAR_VALUE,
+    INTERPOLATION_SMOOTH_VALUE,
+]
+
+INTERPOLATION_LINEAR_LABEL = "Linear"
+INTERPOLATION_SMOOTH_LABEL = "Smooth"
+INTERPOLATION_LABELS = [
+    INTERPOLATION_LINEAR_LABEL,
+    INTERPOLATION_SMOOTH_LABEL,
+]
+
+INTERPOLATION_VALUE_LABEL_MAP = {
+    INTERPOLATION_LINEAR_VALUE: INTERPOLATION_LINEAR_LABEL,
+    INTERPOLATION_SMOOTH_VALUE: INTERPOLATION_SMOOTH_LABEL,
+}
+
+
+# Default Values
+DEFAULT_FRAME_START = 1
+DEFAULT_FRAME_END = 120
+DEFAULT_FRAME_RANGE_MODE = FRAME_RANGE_MODE_INPUT_ANIM_CURVE_VALUE
+DEFAULT_CONTROL_POINTS = 3
+DEFAULT_DISTRIBUTION = DISTRIBUTION_UNIFORM_VALUE
+DEFAULT_INTERPOLATION = INTERPOLATION_SMOOTH_VALUE
+
+# Config files
+CONFIG_FRAME_RANGE_MODE_KEY = "mmSolver_attrcurvesimplify_frame_range_mode"
+CONFIG_FRAME_START_KEY = "mmSolver_attrcurvesimplify_frame_start"
+CONFIG_FRAME_END_KEY = "mmSolver_attrcurvesimplify_frame_end"
+CONFIG_CONTROL_POINTS_KEY = "mmSolver_attrcurvesimplify_control_points"
+CONFIG_DISTRIBUTION_KEY = "mmSolver_attrcurvesimplify_distribution"
+CONFIG_INTERPOLATION_KEY = "mmSolver_attrcurvesimplify_interpolation"

@@ -169,6 +169,11 @@ if (MMSOLVER_BUILD_QT_UI)
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/attributecurvefilterpops/ui/ui_attrcurvefilterpops_layout.py
             )
 
+    compile_qt_ui_to_python_file("attributecurvesimplify"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/attributecurvesimplify/ui/attrcurvesimplify_layout.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/attributecurvesimplify/ui/ui_attrcurvesimplify_layout.py
+            )
+
     compile_qt_ui_to_python_file("createcontroller2"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/createcontroller2/ui/createcontroller_layout.ui
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/createcontroller2/ui/ui_createcontroller_layout.py

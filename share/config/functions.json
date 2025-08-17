@@ -229,6 +229,29 @@
                 "mmSolver.tools.attributecurvefilterpops.tool.open_window();"
             ]
         },
+        "attribute_curve_simplify": {
+            "name": "Simplify Animation Curve",
+            "name_shelf": "AttrCurveSimplify",
+            "tooltip": "Simplify animation curve on attributes.",
+            "command": [
+                "import mmSolver.tools.attributecurvesimplify.tool;",
+                "mmSolver.tools.attributecurvesimplify.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.attributecurvesimplify.tool;",
+                "mmSolver.tools.attributecurvesimplify.tool.open_window();"
+            ]
+        },
+        "attribute_curve_simplify_ui": {
+            "name": "Simplify Animation Curve UI...",
+            "name_shelf": "AttrCurveSimplify",
+            "tooltip": "Simplify animation curve on attributes.",
+            "command": [
+                "import mmSolver.tools.attributecurvesimplify.tool;",
+                "mmSolver.tools.attributecurvesimplify.tool.open_window();"
+            ]
+        },
         "aim_at_camera_manipulator": {
             "name": "Aim At Camera (Screen-Z Manipulator)",
             "tooltip": "Screen-space Z manipulator.",

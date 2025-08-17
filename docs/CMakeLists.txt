@@ -1,4 +1,4 @@
-# Copyright (C) 2019, 2020 David Cattermole.
+# Copyright (C) 2019, 2020, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -27,8 +27,15 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/source/conf.py
   @ONLY)
 
+find_program(SPHINX_BUILD sphinx-build)
+if(SPHINX_BUILD)
+    message(STATUS "Found sphinx-build: ${SPHINX_BUILD}")
+    set(SPHINX_AVAILABLE TRUE)
+else()
+    message(WARNING "sphinx-build not found. Documentation will not be built.")
+    set(SPHINX_AVAILABLE FALSE)
+endif()
 
-# Build Documentation (using Python Sphinx)
 set(input_files
         source/index.rst
         source/introduction.rst
@@ -45,30 +52,35 @@ set(input_files
         source/mmSolver.utils.rst
         )
 
-# Get the location where the build files will be generated
-get_maya_module_os_name(os_name)
-set(BUILD_DOCS_DIR "build_${os_name}_maya${MAYA_VERSION}")
+# Build Documentation (using Python Sphinx)
+if(SPHINX_AVAILABLE)
+    # Get the location where the build files will be generated.
+    get_maya_module_os_name(os_name)
+    set(BUILD_DOCS_DIR "build_${os_name}_maya${MAYA_VERSION}")
 
-set(input_file source/index.html)
-set(output_file ${BUILD_DOCS_DIR}/html/py-modindex.html)
-add_custom_command(
-        OUTPUT ${output_file}
-        COMMAND ${CMAKE_COMMAND} -E copy ${input_file} ${BUILD_DOCS_DIR}/html/index.html
-        COMMAND make html
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DEPENDS ${input_files}
-)
+    set(input_file source/index.html)
+    set(output_file ${BUILD_DOCS_DIR}/html/py-modindex.html)
+    add_custom_command(
+            OUTPUT ${output_file}
+            COMMAND ${CMAKE_COMMAND} -E copy ${input_file} ${BUILD_DOCS_DIR}/html/index.html
+            COMMAND make html
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            DEPENDS ${input_files}
+    )
 
-add_custom_target(
-        build_documentation ALL
-        DEPENDS ${output_file}
-        COMMENT "Building Documentation (with Sphinx) (${input_file})..."
-)
+    add_custom_target(
+            build_documentation ALL
+            DEPENDS ${output_file}
+            COMMENT "Building Documentation (with Sphinx) (${input_file})..."
+    )
 
-if (MMSOLVER_BUILD_PLUGIN)
-    add_dependencies(mmSolver build_documentation)
-endif ()
+    if (MMSOLVER_BUILD_PLUGIN)
+        add_dependencies(mmSolver build_documentation)
+    endif ()
 
-# Install Documentation
-install(DIRECTORY "${BUILD_DOCS_DIR}/html/"
-        DESTINATION "${MODULE_FULL_NAME}/docs/html")
+    # Install Documentation
+    install(DIRECTORY "${BUILD_DOCS_DIR}/html/"
+            DESTINATION "${MODULE_FULL_NAME}/docs/html")
+else()
+    message(STATUS "Skipping documentation build because sphinx-build is not available")
+endif()

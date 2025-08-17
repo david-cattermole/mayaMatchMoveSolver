@@ -80,10 +80,16 @@ set(GLOG_SRCS
     src/logging.cc
     src/raw_logging.cc
     src/signalhandler.cc
+    src/stacktrace.cc
     src/symbolize.cc
     src/utilities.cc
     src/vlog_is_on.cc
 )
+
+# Windows-specific source files
+if(WIN32)
+    list(APPEND GLOG_SRCS src/windows/port.cc)
+endif()
 
 # Create the glog library as the standard glog::glog target.
 add_library(glog STATIC ${GLOG_SRCS})
@@ -111,6 +117,8 @@ target_compile_definitions(glog PUBLIC
 target_compile_definitions(glog PRIVATE
   $<$<CONFIG:Debug>:_DEBUG>
   HAVE_CONFIG_H
+  $<$<PLATFORM_ID:Windows>:GLOG_USE_WINDOWS_PORT>
+  $<$<PLATFORM_ID:Windows>:NOMINMAX>
 )
 
 # Include directories
@@ -123,6 +131,7 @@ target_include_directories(glog PUBLIC
 target_include_directories(glog PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_BINARY_DIR}
+  $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_SOURCE_DIR}/src/windows>
 )
 
 # Link libraries

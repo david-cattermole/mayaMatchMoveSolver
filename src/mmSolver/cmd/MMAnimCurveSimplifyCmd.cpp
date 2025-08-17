@@ -58,6 +58,8 @@
 
 // MM Solver
 #include "mmSolver/cmd/anim_curve_cmd_utils.h"
+#include "mmSolver/core/frame.h"
+#include "mmSolver/core/types.h"
 #include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
@@ -178,8 +180,8 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
         MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    m_startFrame = std::numeric_limits<uint32_t>::max();
-    m_endFrame = std::numeric_limits<uint32_t>::max();
+    m_startFrame = std::numeric_limits<FrameNumber>::max();
+    m_endFrame = std::numeric_limits<FrameNumber>::max();
     if (argData.isFlagSet(START_FRAME_FLAG_SHORT)) {
         status =
             argData.getFlagArgument(START_FRAME_FLAG_SHORT, 0, m_startFrame);
@@ -309,7 +311,7 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
 
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_startFrame=" << m_startFrame);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_endFrame=" << m_endFrame);
-    auto frame_count = static_cast<size_t>(m_endFrame - m_startFrame) + 1;
+    const auto frame_count = static_cast<size_t>(m_endFrame - m_startFrame) + 1;
     MMSOLVER_MAYA_VRB(CMD_NAME << ": frame_count=" << frame_count);
     MMSOLVER_MAYA_VRB(CMD_NAME << ": m_selection.length()="
                                << m_selection.length());
@@ -324,8 +326,8 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
     MDoubleArray result;
 
     const auto time_unit = MTime::uiUnit();
-    uint32_t success_count = 0;
-    uint32_t failure_count = 0;
+    Count32 success_count = 0;
+    Count32 failure_count = 0;
     for (auto i = 0; i < m_selection.length(); i++) {
         MMSOLVER_MAYA_VRB(CMD_NAME << ": i=" << i);
 
@@ -353,7 +355,7 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
             min_frame_count, m_animCurveFn, start_frame, end_frame);
         if (!success) {
             MGlobal::displayWarning(CMD_NAME
-                                    ": failed to validate animation curve.");
+                                    ": Failed to validate animation curve.");
             failure_count++;
             continue;
         }
@@ -362,7 +364,7 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
                                 m_animCurveFn, values_x, values_y);
         if (status != MS::kSuccess) {
             MGlobal::displayWarning(
-                CMD_NAME ": failed to set animation curve keyframes.");
+                CMD_NAME ": Failed to set animation curve keyframes.");
             failure_count++;
             continue;
         }
@@ -381,7 +383,7 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
 
         MMSOLVER_MAYA_VRB(CMD_NAME
                           << ": m_controlPointCount="
-                          << static_cast<int32_t>(m_controlPointCount));
+                          << static_cast<Count32>(m_controlPointCount));
 
         rust::Slice<const mmsg::Real> values_slice_x{values_x.data(),
                                                      values_x.size()};
@@ -413,7 +415,7 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
                 preserve_first_last_keys);
             if (status != MS::kSuccess) {
                 MGlobal::displayWarning(
-                    CMD_NAME ": failed to set animation curve keyframes.");
+                    CMD_NAME ": Failed to set animation curve keyframes.");
                 failure_count++;
                 continue;
             }
@@ -423,12 +425,12 @@ MStatus MMAnimCurveSimplifyCmd::doIt(const MArgList &args) {
     }
 
     MMSOLVER_MAYA_VRB(CMD_NAME << ": failure_count="
-                               << static_cast<int32_t>(failure_count));
+                               << static_cast<Count32>(failure_count));
     MMSOLVER_MAYA_VRB(CMD_NAME << ": success_count="
-                               << static_cast<int32_t>(success_count));
+                               << static_cast<Count32>(success_count));
     if (failure_count > 0) {
         MGlobal::displayError(CMD_NAME
-                              ": failed to simplify on animation curves.");
+                              ": Failed to simplify on animation curves.");
     }
     if (success_count == 0) {
         status = MS::kFailure;

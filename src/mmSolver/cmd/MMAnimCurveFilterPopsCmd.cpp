@@ -144,8 +144,8 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
     }
 
     // Parse optional arguments
-    m_startFrame = std::numeric_limits<uint32_t>::max();
-    m_endFrame = std::numeric_limits<uint32_t>::max();
+    m_startFrame = std::numeric_limits<FrameNumber>::max();
+    m_endFrame = std::numeric_limits<FrameNumber>::max();
     if (argData.isFlagSet(START_FRAME_FLAG_SHORT)) {
         status =
             argData.getFlagArgument(START_FRAME_FLAG_SHORT, 0, m_startFrame);
@@ -182,7 +182,7 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
     // Don't store each individual edit, just store the combination.
     m_curveChange.setInteractive(true);
 
-    auto count = static_cast<size_t>(m_endFrame - m_startFrame) + 1;
+    const auto count = static_cast<size_t>(m_endFrame - m_startFrame) + 1;
     MMSOLVER_MAYA_VRB(CMD_NAME << ": count=" << count);
 
     rust::Vec<mmsg::Real> values_x;

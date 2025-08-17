@@ -67,20 +67,6 @@ if(NOT eigen3_cxx_features OR eigen3_cxx_features STREQUAL "eigen3_cxx_features-
   target_compile_features(Eigen3 INTERFACE cxx_std_14)
 endif()
 
-# Install Eigen headers - now properly organized in Eigen subdirectory
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Eigen/
-        DESTINATION include/Eigen
-        FILES_MATCHING PATTERN "*" PATTERN "*.h" PATTERN "*.hpp")
-
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/unsupported
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-
-# Install Eigen targets
-include(MMCommonUtils)
-mm_common_install_target_library("mmsolverlibs_cpp" eigen)
-# Note: Eigen3 target is exported early in the main CMakeLists.txt to resolve dependency ordering
-
 # Set version information
 set_target_properties(eigen PROPERTIES
   VERSION "3.4.0"

@@ -147,17 +147,3 @@ target_include_directories(${cpp_lib_name}
   PRIVATE $<BUILD_INTERFACE:${ldpk_INCLUDE_DIR}>
   PUBLIC $<INSTALL_INTERFACE:include/>
   )
-
-mm_common_install_target_library("mmsolverlibs_cpp" ${cpp_lib_name})
-
-# Install public headers
-include(GNUInstallDirs)
-install(DIRECTORY
-  "${mmcolorio_include_dir}/"
-  "${mmcore_include_dir}/"
-  "${mmimage_include_dir}/"
-  "${mmlens_include_dir}/"
-  "${mmscenegraph_include_dir}/"
-  "${main_include_dir}/"
-  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-  FILES_MATCHING PATTERN "*.h")

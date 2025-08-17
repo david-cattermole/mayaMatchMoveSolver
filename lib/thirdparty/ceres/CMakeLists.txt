@@ -200,7 +200,7 @@ set(CERES_CONFIG_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/config_static")
 set(CERES_CONFIG_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/config")
 
 # Copy the static config.h to the build directory
-file(COPY "${CERES_CONFIG_SOURCE_DIR}/" 
+file(COPY "${CERES_CONFIG_SOURCE_DIR}/"
      DESTINATION "${CERES_CONFIG_OUTPUT_DIR}")
 
 # Configure include directories
@@ -245,34 +245,5 @@ target_link_libraries(ceres PUBLIC
   Eigen3::Eigen      # Vendored Eigen for linear algebra
 )
 
-# Threading support is intentionally disabled (CERES_NO_THREADS)
-# This simplifies the build and ensures Maya plugin compatibility
-
 # Create an alias to match the expected target name from FindCeres
 add_library(ceres::ceres ALIAS ceres)
-
-# Install headers (public API)
-install(DIRECTORY include/ceres
-  DESTINATION include
-  FILES_MATCHING PATTERN "*.h"
-)
-
-# Install the static config.h (required by internal headers)
-install(FILES ${CERES_CONFIG_OUTPUT_DIR}/ceres/internal/config.h
-  DESTINATION include/ceres/internal
-)
-
-# Install the library as part of mmsolverlibs
-# Note: The following is only used when building as part of mmSolver
-if(COMMAND mm_common_install_target_library)
-  include(MMCommonUtils)
-  mm_common_install_target_library("mmsolverlibs_cpp" ceres)
-else()
-  # Standalone installation
-  install(TARGETS ceres
-    EXPORT CeresTargets
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin
-  )
-endif()

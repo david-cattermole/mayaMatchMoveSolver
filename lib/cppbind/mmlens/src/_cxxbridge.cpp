@@ -458,12 +458,12 @@ struct ImageDimensions final {
   ::std::size_t end_width;
   ::std::size_t end_height;
 
-  bool operator==(const ImageDimensions &) const noexcept;
-  bool operator!=(const ImageDimensions &) const noexcept;
-  bool operator<(const ImageDimensions &) const noexcept;
-  bool operator<=(const ImageDimensions &) const noexcept;
-  bool operator>(const ImageDimensions &) const noexcept;
-  bool operator>=(const ImageDimensions &) const noexcept;
+  bool operator==(ImageDimensions const &) const noexcept;
+  bool operator!=(ImageDimensions const &) const noexcept;
+  bool operator<(ImageDimensions const &) const noexcept;
+  bool operator<=(ImageDimensions const &) const noexcept;
+  bool operator>(ImageDimensions const &) const noexcept;
+  bool operator>=(ImageDimensions const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$ImageDimensions
@@ -478,12 +478,12 @@ struct CameraParameters final {
   double lens_center_offset_x_cm;
   double lens_center_offset_y_cm;
 
-  bool operator==(const CameraParameters &) const noexcept;
-  bool operator!=(const CameraParameters &) const noexcept;
-  bool operator<(const CameraParameters &) const noexcept;
-  bool operator<=(const CameraParameters &) const noexcept;
-  bool operator>(const CameraParameters &) const noexcept;
-  bool operator>=(const CameraParameters &) const noexcept;
+  bool operator==(CameraParameters const &) const noexcept;
+  bool operator!=(CameraParameters const &) const noexcept;
+  bool operator<(CameraParameters const &) const noexcept;
+  bool operator<=(CameraParameters const &) const noexcept;
+  bool operator>(CameraParameters const &) const noexcept;
+  bool operator>=(CameraParameters const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$CameraParameters
@@ -497,12 +497,12 @@ struct Parameters3deClassic final {
   double curvature_y;
   double quartic_distortion;
 
-  bool operator==(const Parameters3deClassic &) const noexcept;
-  bool operator!=(const Parameters3deClassic &) const noexcept;
-  bool operator<(const Parameters3deClassic &) const noexcept;
-  bool operator<=(const Parameters3deClassic &) const noexcept;
-  bool operator>(const Parameters3deClassic &) const noexcept;
-  bool operator>=(const Parameters3deClassic &) const noexcept;
+  bool operator==(Parameters3deClassic const &) const noexcept;
+  bool operator!=(Parameters3deClassic const &) const noexcept;
+  bool operator<(Parameters3deClassic const &) const noexcept;
+  bool operator<=(Parameters3deClassic const &) const noexcept;
+  bool operator>(Parameters3deClassic const &) const noexcept;
+  bool operator>=(Parameters3deClassic const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$Parameters3deClassic
@@ -519,12 +519,12 @@ struct Parameters3deRadialStdDeg4 final {
   double cylindric_direction;
   double cylindric_bending;
 
-  bool operator==(const Parameters3deRadialStdDeg4 &) const noexcept;
-  bool operator!=(const Parameters3deRadialStdDeg4 &) const noexcept;
-  bool operator<(const Parameters3deRadialStdDeg4 &) const noexcept;
-  bool operator<=(const Parameters3deRadialStdDeg4 &) const noexcept;
-  bool operator>(const Parameters3deRadialStdDeg4 &) const noexcept;
-  bool operator>=(const Parameters3deRadialStdDeg4 &) const noexcept;
+  bool operator==(Parameters3deRadialStdDeg4 const &) const noexcept;
+  bool operator!=(Parameters3deRadialStdDeg4 const &) const noexcept;
+  bool operator<(Parameters3deRadialStdDeg4 const &) const noexcept;
+  bool operator<=(Parameters3deRadialStdDeg4 const &) const noexcept;
+  bool operator>(Parameters3deRadialStdDeg4 const &) const noexcept;
+  bool operator>=(Parameters3deRadialStdDeg4 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$Parameters3deRadialStdDeg4
@@ -546,12 +546,12 @@ struct Parameters3deAnamorphicStdDeg4 final {
   double squeeze_x;
   double squeeze_y;
 
-  bool operator==(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
-  bool operator!=(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
-  bool operator<(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
-  bool operator<=(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
-  bool operator>(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
-  bool operator>=(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
+  bool operator==(Parameters3deAnamorphicStdDeg4 const &) const noexcept;
+  bool operator!=(Parameters3deAnamorphicStdDeg4 const &) const noexcept;
+  bool operator<(Parameters3deAnamorphicStdDeg4 const &) const noexcept;
+  bool operator<=(Parameters3deAnamorphicStdDeg4 const &) const noexcept;
+  bool operator>(Parameters3deAnamorphicStdDeg4 const &) const noexcept;
+  bool operator>=(Parameters3deAnamorphicStdDeg4 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4
@@ -574,12 +574,12 @@ struct Parameters3deAnamorphicStdDeg4Rescaled final {
   double squeeze_y;
   double rescale;
 
-  bool operator==(const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
-  bool operator!=(const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
-  bool operator<(const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
-  bool operator<=(const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
-  bool operator>(const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
-  bool operator>=(const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+  bool operator==(Parameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
+  bool operator!=(Parameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
+  bool operator<(Parameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
+  bool operator<=(Parameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
+  bool operator>(Parameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
+  bool operator>=(Parameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4Rescaled
@@ -609,12 +609,12 @@ struct Parameters3deAnamorphicStdDeg6 final {
   double squeeze_x;
   double squeeze_y;
 
-  bool operator==(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
-  bool operator!=(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
-  bool operator<(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
-  bool operator<=(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
-  bool operator>(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
-  bool operator>=(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator==(Parameters3deAnamorphicStdDeg6 const &) const noexcept;
+  bool operator!=(Parameters3deAnamorphicStdDeg6 const &) const noexcept;
+  bool operator<(Parameters3deAnamorphicStdDeg6 const &) const noexcept;
+  bool operator<=(Parameters3deAnamorphicStdDeg6 const &) const noexcept;
+  bool operator>(Parameters3deAnamorphicStdDeg6 const &) const noexcept;
+  bool operator>=(Parameters3deAnamorphicStdDeg6 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg6
@@ -645,12 +645,12 @@ struct Parameters3deAnamorphicStdDeg6Rescaled final {
   double squeeze_y;
   double rescale;
 
-  bool operator==(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
-  bool operator!=(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
-  bool operator<(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
-  bool operator<=(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
-  bool operator>(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
-  bool operator>=(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator==(Parameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
+  bool operator!=(Parameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
+  bool operator<(Parameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
+  bool operator<=(Parameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
+  bool operator>(Parameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
+  bool operator>=(Parameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg6Rescaled
@@ -661,12 +661,12 @@ struct OptionParameters3deClassic final {
   bool exists;
   ::mmlens::Parameters3deClassic value;
 
-  bool operator==(const OptionParameters3deClassic &) const noexcept;
-  bool operator!=(const OptionParameters3deClassic &) const noexcept;
-  bool operator<(const OptionParameters3deClassic &) const noexcept;
-  bool operator<=(const OptionParameters3deClassic &) const noexcept;
-  bool operator>(const OptionParameters3deClassic &) const noexcept;
-  bool operator>=(const OptionParameters3deClassic &) const noexcept;
+  bool operator==(OptionParameters3deClassic const &) const noexcept;
+  bool operator!=(OptionParameters3deClassic const &) const noexcept;
+  bool operator<(OptionParameters3deClassic const &) const noexcept;
+  bool operator<=(OptionParameters3deClassic const &) const noexcept;
+  bool operator>(OptionParameters3deClassic const &) const noexcept;
+  bool operator>=(OptionParameters3deClassic const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deClassic
@@ -677,12 +677,12 @@ struct OptionParameters3deRadialStdDeg4 final {
   bool exists;
   ::mmlens::Parameters3deRadialStdDeg4 value;
 
-  bool operator==(const OptionParameters3deRadialStdDeg4 &) const noexcept;
-  bool operator!=(const OptionParameters3deRadialStdDeg4 &) const noexcept;
-  bool operator<(const OptionParameters3deRadialStdDeg4 &) const noexcept;
-  bool operator<=(const OptionParameters3deRadialStdDeg4 &) const noexcept;
-  bool operator>(const OptionParameters3deRadialStdDeg4 &) const noexcept;
-  bool operator>=(const OptionParameters3deRadialStdDeg4 &) const noexcept;
+  bool operator==(OptionParameters3deRadialStdDeg4 const &) const noexcept;
+  bool operator!=(OptionParameters3deRadialStdDeg4 const &) const noexcept;
+  bool operator<(OptionParameters3deRadialStdDeg4 const &) const noexcept;
+  bool operator<=(OptionParameters3deRadialStdDeg4 const &) const noexcept;
+  bool operator>(OptionParameters3deRadialStdDeg4 const &) const noexcept;
+  bool operator>=(OptionParameters3deRadialStdDeg4 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deRadialStdDeg4
@@ -693,12 +693,12 @@ struct OptionParameters3deAnamorphicStdDeg4 final {
   bool exists;
   ::mmlens::Parameters3deAnamorphicStdDeg4 value;
 
-  bool operator==(const OptionParameters3deAnamorphicStdDeg4 &) const noexcept;
-  bool operator!=(const OptionParameters3deAnamorphicStdDeg4 &) const noexcept;
-  bool operator<(const OptionParameters3deAnamorphicStdDeg4 &) const noexcept;
-  bool operator<=(const OptionParameters3deAnamorphicStdDeg4 &) const noexcept;
-  bool operator>(const OptionParameters3deAnamorphicStdDeg4 &) const noexcept;
-  bool operator>=(const OptionParameters3deAnamorphicStdDeg4 &) const noexcept;
+  bool operator==(OptionParameters3deAnamorphicStdDeg4 const &) const noexcept;
+  bool operator!=(OptionParameters3deAnamorphicStdDeg4 const &) const noexcept;
+  bool operator<(OptionParameters3deAnamorphicStdDeg4 const &) const noexcept;
+  bool operator<=(OptionParameters3deAnamorphicStdDeg4 const &) const noexcept;
+  bool operator>(OptionParameters3deAnamorphicStdDeg4 const &) const noexcept;
+  bool operator>=(OptionParameters3deAnamorphicStdDeg4 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deAnamorphicStdDeg4
@@ -709,12 +709,12 @@ struct OptionParameters3deAnamorphicStdDeg4Rescaled final {
   bool exists;
   ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled value;
 
-  bool operator==(const OptionParameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
-  bool operator!=(const OptionParameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
-  bool operator<(const OptionParameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
-  bool operator<=(const OptionParameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
-  bool operator>(const OptionParameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
-  bool operator>=(const OptionParameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+  bool operator==(OptionParameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
+  bool operator!=(OptionParameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
+  bool operator<(OptionParameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
+  bool operator<=(OptionParameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
+  bool operator>(OptionParameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
+  bool operator>=(OptionParameters3deAnamorphicStdDeg4Rescaled const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deAnamorphicStdDeg4Rescaled
@@ -725,12 +725,12 @@ struct OptionParameters3deAnamorphicStdDeg6 final {
   bool exists;
   ::mmlens::Parameters3deAnamorphicStdDeg6 value;
 
-  bool operator==(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
-  bool operator!=(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
-  bool operator<(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
-  bool operator<=(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
-  bool operator>(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
-  bool operator>=(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator==(OptionParameters3deAnamorphicStdDeg6 const &) const noexcept;
+  bool operator!=(OptionParameters3deAnamorphicStdDeg6 const &) const noexcept;
+  bool operator<(OptionParameters3deAnamorphicStdDeg6 const &) const noexcept;
+  bool operator<=(OptionParameters3deAnamorphicStdDeg6 const &) const noexcept;
+  bool operator>(OptionParameters3deAnamorphicStdDeg6 const &) const noexcept;
+  bool operator>=(OptionParameters3deAnamorphicStdDeg6 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deAnamorphicStdDeg6
@@ -741,12 +741,12 @@ struct OptionParameters3deAnamorphicStdDeg6Rescaled final {
   bool exists;
   ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled value;
 
-  bool operator==(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
-  bool operator!=(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
-  bool operator<(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
-  bool operator<=(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
-  bool operator>(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
-  bool operator>=(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator==(OptionParameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
+  bool operator!=(OptionParameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
+  bool operator<(OptionParameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
+  bool operator<=(OptionParameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
+  bool operator>(OptionParameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
+  bool operator>=(OptionParameters3deAnamorphicStdDeg6Rescaled const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deAnamorphicStdDeg6Rescaled
@@ -780,120 +780,120 @@ private:
 #endif // CXXBRIDGE1_STRUCT_mmlens$ShimDistortionLayers
 
 extern "C" {
-bool mmlens$cxxbridge1$ImageDimensions$operator$eq(const ImageDimensions &, const ImageDimensions &) noexcept;
-bool mmlens$cxxbridge1$ImageDimensions$operator$ne(const ImageDimensions &, const ImageDimensions &) noexcept;
-bool mmlens$cxxbridge1$ImageDimensions$operator$lt(const ImageDimensions &, const ImageDimensions &) noexcept;
-bool mmlens$cxxbridge1$ImageDimensions$operator$le(const ImageDimensions &, const ImageDimensions &) noexcept;
-bool mmlens$cxxbridge1$ImageDimensions$operator$gt(const ImageDimensions &, const ImageDimensions &) noexcept;
-bool mmlens$cxxbridge1$ImageDimensions$operator$ge(const ImageDimensions &, const ImageDimensions &) noexcept;
-bool mmlens$cxxbridge1$CameraParameters$operator$eq(const CameraParameters &, const CameraParameters &) noexcept;
-bool mmlens$cxxbridge1$CameraParameters$operator$ne(const CameraParameters &, const CameraParameters &) noexcept;
-bool mmlens$cxxbridge1$CameraParameters$operator$lt(const CameraParameters &, const CameraParameters &) noexcept;
-bool mmlens$cxxbridge1$CameraParameters$operator$le(const CameraParameters &, const CameraParameters &) noexcept;
-bool mmlens$cxxbridge1$CameraParameters$operator$gt(const CameraParameters &, const CameraParameters &) noexcept;
-bool mmlens$cxxbridge1$CameraParameters$operator$ge(const CameraParameters &, const CameraParameters &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deClassic$operator$eq(const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deClassic$operator$ne(const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deClassic$operator$lt(const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deClassic$operator$le(const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deClassic$operator$gt(const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deClassic$operator$ge(const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$eq(const Parameters3deRadialStdDeg4 &, const Parameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$ne(const Parameters3deRadialStdDeg4 &, const Parameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$lt(const Parameters3deRadialStdDeg4 &, const Parameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$le(const Parameters3deRadialStdDeg4 &, const Parameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$gt(const Parameters3deRadialStdDeg4 &, const Parameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$ge(const Parameters3deRadialStdDeg4 &, const Parameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$eq(const Parameters3deAnamorphicStdDeg4 &, const Parameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$ne(const Parameters3deAnamorphicStdDeg4 &, const Parameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$lt(const Parameters3deAnamorphicStdDeg4 &, const Parameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$le(const Parameters3deAnamorphicStdDeg4 &, const Parameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$gt(const Parameters3deAnamorphicStdDeg4 &, const Parameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$ge(const Parameters3deAnamorphicStdDeg4 &, const Parameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$eq(const Parameters3deAnamorphicStdDeg4Rescaled &, const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$ne(const Parameters3deAnamorphicStdDeg4Rescaled &, const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$lt(const Parameters3deAnamorphicStdDeg4Rescaled &, const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$le(const Parameters3deAnamorphicStdDeg4Rescaled &, const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$gt(const Parameters3deAnamorphicStdDeg4Rescaled &, const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$ge(const Parameters3deAnamorphicStdDeg4Rescaled &, const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$eq(const Parameters3deAnamorphicStdDeg6 &, const Parameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$ne(const Parameters3deAnamorphicStdDeg6 &, const Parameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$lt(const Parameters3deAnamorphicStdDeg6 &, const Parameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$le(const Parameters3deAnamorphicStdDeg6 &, const Parameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$gt(const Parameters3deAnamorphicStdDeg6 &, const Parameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$ge(const Parameters3deAnamorphicStdDeg6 &, const Parameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$eq(const Parameters3deAnamorphicStdDeg6Rescaled &, const Parameters3deAnamorphicStdDeg6Rescaled &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$ne(const Parameters3deAnamorphicStdDeg6Rescaled &, const Parameters3deAnamorphicStdDeg6Rescaled &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$lt(const Parameters3deAnamorphicStdDeg6Rescaled &, const Parameters3deAnamorphicStdDeg6Rescaled &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$le(const Parameters3deAnamorphicStdDeg6Rescaled &, const Parameters3deAnamorphicStdDeg6Rescaled &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$gt(const Parameters3deAnamorphicStdDeg6Rescaled &, const Parameters3deAnamorphicStdDeg6Rescaled &) noexcept;
-bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$ge(const Parameters3deAnamorphicStdDeg6Rescaled &, const Parameters3deAnamorphicStdDeg6Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$eq(const OptionParameters3deClassic &, const OptionParameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$ne(const OptionParameters3deClassic &, const OptionParameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$lt(const OptionParameters3deClassic &, const OptionParameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$le(const OptionParameters3deClassic &, const OptionParameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$gt(const OptionParameters3deClassic &, const OptionParameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$ge(const OptionParameters3deClassic &, const OptionParameters3deClassic &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$eq(const OptionParameters3deRadialStdDeg4 &, const OptionParameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$ne(const OptionParameters3deRadialStdDeg4 &, const OptionParameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$lt(const OptionParameters3deRadialStdDeg4 &, const OptionParameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$le(const OptionParameters3deRadialStdDeg4 &, const OptionParameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$gt(const OptionParameters3deRadialStdDeg4 &, const OptionParameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$ge(const OptionParameters3deRadialStdDeg4 &, const OptionParameters3deRadialStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$eq(const OptionParameters3deAnamorphicStdDeg4 &, const OptionParameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$ne(const OptionParameters3deAnamorphicStdDeg4 &, const OptionParameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$lt(const OptionParameters3deAnamorphicStdDeg4 &, const OptionParameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$le(const OptionParameters3deAnamorphicStdDeg4 &, const OptionParameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$gt(const OptionParameters3deAnamorphicStdDeg4 &, const OptionParameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$ge(const OptionParameters3deAnamorphicStdDeg4 &, const OptionParameters3deAnamorphicStdDeg4 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$eq(const OptionParameters3deAnamorphicStdDeg4Rescaled &, const OptionParameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$ne(const OptionParameters3deAnamorphicStdDeg4Rescaled &, const OptionParameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$lt(const OptionParameters3deAnamorphicStdDeg4Rescaled &, const OptionParameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$le(const OptionParameters3deAnamorphicStdDeg4Rescaled &, const OptionParameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$gt(const OptionParameters3deAnamorphicStdDeg4Rescaled &, const OptionParameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$ge(const OptionParameters3deAnamorphicStdDeg4Rescaled &, const OptionParameters3deAnamorphicStdDeg4Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$eq(const OptionParameters3deAnamorphicStdDeg6 &, const OptionParameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$ne(const OptionParameters3deAnamorphicStdDeg6 &, const OptionParameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$lt(const OptionParameters3deAnamorphicStdDeg6 &, const OptionParameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$le(const OptionParameters3deAnamorphicStdDeg6 &, const OptionParameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$gt(const OptionParameters3deAnamorphicStdDeg6 &, const OptionParameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$ge(const OptionParameters3deAnamorphicStdDeg6 &, const OptionParameters3deAnamorphicStdDeg6 &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$eq(const OptionParameters3deAnamorphicStdDeg6Rescaled &, const OptionParameters3deAnamorphicStdDeg6Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$ne(const OptionParameters3deAnamorphicStdDeg6Rescaled &, const OptionParameters3deAnamorphicStdDeg6Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$lt(const OptionParameters3deAnamorphicStdDeg6Rescaled &, const OptionParameters3deAnamorphicStdDeg6Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$le(const OptionParameters3deAnamorphicStdDeg6Rescaled &, const OptionParameters3deAnamorphicStdDeg6Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$gt(const OptionParameters3deAnamorphicStdDeg6Rescaled &, const OptionParameters3deAnamorphicStdDeg6Rescaled &) noexcept;
-bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$ge(const OptionParameters3deAnamorphicStdDeg6Rescaled &, const OptionParameters3deAnamorphicStdDeg6Rescaled &) noexcept;
+bool mmlens$cxxbridge1$ImageDimensions$operator$eq(ImageDimensions const &, ImageDimensions const &) noexcept;
+bool mmlens$cxxbridge1$ImageDimensions$operator$ne(ImageDimensions const &, ImageDimensions const &) noexcept;
+bool mmlens$cxxbridge1$ImageDimensions$operator$lt(ImageDimensions const &, ImageDimensions const &) noexcept;
+bool mmlens$cxxbridge1$ImageDimensions$operator$le(ImageDimensions const &, ImageDimensions const &) noexcept;
+bool mmlens$cxxbridge1$ImageDimensions$operator$gt(ImageDimensions const &, ImageDimensions const &) noexcept;
+bool mmlens$cxxbridge1$ImageDimensions$operator$ge(ImageDimensions const &, ImageDimensions const &) noexcept;
+bool mmlens$cxxbridge1$CameraParameters$operator$eq(CameraParameters const &, CameraParameters const &) noexcept;
+bool mmlens$cxxbridge1$CameraParameters$operator$ne(CameraParameters const &, CameraParameters const &) noexcept;
+bool mmlens$cxxbridge1$CameraParameters$operator$lt(CameraParameters const &, CameraParameters const &) noexcept;
+bool mmlens$cxxbridge1$CameraParameters$operator$le(CameraParameters const &, CameraParameters const &) noexcept;
+bool mmlens$cxxbridge1$CameraParameters$operator$gt(CameraParameters const &, CameraParameters const &) noexcept;
+bool mmlens$cxxbridge1$CameraParameters$operator$ge(CameraParameters const &, CameraParameters const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$eq(Parameters3deClassic const &, Parameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$ne(Parameters3deClassic const &, Parameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$lt(Parameters3deClassic const &, Parameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$le(Parameters3deClassic const &, Parameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$gt(Parameters3deClassic const &, Parameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$ge(Parameters3deClassic const &, Parameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$eq(Parameters3deRadialStdDeg4 const &, Parameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$ne(Parameters3deRadialStdDeg4 const &, Parameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$lt(Parameters3deRadialStdDeg4 const &, Parameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$le(Parameters3deRadialStdDeg4 const &, Parameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$gt(Parameters3deRadialStdDeg4 const &, Parameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$ge(Parameters3deRadialStdDeg4 const &, Parameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$eq(Parameters3deAnamorphicStdDeg4 const &, Parameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$ne(Parameters3deAnamorphicStdDeg4 const &, Parameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$lt(Parameters3deAnamorphicStdDeg4 const &, Parameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$le(Parameters3deAnamorphicStdDeg4 const &, Parameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$gt(Parameters3deAnamorphicStdDeg4 const &, Parameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$ge(Parameters3deAnamorphicStdDeg4 const &, Parameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$eq(Parameters3deAnamorphicStdDeg4Rescaled const &, Parameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$ne(Parameters3deAnamorphicStdDeg4Rescaled const &, Parameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$lt(Parameters3deAnamorphicStdDeg4Rescaled const &, Parameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$le(Parameters3deAnamorphicStdDeg4Rescaled const &, Parameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$gt(Parameters3deAnamorphicStdDeg4Rescaled const &, Parameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$ge(Parameters3deAnamorphicStdDeg4Rescaled const &, Parameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$eq(Parameters3deAnamorphicStdDeg6 const &, Parameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$ne(Parameters3deAnamorphicStdDeg6 const &, Parameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$lt(Parameters3deAnamorphicStdDeg6 const &, Parameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$le(Parameters3deAnamorphicStdDeg6 const &, Parameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$gt(Parameters3deAnamorphicStdDeg6 const &, Parameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$ge(Parameters3deAnamorphicStdDeg6 const &, Parameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$eq(Parameters3deAnamorphicStdDeg6Rescaled const &, Parameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$ne(Parameters3deAnamorphicStdDeg6Rescaled const &, Parameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$lt(Parameters3deAnamorphicStdDeg6Rescaled const &, Parameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$le(Parameters3deAnamorphicStdDeg6Rescaled const &, Parameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$gt(Parameters3deAnamorphicStdDeg6Rescaled const &, Parameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$ge(Parameters3deAnamorphicStdDeg6Rescaled const &, Parameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$eq(OptionParameters3deClassic const &, OptionParameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$ne(OptionParameters3deClassic const &, OptionParameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$lt(OptionParameters3deClassic const &, OptionParameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$le(OptionParameters3deClassic const &, OptionParameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$gt(OptionParameters3deClassic const &, OptionParameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deClassic$operator$ge(OptionParameters3deClassic const &, OptionParameters3deClassic const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$eq(OptionParameters3deRadialStdDeg4 const &, OptionParameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$ne(OptionParameters3deRadialStdDeg4 const &, OptionParameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$lt(OptionParameters3deRadialStdDeg4 const &, OptionParameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$le(OptionParameters3deRadialStdDeg4 const &, OptionParameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$gt(OptionParameters3deRadialStdDeg4 const &, OptionParameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$ge(OptionParameters3deRadialStdDeg4 const &, OptionParameters3deRadialStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$eq(OptionParameters3deAnamorphicStdDeg4 const &, OptionParameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$ne(OptionParameters3deAnamorphicStdDeg4 const &, OptionParameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$lt(OptionParameters3deAnamorphicStdDeg4 const &, OptionParameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$le(OptionParameters3deAnamorphicStdDeg4 const &, OptionParameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$gt(OptionParameters3deAnamorphicStdDeg4 const &, OptionParameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$ge(OptionParameters3deAnamorphicStdDeg4 const &, OptionParameters3deAnamorphicStdDeg4 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$eq(OptionParameters3deAnamorphicStdDeg4Rescaled const &, OptionParameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$ne(OptionParameters3deAnamorphicStdDeg4Rescaled const &, OptionParameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$lt(OptionParameters3deAnamorphicStdDeg4Rescaled const &, OptionParameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$le(OptionParameters3deAnamorphicStdDeg4Rescaled const &, OptionParameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$gt(OptionParameters3deAnamorphicStdDeg4Rescaled const &, OptionParameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$ge(OptionParameters3deAnamorphicStdDeg4Rescaled const &, OptionParameters3deAnamorphicStdDeg4Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$eq(OptionParameters3deAnamorphicStdDeg6 const &, OptionParameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$ne(OptionParameters3deAnamorphicStdDeg6 const &, OptionParameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$lt(OptionParameters3deAnamorphicStdDeg6 const &, OptionParameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$le(OptionParameters3deAnamorphicStdDeg6 const &, OptionParameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$gt(OptionParameters3deAnamorphicStdDeg6 const &, OptionParameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$ge(OptionParameters3deAnamorphicStdDeg6 const &, OptionParameters3deAnamorphicStdDeg6 const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$eq(OptionParameters3deAnamorphicStdDeg6Rescaled const &, OptionParameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$ne(OptionParameters3deAnamorphicStdDeg6Rescaled const &, OptionParameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$lt(OptionParameters3deAnamorphicStdDeg6Rescaled const &, OptionParameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$le(OptionParameters3deAnamorphicStdDeg6Rescaled const &, OptionParameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$gt(OptionParameters3deAnamorphicStdDeg6Rescaled const &, OptionParameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
+bool mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$ge(OptionParameters3deAnamorphicStdDeg6Rescaled const &, OptionParameters3deAnamorphicStdDeg6Rescaled const &) noexcept;
 ::std::size_t mmlens$cxxbridge1$ShimDistortionLayers$operator$sizeof() noexcept;
 ::std::size_t mmlens$cxxbridge1$ShimDistortionLayers$operator$alignof() noexcept;
 
-bool mmlens$cxxbridge1$ShimDistortionLayers$is_static(const ::mmlens::ShimDistortionLayers &self) noexcept;
+bool mmlens$cxxbridge1$ShimDistortionLayers$is_static(::mmlens::ShimDistortionLayers const &self) noexcept;
 
-void mmlens$cxxbridge1$ShimDistortionLayers$frame_range(const ::mmlens::ShimDistortionLayers &self, ::std::uint16_t &out_start_frame, ::std::uint16_t &out_end_frame) noexcept;
+void mmlens$cxxbridge1$ShimDistortionLayers$frame_range(::mmlens::ShimDistortionLayers const &self, ::std::uint16_t &out_start_frame, ::std::uint16_t &out_end_frame) noexcept;
 
-::std::uint16_t mmlens$cxxbridge1$ShimDistortionLayers$frame_count(const ::mmlens::ShimDistortionLayers &self) noexcept;
+::std::uint16_t mmlens$cxxbridge1$ShimDistortionLayers$frame_count(::mmlens::ShimDistortionLayers const &self) noexcept;
 
-::std::uint64_t mmlens$cxxbridge1$ShimDistortionLayers$frame_hash(const ::mmlens::ShimDistortionLayers &self, ::std::uint16_t frame) noexcept;
+::std::uint64_t mmlens$cxxbridge1$ShimDistortionLayers$frame_hash(::mmlens::ShimDistortionLayers const &self, ::std::uint16_t frame) noexcept;
 
-::mmlens::CameraParameters mmlens$cxxbridge1$ShimDistortionLayers$camera_parameters(const ::mmlens::ShimDistortionLayers &self) noexcept;
+::mmlens::CameraParameters mmlens$cxxbridge1$ShimDistortionLayers$camera_parameters(::mmlens::ShimDistortionLayers const &self) noexcept;
 
-::std::uint8_t mmlens$cxxbridge1$ShimDistortionLayers$layer_count(const ::mmlens::ShimDistortionLayers &self) noexcept;
+::std::uint8_t mmlens$cxxbridge1$ShimDistortionLayers$layer_count(::mmlens::ShimDistortionLayers const &self) noexcept;
 
-::mmlens::LensModelType mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_model_type(const ::mmlens::ShimDistortionLayers &self, ::std::uint8_t layer_num) noexcept;
+::mmlens::LensModelType mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_model_type(::mmlens::ShimDistortionLayers const &self, ::std::uint8_t layer_num) noexcept;
 
-::mmlens::OptionParameters3deClassic mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_classic(const ::mmlens::ShimDistortionLayers &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
+::mmlens::OptionParameters3deClassic mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_classic(::mmlens::ShimDistortionLayers const &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
 
-::mmlens::OptionParameters3deRadialStdDeg4 mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_radial_std_deg4(const ::mmlens::ShimDistortionLayers &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
+::mmlens::OptionParameters3deRadialStdDeg4 mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_radial_std_deg4(::mmlens::ShimDistortionLayers const &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
 
-::mmlens::OptionParameters3deAnamorphicStdDeg4 mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_anamorphic_std_deg4(const ::mmlens::ShimDistortionLayers &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
+::mmlens::OptionParameters3deAnamorphicStdDeg4 mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_anamorphic_std_deg4(::mmlens::ShimDistortionLayers const &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
 
-::mmlens::OptionParameters3deAnamorphicStdDeg4Rescaled mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_anamorphic_std_deg4_rescaled(const ::mmlens::ShimDistortionLayers &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
+::mmlens::OptionParameters3deAnamorphicStdDeg4Rescaled mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_anamorphic_std_deg4_rescaled(::mmlens::ShimDistortionLayers const &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
 
-::mmlens::OptionParameters3deAnamorphicStdDeg6 mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_anamorphic_std_deg6(const ::mmlens::ShimDistortionLayers &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
+::mmlens::OptionParameters3deAnamorphicStdDeg6 mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_anamorphic_std_deg6(::mmlens::ShimDistortionLayers const &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
 
-::mmlens::OptionParameters3deAnamorphicStdDeg6Rescaled mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_anamorphic_std_deg6_rescaled(const ::mmlens::ShimDistortionLayers &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
+::mmlens::OptionParameters3deAnamorphicStdDeg6Rescaled mmlens$cxxbridge1$ShimDistortionLayers$layer_lens_parameters_3de_anamorphic_std_deg6_rescaled(::mmlens::ShimDistortionLayers const &self, ::std::uint8_t layer_num, ::std::uint16_t frame) noexcept;
 
-void mmlens$cxxbridge1$ShimDistortionLayers$as_string(const ::mmlens::ShimDistortionLayers &self, ::rust::String *return$) noexcept;
+void mmlens$cxxbridge1$ShimDistortionLayers$as_string(::mmlens::ShimDistortionLayers const &self, ::rust::String *return$) noexcept;
 
 ::mmlens::ShimDistortionLayers *mmlens$cxxbridge1$shim_create_distortion_layers_box() noexcept;
 
@@ -909,13 +909,13 @@ MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_classic(::mml
   apply_identity_to_f32_3de_classic$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_classic(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
-  void (*apply_f64_to_f64_3de_classic$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deClassic) = ::mmlens::apply_f64_to_f64;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_classic(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
+  void (*apply_f64_to_f64_3de_classic$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deClassic) = ::mmlens::apply_f64_to_f64;
   apply_f64_to_f64_3de_classic$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_classic(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
-  void (*apply_f64_to_f32_3de_classic$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deClassic) = ::mmlens::apply_f64_to_f32;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_classic(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
+  void (*apply_f64_to_f32_3de_classic$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deClassic) = ::mmlens::apply_f64_to_f32;
   apply_f64_to_f32_3de_classic$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
@@ -929,13 +929,13 @@ MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_radial_std_de
   apply_identity_to_f32_3de_radial_std_deg4$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_radial_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
-  void (*apply_f64_to_f64_3de_radial_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deRadialStdDeg4) = ::mmlens::apply_f64_to_f64;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_radial_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
+  void (*apply_f64_to_f64_3de_radial_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deRadialStdDeg4) = ::mmlens::apply_f64_to_f64;
   apply_f64_to_f64_3de_radial_std_deg4$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_radial_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
-  void (*apply_f64_to_f32_3de_radial_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deRadialStdDeg4) = ::mmlens::apply_f64_to_f32;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_radial_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
+  void (*apply_f64_to_f32_3de_radial_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deRadialStdDeg4) = ::mmlens::apply_f64_to_f32;
   apply_f64_to_f32_3de_radial_std_deg4$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
@@ -949,13 +949,13 @@ MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_st
   apply_identity_to_f32_3de_anamorphic_std_deg4$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
-  void (*apply_f64_to_f64_3de_anamorphic_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4) = ::mmlens::apply_f64_to_f64;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
+  void (*apply_f64_to_f64_3de_anamorphic_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4) = ::mmlens::apply_f64_to_f64;
   apply_f64_to_f64_3de_anamorphic_std_deg4$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
-  void (*apply_f64_to_f32_3de_anamorphic_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4) = ::mmlens::apply_f64_to_f32;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
+  void (*apply_f64_to_f32_3de_anamorphic_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4) = ::mmlens::apply_f64_to_f32;
   apply_f64_to_f32_3de_anamorphic_std_deg4$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
@@ -969,13 +969,13 @@ MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_st
   apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
-  void (*apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled) = ::mmlens::apply_f64_to_f64;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
+  void (*apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled) = ::mmlens::apply_f64_to_f64;
   apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
-  void (*apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled) = ::mmlens::apply_f64_to_f32;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
+  void (*apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled) = ::mmlens::apply_f64_to_f32;
   apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
@@ -989,13 +989,13 @@ MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_st
   apply_identity_to_f32_3de_anamorphic_std_deg6$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
-  void (*apply_f64_to_f64_3de_anamorphic_std_deg6$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6) = ::mmlens::apply_f64_to_f64;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
+  void (*apply_f64_to_f64_3de_anamorphic_std_deg6$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6) = ::mmlens::apply_f64_to_f64;
   apply_f64_to_f64_3de_anamorphic_std_deg6$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg6(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
-  void (*apply_f64_to_f32_3de_anamorphic_std_deg6$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6) = ::mmlens::apply_f64_to_f32;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg6(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
+  void (*apply_f64_to_f32_3de_anamorphic_std_deg6$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6) = ::mmlens::apply_f64_to_f32;
   apply_f64_to_f32_3de_anamorphic_std_deg6$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
@@ -1009,13 +1009,13 @@ MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_st
   apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
-  void (*apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled) = ::mmlens::apply_f64_to_f64;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
+  void (*apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled) = ::mmlens::apply_f64_to_f64;
   apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
-  void (*apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, const double *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled) = ::mmlens::apply_f64_to_f32;
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
+  void (*apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, double const *, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled) = ::mmlens::apply_f64_to_f32;
   apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
@@ -1025,384 +1025,384 @@ void mmlens$cxxbridge1$apply_identity_to_f64_3de_classic_multithread(::mmlens::D
 
 void mmlens$cxxbridge1$apply_identity_to_f32_3de_classic_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f64_3de_classic_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f64_3de_classic_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f32_3de_classic_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f32_3de_classic_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept;
 
 void mmlens$cxxbridge1$apply_identity_to_f64_3de_radial_std_deg4_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept;
 
 void mmlens$cxxbridge1$apply_identity_to_f32_3de_radial_std_deg4_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f64_3de_radial_std_deg4_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f64_3de_radial_std_deg4_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f32_3de_radial_std_deg4_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f32_3de_radial_std_deg4_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept;
 
 void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg4_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept;
 
 void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg4_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg4_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg4_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept;
 
 void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept;
 
 void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept;
 
 void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg6_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept;
 
 void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg6_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg6_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg6_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept;
 
 void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept;
 
 void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept;
 
-void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept;
+void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept;
 } // extern "C"
 
-bool ImageDimensions::operator==(const ImageDimensions &rhs) const noexcept {
+bool ImageDimensions::operator==(ImageDimensions const &rhs) const noexcept {
   return mmlens$cxxbridge1$ImageDimensions$operator$eq(*this, rhs);
 }
 
-bool ImageDimensions::operator!=(const ImageDimensions &rhs) const noexcept {
+bool ImageDimensions::operator!=(ImageDimensions const &rhs) const noexcept {
   return mmlens$cxxbridge1$ImageDimensions$operator$ne(*this, rhs);
 }
 
-bool ImageDimensions::operator<(const ImageDimensions &rhs) const noexcept {
+bool ImageDimensions::operator<(ImageDimensions const &rhs) const noexcept {
   return mmlens$cxxbridge1$ImageDimensions$operator$lt(*this, rhs);
 }
 
-bool ImageDimensions::operator<=(const ImageDimensions &rhs) const noexcept {
+bool ImageDimensions::operator<=(ImageDimensions const &rhs) const noexcept {
   return mmlens$cxxbridge1$ImageDimensions$operator$le(*this, rhs);
 }
 
-bool ImageDimensions::operator>(const ImageDimensions &rhs) const noexcept {
+bool ImageDimensions::operator>(ImageDimensions const &rhs) const noexcept {
   return mmlens$cxxbridge1$ImageDimensions$operator$gt(*this, rhs);
 }
 
-bool ImageDimensions::operator>=(const ImageDimensions &rhs) const noexcept {
+bool ImageDimensions::operator>=(ImageDimensions const &rhs) const noexcept {
   return mmlens$cxxbridge1$ImageDimensions$operator$ge(*this, rhs);
 }
 
-bool CameraParameters::operator==(const CameraParameters &rhs) const noexcept {
+bool CameraParameters::operator==(CameraParameters const &rhs) const noexcept {
   return mmlens$cxxbridge1$CameraParameters$operator$eq(*this, rhs);
 }
 
-bool CameraParameters::operator!=(const CameraParameters &rhs) const noexcept {
+bool CameraParameters::operator!=(CameraParameters const &rhs) const noexcept {
   return mmlens$cxxbridge1$CameraParameters$operator$ne(*this, rhs);
 }
 
-bool CameraParameters::operator<(const CameraParameters &rhs) const noexcept {
+bool CameraParameters::operator<(CameraParameters const &rhs) const noexcept {
   return mmlens$cxxbridge1$CameraParameters$operator$lt(*this, rhs);
 }
 
-bool CameraParameters::operator<=(const CameraParameters &rhs) const noexcept {
+bool CameraParameters::operator<=(CameraParameters const &rhs) const noexcept {
   return mmlens$cxxbridge1$CameraParameters$operator$le(*this, rhs);
 }
 
-bool CameraParameters::operator>(const CameraParameters &rhs) const noexcept {
+bool CameraParameters::operator>(CameraParameters const &rhs) const noexcept {
   return mmlens$cxxbridge1$CameraParameters$operator$gt(*this, rhs);
 }
 
-bool CameraParameters::operator>=(const CameraParameters &rhs) const noexcept {
+bool CameraParameters::operator>=(CameraParameters const &rhs) const noexcept {
   return mmlens$cxxbridge1$CameraParameters$operator$ge(*this, rhs);
 }
 
-bool Parameters3deClassic::operator==(const Parameters3deClassic &rhs) const noexcept {
+bool Parameters3deClassic::operator==(Parameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deClassic$operator$eq(*this, rhs);
 }
 
-bool Parameters3deClassic::operator!=(const Parameters3deClassic &rhs) const noexcept {
+bool Parameters3deClassic::operator!=(Parameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deClassic$operator$ne(*this, rhs);
 }
 
-bool Parameters3deClassic::operator<(const Parameters3deClassic &rhs) const noexcept {
+bool Parameters3deClassic::operator<(Parameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deClassic$operator$lt(*this, rhs);
 }
 
-bool Parameters3deClassic::operator<=(const Parameters3deClassic &rhs) const noexcept {
+bool Parameters3deClassic::operator<=(Parameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deClassic$operator$le(*this, rhs);
 }
 
-bool Parameters3deClassic::operator>(const Parameters3deClassic &rhs) const noexcept {
+bool Parameters3deClassic::operator>(Parameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deClassic$operator$gt(*this, rhs);
 }
 
-bool Parameters3deClassic::operator>=(const Parameters3deClassic &rhs) const noexcept {
+bool Parameters3deClassic::operator>=(Parameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deClassic$operator$ge(*this, rhs);
 }
 
-bool Parameters3deRadialStdDeg4::operator==(const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+bool Parameters3deRadialStdDeg4::operator==(Parameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$eq(*this, rhs);
 }
 
-bool Parameters3deRadialStdDeg4::operator!=(const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+bool Parameters3deRadialStdDeg4::operator!=(Parameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$ne(*this, rhs);
 }
 
-bool Parameters3deRadialStdDeg4::operator<(const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+bool Parameters3deRadialStdDeg4::operator<(Parameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$lt(*this, rhs);
 }
 
-bool Parameters3deRadialStdDeg4::operator<=(const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+bool Parameters3deRadialStdDeg4::operator<=(Parameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$le(*this, rhs);
 }
 
-bool Parameters3deRadialStdDeg4::operator>(const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+bool Parameters3deRadialStdDeg4::operator>(Parameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$gt(*this, rhs);
 }
 
-bool Parameters3deRadialStdDeg4::operator>=(const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+bool Parameters3deRadialStdDeg4::operator>=(Parameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$ge(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4::operator==(const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4::operator==(Parameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$eq(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4::operator!=(const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4::operator!=(Parameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$ne(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4::operator<(const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4::operator<(Parameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$lt(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4::operator<=(const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4::operator<=(Parameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$le(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4::operator>(const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4::operator>(Parameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$gt(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4::operator>=(const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4::operator>=(Parameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$ge(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4Rescaled::operator==(const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator==(Parameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$eq(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4Rescaled::operator!=(const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator!=(Parameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$ne(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4Rescaled::operator<(const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator<(Parameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$lt(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4Rescaled::operator<=(const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator<=(Parameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$le(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4Rescaled::operator>(const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator>(Parameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$gt(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg4Rescaled::operator>=(const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator>=(Parameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$ge(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6::operator==(const Parameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6::operator==(Parameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$eq(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6::operator!=(const Parameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6::operator!=(Parameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$ne(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6::operator<(const Parameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6::operator<(Parameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$lt(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6::operator<=(const Parameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6::operator<=(Parameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$le(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6::operator>(const Parameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6::operator>(Parameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$gt(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6::operator>=(const Parameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6::operator>=(Parameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6$operator$ge(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6Rescaled::operator==(const Parameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6Rescaled::operator==(Parameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$eq(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6Rescaled::operator!=(const Parameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6Rescaled::operator!=(Parameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$ne(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6Rescaled::operator<(const Parameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6Rescaled::operator<(Parameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$lt(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6Rescaled::operator<=(const Parameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6Rescaled::operator<=(Parameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$le(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6Rescaled::operator>(const Parameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6Rescaled::operator>(Parameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$gt(*this, rhs);
 }
 
-bool Parameters3deAnamorphicStdDeg6Rescaled::operator>=(const Parameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool Parameters3deAnamorphicStdDeg6Rescaled::operator>=(Parameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg6Rescaled$operator$ge(*this, rhs);
 }
 
-bool OptionParameters3deClassic::operator==(const OptionParameters3deClassic &rhs) const noexcept {
+bool OptionParameters3deClassic::operator==(OptionParameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deClassic$operator$eq(*this, rhs);
 }
 
-bool OptionParameters3deClassic::operator!=(const OptionParameters3deClassic &rhs) const noexcept {
+bool OptionParameters3deClassic::operator!=(OptionParameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deClassic$operator$ne(*this, rhs);
 }
 
-bool OptionParameters3deClassic::operator<(const OptionParameters3deClassic &rhs) const noexcept {
+bool OptionParameters3deClassic::operator<(OptionParameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deClassic$operator$lt(*this, rhs);
 }
 
-bool OptionParameters3deClassic::operator<=(const OptionParameters3deClassic &rhs) const noexcept {
+bool OptionParameters3deClassic::operator<=(OptionParameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deClassic$operator$le(*this, rhs);
 }
 
-bool OptionParameters3deClassic::operator>(const OptionParameters3deClassic &rhs) const noexcept {
+bool OptionParameters3deClassic::operator>(OptionParameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deClassic$operator$gt(*this, rhs);
 }
 
-bool OptionParameters3deClassic::operator>=(const OptionParameters3deClassic &rhs) const noexcept {
+bool OptionParameters3deClassic::operator>=(OptionParameters3deClassic const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deClassic$operator$ge(*this, rhs);
 }
 
-bool OptionParameters3deRadialStdDeg4::operator==(const OptionParameters3deRadialStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deRadialStdDeg4::operator==(OptionParameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$eq(*this, rhs);
 }
 
-bool OptionParameters3deRadialStdDeg4::operator!=(const OptionParameters3deRadialStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deRadialStdDeg4::operator!=(OptionParameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$ne(*this, rhs);
 }
 
-bool OptionParameters3deRadialStdDeg4::operator<(const OptionParameters3deRadialStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deRadialStdDeg4::operator<(OptionParameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$lt(*this, rhs);
 }
 
-bool OptionParameters3deRadialStdDeg4::operator<=(const OptionParameters3deRadialStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deRadialStdDeg4::operator<=(OptionParameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$le(*this, rhs);
 }
 
-bool OptionParameters3deRadialStdDeg4::operator>(const OptionParameters3deRadialStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deRadialStdDeg4::operator>(OptionParameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$gt(*this, rhs);
 }
 
-bool OptionParameters3deRadialStdDeg4::operator>=(const OptionParameters3deRadialStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deRadialStdDeg4::operator>=(OptionParameters3deRadialStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deRadialStdDeg4$operator$ge(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4::operator==(const OptionParameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4::operator==(OptionParameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$eq(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4::operator!=(const OptionParameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4::operator!=(OptionParameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$ne(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4::operator<(const OptionParameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4::operator<(OptionParameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$lt(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4::operator<=(const OptionParameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4::operator<=(OptionParameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$le(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4::operator>(const OptionParameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4::operator>(OptionParameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$gt(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4::operator>=(const OptionParameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4::operator>=(OptionParameters3deAnamorphicStdDeg4 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4$operator$ge(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator==(const OptionParameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator==(OptionParameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$eq(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator!=(const OptionParameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator!=(OptionParameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$ne(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator<(const OptionParameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator<(OptionParameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$lt(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator<=(const OptionParameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator<=(OptionParameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$le(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator>(const OptionParameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator>(OptionParameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$gt(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator>=(const OptionParameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg4Rescaled::operator>=(OptionParameters3deAnamorphicStdDeg4Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg4Rescaled$operator$ge(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6::operator==(const OptionParameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6::operator==(OptionParameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$eq(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6::operator!=(const OptionParameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6::operator!=(OptionParameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$ne(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6::operator<(const OptionParameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6::operator<(OptionParameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$lt(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6::operator<=(const OptionParameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6::operator<=(OptionParameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$le(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6::operator>(const OptionParameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6::operator>(OptionParameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$gt(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6::operator>=(const OptionParameters3deAnamorphicStdDeg6 &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6::operator>=(OptionParameters3deAnamorphicStdDeg6 const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6$operator$ge(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator==(const OptionParameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator==(OptionParameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$eq(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator!=(const OptionParameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator!=(OptionParameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$ne(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator<(const OptionParameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator<(OptionParameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$lt(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator<=(const OptionParameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator<=(OptionParameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$le(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator>(const OptionParameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator>(OptionParameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$gt(*this, rhs);
 }
 
-bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator>=(const OptionParameters3deAnamorphicStdDeg6Rescaled &rhs) const noexcept {
+bool OptionParameters3deAnamorphicStdDeg6Rescaled::operator>=(OptionParameters3deAnamorphicStdDeg6Rescaled const &rhs) const noexcept {
   return mmlens$cxxbridge1$OptionParameters3deAnamorphicStdDeg6Rescaled$operator$ge(*this, rhs);
 }
 
@@ -1492,11 +1492,11 @@ MMLENS_API_EXPORT void apply_identity_to_f32_multithread(::mmlens::DistortionDir
   mmlens$cxxbridge1$apply_identity_to_f32_3de_classic_multithread(direction, image_width, image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f64_3de_classic_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f32_3de_classic_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
@@ -1508,11 +1508,11 @@ MMLENS_API_EXPORT void apply_identity_to_f32_multithread(::mmlens::DistortionDir
   mmlens$cxxbridge1$apply_identity_to_f32_3de_radial_std_deg4_multithread(direction, image_width, image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f64_3de_radial_std_deg4_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f32_3de_radial_std_deg4_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
@@ -1524,11 +1524,11 @@ MMLENS_API_EXPORT void apply_identity_to_f32_multithread(::mmlens::DistortionDir
   mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg4_multithread(direction, image_width, image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg4_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
@@ -1540,11 +1540,11 @@ MMLENS_API_EXPORT void apply_identity_to_f32_multithread(::mmlens::DistortionDir
   mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled_multithread(direction, image_width, image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
@@ -1556,11 +1556,11 @@ MMLENS_API_EXPORT void apply_identity_to_f32_multithread(::mmlens::DistortionDir
   mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg6_multithread(direction, image_width, image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg6_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
@@ -1572,11 +1572,11 @@ MMLENS_API_EXPORT void apply_identity_to_f32_multithread(::mmlens::DistortionDir
   mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled_multithread(direction, image_width, image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
+MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, double const *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
   mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled_multithread(direction, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 } // namespace mmlens

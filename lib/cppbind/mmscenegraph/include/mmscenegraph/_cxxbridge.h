@@ -57,6 +57,9 @@ public:
   Slice() noexcept;
   Slice(T *, std::size_t count) noexcept;
 
+  template <typename C>
+  explicit Slice(C& c) : Slice(c.data(), c.size()) {}
+
   Slice &operator=(const Slice<T> &) &noexcept = default;
   Slice &operator=(Slice<T> &&) &noexcept = default;
 
@@ -269,7 +272,8 @@ typename Slice<T>::iterator::difference_type
 Slice<T>::iterator::operator-(const iterator &other) const noexcept {
   auto diff = std::distance(static_cast<char *>(other.pos),
                             static_cast<char *>(this->pos));
-  return diff / this->stride;
+  return diff / static_cast<typename Slice<T>::iterator::difference_type>(
+                    this->stride);
 }
 
 template <typename T>
@@ -851,8 +855,8 @@ struct Point3 final {
   double y;
   double z;
 
-  bool operator==(const Point3 &) const noexcept;
-  bool operator!=(const Point3 &) const noexcept;
+  bool operator==(Point3 const &) const noexcept;
+  bool operator!=(Point3 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmscenegraph$Point3
@@ -863,12 +867,12 @@ struct NodeId final {
   ::mmscenegraph::NodeType node_type;
   ::std::size_t index;
 
-  bool operator==(const NodeId &) const noexcept;
-  bool operator!=(const NodeId &) const noexcept;
-  bool operator<(const NodeId &) const noexcept;
-  bool operator<=(const NodeId &) const noexcept;
-  bool operator>(const NodeId &) const noexcept;
-  bool operator>=(const NodeId &) const noexcept;
+  bool operator==(NodeId const &) const noexcept;
+  bool operator!=(NodeId const &) const noexcept;
+  bool operator<(NodeId const &) const noexcept;
+  bool operator<=(NodeId const &) const noexcept;
+  bool operator>(NodeId const &) const noexcept;
+  bool operator>=(NodeId const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmscenegraph$NodeId
@@ -889,12 +893,12 @@ struct AttrId final {
   ::mmscenegraph::AttrType attr_type;
   ::std::size_t index;
 
-  bool operator==(const AttrId &) const noexcept;
-  bool operator!=(const AttrId &) const noexcept;
-  bool operator<(const AttrId &) const noexcept;
-  bool operator<=(const AttrId &) const noexcept;
-  bool operator>(const AttrId &) const noexcept;
-  bool operator>=(const AttrId &) const noexcept;
+  bool operator==(AttrId const &) const noexcept;
+  bool operator!=(AttrId const &) const noexcept;
+  bool operator<(AttrId const &) const noexcept;
+  bool operator<=(AttrId const &) const noexcept;
+  bool operator>(AttrId const &) const noexcept;
+  bool operator>=(AttrId const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmscenegraph$AttrId
@@ -1008,12 +1012,12 @@ struct TransformNode final {
   ::mmscenegraph::AttrId attr_sz;
   ::mmscenegraph::RotateOrder rotate_order;
 
-  bool operator==(const TransformNode &) const noexcept;
-  bool operator!=(const TransformNode &) const noexcept;
-  bool operator<(const TransformNode &) const noexcept;
-  bool operator<=(const TransformNode &) const noexcept;
-  bool operator>(const TransformNode &) const noexcept;
-  bool operator>=(const TransformNode &) const noexcept;
+  bool operator==(TransformNode const &) const noexcept;
+  bool operator!=(TransformNode const &) const noexcept;
+  bool operator<(TransformNode const &) const noexcept;
+  bool operator<=(TransformNode const &) const noexcept;
+  bool operator>(TransformNode const &) const noexcept;
+  bool operator>=(TransformNode const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmscenegraph$TransformNode
@@ -1033,12 +1037,12 @@ struct BundleNode final {
   ::mmscenegraph::AttrId attr_sz;
   ::mmscenegraph::RotateOrder rotate_order;
 
-  bool operator==(const BundleNode &) const noexcept;
-  bool operator!=(const BundleNode &) const noexcept;
-  bool operator<(const BundleNode &) const noexcept;
-  bool operator<=(const BundleNode &) const noexcept;
-  bool operator>(const BundleNode &) const noexcept;
-  bool operator>=(const BundleNode &) const noexcept;
+  bool operator==(BundleNode const &) const noexcept;
+  bool operator!=(BundleNode const &) const noexcept;
+  bool operator<(BundleNode const &) const noexcept;
+  bool operator<=(BundleNode const &) const noexcept;
+  bool operator>(BundleNode const &) const noexcept;
+  bool operator>=(BundleNode const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmscenegraph$BundleNode
@@ -1069,12 +1073,12 @@ struct CameraNode final {
   ::std::int32_t render_image_width;
   ::std::int32_t render_image_height;
 
-  bool operator==(const CameraNode &) const noexcept;
-  bool operator!=(const CameraNode &) const noexcept;
-  bool operator<(const CameraNode &) const noexcept;
-  bool operator<=(const CameraNode &) const noexcept;
-  bool operator>(const CameraNode &) const noexcept;
-  bool operator>=(const CameraNode &) const noexcept;
+  bool operator==(CameraNode const &) const noexcept;
+  bool operator!=(CameraNode const &) const noexcept;
+  bool operator<(CameraNode const &) const noexcept;
+  bool operator<=(CameraNode const &) const noexcept;
+  bool operator>(CameraNode const &) const noexcept;
+  bool operator>=(CameraNode const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmscenegraph$CameraNode
@@ -1087,12 +1091,12 @@ struct MarkerNode final {
   ::mmscenegraph::AttrId attr_ty;
   ::mmscenegraph::AttrId attr_weight;
 
-  bool operator==(const MarkerNode &) const noexcept;
-  bool operator!=(const MarkerNode &) const noexcept;
-  bool operator<(const MarkerNode &) const noexcept;
-  bool operator<=(const MarkerNode &) const noexcept;
-  bool operator>(const MarkerNode &) const noexcept;
-  bool operator>=(const MarkerNode &) const noexcept;
+  bool operator==(MarkerNode const &) const noexcept;
+  bool operator!=(MarkerNode const &) const noexcept;
+  bool operator<(MarkerNode const &) const noexcept;
+  bool operator<=(MarkerNode const &) const noexcept;
+  bool operator>(MarkerNode const &) const noexcept;
+  bool operator>=(MarkerNode const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmscenegraph$MarkerNode
@@ -1147,11 +1151,11 @@ private:
 #ifndef CXXBRIDGE1_STRUCT_mmscenegraph$ShimFlatScene
 #define CXXBRIDGE1_STRUCT_mmscenegraph$ShimFlatScene
 struct ShimFlatScene final : public ::rust::Opaque {
-  MMSCENEGRAPH_API_EXPORT ::rust::Slice<const double> markers() const noexcept;
-  MMSCENEGRAPH_API_EXPORT ::rust::Slice<const double> points() const noexcept;
+  MMSCENEGRAPH_API_EXPORT ::rust::Slice<double const> markers() const noexcept;
+  MMSCENEGRAPH_API_EXPORT ::rust::Slice<double const> points() const noexcept;
   MMSCENEGRAPH_API_EXPORT ::std::size_t num_markers() const noexcept;
   MMSCENEGRAPH_API_EXPORT ::std::size_t num_points() const noexcept;
-  MMSCENEGRAPH_API_EXPORT void evaluate(const ::rust::Box<::mmscenegraph::ShimAttrDataBlock> &attrdb, ::rust::Slice<const ::std::uint32_t> frame_list) noexcept;
+  MMSCENEGRAPH_API_EXPORT void evaluate(::rust::Box<::mmscenegraph::ShimAttrDataBlock> const &attrdb, ::rust::Slice<::std::uint32_t const> frame_list) noexcept;
   ~ShimFlatScene() = delete;
 
 private:
@@ -1173,9 +1177,9 @@ struct ShimEvaluationObjects final : public ::rust::Opaque {
   MMSCENEGRAPH_API_EXPORT ::std::size_t num_bundles() const noexcept;
   MMSCENEGRAPH_API_EXPORT ::std::size_t num_markers() const noexcept;
   MMSCENEGRAPH_API_EXPORT ::std::size_t num_cameras() const noexcept;
-  MMSCENEGRAPH_API_EXPORT void add_bundle(const ::mmscenegraph::BundleNode &bnd_node) noexcept;
-  MMSCENEGRAPH_API_EXPORT void add_camera(const ::mmscenegraph::CameraNode &cam_node) noexcept;
-  MMSCENEGRAPH_API_EXPORT void add_marker(const ::mmscenegraph::MarkerNode &mkr_node) noexcept;
+  MMSCENEGRAPH_API_EXPORT void add_bundle(::mmscenegraph::BundleNode const &bnd_node) noexcept;
+  MMSCENEGRAPH_API_EXPORT void add_camera(::mmscenegraph::CameraNode const &cam_node) noexcept;
+  MMSCENEGRAPH_API_EXPORT void add_marker(::mmscenegraph::MarkerNode const &mkr_node) noexcept;
   ~ShimEvaluationObjects() = delete;
 
 private:
@@ -1211,81 +1215,81 @@ MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimAttrDataBlock> shim_crea
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimSceneGraph> shim_create_scene_graph_box() noexcept;
 
-MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_bake_scene_graph(const ::rust::Box<::mmscenegraph::ShimSceneGraph> &sg, const ::rust::Box<::mmscenegraph::ShimEvaluationObjects> &eval_objects) noexcept;
+MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_bake_scene_graph(::rust::Box<::mmscenegraph::ShimSceneGraph> const &sg, ::rust::Box<::mmscenegraph::ShimEvaluationObjects> const &eval_objects) noexcept;
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_create_flat_scene_box() noexcept;
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimEvaluationObjects> shim_create_evaluation_objects_box() noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_dir_x, double &out_dir_y) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<double const> x, ::rust::Slice<double const> y, double &out_point_x, double &out_point_y, double &out_dir_x, double &out_dir_y) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_fit_straight_line_to_ordered_points(::rust::Slice<const double> points_coord_x, ::rust::Slice<const double> points_coord_y, double &out_point_x, double &out_point_y, double &out_dir_x, double &out_dir_y) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_fit_straight_line_to_ordered_points(::rust::Slice<double const> points_coord_x, ::rust::Slice<double const> points_coord_y, double &out_point_x, double &out_point_y, double &out_dir_x, double &out_dir_y) noexcept;
 
 MMSCENEGRAPH_API_EXPORT bool shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_fit_plane_to_points(::rust::Slice<const double> points_xyz, double &out_point_x, double &out_point_y, double &out_point_z, double &out_dir_x, double &out_dir_y, double &out_dir_z, double &out_scale, double &out_rms_error) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_fit_plane_to_points(::rust::Slice<double const> points_xyz, double &out_point_x, double &out_point_y, double &out_point_z, double &out_dir_x, double &out_dir_y, double &out_dir_z, double &out_scale, double &out_rms_error) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_detect_curve_pops(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_detect_curve_pops(::rust::Slice<double const> x_values, ::rust::Slice<double const> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_filter_curve_pops(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_filter_curve_pops(::rust::Slice<double const> x_values, ::rust::Slice<double const> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_curve_simplify(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, ::std::size_t control_point_count, ::mmscenegraph::ControlPointDistribution distribution, ::mmscenegraph::Interpolation interpolation_method, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_curve_simplify(::rust::Slice<double const> x_values, ::rust::Slice<double const> y_values, ::std::size_t control_point_count, ::mmscenegraph::ControlPointDistribution distribution, ::mmscenegraph::Interpolation interpolation_method, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
 
 MMSCENEGRAPH_API_EXPORT double shim_gaussian(double x, double mean, double sigma) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_mean_absolute_deviation(::rust::Slice<const double> data, double &out_mean) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_mean_absolute_deviation(::rust::Slice<double const> data, double &out_mean) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_population_variance(::rust::Slice<const double> data, double &out_mean, double &out_variance) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_population_variance(::rust::Slice<double const> data, double &out_mean, double &out_variance) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_variance(::rust::Slice<const double> data, double &out_mean, double &out_variance) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_variance(::rust::Slice<double const> data, double &out_mean, double &out_variance) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_population_standard_deviation(::rust::Slice<const double> data, double &out_mean, double &out_std_dev) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_population_standard_deviation(::rust::Slice<double const> data, double &out_mean, double &out_std_dev) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_standard_deviation(::rust::Slice<const double> data, double &out_mean, double &out_std_dev) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_standard_deviation(::rust::Slice<double const> data, double &out_mean, double &out_std_dev) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_population_coefficient_of_variation(::rust::Slice<const double> data, double &out_mean, double &out_cv) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_population_coefficient_of_variation(::rust::Slice<double const> data, double &out_mean, double &out_cv) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_coefficient_of_variation(::rust::Slice<const double> data, double &out_mean, double &out_cv) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_coefficient_of_variation(::rust::Slice<double const> data, double &out_mean, double &out_cv) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_population_relative_standard_deviation(::rust::Slice<const double> data, double &out_mean, double &out_rsd) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_population_relative_standard_deviation(::rust::Slice<double const> data, double &out_mean, double &out_rsd) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_relative_standard_deviation(::rust::Slice<const double> data, double &out_mean, double &out_rsd) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_relative_standard_deviation(::rust::Slice<double const> data, double &out_mean, double &out_rsd) noexcept;
 
 MMSCENEGRAPH_API_EXPORT double shim_calc_z_score(double mean, double std_dev, double value) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_peak_to_peak(::rust::Slice<const double> data, double &out_value) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_peak_to_peak(::rust::Slice<double const> data, double &out_value) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_skewness_type1(::rust::Slice<const double> data, double &out_mean, double &out_skewness) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_skewness_type1(::rust::Slice<double const> data, double &out_mean, double &out_skewness) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_skewness_type2(::rust::Slice<const double> data, double &out_mean, double &out_skewness) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_skewness_type2(::rust::Slice<double const> data, double &out_mean, double &out_skewness) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_population_kurtosis_excess(::rust::Slice<const double> data, double &out_mean, double &out_kurtosis) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_population_kurtosis_excess(::rust::Slice<double const> data, double &out_mean, double &out_kurtosis) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_kurtosis_excess(::rust::Slice<const double> data, double &out_mean, double &out_kurtosis) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_sample_kurtosis_excess(::rust::Slice<double const> data, double &out_mean, double &out_kurtosis) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_local_minima_maxima(::rust::Slice<const double> data, ::rust::Vec<::std::size_t> &out_indices) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_local_minima_maxima(::rust::Slice<double const> data, ::rust::Vec<::std::size_t> &out_indices) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_signal_to_noise_ratio(::rust::Slice<const double> data, double &out_mean, double &out_snr) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_signal_to_noise_ratio(::rust::Slice<double const> data, double &out_mean, double &out_snr) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_signal_to_noise_ratio_as_decibels(::rust::Slice<const double> data, double &out_mean, double &out_snr_db) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_signal_to_noise_ratio_as_decibels(::rust::Slice<double const> data, double &out_mean, double &out_snr_db) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_median_absolute_deviation(::rust::Slice<const double> sorted_data, double &out_median, double &out_mad) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_median_absolute_deviation(::rust::Slice<double const> sorted_data, double &out_median, double &out_mad) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_median_absolute_deviation_sigma(double value, ::rust::Slice<const double> sorted_data, double &out_median, double &out_sigma) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_median_absolute_deviation_sigma(double value, ::rust::Slice<double const> sorted_data, double &out_median, double &out_sigma) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_quantile(::rust::Slice<const double> sorted_data, double probability, double &out_value) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_quantile(::rust::Slice<double const> sorted_data, double probability, double &out_value) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_quartiles(::rust::Slice<const double> sorted_data, double &out_q1, double &out_q2, double &out_q3) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_quartiles(::rust::Slice<double const> sorted_data, double &out_q1, double &out_q2, double &out_q3) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_interquartile_range(::rust::Slice<const double> sorted_data, double &out_median, double &out_iqr) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_interquartile_range(::rust::Slice<double const> sorted_data, double &out_median, double &out_iqr) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_percentile_rank(::rust::Slice<const double> sorted_data, double value, double &out_rank) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_percentile_rank(::rust::Slice<double const> sorted_data, double value, double &out_rank) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_mean_absolute_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_mae) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_mean_absolute_error(::rust::Slice<double const> actual, ::rust::Slice<double const> predicted, double &out_mae) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_root_mean_square_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_rmse) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_root_mean_square_error(::rust::Slice<double const> actual, ::rust::Slice<double const> predicted, double &out_rmse) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_normalized_root_mean_square_error(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_nrmse) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_normalized_root_mean_square_error(::rust::Slice<double const> actual, ::rust::Slice<double const> predicted, double &out_nrmse) noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_calc_coefficient_of_determination(::rust::Slice<const double> actual, ::rust::Slice<const double> predicted, double &out_r_squared) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_calc_coefficient_of_determination(::rust::Slice<double const> actual, ::rust::Slice<double const> predicted, double &out_r_squared) noexcept;
 } // namespace mmscenegraph

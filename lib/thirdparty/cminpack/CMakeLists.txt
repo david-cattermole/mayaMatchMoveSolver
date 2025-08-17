@@ -96,3 +96,14 @@ endif()
 
 # Create an alias to match the expected target name
 add_library(cminpack::cminpack ALIAS cminpack_s)
+
+# Install headers
+install(FILES
+  cminpack.h
+  minpack.h
+  DESTINATION include/cminpack-1
+)
+
+# Install the library as part of mmsolverlibs
+include(MMCommonUtils)
+mm_common_install_target_library("mmsolverlibs_cpp" cminpack_s)

@@ -105,3 +105,17 @@ if(MSVC)
   set_target_properties(openMVG PROPERTIES COMPILE_FLAGS "/bigobj")
   target_compile_options(openMVG PUBLIC "-D_USE_MATH_DEFINES")
 endif()
+
+# Install OpenMVG headers and template implementation files.
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../openMVG/
+        DESTINATION include/openMVG
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.cpp")
+
+# Install OpenMVG third_party dependencies.
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/
+        DESTINATION include/third_party
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.cpp")
+
+# Install OpenMVG as part of mmsolverlibs.
+include(MMCommonUtils)
+mm_common_install_target_library("mmsolverlibs_cpp" openMVG)

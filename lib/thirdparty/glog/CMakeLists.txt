@@ -154,4 +154,20 @@ set_target_properties(glog PROPERTIES
   OUTPUT_NAME glog
 )
 
+# Install the library and headers for integration with the main build
+install(TARGETS glog
+  EXPORT mmsolverlibs_cppTargets
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+
+# Install headers
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/glog
+  DESTINATION include
+  FILES_MATCHING PATTERN "*.h"
+)
+
 message(STATUS "glog: Version ${GLOG_VERSION} (vendored)")
+

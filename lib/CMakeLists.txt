@@ -116,3 +116,6 @@ if (MMSOLVERLIBS_BUILD_TESTS)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmimage/tests)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmscenegraph/tests)
 endif()
+
+include(MMCommonUtils)
+mm_common_add_install_target("mmsolverlibs_cpp" ${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in)

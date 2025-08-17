@@ -180,6 +180,13 @@ IF EXIST "C:\MinGW" (
     SET IGNORE_INCLUDE_DIRECTORIES="C:\MinGW\bin;C:\MinGW\include"
 )
 
+:: A local copy of LDPK to reduce the amount of downloads to the
+:: 3DEqualizer website (LDPK doesn't have a git repo to clone from).
+SET LDPK_URL="%PROJECT_ROOT%\external\archives\ldpk-2.12.0.tar"
+:: Convert back-slashes to forward-slashes.
+:: https://stackoverflow.com/questions/23542453/change-backslash-to-forward-slash-in-windows-batch-file
+SET "LDPK_URL=%LDPK_URL:\=/%"
+
 :: Get the git branch name, commit long and short hashes.
 ::
 :: NOTE: Assumes the current working directory is the project root.
@@ -257,6 +264,7 @@ CHDIR "%BUILD_DIR%"
     -DMMSOLVERLIBS_LIB_DIR=%MMSOLVERLIBS_LIB_DIR% ^
     -Dmmsolverlibs_rust_DIR=%MMSOLVERLIBS_RUST_DIR% ^
     -Dmmsolverlibs_cpp_DIR=%MMSOLVERLIBS_CMAKE_CONFIG_DIR% ^
+    -Dldpk_URL=%LDPK_URL% ^
     -DOpenColorIO_DIR=%OCIO_CMAKE_CONFIG_DIR% ^
     -DOCIO_INSTALL_EXT_PACKAGES=NONE ^
     -DopenMVG_USE_AVX=0 ^

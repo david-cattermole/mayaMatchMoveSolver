@@ -55,5 +55,3 @@ target_include_directories(${target_test_exe_name}
 include(MMColorIOUtils)
 mmcolorio_find_packages()
 mmcolorio_target_link_packages(${target_test_exe_name})
-
-install(TARGETS ${target_test_exe_name})

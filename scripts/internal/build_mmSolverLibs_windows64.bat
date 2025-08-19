@@ -18,6 +18,10 @@
 :: along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 :: ---------------------------------------------------------------------
 ::
+:: DEPRECATED: This script is deprecated and no longer used.
+:: The mmSolverLibs functionality has been merged into build_mmSolver_windows64.bat.
+:: This file is kept for reference only and will be removed in a future version.
+::
 :: Build the mmSolverLibs library.
 ::
 :: NOTE: Do not call this script directly! This file should be called by

@@ -18,7 +18,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# Builds the Maya MatchMove Solver project.
+# Builds the Maya MatchMove Solver project (unified build including Rust libraries).
 #
 # This script is assumed to be called with a number of variables
 # already set:
@@ -27,6 +27,7 @@
 # - MAYA_LOCATION
 # - PYTHON_EXE
 # - CMAKE_EXE
+# - RUST_CARGO_EXE
 
 # The -e flag causes the script to exit as soon as one command returns
 # a non-zero exit code.
@@ -108,18 +109,17 @@ echo "Project Root: ${PROJECT_ROOT}"
 PYTHON_VIRTUAL_ENV_DIR_NAME="python_venv_linux_maya${MAYA_VERSION}"
 source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"
 
-# Where to find the mmsolverlibs Rust libraries and headers.
-MMSOLVERLIBS_INSTALL_DIR="${BUILD_MMSOLVERLIBS_DIR_BASE}/install/maya${MAYA_VERSION}_linux/"
-MMSOLVERLIBS_CMAKE_CONFIG_DIR="${MMSOLVERLIBS_INSTALL_DIR}/lib64/cmake/mmsolverlibs_cpp"
-MMSOLVERLIBS_RUST_DIR="${BUILD_MMSOLVERLIBS_DIR_BASE}/rust_linux_maya${MAYA_VERSION}/${BUILD_TYPE_DIR}"
+# mmSolver build dir (now includes mmSolverLibs).
+BUILD_MMSOLVER_DIR_NAME="build_mmsolver"
+BUILD_MMSOLVER_DIR_BASE="${BUILD_DIR_BASE}/${BUILD_MMSOLVER_DIR_NAME}"
+echo "Build mmSolver directory base: ${BUILD_MMSOLVER_DIR_BASE}"
 
-# Where to find the mmsolverlibs Rust libraries and headers.
-MMSOLVERLIBS_INSTALL_PATH="${BUILD_MMSOLVERLIBS_DIR_BASE}/install/maya${MAYA_VERSION}_linux/"
+# Where to find the mmsolverlibs Rust libraries and headers (now built as part of mmSolver).
 MMSOLVERLIBS_ROOT="${PROJECT_ROOT}/lib"
 MMSOLVERLIBS_RUST_ROOT="${MMSOLVERLIBS_ROOT}/mmsolverlibs"
-MMSOLVERLIBS_CPP_TARGET_DIR="${BUILD_MMSOLVERLIBS_DIR_BASE}/rust_linux_maya${MAYA_VERSION}"
+MMSOLVERLIBS_CPP_TARGET_DIR="${BUILD_MMSOLVER_DIR_BASE}/rust_linux_maya${MAYA_VERSION}"
 MMSOLVERLIBS_LIB_DIR="${MMSOLVERLIBS_CPP_TARGET_DIR}/${BUILD_TYPE_DIR}"
-MMSOLVERLIBS_INCLUDE_DIR="${MMSOLVERLIBS_ROOT}/include"
+MMSOLVERLIBS_RUST_DIR="${MMSOLVERLIBS_CPP_TARGET_DIR}/${BUILD_TYPE_DIR}"
 
 # Paths for dependencies.
 EXTERNAL_BUILD_DIR="${BUILD_OCIO_DIR_BASE}/cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}/ext/dist"
@@ -164,18 +164,23 @@ then
     # './scripts/internal/build_mmSolver_linux.bash'
     # './scripts/internal/build_mmSolverLibs_windows64.bat'
     # './scripts/internal/build_mmSolverLibs_linux.bash'
-    ${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.129
+    ${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.155
 fi
 MMSOLVERLIBS_CXXBRIDGE_EXE="${HOME}/.cargo/bin/cxxbridge"
+
+# Build mmSolverLibs Rust code first
+echo "Building mmsolverlibs Rust libraries... (${MMSOLVERLIBS_ROOT})"
+cd ${MMSOLVERLIBS_RUST_ROOT}
+${RUST_CARGO_EXE} build --release --target-dir ${MMSOLVERLIBS_CPP_TARGET_DIR}
 
 # A local copy of LDPK to reduce the amount of downloads to the
 # 3DEqualizer website (LDPK doesn't have a git repo to clone from).
 LDPK_URL="${PROJECT_ROOT}/external/archives/ldpk-2.12.0.tar"
 
-# Build mmSolver project
+# Build mmSolver project (now includes mmSolverLibs)
 cd ${BUILD_DIR_BASE}
 BUILD_DIR_NAME="cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}"
-BUILD_DIR="${BUILD_DIR_BASE}/build_mmsolver/${BUILD_DIR_NAME}"
+BUILD_DIR="${BUILD_MMSOLVER_DIR_BASE}/${BUILD_DIR_NAME}"
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
@@ -208,9 +213,9 @@ ${CMAKE_EXE} \
     -DMAYA_LOCATION=${MAYA_LOCATION} \
     -DMAYA_VERSION=${MAYA_VERSION} \
     -DMMSOLVERLIBS_CXXBRIDGE_EXE=${MMSOLVERLIBS_CXXBRIDGE_EXE} \
-    -DMMSOLVERLIBS_LIB_DIR=${MMSOLVERLIBS_LIB_DIR} \
+    -DMMSOLVERLIBS_BUILD_TESTS=0 \
+    -DMMSOLVER_DOWNLOAD_DEPENDENCIES=ON \
     -Dmmsolverlibs_rust_DIR=${MMSOLVERLIBS_RUST_DIR} \
-    -Dmmsolverlibs_cpp_DIR=${MMSOLVERLIBS_CMAKE_CONFIG_DIR} \
     -Dldpk_URL=${LDPK_URL} \
     -DOpenColorIO_DIR=${OCIO_CMAKE_CONFIG_DIR} \
     -DOCIO_INSTALL_EXT_PACKAGES=NONE \

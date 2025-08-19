@@ -19,43 +19,6 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-
-# The "project" command will overwrite the "VERSION" variables. We set
-# the VERSION variables after the "project" command, so it should not
-# affect us.
-#
-# https://cmake.org/cmake/help/latest/policy/CMP0048.html
-cmake_policy(SET CMP0048 NEW)
-
-# # Honor visibility properties for all target types.
-# #
-# # https://cmake.org/cmake/help/latest/policy/CMP0063.html
-# cmake_policy(SET CMP0063 NEW)
-
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
-  # Changes how timestamps of downloaded files with
-  # ExternalProject_Add() are set.
-  #
-  # https://cmake.org/cmake/help/latest/policy/CMP0135.html
-  cmake_policy(SET CMP0135 NEW)
-endif()
-
-# Do not allow using GNU extensions (such as '-std=g++11'), because
-# it's not compatible with Maya.
-set(CXX_EXTENSIONS OFF)
-
-# Project configuration.
-project(mmsolverlibs)
-set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 1)
-set(PROJECT_VERSION_PATCH 0)
-set(PROJECT_VERSION_TWEAK 0)
-set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.${PROJECT_VERSION_TWEAK}")
-set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
-set(PROJECT_DESCRIPTION "mmSolver libraries.")
-set(PROJECT_AUTHOR "David Cattermole")
-set(PROJECT_COPYRIGHT "2023, 2024, David Cattermole.")
-
 # TODO: This relies on the '${mmsolverlibs_rust_DIR}' variable being set,
 # which is not ideal at all. Instead this should be a default value
 # (such as "/path/to/rust/build/directory/").
@@ -116,6 +79,3 @@ if (MMSOLVERLIBS_BUILD_TESTS)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmimage/tests)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmscenegraph/tests)
 endif()
-
-include(MMCommonUtils)
-mm_common_add_install_target("mmsolverlibs_cpp" ${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in)

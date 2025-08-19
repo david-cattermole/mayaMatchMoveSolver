@@ -247,19 +247,3 @@ target_link_libraries(ceres PUBLIC
 
 # Create an alias to match the expected target name from FindCeres
 add_library(ceres::ceres ALIAS ceres)
-
-# Install headers (public API)
-install(DIRECTORY include/ceres
-  DESTINATION include
-  FILES_MATCHING PATTERN "*.h"
-)
-
-# Install the static config.h (required by internal headers)
-install(FILES ${CERES_CONFIG_OUTPUT_DIR}/ceres/internal/config.h
-  DESTINATION include/ceres/internal
-)
-
-# Install the library as part of mmsolverlibs
-# Note: The following is only used when building as part of mmSolver
-include(MMCommonUtils)
-mm_common_install_target_library("mmsolverlibs_cpp" ceres)

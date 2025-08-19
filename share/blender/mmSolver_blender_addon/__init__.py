@@ -19,7 +19,7 @@
 bl_info = {
     'name': 'MM Solver Blender Tools',
     'author': 'David Cattermole',
-    'version': (0, 2, 0),
+    'version': (0, 2, 1),
     'blender': (2, 80, 0),
     'location': 'Motion Clip Editor > Sidebar and File > Export > Export Selected 2D Tracks (MM Solver .uv)',
     'description': 'Tools to use mmSolver with Blender',

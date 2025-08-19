@@ -29,14 +29,17 @@ set(source_files
 add_executable(${lensdistortion_exe_name} ${source_files})
 
 # MM Solver standalone libraries.
-find_package(mmsolverlibs_cpp REQUIRED)
+#
+# NOTE: 'mmsolverlibs_cpp' is built as part of this project in the
+# lib/ subdirectory.  'mmsolverlibs_rust' is built with cargo and
+# imported via find_package().
 find_package(mmsolverlibs_rust REQUIRED)
 
 target_link_libraries(${lensdistortion_exe_name}
   # The order of these libraries matters. See similar
   # 'target_link_libraries()' in '${PROJECT_ROOT}/src/CMakeLists.txt'.
   PUBLIC mmsolverlibs_rust::mmsolverlibs_rust
-  PUBLIC mmsolverlibs_cpp::mmsolverlibs_cpp
+  PUBLIC mmsolverlibs_cpp
 
   PRIVATE ${rust_depend_on_libraries}
 )

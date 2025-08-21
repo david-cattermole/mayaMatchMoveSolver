@@ -18,6 +18,10 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
+# DEPRECATED: This script is deprecated and no longer used.
+# The mmSolverLibs functionality has been merged into build_mmSolver_linux.bash.
+# This file is kept for reference only and will be removed in a future version.
+#
 # Builds a rust-based library.
 #
 # This script is assumed to be called with a number of variables

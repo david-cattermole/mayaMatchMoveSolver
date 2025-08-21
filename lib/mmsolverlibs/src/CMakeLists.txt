@@ -120,14 +120,12 @@ target_link_libraries(${cpp_lib_name}
 # ldpk to be installed so we have the 'ldpk_INCLUDE_DIR' variable.
 add_dependencies(${cpp_lib_name} ldpk::ldpk)
 
-# Link cminpack dependency
+# Add dependencies.
 target_link_libraries(${cpp_lib_name}
-  PUBLIC cminpack::cminpack
-)
-
-# Link OpenMVG dependency for SFM functions
-target_link_libraries(${cpp_lib_name}
-  PUBLIC openMVG
+  PUBLIC cminpack::cminpack  # for small/medium optimization problems.
+  PUBLIC openMVG             # for SFM functions.
+  PUBLIC glog::glog          # required by Ceres for logging.
+  PUBLIC ceres::ceres        # for large scale optimization problems.
 )
 
 # MM Color IO dependencies
@@ -147,18 +145,3 @@ target_include_directories(${cpp_lib_name}
   PRIVATE $<BUILD_INTERFACE:${ldpk_INCLUDE_DIR}>
   PUBLIC $<INSTALL_INTERFACE:include/>
   )
-
-# Install public headers
-include(GNUInstallDirs)
-install(DIRECTORY
-  "${mmcolorio_include_dir}/"
-  "${mmcore_include_dir}/"
-  "${mmimage_include_dir}/"
-  "${mmlens_include_dir}/"
-  "${mmscenegraph_include_dir}/"
-  "${main_include_dir}/"
-  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-  FILES_MATCHING PATTERN "*.h")
-
-mm_common_install_target_library("mmsolverlibs_cpp" ${cpp_lib_name})
-

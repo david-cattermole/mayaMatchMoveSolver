@@ -19,7 +19,7 @@ SETLOCAL
 :: along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 :: ---------------------------------------------------------------------
 ::
-:: Build the mmSolver plug-in.
+:: Build the mmSolver plug-in (unified build including Rust libraries).
 ::
 :: NOTE: Do not call this script directly! This file should be called by
 :: the build_mmSolver_windows64_mayaXXXX.bat files.
@@ -43,10 +43,10 @@ SET BUILD_OCIO_DIR_NAME=build_opencolorio
 SET BUILD_OCIO_DIR_BASE=%BUILD_DIR_BASE%\%BUILD_OCIO_DIR_NAME%
 ECHO Build OpenColorIO directory base: %BUILD_OCIO_DIR_BASE%
 
-:: mmSolverLibs build dir.
-SET BUILD_MMSOLVERLIBS_DIR_NAME=build_mmsolverlibs
-SET BUILD_MMSOLVERLIBS_DIR_BASE=%BUILD_DIR_BASE%\%BUILD_MMSOLVERLIBS_DIR_NAME%
-ECHO Build mmSolverLibs directory base: %BUILD_MMSOLVERLIBS_DIR_BASE%
+:: mmSolver build dir (now includes mmSolverLibs).
+SET BUILD_MMSOLVER_DIR_NAME=build_mmsolver
+SET BUILD_MMSOLVER_DIR_BASE=%BUILD_DIR_BASE%\%BUILD_MMSOLVER_DIR_NAME%
+ECHO Build mmSolver directory base: %BUILD_MMSOLVER_DIR_BASE%
 
 :: Run the Python API and Solver tests inside Maya, after a
 :: successfully build an install process.
@@ -109,18 +109,14 @@ SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya%MAYA_VERSION%
 :: environment variables are leaked into the calling environment.
 CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat
 
-:: Paths for mmSolver library dependencies.
-SET MMSOLVERLIBS_INSTALL_DIR="%BUILD_MMSOLVERLIBS_DIR_BASE%\install\maya%MAYA_VERSION%_windows64"
-SET MMSOLVERLIBS_CMAKE_CONFIG_DIR="%MMSOLVERLIBS_INSTALL_DIR%\lib\cmake\mmsolverlibs_cpp"
-SET MMSOLVERLIBS_RUST_DIR="%BUILD_MMSOLVERLIBS_DIR_BASE%\rust_windows64_maya%MAYA_VERSION%\%BUILD_TYPE_DIR%"
-
-:: Where to find the mmsolverlibs Rust libraries and headers.
-SET MMSOLVERLIBS_INSTALL_PATH=%BUILD_MMSOLVERLIBS_DIR_BASE%\install\maya%MAYA_VERSION%_windows64\
+:: Where to find the mmsolverlibs Rust libraries and headers (now built as part of mmSolver).
 SET MMSOLVERLIBS_ROOT=%PROJECT_ROOT%\lib
 SET MMSOLVERLIBS_RUST_ROOT=%MMSOLVERLIBS_ROOT%\mmsolverlibs
-SET MMSOLVERLIBS_CPP_TARGET_DIR=%BUILD_MMSOLVERLIBS_DIR_BASE%\rust_windows64_maya%MAYA_VERSION%
+SET MMSOLVERLIBS_CPP_TARGET_DIR=%BUILD_MMSOLVER_DIR_BASE%\rust_windows64_maya%MAYA_VERSION%
 SET MMSOLVERLIBS_LIB_DIR=%MMSOLVERLIBS_CPP_TARGET_DIR%\%BUILD_TYPE_DIR%
-SET MMSOLVERLIBS_INCLUDE_DIR=%MMSOLVERLIBS_ROOT%\include
+SET MMSOLVERLIBS_RUST_DIR=%MMSOLVERLIBS_CPP_TARGET_DIR%\%BUILD_TYPE_DIR%
+
+SET MMSOLVERLIBS_BUILD_TESTS=0
 
 :: Paths for dependencies.
 SET EXTERNAL_OCIO_BUILD_DIR=%BUILD_OCIO_DIR_BASE%\cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%\ext\dist
@@ -165,12 +161,18 @@ IF %ERRORLEVEL% EQU 1 (
    :: './scripts/internal/build_mmSolver_linux.bash'
    :: './scripts/internal/build_mmSolverLibs_windows64.bat'
    :: './scripts/internal/build_mmSolverLibs_linux.bash'
-   %RUST_CARGO_EXE% install cxxbridge-cmd --version 1.0.129
+   %RUST_CARGO_EXE% install cxxbridge-cmd --version 1.0.155
 )
 SET MMSOLVERLIBS_CXXBRIDGE_EXE="%USERPROFILE%\.cargo\bin\cxxbridge.exe"
 :: Convert back-slashes to forward-slashes.
 :: https://stackoverflow.com/questions/23542453/change-backslash-to-forward-slash-in-windows-batch-file
 SET "MMSOLVERLIBS_CXXBRIDGE_EXE=%MMSOLVERLIBS_CXXBRIDGE_EXE:\=/%"
+
+:: Build mmSolverLibs Rust code first
+ECHO Building mmsolverlibs Rust libraries... (%MMSOLVERLIBS_ROOT%)
+CHDIR "%MMSOLVERLIBS_RUST_ROOT%"
+%RUST_CARGO_EXE% build %RELEASE_FLAG% --target-dir "%MMSOLVERLIBS_CPP_TARGET_DIR%"
+if errorlevel 1 goto failed_to_build_rust
 
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
@@ -217,15 +219,15 @@ SET CMAKE_GENERATOR=Ninja
 SET CMAKE_C_COMPILER=cl
 SET CMAKE_CXX_COMPILER=cl
 
-:: Build project
+:: Build mmSolver project (now includes mmSolverLibs)
 SET BUILD_DIR_NAME=cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%
-SET BUILD_DIR=%BUILD_DIR_BASE%\build_mmsolver\%BUILD_DIR_NAME%
+SET BUILD_DIR=%BUILD_MMSOLVER_DIR_BASE%\%BUILD_DIR_NAME%
 ECHO BUILD_DIR_BASE: %BUILD_DIR_BASE%
 ECHO BUILD_DIR_NAME: %BUILD_DIR_NAME%
 ECHO BUILD_DIR: %BUILD_DIR%
 CHDIR "%BUILD_DIR_BASE%"
-MKDIR "build_mmsolver"
-CHDIR "%BUILD_DIR_BASE%\build_mmsolver"
+MKDIR "%BUILD_MMSOLVER_DIR_NAME%"
+CHDIR "%BUILD_MMSOLVER_DIR_BASE%"
 MKDIR "%BUILD_DIR_NAME%"
 CHDIR "%BUILD_DIR%"
 
@@ -261,9 +263,9 @@ CHDIR "%BUILD_DIR%"
     -DMAYA_LOCATION=%MAYA_LOCATION% ^
     -DMAYA_VERSION=%MAYA_VERSION% ^
     -DMMSOLVERLIBS_CXXBRIDGE_EXE=%MMSOLVERLIBS_CXXBRIDGE_EXE% ^
-    -DMMSOLVERLIBS_LIB_DIR=%MMSOLVERLIBS_LIB_DIR% ^
+    -DMMSOLVERLIBS_BUILD_TESTS=%MMSOLVERLIBS_BUILD_TESTS% ^
+    -DMMSOLVER_DOWNLOAD_DEPENDENCIES=ON ^
     -Dmmsolverlibs_rust_DIR=%MMSOLVERLIBS_RUST_DIR% ^
-    -Dmmsolverlibs_cpp_DIR=%MMSOLVERLIBS_CMAKE_CONFIG_DIR% ^
     -Dldpk_URL=%LDPK_URL% ^
     -DOpenColorIO_DIR=%OCIO_CMAKE_CONFIG_DIR% ^
     -DOCIO_INSTALL_EXT_PACKAGES=NONE ^
@@ -307,6 +309,10 @@ IF "%BUILD_PACKAGE%"=="1" (
 :: Return back project root directory.
 CHDIR "%PROJECT_ROOT%"
 exit /b 0
+
+:failed_to_build_rust
+echo Failed to build Rust code for mmSolverLibs.
+exit /b 1
 
 :failed_to_generate
 echo Failed to generate build files for mmSolver component.

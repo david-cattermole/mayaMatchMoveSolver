@@ -24,17 +24,8 @@
 # $ source scripts/python_venv_activate_maya2016.bash
 #
 
-# The -e flag causes the script to exit as soon as one command returns
-# a non-zero exit code.
-set -ev
+# Set Maya version for the common venv activation script.
+export MAYA_VERSION=2016
 
-PROJECT_ROOT=`pwd`
-
-MAYA_VERSION=2016
-
-# Python executable - edit this to point to an explicit python
-# executable file.
-PYTHON_EXE=python
-
-PYTHON_VIRTUAL_ENV_DIR_NAME="python_venv_linux_maya${MAYA_VERSION}"
-source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"
+# Call the common venv activation script.
+source "$(pwd)/scripts/internal/python_venv_activate_common.bash"

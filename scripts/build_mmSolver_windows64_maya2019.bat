@@ -63,9 +63,6 @@ if errorlevel 1 goto failed_to_build_opencolorio
 
 :: This script assumes 'RUST_CARGO_EXE' has been set to the Rust
 :: 'cargo' executable.
-CALL scripts\internal\build_mmSolverLibs_windows64.bat
-if errorlevel 1 goto failed_to_build_mmsolverlibs
-
 CALL scripts\internal\build_mmSolver_windows64.bat
 if errorlevel 1 goto failed_to_build_mmsolver
 
@@ -74,10 +71,6 @@ exit /b 0
 
 :failed_to_build_opencolorio
 echo Failed to build OpenColorIO dependency.
-exit /b 1
-
-:failed_to_build_mmsolverlibs
-echo Failed to build MM Solver Library entry point.
 exit /b 1
 
 :failed_to_build_mmsolver

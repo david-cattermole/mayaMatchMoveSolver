@@ -121,8 +121,18 @@ def get_camera_data(context, clip, cam, frame_range):
     film_back_width *= 0.1
     film_back_height *= 0.1
 
-    principal_x = (cam.principal[0] / res_width) - 0.5
-    principal_y = (cam.principal[0] / res_width) - 0.5
+    if hasattr(cam, 'principal_point'):
+        # Blender 3.6+ and newer.
+        principal_x = (cam.principal_point[0] / res_width) - 0.5
+        principal_y = (cam.principal_point[1] / res_height) - 0.5
+    elif hasattr(cam, 'principal'):
+        # Blender 3.3 and earlier.
+        principal_x = (cam.principal[0] / res_width) - 0.5
+        principal_y = (cam.principal[1] / res_height) - 0.5
+    else:
+        principal_x = 0.0
+        principal_y = 0.0
+
     lco_x = principal_x * film_back_width
     lco_y = principal_y * film_back_height
 

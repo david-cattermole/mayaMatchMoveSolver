@@ -201,7 +201,10 @@ mm_common_set_global_treat_warnings_as_errors()
 mm_common_set_global_compile_options(MMSOLVER_DEBUG)
 
 # MM Solver standalone libraries.
-find_package(mmsolverlibs_cpp REQUIRED)
+#
+# NOTE: 'mmsolverlibs_cpp' is built as part of this project in the
+# lib/ subdirectory. 'mmsolverlibs_rust' is built with cargo and
+# imported via find_package().
 find_package(mmsolverlibs_rust REQUIRED)
 
 target_link_libraries(mmSolver
@@ -218,7 +221,7 @@ target_link_libraries(mmSolver
   # See more information:
   # https://stackoverflow.com/questions/45135/why-does-the-order-in-which-libraries-are-linked-sometimes-cause-errors-in-gcc
   PUBLIC mmsolverlibs_rust::mmsolverlibs_rust
-  PUBLIC mmsolverlibs_cpp::mmsolverlibs_cpp
+  PUBLIC mmsolverlibs_cpp
 )
 
 # glog is now included through mmsolverlibs_cpp (vendored)

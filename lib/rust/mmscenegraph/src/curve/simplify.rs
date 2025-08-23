@@ -26,6 +26,7 @@ use crate::constant::Real;
 use crate::curve::detect::keypoints::analyze_curve;
 use crate::math::curve_fit::linear_regression;
 use crate::math::curve_fit::nonlinear_line_n3;
+use crate::math::curve_fit::nonlinear_line_n3_with_initial;
 use crate::math::curve_fit::nonlinear_line_n_points;
 use crate::math::curve_fit::nonlinear_line_n_points_with_initial;
 use crate::math::interpolate::evaluate_curve_points;
@@ -80,33 +81,75 @@ pub fn simplify(
             &control_points_y,
             interpolation_method,
         )
-    } else if control_point_count == 3
-        && interpolation_method == Interpolation::Linear
-    {
-        // Linear - 3 points.
-        let (control_point_a, control_point_b, control_point_c) =
-            nonlinear_line_n3(values_x, values_y)?;
-        debug!("control_point_a={control_point_a:?}");
-        debug!("control_point_b={control_point_b:?}");
-        debug!("control_point_c={control_point_c:?}");
+    } else if control_point_count == 3 {
+        // All 3-point cases use the dedicated N3 solver for better robustness
+        if distribution == ControlPointDistribution::AutoKeypoints {
+            // Use auto_keypoints with dedicated N3 solver
+            match try_auto_keypoints_n3_simplify(
+                values_x,
+                values_y,
+                interpolation_method,
+            ) {
+                Ok(eval_values_xy) => {
+                    debug!("auto_keypoints N3 succeeded");
+                    eval_values_xy
+                }
+                Err(e) => {
+                    debug!("auto_keypoints N3 failed: {}, falling back to uniform N3", e);
+                    error!("auto_keypoints N3 failed: {}, falling back to uniform N3", e);
 
-        let control_points_x: Vec<Real> = vec![
-            control_point_a.x(),
-            control_point_b.x(),
-            control_point_c.x(),
-        ];
-        let control_points_y: Vec<Real> = vec![
-            control_point_a.y(),
-            control_point_b.y(),
-            control_point_c.y(),
-        ];
+                    // Fallback to uniform distribution with N3 solver
+                    let (control_point_a, control_point_b, control_point_c) =
+                        nonlinear_line_n3(values_x, values_y)?;
+                    debug!("fallback N3 control_point_a={control_point_a:?}");
+                    debug!("fallback N3 control_point_b={control_point_b:?}");
+                    debug!("fallback N3 control_point_c={control_point_c:?}");
 
-        evaluate_curve_points(
-            values_x,
-            &control_points_x,
-            &control_points_y,
-            interpolation_method,
-        )
+                    let control_points_x: Vec<Real> = vec![
+                        control_point_a.x(),
+                        control_point_b.x(),
+                        control_point_c.x(),
+                    ];
+                    let control_points_y: Vec<Real> = vec![
+                        control_point_a.y(),
+                        control_point_b.y(),
+                        control_point_c.y(),
+                    ];
+
+                    evaluate_curve_points(
+                        values_x,
+                        &control_points_x,
+                        &control_points_y,
+                        interpolation_method,
+                    )
+                }
+            }
+        } else {
+            // Uniform distribution - use N3 solver with linear regression initialization
+            let (control_point_a, control_point_b, control_point_c) =
+                nonlinear_line_n3(values_x, values_y)?;
+            debug!("uniform N3 control_point_a={control_point_a:?}");
+            debug!("uniform N3 control_point_b={control_point_b:?}");
+            debug!("uniform N3 control_point_c={control_point_c:?}");
+
+            let control_points_x: Vec<Real> = vec![
+                control_point_a.x(),
+                control_point_b.x(),
+                control_point_c.x(),
+            ];
+            let control_points_y: Vec<Real> = vec![
+                control_point_a.y(),
+                control_point_b.y(),
+                control_point_c.y(),
+            ];
+
+            evaluate_curve_points(
+                values_x,
+                &control_points_x,
+                &control_points_y,
+                interpolation_method,
+            )
+        }
     } else if distribution == ControlPointDistribution::Uniform {
         let control_points = nonlinear_line_n_points(
             values_x,
@@ -128,34 +171,43 @@ pub fn simplify(
             interpolation_method,
         )
     } else if distribution == ControlPointDistribution::AutoKeypoints {
-        let control_points =
-            analyze_curve(values_x, values_y, control_point_count)?;
-        let control_points_x: Vec<Real> =
-            control_points.iter().map(|x| x.time as Real).collect();
-        let control_points_y: Vec<Real> =
-            control_points.iter().map(|x| x.value as Real).collect();
-
-        let control_points = nonlinear_line_n_points_with_initial(
+        // Try auto_keypoints first, fallback to uniform distribution if it fails
+        match try_auto_keypoints_simplify(
             values_x,
             values_y,
-            &control_points_x,
-            &control_points_y,
+            control_point_count,
             interpolation_method,
-        )?;
-        debug!("control_points={control_points:?}");
-        assert_eq!(control_points.len(), control_points_x.len());
+        ) {
+            Ok(eval_values_xy) => {
+                debug!("auto_keypoints succeeded");
+                eval_values_xy
+            }
+            Err(e) => {
+                debug!("auto_keypoints failed: {}, falling back to uniform distribution", e);
+                error!("auto_keypoints failed: {}, falling back to uniform distribution", e);
 
-        let control_points_x: Vec<Real> =
-            control_points.iter().map(|p| p.x() as Real).collect();
-        let control_points_y: Vec<Real> =
-            control_points.iter().map(|p| p.y() as Real).collect();
+                // Fallback to uniform distribution
+                let control_points = nonlinear_line_n_points(
+                    values_x,
+                    values_y,
+                    control_point_count,
+                    interpolation_method,
+                )?;
+                debug!("fallback control_points={control_points:?}");
 
-        evaluate_curve_points(
-            values_x,
-            &control_points_x,
-            &control_points_y,
-            interpolation_method,
-        )
+                let control_points_x: Vec<Real> =
+                    control_points.iter().map(|p| p.x() as Real).collect();
+                let control_points_y: Vec<Real> =
+                    control_points.iter().map(|p| p.y() as Real).collect();
+
+                evaluate_curve_points(
+                    values_x,
+                    &control_points_x,
+                    &control_points_y,
+                    interpolation_method,
+                )
+            }
+        }
     } else {
         error!("Not implemented use case!");
         error!("target_control_points={control_point_count:?}");
@@ -165,4 +217,183 @@ pub fn simplify(
     };
 
     Ok(eval_values_xy)
+}
+
+/// Attempts auto_keypoints simplification specifically for 3-point cases using the robust N3 solver.
+/// Returns the evaluated curve points if successful, or an error if it fails.
+fn try_auto_keypoints_n3_simplify(
+    values_x: &[Real],
+    values_y: &[Real],
+    interpolation_method: Interpolation,
+) -> Result<Vec<(Real, Real)>> {
+    debug!("try_auto_keypoints_n3_simplify: using dedicated 3-point N3 solver");
+    debug!(
+        "try_auto_keypoints_n3_simplify: interpolation_method={:?}",
+        interpolation_method
+    );
+
+    // Detect keypoints using pyramid analysis (always 3 points for this function)
+    let control_points = analyze_curve(values_x, values_y, 3)?;
+    debug!(
+        "try_auto_keypoints_n3_simplify: detected {} keypoints",
+        control_points.len()
+    );
+
+    let control_points_x: Vec<Real> =
+        control_points.iter().map(|x| x.time as Real).collect();
+    let control_points_y: Vec<Real> =
+        control_points.iter().map(|x| x.value as Real).collect();
+
+    // Validate keypoint positions for potential optimization issues
+    if let Err(validation_error) =
+        validate_keypoint_positions(&control_points_x, &control_points_y)
+    {
+        debug!(
+            "try_auto_keypoints_n3_simplify: keypoint validation failed: {}",
+            validation_error
+        );
+        return Err(validation_error);
+    }
+
+    // Use the dedicated N3 solver with detected keypoint positions
+    let (control_point_a, control_point_b, control_point_c) =
+        nonlinear_line_n3_with_initial(
+            values_x,
+            values_y,
+            &control_points_x,
+            &control_points_y,
+        )?;
+    debug!("try_auto_keypoints_n3_simplify: N3 optimization succeeded");
+    debug!("control_point_a={control_point_a:?}");
+    debug!("control_point_b={control_point_b:?}");
+    debug!("control_point_c={control_point_c:?}");
+
+    let control_points_x: Vec<Real> = vec![
+        control_point_a.x(),
+        control_point_b.x(),
+        control_point_c.x(),
+    ];
+    let control_points_y: Vec<Real> = vec![
+        control_point_a.y(),
+        control_point_b.y(),
+        control_point_c.y(),
+    ];
+
+    let eval_values_xy = evaluate_curve_points(
+        values_x,
+        &control_points_x,
+        &control_points_y,
+        interpolation_method,
+    );
+
+    Ok(eval_values_xy)
+}
+
+/// Attempts auto_keypoints simplification with detailed error handling.
+/// Returns the evaluated curve points if successful, or an error if it fails.
+fn try_auto_keypoints_simplify(
+    values_x: &[Real],
+    values_y: &[Real],
+    control_point_count: usize,
+    interpolation_method: Interpolation,
+) -> Result<Vec<(Real, Real)>> {
+    debug!(
+        "try_auto_keypoints_simplify: control_point_count={}",
+        control_point_count
+    );
+    debug!(
+        "try_auto_keypoints_simplify: interpolation_method={:?}",
+        interpolation_method
+    );
+
+    // Detect keypoints using pyramid analysis
+    let control_points =
+        analyze_curve(values_x, values_y, control_point_count)?;
+    debug!(
+        "try_auto_keypoints_simplify: detected {} keypoints",
+        control_points.len()
+    );
+
+    let control_points_x: Vec<Real> =
+        control_points.iter().map(|x| x.time as Real).collect();
+    let control_points_y: Vec<Real> =
+        control_points.iter().map(|x| x.value as Real).collect();
+
+    // Validate keypoint positions for potential optimization issues
+    if let Err(validation_error) =
+        validate_keypoint_positions(&control_points_x, &control_points_y)
+    {
+        debug!(
+            "try_auto_keypoints_simplify: keypoint validation failed: {}",
+            validation_error
+        );
+        return Err(validation_error);
+    }
+
+    // Attempt optimization with the detected keypoints
+    let control_points = nonlinear_line_n_points_with_initial(
+        values_x,
+        values_y,
+        &control_points_x,
+        &control_points_y,
+        interpolation_method,
+    )?;
+    debug!("try_auto_keypoints_simplify: optimization succeeded, control_points={:?}", control_points);
+    assert_eq!(control_points.len(), control_points_x.len());
+
+    let control_points_x: Vec<Real> =
+        control_points.iter().map(|p| p.x() as Real).collect();
+    let control_points_y: Vec<Real> =
+        control_points.iter().map(|p| p.y() as Real).collect();
+
+    let eval_values_xy = evaluate_curve_points(
+        values_x,
+        &control_points_x,
+        &control_points_y,
+        interpolation_method,
+    );
+
+    Ok(eval_values_xy)
+}
+
+/// Validates keypoint positions to detect potential optimization issues.
+fn validate_keypoint_positions(
+    control_points_x: &[Real],
+    control_points_y: &[Real],
+) -> Result<()> {
+    if control_points_x.len() != control_points_y.len() {
+        anyhow::bail!("Mismatched control point array lengths");
+    }
+
+    if control_points_x.len() < 2 {
+        anyhow::bail!("Insufficient control points for optimization");
+    }
+
+    // Check for minimum spacing between control points
+    let total_range =
+        control_points_x[control_points_x.len() - 1] - control_points_x[0];
+    let min_spacing = total_range / (control_points_x.len() as Real * 10.0); // 10% of average spacing
+
+    for i in 1..control_points_x.len() {
+        let spacing = control_points_x[i] - control_points_x[i - 1];
+        if spacing < min_spacing {
+            anyhow::bail!(
+                "Control points too close together: spacing={}, min_spacing={}",
+                spacing,
+                min_spacing
+            );
+        }
+    }
+
+    // Check for extreme Y values that might cause numerical issues
+    for &y in control_points_y {
+        if !y.is_finite() {
+            anyhow::bail!("Non-finite Y value detected: {}", y);
+        }
+        if y.abs() > 1e6 {
+            anyhow::bail!("Extreme Y value detected: {}", y);
+        }
+    }
+
+    Ok(())
 }

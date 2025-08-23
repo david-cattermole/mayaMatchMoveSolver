@@ -18,14 +18,10 @@
 // ====================================================================
 //
 
-use anyhow::bail;
 use anyhow::Result;
-use argmin;
-use argmin::core::Gradient;
-use argmin::core::State;
-use finitediff::FiniteDiff;
 use log::debug;
-use ndarray::{Array1, Array2};
+use log::info;
+use nalgebra::{DMatrix, DVector};
 
 use crate::constant::Real;
 use crate::math::interpolate::linear_interpolate_y_value_at_value_x;
@@ -33,6 +29,9 @@ use crate::math::interpolate::CurveInterpolator;
 use crate::math::interpolate::Interpolation;
 use crate::math::interpolate::Interpolator;
 use crate::math::line::curve_fit_linear_regression_type1;
+use mmoptimise::solver::{
+    LevenbergMarquardt, OptimisationProblem, SolverConfig, SolverWorkspace,
+};
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point2 {
@@ -107,41 +106,63 @@ pub fn linear_regression(
     Ok((point, angle))
 }
 
-#[derive(Debug)]
-struct CurveFitLinearN3Problem {
-    // Curve values we are trying to fit to.
+/// N3 Curve Fitting Problem for LevenbergMarquardt solver.
+struct N3CurveFitProblem {
     reference_values: Vec<(f64, f64)>,
-    reference_values_first_x: usize,
-    // reference_values_last_x: usize,
-
-    // These are parameters that are hard-coded.
     point_a_x: f64,
     point_b_x: f64,
     point_c_x: f64,
 }
 
-impl CurveFitLinearN3Problem {
+impl N3CurveFitProblem {
     fn new(
         point_a_x: f64,
         point_b_x: f64,
         point_c_x: f64,
-        reference_curve: &[(f64, f64)],
+        reference_values: Vec<(f64, f64)>,
     ) -> Self {
-        // let count = reference_curve.len();
-        let x_first: usize = reference_curve[0].0.floor() as usize;
-        // let x_last: usize = reference_curve[count - 1].0.ceil() as usize;
-
-        let reference_values: Vec<(f64, f64)> =
-            reference_curve.iter().map(|x| *x).collect();
-
         Self {
             reference_values,
-            reference_values_first_x: x_first,
-            // reference_values_last_x: x_last,
             point_a_x,
             point_b_x,
             point_c_x,
         }
+    }
+}
+
+impl OptimisationProblem for N3CurveFitProblem {
+    fn residuals(
+        &self,
+        parameters: &[f64],
+        out_residuals: &mut [f64],
+    ) -> anyhow::Result<()> {
+        if parameters.len() != 3 {
+            return Err(anyhow::anyhow!(
+                "N3 problem requires exactly 3 parameters (Y values)"
+            ));
+        }
+
+        let point_a_y = parameters[0];
+        let point_b_y = parameters[1];
+        let point_c_y = parameters[2];
+
+        for i in 0..self.residual_count() {
+            let data_x = self.reference_values[i].0;
+            let data_y = self.reference_values[i].1;
+
+            let curve_y = linear_interpolate_y_value_at_value_x(
+                data_x,
+                self.point_a_x,
+                point_a_y,
+                self.point_b_x,
+                point_b_y,
+                self.point_c_x,
+                point_c_y,
+            );
+            out_residuals[i] = curve_y - data_y;
+        }
+
+        Ok(())
     }
 
     fn parameter_count(&self) -> usize {
@@ -151,129 +172,184 @@ impl CurveFitLinearN3Problem {
         3
     }
 
-    fn reference_y_value_at_value_x(&self, value_x: f64) -> f64 {
-        let value_start = self.point_a_x.floor() as usize;
-        let value_end = self.point_c_x.ceil() as usize;
-
-        let mut value_index = value_x.round() as usize;
-        if value_index < value_start {
-            value_index = value_start;
-        } else if value_index > value_end {
-            value_index = value_end;
-        }
-
-        let mut index = value_index - self.reference_values_first_x;
-        if index > self.reference_values.len() {
-            index = self.reference_values.len();
-        }
-
-        self.reference_values[index].1
+    fn residual_count(&self) -> usize {
+        self.reference_values.len()
     }
+}
 
+/// N-points Curve Fitting Problem for LevenbergMarquardt solver.
+struct NPointsCurveFitProblem {
+    reference_values: Vec<(f64, f64)>,
+    control_points_x: Vec<f64>,
+    interpolator: Interpolator,
+}
+
+impl NPointsCurveFitProblem {
+    fn new(
+        control_points_x: Vec<f64>,
+        reference_values: Vec<(f64, f64)>,
+        interpolation_method: Interpolation,
+    ) -> anyhow::Result<Self> {
+        let interpolator = Interpolator::from_method(interpolation_method);
+        interpolator.set_control_points_x(&control_points_x);
+
+        Ok(Self {
+            reference_values,
+            control_points_x,
+            interpolator,
+        })
+    }
+}
+
+impl OptimisationProblem for NPointsCurveFitProblem {
     fn residuals(
         &self,
-        point_a_y: f64,
-        point_b_y: f64,
-        point_c_y: f64,
-    ) -> Vec<f64> {
-        self.reference_values
-            .iter()
-            .map(|x| {
-                let value_x = x.0;
-                let curve_y = linear_interpolate_y_value_at_value_x(
-                    value_x,
-                    self.point_a_x,
-                    point_a_y,
-                    self.point_b_x,
-                    point_b_y,
-                    self.point_c_x,
-                    point_c_y,
-                );
-                let data_y = self.reference_y_value_at_value_x(value_x);
-                (curve_y - data_y).abs()
-            })
-            .collect()
+        parameters: &[f64],
+        out_residuals: &mut [f64],
+    ) -> anyhow::Result<()> {
+        if parameters.len() != self.control_points_x.len() {
+            return Err(anyhow::anyhow!(
+                "Parameter count must match control point count"
+            ));
+        }
+
+        self.interpolator.set_control_points_y(parameters);
+
+        for i in 0..self.residual_count() {
+            let data_x = self.reference_values[i].0;
+            let data_y = self.reference_values[i].1;
+            let curve_y = self.interpolator.interpolate(data_x);
+            out_residuals[i] = curve_y - data_y;
+        }
+
+        Ok(())
+    }
+
+    fn parameter_count(&self) -> usize {
+        self.control_points_x.len()
+    }
+
+    fn residual_count(&self) -> usize {
+        self.reference_values.len()
     }
 }
 
-impl argmin::core::CostFunction for CurveFitLinearN3Problem {
-    type Param = Array1<f64>;
-    type Output = f64;
+/// Perform a non-linear least-squares fit for a line with 3 points
+/// using custom initial positions.
+///
+/// This function is similar to `nonlinear_line_n3()` but accepts
+/// custom initial positions for the 3 control points instead of
+/// deriving them from linear regression.
+///
+/// This is useful for auto_keypoints cases where the keypoint
+/// detection algorithm provides better initial positions than linear
+/// regression.
+pub fn nonlinear_line_n3_with_initial(
+    x_values: &[f64],
+    y_values: &[f64],
+    initial_control_points_x: &[f64],
+    initial_control_points_y: &[f64],
+) -> Result<(Point2, Point2, Point2)> {
+    assert_eq!(x_values.len(), y_values.len());
+    let value_count = x_values.len();
+    assert!(value_count > 2);
+    assert_eq!(
+        initial_control_points_x.len(),
+        3,
+        "Must provide exactly 3 initial control points X coordinates"
+    );
+    assert_eq!(
+        initial_control_points_y.len(),
+        3,
+        "Must provide exactly 3 initial control points Y coordinates"
+    );
 
-    fn cost(
-        &self,
-        parameters: &Self::Param,
-    ) -> Result<Self::Output, argmin::core::Error> {
-        debug!("Cost: parameters={parameters:?}");
+    info!("nonlinear_line_n3_with_initial: using custom initial positions");
+    debug!(
+        "nonlinear_line_n3_with_initial: initial_control_points_x={:?}",
+        initial_control_points_x
+    );
+    debug!(
+        "nonlinear_line_n3_with_initial: initial_control_points_y={:?}",
+        initial_control_points_y
+    );
 
-        let parameter_count = self.parameter_count();
-        assert_eq!(parameters.len(), parameter_count);
+    // Use the provided initial positions directly.
+    let point_a_x = initial_control_points_x[0];
+    let point_b_x = initial_control_points_x[1];
+    let point_c_x = initial_control_points_x[2];
+    let point_a_y = initial_control_points_y[0];
+    let point_b_y = initial_control_points_y[1];
+    let point_c_y = initial_control_points_y[2];
 
-        let residuals_data =
-            self.residuals(parameters[0], parameters[1], parameters[2]);
-        let residuals = Array1::from_vec(residuals_data);
+    debug!("point_a=({}, {})", point_a_x, point_a_y);
+    debug!("point_b=({}, {})", point_b_x, point_b_y);
+    debug!("point_c=({}, {})", point_c_x, point_c_y);
 
-        let residuals_sum = residuals.sum();
-        debug!("residuals_sum: {residuals_sum}");
+    // Define initial parameter vector (only Y values, X values are
+    // fixed).
+    let initial_parameters_vec = vec![point_a_y, point_b_y, point_c_y];
+    debug!("initial_parameters={initial_parameters_vec:?}");
 
-        Ok(residuals_sum * residuals_sum)
-    }
-}
+    // Define the problem.
+    let reference_values: Vec<(f64, f64)> = x_values
+        .iter()
+        .zip(y_values)
+        .map(|x| (*x.0, *x.1))
+        .collect();
 
-impl argmin::core::Gradient for CurveFitLinearN3Problem {
-    type Param = Array1<f64>;
-    type Gradient = Array1<f64>;
+    let problem = N3CurveFitProblem::new(
+        point_a_x,
+        point_b_x,
+        point_c_x,
+        reference_values,
+    );
 
-    fn gradient(
-        &self,
-        parameters: &Self::Param,
-    ) -> Result<Self::Gradient, argmin::core::Error> {
-        debug!("Gradient: parameters={parameters:?}");
+    // Use LevenbergMarquardt solver with good tolerances for N3.
+    let config = SolverConfig {
+        ftol: 1e-8,
+        xtol: 1e-8,
+        gtol: 1e-8,
+        max_iterations: 300,
+        step_bound: 100.0,
+        verbose: false,
+    };
 
-        let parameter_count = self.parameter_count();
-        assert_eq!(parameters.len(), parameter_count);
+    let solver = LevenbergMarquardt::new(config);
+    let mut workspace =
+        SolverWorkspace::new(&problem, &initial_parameters_vec).unwrap();
+    let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
-        let vector = (*parameters).forward_diff(&|x| {
-            let sum: f64 = self.residuals(x[0], x[1], x[2]).into_iter().sum();
-            debug!("forward_diff residuals_sum: {sum}");
-            sum * sum
-        });
+    info!(
+        "LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
+        result.status, result.cost, result.iterations, result.function_evaluations
+    );
 
-        Ok(vector)
-    }
-}
-
-impl argmin::core::Hessian for CurveFitLinearN3Problem {
-    type Param = Array1<f64>;
-    type Hessian = Array2<f64>;
-
-    fn hessian(
-        &self,
-        parameters: &Self::Param,
-    ) -> Result<Self::Hessian, argmin::core::Error> {
-        debug!("Hessian: parameters={parameters:?}");
-
-        let parameter_count = self.parameter_count();
-        assert_eq!(parameters.len(), parameter_count);
-
-        let matrix =
-            (*parameters).forward_hessian(&|x| self.gradient(x).unwrap());
-
-        Ok(matrix)
-    }
+    Ok((
+        Point2 {
+            x: point_a_x,
+            y: result.parameters[0],
+        },
+        Point2 {
+            x: point_b_x,
+            y: result.parameters[1],
+        },
+        Point2 {
+            x: point_c_x,
+            y: result.parameters[2],
+        },
+    ))
 }
 
 /// Perform a non-linear least-squares fits for a line with 3 points.
 ///
-/// The approach here is to start with a linear regression, to get a
-/// starting point, and then refine the solution using a solver.
+/// The approach uses a 3-stage optimization process:
+/// 1. Polynomial least-squares initialization for better starting points.
+/// 2. Coarse non-linear optimization with relaxed tolerances.
+/// 3. Fine-tuning optimization with tighter tolerances.
 ///
-/// Rather than solve a direct solution we aim to solve successively
-/// more difficult problem in multiple steps, as each one improves the
-/// overall fit to the source data values.
-///
-/// In the future we may wish to allow different types of curve
-/// interpolation between the 3 points.
+/// This multi-stage approach provides better convergence and higher
+/// quality fits compared to single-stage optimization.
 pub fn nonlinear_line_n3(
     x_values: &[f64],
     y_values: &[f64],
@@ -282,6 +358,10 @@ pub fn nonlinear_line_n3(
     let value_count = x_values.len();
     assert!(value_count > 2);
 
+    info!("nonlinear_line_n3: Starting multi-stage optimization");
+
+    // Calculate control point X positions using linear regression
+    // approach.
     let mut point_x = 0.0;
     let mut point_y = 0.0;
     let mut dir_x = 0.0;
@@ -298,194 +378,25 @@ pub fn nonlinear_line_n3(
     let x_first = x_values[0];
     let x_last = x_values[value_count - 1];
     let x_diff = (x_last - x_first) / 2.0;
-    debug!("x_first={x_first}");
-    debug!("x_last={x_last}");
-    debug!("x_diff={x_diff}");
+    debug!("x_first={x_first}, x_last={x_last}, x_diff={x_diff}");
 
     // Scale up to X axis range.
     let dir_x = dir_x * x_diff;
-    let dir_y = dir_y * x_diff;
 
-    // Define initial parameter vector
-    let point_a = Point2 {
-        x: point_x - dir_x,
-        y: point_y - dir_y,
-    };
-    let point_b = Point2 {
-        x: point_x,
-        y: point_y,
-    };
-    let point_c = Point2 {
-        x: point_x + dir_x,
-        y: point_y + dir_y,
-    };
-    // NOTE: point_a.x, point_b.x and point_c.x are omitted as these
-    // are hard-coded as known parameters and do not need to be
-    // solved.
-    let initial_parameters_vec = vec![point_a.y, point_b.y, point_c.y];
-    let initial_parameters: Array1<f64> = Array1::from(initial_parameters_vec);
-    debug!("initial_parameters={initial_parameters:?}");
+    // Define control point X coordinates.
+    let point_a_x = point_x - dir_x;
+    let point_b_x = point_x;
+    let point_c_x = point_x + dir_x;
 
-    // Define the problem
-    let reference_values: Vec<(f64, f64)> = x_values
-        .iter()
-        .zip(y_values)
-        .map(|x| (*x.0, *x.1))
-        .collect();
-    let problem = CurveFitLinearN3Problem::new(
-        // Known parameters
-        point_a.x,
-        point_b.x,
-        point_c.x,
-        // Curve values to match-to.
-        &reference_values,
+    debug!(
+        "Control point X coordinates: a={}, b={}, c={}",
+        point_a_x, point_b_x, point_c_x
     );
 
-    // Set up solver.
-    let epsilon = 1e-9;
-    let condition =
-        argmin::solver::linesearch::condition::ArmijoCondition::new(1e-5)?;
-    let linesearch =
-        argmin::solver::linesearch::BacktrackingLineSearch::new(condition)
-            .rho(0.5)?;
-    let solver = argmin::solver::quasinewton::BFGS::new(linesearch)
-        .with_tolerance_cost(epsilon)?;
-
-    // Run solver
-    let initial_hessian: Array2<f64> = Array2::eye(3);
-    let result = argmin::core::Executor::new(problem, solver)
-        .configure(|state| {
-            state
-                .param(initial_parameters)
-                .inv_hessian(initial_hessian)
-                .max_iters(50)
-        })
-        .run()?;
-    debug!("Solver Result: {result}");
-
-    match result.state().get_best_param() {
-        Some(parameters) => Ok((
-            Point2 {
-                x: point_a.x,
-                y: parameters[0],
-            },
-            Point2 {
-                x: point_b.x,
-                y: parameters[1],
-            },
-            Point2 {
-                x: point_c.x,
-                y: parameters[2],
-            },
-        )),
-        None => bail!("Solve failed."),
-    }
-}
-
-#[derive(Debug)]
-pub struct CurveFitLinearNPointsProblem {
-    // Curve values we are trying to fit to.
-    reference_values: Vec<(f64, f64)>,
-    // X-coordinates of control points (fixed).
-    control_points_x: Vec<f64>,
-    // Interpolation method to use.
-    interpolator: Interpolator,
-}
-
-impl CurveFitLinearNPointsProblem {
-    fn new(
-        control_points_x: Vec<f64>,
-        reference_curve: &[(f64, f64)],
-        interpolation_method: Interpolation,
-    ) -> Result<Self> {
-        let reference_values: Vec<(f64, f64)> = reference_curve.to_vec();
-        debug!("reference_values.len()={}", reference_values.len());
-
-        let interpolator = Interpolator::from_method(interpolation_method);
-        interpolator.set_control_points_x(&control_points_x);
-
-        Ok(Self {
-            reference_values,
-            control_points_x,
-            interpolator,
-        })
-    }
-
-    fn parameter_count(&self) -> usize {
-        self.control_points_x.len()
-    }
-
-    fn residuals(&self, control_points_y: &[f64]) -> Vec<f64> {
-        self.interpolator.set_control_points_y(control_points_y);
-        self.reference_values
-            .iter()
-            .map(|&(value_x, data_y)| {
-                let value_y = self.interpolator.interpolate(value_x);
-                (value_y - data_y).abs()
-            })
-            .collect()
-    }
-}
-
-impl argmin::core::CostFunction for CurveFitLinearNPointsProblem {
-    type Param = Array1<f64>;
-    type Output = f64;
-
-    fn cost(
-        &self,
-        parameters: &Self::Param,
-    ) -> Result<Self::Output, argmin::core::Error> {
-        debug!("Cost: parameters={parameters:?}");
-        assert_eq!(parameters.len(), self.parameter_count());
-
-        let residuals_data = self.residuals(parameters.as_slice().unwrap());
-        let residuals = Array1::from_vec(residuals_data);
-
-        let residuals_sum = residuals.sum();
-        debug!("residuals_sum: {residuals_sum}");
-
-        Ok(residuals_sum * residuals_sum)
-    }
-}
-
-impl argmin::core::Gradient for CurveFitLinearNPointsProblem {
-    type Param = Array1<f64>;
-    type Gradient = Array1<f64>;
-
-    fn gradient(
-        &self,
-        parameters: &Self::Param,
-    ) -> Result<Self::Gradient, argmin::core::Error> {
-        debug!("Gradient: parameters={parameters:?}");
-        assert_eq!(parameters.len(), self.parameter_count());
-
-        let vector = (*parameters).forward_diff(&|x| {
-            let sum: f64 =
-                self.residuals(x.as_slice().unwrap()).into_iter().sum();
-            debug!("forward_diff residuals_sum: {sum}");
-            sum * sum
-        });
-
-        Ok(vector)
-    }
-}
-
-impl argmin::core::Hessian for CurveFitLinearNPointsProblem {
-    type Param = Array1<f64>;
-    type Hessian = Array2<f64>;
-
-    fn hessian(
-        &self,
-        parameters: &Self::Param,
-    ) -> Result<Self::Hessian, argmin::core::Error> {
-        debug!("Hessian: parameters={parameters:?}");
-        assert_eq!(parameters.len(), self.parameter_count());
-
-        let matrix =
-            (*parameters).forward_hessian(&|x| self.gradient(x).unwrap());
-
-        Ok(matrix)
-    }
+    // Use multi-stage optimization.
+    multi_stage_nonlinear_n3(
+        x_values, y_values, point_a_x, point_b_x, point_c_x,
+    )
 }
 
 fn control_point_guess_from_linear_regression(
@@ -578,60 +489,308 @@ pub fn nonlinear_line_n_points_with_initial(
         y_initial_control_points.len(),
         "X and Y control point values must match length."
     );
-    let control_point_count = x_initial_control_points.len();
 
-    // Create reference values.
+    info!("nonlinear_line_n_points_with_initial: Starting multi-stage optimization with {} control points", x_initial_control_points.len());
+    info!("Interpolation method: {:?}", interpolation_method);
+
+    // Use multi-stage optimization (ignoring the provided Y initial
+    // values as Stage 1 will compute better initialization).
+    multi_stage_nonlinear_npoints(
+        x_values,
+        y_values,
+        x_initial_control_points,
+        interpolation_method,
+    )
+}
+
+/// Polynomial least-squares fitting with interpolation method
+/// support.
+///
+/// This performs direct polynomial fitting that respects the user's
+/// chosen interpolation method to provide optimal initial parameter
+/// estimates for non-linear optimization.
+fn polynomial_least_squares_fit_with_interpolation(
+    x_values: &[f64],
+    y_values: &[f64],
+    control_points_x: &[f64],
+    interpolation_method: Interpolation,
+) -> Result<Vec<f64>> {
+    assert_eq!(x_values.len(), y_values.len());
+    assert!(x_values.len() > 2);
+
+    let n_points = control_points_x.len();
+    info!("polynomial_least_squares_fit_with_interpolation: n_points={}, method={:?}", n_points, interpolation_method);
+
+    // Choose polynomial degree based on control point count and
+    // interpolation method.
+    //
+    // For high control point counts, use higher degree polynomials
+    // for better initialization.
+    let base_degree = match interpolation_method {
+        Interpolation::Linear => 1,
+        Interpolation::QuadraticNUBS => 2,
+        Interpolation::CubicSpline | Interpolation::CubicNUBS => 3,
+    };
+
+    // Scale degree with control point count for better
+    // initialization.
+    let scaled_degree = if n_points <= 4 {
+        base_degree
+    } else if n_points <= 8 {
+        (base_degree + 2).min(n_points - 1)
+    } else if n_points <= 16 {
+        (base_degree + 4).min(n_points - 1).min(8) // Cap at degree 8 for numerical stability.
+    } else {
+        (base_degree + 6).min(n_points - 1).min(12) // Cap at degree 12 for very high counts.
+    };
+
+    let degree = scaled_degree.max(base_degree).min(x_values.len() - 1);
+
+    info!("Using polynomial degree: {}", degree);
+
+    // Build the Vandermonde matrix for polynomial fitting.
+    let m = x_values.len(); // Number of data points.
+    let n = degree + 1; // Number of polynomial coefficients.
+    let mut a_data = Vec::with_capacity(m * n);
+    for i in 0..m {
+        let x = x_values[i];
+        for j in 0..n {
+            a_data.push(x.powi(j as i32));
+        }
+    }
+
+    let a_matrix = DMatrix::from_row_slice(m, n, &a_data);
+    let y_vector = DVector::from_row_slice(y_values);
+
+    // Solve normal equations: A^T * A * coeffs = A^T * y.
+    let ata_matrix = a_matrix.transpose() * &a_matrix;
+    let aty_vector = a_matrix.transpose() * y_vector;
+
+    // Use LU decomposition to solve.
+    let coefficients = ata_matrix
+        .lu()
+        .solve(&aty_vector)
+        .ok_or_else(|| {
+            anyhow::anyhow!("Failed to solve polynomial fitting system")
+        })?
+        .data
+        .as_slice()
+        .to_vec();
+
+    info!("Polynomial coefficients: {:?}", coefficients);
+
+    // Convert polynomial coefficients to control point Y-values.
+    let mut control_points_y = Vec::with_capacity(n_points);
+    for &x in control_points_x {
+        let mut y = 0.0;
+        for (i, &coeff) in coefficients.iter().enumerate() {
+            y += coeff * x.powi(i as i32);
+        }
+        control_points_y.push(y);
+    }
+
+    info!(
+        "Initial control points Y from polynomial fit: {:?}",
+        control_points_y
+    );
+    Ok(control_points_y)
+}
+
+/// N3 curve fitting using LevenbergMarquardt solver with polynomial
+/// initialization.
+fn multi_stage_nonlinear_n3(
+    x_values: &[f64],
+    y_values: &[f64],
+    point_a_x: f64,
+    point_b_x: f64,
+    point_c_x: f64,
+) -> Result<(Point2, Point2, Point2)> {
+    info!("multi_stage_nonlinear_n3: Starting LevenbergMarquardt optimization");
+
     let reference_values: Vec<(f64, f64)> = x_values
         .iter()
         .zip(y_values)
         .map(|(&x, &y)| (x, y))
         .collect();
 
-    // Define the problem.
-    let problem = CurveFitLinearNPointsProblem::new(
+    let problem = N3CurveFitProblem::new(
+        point_a_x,
+        point_b_x,
+        point_c_x,
+        reference_values,
+    );
+
+    // Polynomial initialization (Linear interpolation for N3).
+    let control_points_x = vec![point_a_x, point_b_x, point_c_x];
+    let polynomial_y_initial = polynomial_least_squares_fit_with_interpolation(
+        x_values,
+        y_values,
+        &control_points_x,
+        Interpolation::Linear, // N3 always uses linear interpolation.
+    );
+
+    // Use polynomial fit if available, otherwise fall back to linear
+    // regression.
+    let initial_parameters = match polynomial_y_initial {
+        Ok(poly_y) => {
+            info!("Using polynomial initialization: {:?}", poly_y);
+            poly_y
+        }
+        Err(e) => {
+            info!("Polynomial fitting failed ({}), falling back to linear regression", e);
+            // Fall back to original linear regression approach.
+            let mut point_x = 0.0;
+            let mut point_y = 0.0;
+            let mut dir_x = 0.0;
+            let mut dir_y = 0.0;
+            control_point_guess_from_linear_regression(
+                x_values,
+                y_values,
+                &mut point_x,
+                &mut point_y,
+                &mut dir_x,
+                &mut dir_y,
+            );
+
+            let x_first = x_values[0];
+            let x_last = x_values[x_values.len() - 1];
+            let x_diff = (x_last - x_first) / 2.0;
+            let dir_y = dir_y * x_diff;
+
+            vec![point_y - dir_y, point_y, point_y + dir_y]
+        }
+    };
+
+    // LevenbergMarquardt optimization with good tolerances.
+    let config = SolverConfig {
+        ftol: 1e-8,
+        xtol: 1e-8,
+        gtol: 1e-8,
+        max_iterations: 300,
+        step_bound: 100.0,
+        verbose: false,
+    };
+
+    let solver = LevenbergMarquardt::new(config);
+    let mut workspace =
+        SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+    let result = solver.solve_problem(&problem, &mut workspace).unwrap();
+
+    info!("LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
+           result.status, result.cost, result.iterations, result.function_evaluations);
+
+    Ok((
+        Point2 {
+            x: point_a_x,
+            y: result.parameters[0],
+        },
+        Point2 {
+            x: point_b_x,
+            y: result.parameters[1],
+        },
+        Point2 {
+            x: point_c_x,
+            y: result.parameters[2],
+        },
+    ))
+}
+
+/// N-points curve fitting using LevenbergMarquardt solver with
+/// polynomial initialization.
+fn multi_stage_nonlinear_npoints(
+    x_values: &[f64],
+    y_values: &[f64],
+    x_initial_control_points: &[f64],
+    interpolation_method: Interpolation,
+) -> Result<Vec<Point2>> {
+    info!("multi_stage_nonlinear_npoints: Starting LevenbergMarquardt optimization with {:?}", interpolation_method);
+
+    let control_point_count = x_initial_control_points.len();
+    let reference_values: Vec<(f64, f64)> = x_values
+        .iter()
+        .zip(y_values)
+        .map(|(&x, &y)| (x, y))
+        .collect();
+
+    let problem = NPointsCurveFitProblem::new(
         x_initial_control_points.to_vec(),
-        &reference_values,
+        reference_values,
         interpolation_method,
     )?;
 
-    // Set up solver
-    let epsilon = 1e-3;
-    let condition =
-        argmin::solver::linesearch::condition::ArmijoCondition::new(1e-5)?;
-    let linesearch =
-        argmin::solver::linesearch::BacktrackingLineSearch::new(condition)
-            .rho(0.5)?;
-    let solver = argmin::solver::quasinewton::BFGS::new(linesearch)
-        .with_tolerance_cost(epsilon)?;
+    // Polynomial initialization with proper interpolation method.
+    let polynomial_y_initial = polynomial_least_squares_fit_with_interpolation(
+        x_values,
+        y_values,
+        x_initial_control_points,
+        interpolation_method,
+    );
 
-    // Run solver
-    let max_iterations = x_initial_control_points.len() as u64 * 20;
-    let initial_parameters = Array1::from(y_initial_control_points.to_vec());
-    let initial_hessian: Array2<f64> = Array2::eye(control_point_count);
-    let result = argmin::core::Executor::new(problem, solver)
-        .configure(|state| {
-            state
-                .param(initial_parameters)
-                .inv_hessian(initial_hessian)
-                .max_iters(max_iterations)
-        })
-        .run()?;
-
-    debug!("Solver Result: {result}");
-
-    match result.state().get_best_param() {
-        Some(parameters) => {
-            let mut control_points = Vec::with_capacity(control_point_count);
-            for i in 0..control_point_count {
-                control_points.push(Point2 {
-                    x: x_initial_control_points[i],
-                    y: parameters[i],
-                });
-            }
-            Ok(control_points)
+    // Use polynomial fit if available, otherwise fall back to linear regression.
+    let initial_parameters = match polynomial_y_initial {
+        Ok(poly_y) => {
+            info!("Using polynomial initialization: {:?}", poly_y);
+            poly_y
         }
-        None => bail!("Solve failed."),
+        Err(e) => {
+            info!("Polynomial fitting failed ({}), falling back to linear regression", e);
+            // Fall back to original linear regression approach.
+            let mut point_x = 0.0;
+            let mut point_y = 0.0;
+            let mut dir_x = 0.0;
+            let mut dir_y = 0.0;
+            control_point_guess_from_linear_regression(
+                x_values,
+                y_values,
+                &mut point_x,
+                &mut point_y,
+                &mut dir_x,
+                &mut dir_y,
+            );
+
+            let (_, y_control) = generate_evenly_space_control_points(
+                x_values,
+                control_point_count,
+                point_x,
+                point_y,
+                dir_x,
+                dir_y,
+            )?;
+            y_control
+        }
+    };
+
+    let (ftol, xtol, gtol) = (1e-6, 1e-6, 1e-6);
+    let max_iter = 100;
+
+    info!("Using tolerances ftol={}, xtol={}, gtol={}, max_iter={} for {} control points",
+           ftol, xtol, gtol, max_iter, control_point_count);
+
+    let config = SolverConfig {
+        ftol,
+        xtol,
+        gtol,
+        max_iterations: max_iter,
+        step_bound: 100.0,
+        verbose: false,
+    };
+
+    let solver = LevenbergMarquardt::new(config);
+    let mut workspace =
+        SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+    let result = solver.solve_problem(&problem, &mut workspace).unwrap();
+
+    info!("LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
+           result.status, result.cost, result.iterations, result.function_evaluations);
+
+    let mut control_points = Vec::with_capacity(control_point_count);
+    for i in 0..control_point_count {
+        control_points.push(Point2 {
+            x: x_initial_control_points[i],
+            y: result.parameters[i],
+        });
     }
+    Ok(control_points)
 }
 
 pub fn nonlinear_line_n_points(
@@ -656,6 +815,9 @@ pub fn nonlinear_line_n_points(
         );
     }
 
+    info!("nonlinear_line_n_points: Starting multi-stage optimization with {} control points", control_point_count);
+    info!("Interpolation method: {:?}", interpolation);
+
     let mut point_x = 0.0;
     let mut point_y = 0.0;
     let mut dir_x = 0.0;
@@ -669,21 +831,19 @@ pub fn nonlinear_line_n_points(
         &mut dir_y,
     );
 
-    let (x_initial_control_points, y_initial_control_points) =
-        generate_evenly_space_control_points(
-            x_values,
-            control_point_count,
-            point_x,
-            point_y,
-            dir_x,
-            dir_y,
-        )?;
+    let (x_initial_control_points, _) = generate_evenly_space_control_points(
+        x_values,
+        control_point_count,
+        point_x,
+        point_y,
+        dir_x,
+        dir_y,
+    )?;
 
-    nonlinear_line_n_points_with_initial(
+    multi_stage_nonlinear_npoints(
         x_values,
         y_values,
         &x_initial_control_points,
-        &y_initial_control_points,
         interpolation,
     )
 }

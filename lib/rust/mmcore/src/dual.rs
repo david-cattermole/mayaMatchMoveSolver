@@ -18,20 +18,198 @@
 // ====================================================================
 //
 
+//! # Dual Numbers for Automatic Differentiation
+//!
+//! This module implements dual numbers, a mathematical structure that
+//! enables exact computation of derivatives through automatic
+//! differentiation (AD).
+//!
+//! ## Mathematical Foundation
+//!
+//! Dual numbers extend real numbers by introducing an "infinitesimal"
+//! unit `epsilon` such that `epsilon != 0` but `epsilon^2 = 0`.
+//!
+//! A dual number has the form:
+//!
+//! ```text
+//! x = a + b·epsilon
+//! ```
+//!
+//! where `a` is the real part (function value) and `b` is the dual
+//! part (derivative).
+//!
+//! This property `epsilon^2 = 0` is fundamental to automatic
+//! differentiation. When we evaluate a function `f(a + b·epsilon)`
+//! using dual arithmetic, the result naturally contains both `f(a)`
+//! and `f'(a)·b` due to the chain rule.
+//!
+//! ## Automatic Differentiation Example
+//!
+//! Consider evaluating `f(x) = x^2` at `x = 3`:
+//!
+//! ```rust
+//! use mmcore_rust::dual::Dual;
+//!
+//! // Create dual number: 3 + 1·epsilon (derivative seed = 1)
+//! let x = Dual::new(3.0, 1.0);
+//! let result = x * x;
+//!
+//! // result.real = 9.0  (function value)
+//! // result.dual = 6.0  (derivative: d/dx(x^2) = 2x = 6 at x=3)
+//! ```
+//!
+//! The computation expands as:
+//! ```text
+//! (3 + 1·epsilon)^2 = 9 + 2·3·1·epsilon + 1^2·epsilon^2
+//!            = 9 + 6·epsilon + 0     (since epsilon^2 = 0)
+//!            = 9 + 6·epsilon
+//! ```
+//!
+//! ## Arithmetic Operations
+//!
+//! Dual number arithmetic follows from the `epsilon^2 = 0` property:
+//!
+//! - **Addition**: `(a + b·epsilon) + (c + d·epsilon) = (a + c) + (b + d)·epsilon`
+//! - **Multiplication**: `(a + b·epsilon)(c + d·epsilon) = ac + (ad + bc)·epsilon`
+//!   (the `bd·epsilon^2` term vanishes)
+//! - **Division**: Uses the quotient rule for derivatives
+//!
+//! ## Chain Rule Implementation
+//!
+//! For mathematical functions `f`, the dual extension follows:
+//! ```text
+//! f(a + b·epsilon) = f(a) + f'(a)·b·epsilon
+//! ```
+//!
+//! This automatically implements the chain rule. For composite functions:
+//! ```text
+//! g(f(a + b·epsilon)) = g(f(a)) + g'(f(a))·f'(a)·b·epsilon
+//! ```
+//!
+//! ## References
+//!
+//! ### Core Texts on Automatic Differentiation
+//!
+//! - Griewank, A., & Walther, A. (2008). *Evaluating Derivatives: Principles
+//!   and Techniques of Algorithmic Differentiation* (2nd ed.). SIAM.
+//!
+//! - Rall, L. B. (1981). *Automatic Differentiation: Techniques and Applications*.
+//!   Lecture Notes in Computer Science, Vol. 120. Springer-Verlag.
+//!
+//! - Bartholomew-Biggs, M., Brown, S., Christianson, B., & Dixon, L. (2000).
+//!   Automatic differentiation of algorithms. *Journal of Computational and
+//!   Applied Mathematics*, 124(1-2), 171-190.
+//!
+//! ### Modern Reviews and Implementations
+//!
+//! - Margossian, C. C. (2019). A review of automatic differentiation and its
+//!   efficient implementation. *Wiley Interdisciplinary Reviews: Data Mining
+//!   and Knowledge Discovery*, 9(4), e1305.
+//!
+//! - Baydin, A. G., Pearlmutter, B. A., Radul, A. A., & Siskind, J. M. (2018).
+//!   Automatic differentiation in machine learning: a survey. *Journal of
+//!   Machine Learning Research*, 18(153), 1-43.
+//!
+//! ### Mathematical Foundations
+//!
+//! - Study, E. (1903). *Geometrie der Dynamen*. Leipzig: Teubner.
+//!   (Original introduction of dual numbers)
+//!
+//! - Clifford, W. K. (1873). Preliminary sketch of biquaternions. *Proceedings
+//!   of the London Mathematical Society*, 4(1), 381-395.
+//!
+//! ### Implementation References
+//!
+//! - Ceres Solver: A Large Scale Non-linear Optimization Library.
+//!   <http://ceres-solver.org/> (Reference implementation for N-dimensional jets)
+//!
+//! - Automatic Differentiation in PyTorch.
+//!   <https://pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html>
+//!
+//! - JAX Documentation on Automatic Differentiation.
+//!   <https://jax.readthedocs.io/en/latest/notebooks/autodiff_cookbook.html>
+//!
+
 use num_traits::{ToPrimitive, Zero};
 use std::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub,
     SubAssign,
 };
 
+/// A dual number for automatic differentiation.
+///
+/// ## Mathematical Representation
+///
+/// A dual number has the form `a + b·epsilon` where:
+/// - `a` (real part): The function value at the evaluation point
+/// - `b` (dual part): The derivative of the function with respect to the variable
+/// - `epsilon` (epsilon): The infinitesimal unit satisfying `epsilon^2 = 0`
+///
+/// ## Construction Patterns
+///
+/// ```rust
+/// use mmcore_rust::dual::Dual;
+///
+/// // Create a constant (derivative = 0)
+/// let constant = Dual::new(5.0, 0.0);
+/// let from_value: Dual<f64> = 5.0.into();
+///
+/// // Create a variable (derivative = 1)
+/// let variable = Dual::new(3.0, 1.0);
+/// ```
+///
+/// ## Derivative Computation
+///
+/// When using dual numbers for computing derivatives:
+/// - Set the dual part to 1.0 for the variable of differentiation
+/// - Set the dual part to 0.0 for constants
+/// - The result's dual part contains the derivative
+///
+/// ## Type Parameters
+///
+/// - `T`: The underlying numeric type (typically `f64` or `f32`)
+///
+/// ## Examples
+///
+/// Computing `f(x) = 2x^3 + 3x + 1` and `f'(x)` at `x = 2`:
+///
+/// ```rust
+/// use mmcore_rust::dual::Dual;
+///
+/// let x = Dual::new(2.0, 1.0);  // x with dx/dx = 1
+/// let two: Dual<f64> = 2.0.into();
+/// let three: Dual<f64> = 3.0.into();
+/// let one: Dual<f64> = 1.0.into();
+/// let result = two * x * x * x + three * x + one;
+///
+/// assert_eq!(result.real, 23.0);  // f(2) = 2·8 + 3·2 + 1 = 23
+/// assert_eq!(result.dual, 27.0);  // f'(2) = 6·4 + 3 = 27
+/// ```
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Dual<T> {
+    /// The real part (function value)
     pub real: T,
-
+    /// The dual part (derivative)
     pub dual: T,
 }
 
 impl<T> Dual<T> {
+    /// Creates a new dual number with the given real and dual parts.
+    ///
+    /// # Parameters
+    /// - `real`: The function value (real part)
+    /// - `dual`: The derivative value (dual part)
+    ///
+    /// # Examples
+    /// ```rust
+    /// use mmcore_rust::dual::Dual;
+    ///
+    /// // Create a variable x = 5 with derivative dx/dx = 1
+    /// let x = Dual::new(5.0, 1.0);
+    ///
+    /// // Create a constant c = 2 with derivative dc/dx = 0
+    /// let c = Dual::new(2.0, 0.0);
+    /// ```
     pub fn new(real: T, dual: T) -> Self {
         Self { real, dual }
     }
@@ -41,11 +219,39 @@ impl<T> From<T> for Dual<T>
 where
     T: Copy + Default,
 {
+    /// Converts a scalar value to a dual number with zero derivative.
+    ///
+    /// This creates a constant dual number where the dual part is set to the
+    /// default value (typically zero). This is useful for treating scalar
+    /// constants in dual number computations.
+    ///
+    /// # Mathematical Interpretation
+    /// For a constant `c`, we have `d/dx(c) = 0`, so the dual number
+    /// representation is `c + 0·epsilon`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use mmcore_rust::dual::Dual;
+    ///
+    /// let constant: Dual<f64> = 3.14.into();
+    /// assert_eq!(constant.real, 3.14);
+    /// assert_eq!(constant.dual, 0.0);
+    /// ```
     fn from(real: T) -> Self {
         Self::new(real, T::default())
     }
 }
 
+/// Addition of dual numbers.
+///
+/// ## Mathematical Derivation
+/// For dual numbers `u = a + b·epsilon` and `v = c + d·epsilon`:
+/// ```text
+/// u + v = (a + b·epsilon) + (c + d·epsilon)
+///       = (a + c) + (b + d)·epsilon
+/// ```
+///
+/// This follows from the linearity of differentiation: `d/dx(f + g) = f' + g'`.
 impl Add for Dual<f64> {
     type Output = Self;
     fn add(self, other: Self) -> Self {
@@ -53,6 +259,16 @@ impl Add for Dual<f64> {
     }
 }
 
+/// Addition of dual number and scalar.
+///
+/// ## Mathematical Derivation
+/// For dual number `u = a + b·epsilon` and scalar `s`:
+/// ```text
+/// u + s = (a + b·epsilon) + s
+///       = (a + s) + b·epsilon
+/// ```
+///
+/// The derivative of a constant is zero, so only the real part changes.
 impl Add<f64> for Dual<f64> {
     type Output = Self;
     fn add(self, other: f64) -> Self {
@@ -60,6 +276,16 @@ impl Add<f64> for Dual<f64> {
     }
 }
 
+/// Subtraction of dual numbers.
+///
+/// ## Mathematical Derivation
+/// For dual numbers `u = a + b·epsilon` and `v = c + d·epsilon`:
+/// ```text
+/// u - v = (a + b·epsilon) - (c + d·epsilon)
+///       = (a - c) + (b - d)·epsilon
+/// ```
+///
+/// This follows from the linearity of differentiation: `d/dx(f - g) = f' - g'`.
 impl Sub for Dual<f64> {
     type Output = Self;
     fn sub(self, other: Self) -> Self {
@@ -67,6 +293,16 @@ impl Sub for Dual<f64> {
     }
 }
 
+/// Subtraction of scalar from dual number.
+///
+/// ## Mathematical Derivation
+/// For dual number `u = a + b·epsilon` and scalar `s`:
+/// ```text
+/// u - s = (a + b·epsilon) - s
+///       = (a - s) + b·epsilon
+/// ```
+///
+/// The derivative of a constant is zero, so only the real part changes.
 impl Sub<f64> for Dual<f64> {
     type Output = Self;
     fn sub(self, other: f64) -> Self {
@@ -74,6 +310,17 @@ impl Sub<f64> for Dual<f64> {
     }
 }
 
+/// Multiplication of dual numbers.
+///
+/// ## Mathematical Derivation
+/// For dual numbers `u = a + b·epsilon` and `v = c + d·epsilon`:
+/// ```text
+/// u × v = (a + b·epsilon)(c + d·epsilon)
+///       = ac + ad·epsilon + bc·epsilon + bd·epsilon^2
+///       = ac + (ad + bc)·epsilon    (since epsilon^2 = 0)
+/// ```
+///
+/// This implements the product rule: `d/dx(f·g) = f'·g + f·g'`.
 impl Mul for Dual<f64> {
     type Output = Self;
     fn mul(self, other: Self) -> Self {
@@ -84,6 +331,16 @@ impl Mul for Dual<f64> {
     }
 }
 
+/// Multiplication of dual number by scalar.
+///
+/// ## Mathematical Derivation
+/// For dual number `u = a + b·epsilon` and scalar `s`:
+/// ```text
+/// u × s = (a + b·epsilon) × s
+///       = as + bs·epsilon
+/// ```
+///
+/// This follows from the constant multiple rule: `d/dx(c·f) = c·f'`.
 impl Mul<f64> for Dual<f64> {
     type Output = Self;
     fn mul(self, other: f64) -> Self {
@@ -91,6 +348,19 @@ impl Mul<f64> for Dual<f64> {
     }
 }
 
+/// Division of dual numbers.
+///
+/// ## Mathematical Derivation
+/// For dual numbers `u = a + b·epsilon` and `v = c + d·epsilon`, we use the identity:
+/// ```text
+/// u/v = (a + b·epsilon)/(c + d·epsilon)
+///     = (a + b·epsilon)(c - d·epsilon)/((c + d·epsilon)(c - d·epsilon))
+///     = (ac - ad·epsilon + bc·epsilon - bd·epsilon^2)/(c^2 - cd·epsilon + cd·epsilon - d^2·epsilon^2)
+///     = (ac + (bc - ad)·epsilon)/c^2    (since epsilon^2 = 0)
+///     = a/c + (bc - ad)·epsilon/c^2
+/// ```
+///
+/// This implements the quotient rule: `d/dx(f/g) = (f'·g - f·g')/g^2`.
 impl Div for Dual<f64> {
     type Output = Self;
     fn div(self, other: Self) -> Self {
@@ -102,6 +372,16 @@ impl Div for Dual<f64> {
     }
 }
 
+/// Division of dual number by scalar.
+///
+/// ## Mathematical Derivation
+/// For dual number `u = a + b·epsilon` and scalar `s`:
+/// ```text
+/// u / s = (a + b·epsilon) / s
+///       = a/s + (b/s)·epsilon
+/// ```
+///
+/// This follows from the constant divisor rule: `d/dx(f/c) = f'/c`.
 impl Div<f64> for Dual<f64> {
     type Output = Self;
     fn div(self, other: f64) -> Self {
@@ -109,6 +389,11 @@ impl Div<f64> for Dual<f64> {
     }
 }
 
+/// # Compound assignment operators for dual numbers.
+/// These provide convenient in-place operations while maintaining derivative correctness.
+///
+/// Addition assignment for dual numbers.
+/// Implements `u += v` where the derivative follows addition rules.
 impl AddAssign for Dual<f64> {
     fn add_assign(&mut self, other: Self) {
         self.real += other.real;
@@ -116,6 +401,8 @@ impl AddAssign for Dual<f64> {
     }
 }
 
+/// Subtraction assignment for dual numbers.
+/// Implements `u -= v` where the derivative follows subtraction rules.
 impl SubAssign for Dual<f64> {
     fn sub_assign(&mut self, other: Self) {
         self.real -= other.real;
@@ -123,18 +410,28 @@ impl SubAssign for Dual<f64> {
     }
 }
 
+/// Multiplication assignment for dual numbers.
+/// Implements `u *= v` using the product rule for derivatives.
 impl MulAssign for Dual<f64> {
     fn mul_assign(&mut self, other: Self) {
         *self = *self * other;
     }
 }
 
+/// Division assignment for dual numbers.
+/// Implements `u /= v` using the quotient rule for derivatives.
 impl DivAssign for Dual<f64> {
     fn div_assign(&mut self, other: Self) {
         *self = *self / other;
     }
 }
 
+/// Remainder operation for dual numbers.
+///
+/// ## Mathematical Interpretation
+/// The remainder operation is not differentiable in general, so we set the
+/// derivative to zero. This is consistent with treating the remainder as
+/// a discontinuous operation.
 impl Rem for Dual<f64> {
     type Output = Self;
     fn rem(self, other: Self) -> Self::Output {
@@ -142,6 +439,8 @@ impl Rem for Dual<f64> {
     }
 }
 
+/// Remainder assignment for dual numbers.
+/// Sets the derivative to zero as the remainder operation is not differentiable.
 impl RemAssign for Dual<f64> {
     fn rem_assign(&mut self, other: Self) {
         self.real %= other.real;
@@ -149,6 +448,16 @@ impl RemAssign for Dual<f64> {
     }
 }
 
+/// Negation of dual numbers.
+///
+/// ## Mathematical Derivation
+/// For dual number `u = a + b·epsilon`:
+/// ```text
+/// -u = -(a + b·epsilon)
+///    = -a + (-b)·epsilon
+/// ```
+///
+/// This implements the negative rule: `d/dx(-f) = -f'`.
 impl Neg for Dual<f64> {
     type Output = Self;
     fn neg(self) -> Self::Output {
@@ -156,11 +465,24 @@ impl Neg for Dual<f64> {
     }
 }
 
+/// Zero trait implementation for dual numbers.
+///
+/// ## Mathematical Interpretation
+/// The zero element in dual number arithmetic is `0 + 0·epsilon`. This represents
+/// the constant function `f(x) = 0` with derivative `f'(x) = 0`.
+///
+/// ## Behavioral Contract
+/// - `zero() + x = x` for any dual number `x`
+/// - `zero() * x = zero()` for any dual number `x`
+/// - A dual number is zero if both real and dual parts are zero
 impl Zero for Dual<f64> {
+    /// Returns the additive identity: `0 + 0·epsilon`
     fn zero() -> Self {
         Dual::new(0.0, 0.0)
     }
 
+    /// Tests if this dual number represents zero.
+    /// True if both real and dual parts are exactly zero.
     fn is_zero(&self) -> bool {
         self.real == 0.0 && self.dual == 0.0
     }
@@ -178,17 +500,42 @@ impl num_traits::Num for Dual<f64> {
     }
 }
 
+/// One trait implementation for dual numbers.
+///
+/// ## Mathematical Interpretation
+/// The multiplicative identity in dual number arithmetic is `1 + 0·epsilon`.
+/// This represents the constant function `f(x) = 1` with derivative `f'(x) = 0`.
+///
+/// ## Behavioral Contract
+/// - `one() * x = x` for any dual number `x`
+/// - `one() / x = 1/x` (reciprocal operation)
+/// - A dual number is one if real part is 1.0 and dual part is 0.0
 impl num_traits::One for Dual<f64> {
+    /// Returns the multiplicative identity: `1 + 0·epsilon`
     fn one() -> Self {
         Self::new(1.0, 0.0)
     }
 
+    /// Tests if this dual number represents one.
+    /// True if real part is 1.0 and dual part is exactly zero.
     fn is_one(&self) -> bool {
         self.real == 1.0 && self.dual == 0.0
     }
 }
 
+/// NumCast trait implementation for dual numbers.
+///
+/// ## Mathematical Interpretation
+/// Converts primitive numeric types to dual numbers by treating them as constants.
+/// The resulting dual number has zero derivative, representing `f(x) = c` where
+/// `c` is the constant value and `f'(x) = 0`.
+///
+/// ## Usage
+/// This enables generic programming with dual numbers in contexts that need
+/// to convert from various numeric types.
 impl num_traits::NumCast for Dual<f64> {
+    /// Converts a primitive numeric type to a dual number with zero derivative.
+    /// Returns `None` if the conversion to `f64` fails.
     fn from<T: num_traits::ToPrimitive>(n: T) -> Option<Self> {
         let real = n.to_f64()?;
         Some(Self::new(real, 0.0))
@@ -238,36 +585,147 @@ impl ToPrimitive for Dual<f64> {
     }
 }
 
+/// # Mathematical functions for dual numbers with automatic differentiation.
+///
+/// Sine function for dual numbers.
+///
+/// ## Mathematical Derivation
+/// For dual number `x = a + b·epsilon`:
+/// ```text
+/// sin(x) = sin(a + b·epsilon)
+///        = sin(a) + b·cos(a)·epsilon
+/// ```
+///
+/// This follows from the chain rule: `d/dx(sin(f)) = cos(f)·f'`.
 pub fn sin(x: Dual<f64>) -> Dual<f64> {
     Dual::new(x.real.sin(), x.dual * x.real.cos())
 }
 
+/// Cosine function for dual numbers.
+///
+/// ## Mathematical Derivation
+/// For dual number `x = a + b·epsilon`:
+/// ```text
+/// cos(x) = cos(a + b·epsilon)
+///        = cos(a) + b·(-sin(a))·epsilon
+///        = cos(a) - b·sin(a)·epsilon
+/// ```
+///
+/// This follows from the chain rule: `d/dx(cos(f)) = -sin(f)·f'`.
 pub fn cos(x: Dual<f64>) -> Dual<f64> {
     Dual::new(x.real.cos(), x.dual * -x.real.sin())
 }
 
+/// Tangent function for dual numbers.
+///
+/// ## Mathematical Derivation
+/// For dual number `x = a + b·epsilon`:
+/// ```text
+/// tan(x) = tan(a + b·epsilon)
+///        = tan(a) + b·sec^2(a)·epsilon
+///        = tan(a) + b·(1/cos^2(a))·epsilon
+/// ```
+///
+/// This follows from the chain rule: `d/dx(tan(f)) = sec^2(f)·f' = (1/cos^2(f))·f'`.
 pub fn tan(x: Dual<f64>) -> Dual<f64> {
     let tan_real = x.real.tan();
     Dual::new(tan_real, x.dual / x.real.cos().powi(2))
 }
 
+/// Square root function for dual numbers.
+///
+/// ## Mathematical Derivation
+/// For dual number `x = a + b·epsilon`:
+/// ```text
+/// sqrt(x) = sqrt(a + b·epsilon)
+///         = sqrt(a) + b·(1/(2·sqrt(a)))·epsilon
+/// ```
+///
+/// This follows from the chain rule: `d/dx(sqrt(f) = (1/(2sqrt(f))·f'`.
+///
+/// ## Numerical Considerations
+/// For `a = 0`, this derivative is undefined. Care should be taken to avoid
+/// division by zero in practical applications.
 pub fn sqrt(x: Dual<f64>) -> Dual<f64> {
     Dual::new(x.real.sqrt(), x.dual / (2.0 * x.real.sqrt()))
 }
 
+/// Exponential function for dual numbers.
+///
+/// ## Mathematical Derivation
+/// For dual number `x = a + b·epsilon`:
+/// ```text
+/// exp(x) = exp(a + b·epsilon)
+///        = exp(a) + b·exp(a)·epsilon
+///        = exp(a)·(1 + b·epsilon)
+/// ```
+///
+/// This follows from the chain rule: `d/dx(e^f) = e^f·f'`.
+/// The exponential function is unique in that it is its own derivative.
 pub fn exp(x: Dual<f64>) -> Dual<f64> {
     let exp_real = x.real.exp();
     Dual::new(exp_real, x.dual * exp_real)
 }
 
+/// Natural logarithm function for dual numbers.
+///
+/// ## Mathematical Derivation
+/// For dual number `x = a + b·epsilon`:
+/// ```text
+/// ln(x) = ln(a + b·epsilon)
+///       = ln(a) + b·(1/a)·epsilon
+/// ```
+///
+/// This follows from the chain rule: `d/dx(ln(f)) = (1/f)·f'`.
+///
+/// ## Domain Restrictions
+/// This function requires `a > 0` for the logarithm to be defined.
+/// The derivative `1/a` is undefined when `a = 0`.
 pub fn ln(x: Dual<f64>) -> Dual<f64> {
     Dual::new(x.real.ln(), x.dual / x.real)
 }
 
+/// Power function for dual numbers with scalar exponent.
+///
+/// ## Mathematical Derivation
+/// For dual number `x = a + b·epsilon` and scalar `y`:
+/// ```text
+/// pow(x, y) = (a + b·epsilon)^y
+///           = a^y + b·y·a^(y-1)·epsilon
+/// ```
+///
+/// This follows from the power rule: `d/dx(f^c) = c·f^(c-1)·f'`.
+///
+/// ## Special Cases
+/// - When `y = 0`: Result is `1 + 0·epsilon` (constant)
+/// - When `y = 1`: Result is `x` (identity)
+/// - When `a = 0` and `y < 1`: Derivative may be undefined
 pub fn pow(x: Dual<f64>, y: f64) -> Dual<f64> {
     Dual::new(x.real.powf(y), x.dual * y * x.real.powf(y - 1.0))
 }
 
+/// Float trait implementation for dual numbers.
+///
+/// ## Mathematical Interpretation
+///
+/// This implementation extends floating-point operations to dual
+/// numbers, enabling automatic differentiation for all standard
+/// mathematical functions.  Each operation preserves the dual number
+/// property: the dual part contains the derivative computed via the
+/// chain rule.
+///
+/// ## Special Values
+///
+/// Special floating-point values (NaN, infinity) are handled
+/// carefully:
+/// - NaN in either real or dual part makes the entire dual number NaN
+/// - Infinity propagates according to mathematical rules
+/// - Edge cases follow standard floating-point semantics where possible
+///
+/// ## Numerical Stability
+///
+/// The implementation aims for numerical stability but users should be aware
+/// of potential issues near singularities (e.g., sqrt(0), 1/0, log(0)).
 impl num_traits::Float for Dual<f64> {
     fn nan() -> Self {
         Self::new(f64::nan(), f64::nan())
@@ -392,24 +850,76 @@ impl num_traits::Float for Dual<f64> {
         tan(self)
     }
 
+    /// Arcsine function for dual numbers.
+    ///
+    /// ## Mathematical Derivation
+    /// For dual number `x = a + b·epsilon`:
+    /// ```text
+    /// asin(x) = asin(a) + b·(1/sqrt(1-a^2)·epsilon
+    /// ```
+    ///
+    /// This follows from: `d/dx(arcsin(f)) = (1/sqrt(1-f^2)·f'`.
+    ///
+    /// ## Domain Restrictions
+    /// Requires `-1 ≤ a ≤ 1` for the arcsine to be defined.
+    /// Derivative is undefined at `a = ±1`.
     fn asin(self) -> Self {
         let real = self.real.asin();
         let dual = self.dual / (1.0 - self.real.powi(2)).sqrt();
         Self::new(real, dual)
     }
 
+    /// Arccosine function for dual numbers.
+    ///
+    /// ## Mathematical Derivation
+    /// For dual number `x = a + b·epsilon`:
+    /// ```text
+    /// acos(x) = acos(a) + b·(-1/sqrt(1-a^2)·epsilon
+    /// ```
+    ///
+    /// This follows from: `d/dx(arccos(f)) = (-1/sqrt(1-f^2)·f'`.
+    ///
+    /// ## Domain Restrictions
+    /// Requires `-1 ≤ a ≤ 1` for the arccosine to be defined.
+    /// Derivative is undefined at `a = ±1`.
     fn acos(self) -> Self {
         let real = self.real.acos();
         let dual = -self.dual / (1.0 - self.real.powi(2)).sqrt();
         Self::new(real, dual)
     }
 
+    /// Arctangent function for dual numbers.
+    ///
+    /// ## Mathematical Derivation
+    /// For dual number `x = a + b·epsilon`:
+    /// ```text
+    /// atan(x) = atan(a) + b·(1/(1+a^2))·epsilon
+    /// ```
+    ///
+    /// This follows from: `d/dx(arctan(f)) = (1/(1+f^2))·f'`.
+    ///
+    /// ## Properties
+    /// This function is well-defined for all real values and has a bounded derivative.
     fn atan(self) -> Self {
         let real = self.real.atan();
         let dual = self.dual / (1.0 + self.real.powi(2));
         Self::new(real, dual)
     }
 
+    /// Two-argument arctangent function for dual numbers.
+    ///
+    /// ## Mathematical Derivation
+    /// For dual numbers `y = a + b·epsilon` and `x = c + d·epsilon`:
+    /// ```text
+    /// atan2(y, x) = atan2(a, c) + ((c·b - a·d)/(a^2 + c^2))·epsilon
+    /// ```
+    ///
+    /// This follows from: `d/dx(atan2(f, g)) = (g·f' - f·g')/(f^2 + g^2)`.
+    ///
+    /// ## Geometric Interpretation
+    /// Computes the angle θ such that `x = r·cos(θ)` and `y = r·sin(θ)`,
+    /// where `r = sqrt(x^2 + y^2)`. The derivative gives the rate of change of
+    /// the angle with respect to the input variable.
     fn atan2(self, other: Self) -> Self {
         let real = self.real.atan2(other.real);
         let dual = (other.real * self.dual - self.real * other.dual)

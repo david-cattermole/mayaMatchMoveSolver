@@ -20,7 +20,32 @@
 /// Mathematical interpolation functions.
 use crate::constant::Real;
 use enum_dispatch::enum_dispatch;
+use mmcore::dual::Dual;
+use num_traits::{Float, One, ToPrimitive, Zero};
 use std::cell::{Cell, RefCell};
+
+/// Trait for values that can be used in interpolation.
+/// This includes both f64 and Dual<f64>.
+pub trait InterpolationValue:
+    Copy
+    + std::ops::Add<Output = Self>
+    + std::ops::Sub<Output = Self>
+    + std::ops::Mul<Output = Self>
+    + std::ops::Div<Output = Self>
+    + From<f64>
+    + ToPrimitive
+    + Zero
+    + One
+    + Float
+{
+    /// Get the real part for comparisons (f64 returns itself, Dual returns real part)
+    fn to_real(&self) -> f64 {
+        self.to_f64().unwrap_or(0.0)
+    }
+}
+
+impl InterpolationValue for f64 {}
+impl InterpolationValue for Dual<f64> {}
 
 /// Return 'min_value' to 'max_value' linearly, for a 'mix' value
 /// between 0.0 and 1.0.
@@ -29,8 +54,16 @@ use std::cell::{Cell, RefCell};
 /// - Smoothly transition between two values
 /// - Generate points along a line
 /// - Create gradients or animations
-pub fn lerp_f64(min_value: Real, max_value: Real, mix: Real) -> Real {
-    ((1.0 - mix) * min_value) + (mix * max_value)
+pub fn lerp<T>(min_value: T, max_value: T, mix: T) -> T
+where
+    T: Copy
+        + std::ops::Add<Output = T>
+        + std::ops::Sub<Output = T>
+        + std::ops::Mul<Output = T>
+        + num_traits::One,
+{
+    let one = T::one();
+    ((one - mix) * min_value) + (mix * max_value)
 }
 
 /// Return a value between 0.0 and 1.0 for a value in an input range
@@ -40,8 +73,25 @@ pub fn lerp_f64(min_value: Real, max_value: Real, mix: Real) -> Real {
 /// - Find normalized position in a range
 /// - Convert absolute values to percentages
 /// - Inverse of lerp operation
-pub fn inverse_lerp_f64(from: Real, to: Real, value: Real) -> Real {
+pub fn inverse_lerp<T>(from: T, to: T, value: T) -> T
+where
+    T: Copy
+        + std::ops::Add<Output = T>
+        + std::ops::Sub<Output = T>
+        + std::ops::Mul<Output = T>
+        + std::ops::Div<Output = T>,
+{
     (value - from) / (to - from)
+}
+
+// Backwards compatibility.
+pub fn lerp_f64(min_value: Real, max_value: Real, mix: Real) -> Real {
+    lerp(min_value, max_value, mix)
+}
+
+// Backwards compatibility.
+pub fn inverse_lerp_f64(from: Real, to: Real, value: Real) -> Real {
+    inverse_lerp(from, to, value)
 }
 
 /// Remap from an 'original' value range to a 'target' value range.
@@ -57,38 +107,23 @@ pub fn remap_f64(
     lerp_f64(target_from, target_to, map_to_original_range)
 }
 
-fn linear_interpolate_point_y_value_at_value_x(
-    value_x: f64,
-    point_a_x: f64,
-    point_a_y: f64,
-    point_b_x: f64,
-    point_b_y: f64,
-) -> f64 {
-    let mix_x = inverse_lerp_f64(point_a_x, point_b_x, value_x);
-    let mix_y = lerp_f64(point_a_y, point_b_y, mix_x);
-    mix_y
-}
-
-pub fn linear_interpolate_y_value_at_value_x(
-    value_x: f64,
-    point_a_x: f64,
-    point_a_y: f64,
-    point_b_x: f64,
-    point_b_y: f64,
-    point_c_x: f64,
-    point_c_y: f64,
-) -> f64 {
-    if value_x < point_b_x {
-        linear_interpolate_point_y_value_at_value_x(
-            value_x, point_a_x, point_a_y, point_b_x, point_b_y,
-        )
-    } else if value_x > point_b_x {
-        linear_interpolate_point_y_value_at_value_x(
-            value_x, point_b_x, point_b_y, point_c_x, point_c_y,
-        )
-    } else {
-        point_b_y
-    }
+fn linear_interpolate_point_y_value_at_value_x<T>(
+    value_x: T,
+    point_a_x: T,
+    point_a_y: T,
+    point_b_x: T,
+    point_b_y: T,
+) -> T
+where
+    T: Copy
+        + std::ops::Add<Output = T>
+        + std::ops::Sub<Output = T>
+        + std::ops::Mul<Output = T>
+        + std::ops::Div<Output = T>
+        + num_traits::One,
+{
+    let mix_x = inverse_lerp(point_a_x, point_b_x, value_x);
+    lerp(point_a_y, point_b_y, mix_x)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -100,6 +135,8 @@ pub enum Interpolation {
     CubicSpline,
 }
 
+/// Generic trait for curve interpolation.
+/// Control points are always f64, but evaluation can be generic.
 #[enum_dispatch]
 pub trait CurveInterpolator {
     /// Update control points.
@@ -112,11 +149,16 @@ pub trait CurveInterpolator {
     /// Update control points X coordinates.
     fn set_control_points_x(&self, control_points_x: &[f64]);
 
-    /// Update control points X coordinates.
+    /// Update control points Y coordinates.
     fn set_control_points_y(&self, control_points_y: &[f64]);
 
-    /// Interpolate X coordinate value.
-    fn interpolate(&self, value_x: f64) -> f64;
+    /// Interpolate at X coordinate value.
+    fn interpolate_f64(&self, value_x: f64) -> f64 {
+        self.interpolate(value_x)
+    }
+
+    /// Generic Interpolate at X coordinate value.
+    fn interpolate<T: InterpolationValue>(&self, value_x: T) -> T;
 }
 
 #[derive(Debug, Clone)]
@@ -126,7 +168,7 @@ pub struct LinearInterpolator {
 }
 
 impl LinearInterpolator {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             control_points_x: RefCell::new(Vec::new()),
             control_points_y: RefCell::new(Vec::new()),
@@ -163,28 +205,31 @@ impl CurveInterpolator for LinearInterpolator {
         y_points.extend_from_slice(control_points_y);
     }
 
-    fn interpolate(&self, value_x: f64) -> f64 {
+    fn interpolate<T: InterpolationValue>(&self, value_x: T) -> T {
         let x_points = self.control_points_x.borrow();
         let y_points = self.control_points_y.borrow();
 
         assert_eq!(x_points.len(), y_points.len());
 
+        // Use real part for comparisons.
+        let value_x_real = value_x.to_real();
+
         for i in 0..x_points.len() - 1 {
-            if value_x <= x_points[i + 1] {
-                if value_x == x_points[i + 1] {
-                    return y_points[i + 1];
+            if value_x_real <= x_points[i + 1] {
+                if value_x_real == x_points[i + 1] {
+                    return <T as From<f64>>::from(y_points[i + 1]);
                 }
                 return linear_interpolate_point_y_value_at_value_x(
                     value_x,
-                    x_points[i],
-                    y_points[i],
-                    x_points[i + 1],
-                    y_points[i + 1],
+                    <T as From<f64>>::from(x_points[i]),
+                    <T as From<f64>>::from(y_points[i]),
+                    <T as From<f64>>::from(x_points[i + 1]),
+                    <T as From<f64>>::from(y_points[i + 1]),
                 );
             }
         }
 
-        *y_points.last().unwrap()
+        <T as From<f64>>::from(*y_points.last().unwrap())
     }
 }
 
@@ -339,37 +384,31 @@ impl<const DEGREE: usize> NUBSInterpolator<DEGREE> {
     /// # Returns
     ///
     /// Knot span index
-    fn find_knot_span(
-        u_coord: f64,
+    fn find_knot_span<T: InterpolationValue>(
+        u_coord: T,
         control_point_count: usize,
         knots: &[f64],
     ) -> usize {
         let n = control_point_count;
+        let u_coord_real = u_coord.to_f64().unwrap_or(0.0);
 
-        // Special case: if u_coord is at the end, return the last
-        // valid span.
-        if u_coord >= 1.0 - f64::EPSILON {
+        // Special case: if u_coord_real is at the end, return the
+        // last valid span.
+        if u_coord_real >= 1.0 - f64::EPSILON {
             return n - 1;
         }
 
-        // Binary search for the knot span.
-        //
-        // We search in the range [degree, n-1] for the valid spans.
-        let mut low = DEGREE;
-        let mut high = n - 1;
-        while low < high {
-            let mid = (low + high) / 2;
-
-            if u_coord < knots[mid + 1] {
-                high = mid;
-            } else {
-                low = mid + 1;
+        // Linear search for differentiability.
+        for i in DEGREE..n {
+            if i < knots.len() - 1
+                && u_coord_real >= knots[i]
+                && u_coord_real < knots[i + 1]
+            {
+                return i;
             }
         }
 
-        // At this point, low == high, and u_coord is in [knots[low],
-        // knots[low+1]).
-        low
+        n - 1
     }
 
     /// Evaluates B-spline basis functions using the Cox-de Boor
@@ -410,43 +449,51 @@ impl<const DEGREE: usize> NUBSInterpolator<DEGREE> {
     /// # Returns
     ///
     /// Basis function value at the given parameter, guaranteed to be in [0, 1].
-    fn basis_function(
+    fn basis_function<T: InterpolationValue>(
         control_point_index: usize,
         degree: usize,
-        u_coord: f64,
+        u_coord: T,
         knots: &[f64],
-    ) -> f64 {
+    ) -> T {
         let cp_index = control_point_index;
-        let current_knot = knots[cp_index];
-        let next_knot = knots[cp_index + 1];
+        let current_knot = <T as From<f64>>::from(knots[cp_index]);
+        let next_knot = <T as From<f64>>::from(knots[cp_index + 1]);
 
         // Base case: degree 0 basis functions are indicator
         // functions.
         if degree == 0 {
+            let u_coord_real = u_coord.to_f64().unwrap_or(0.0);
+            let current_knot_real = knots[cp_index];
+            let next_knot_real = knots[cp_index + 1];
+
             // For the last valid basis function when u_coord is at
             // the end, we need to include the right endpoint to
             // handle u_coord = 1.0.
-            let in_range = u_coord >= current_knot && u_coord < next_knot;
+            let in_range = u_coord_real >= current_knot_real
+                && u_coord_real < next_knot_real;
 
             // Handle the special case where u_coord = 1.0 at the last
             // knot.
-            let u_coord_at_one = next_knot >= 1.0 - f64::EPSILON
-                && u_coord >= 1.0 - f64::EPSILON;
+            let at_end = next_knot_real >= 1.0 - f64::EPSILON
+                && u_coord_real >= 1.0 - f64::EPSILON;
 
-            if in_range || u_coord_at_one {
-                1.0
+            if in_range || at_end {
+                T::one()
             } else {
-                0.0
+                T::zero()
             }
         } else {
-            let mut left = 0.0;
-            let mut right = 0.0;
+            let mut left = T::zero();
+            let mut right = T::zero();
 
             // Left side of the recursion:
             // (u - t[i]) / (t[i+p] - t[i]) * N[i,p-1](u)
-            let degree_current_knot = knots[cp_index + degree];
-            let denominator1 = degree_current_knot - current_knot;
-            if denominator1 > f64::EPSILON {
+            let degree_current_knot =
+                <T as From<f64>>::from(knots[cp_index + degree]);
+            let denominator1_real = knots[cp_index + degree] - knots[cp_index];
+
+            if denominator1_real > f64::EPSILON {
+                let denominator1 = degree_current_knot - current_knot;
                 left = (u_coord - current_knot) / denominator1
                     * Self::basis_function(
                         cp_index,
@@ -458,9 +505,13 @@ impl<const DEGREE: usize> NUBSInterpolator<DEGREE> {
 
             // Right side of the recursion:
             // (t[i+p+1] - u) / (t[i+p+1] - t[i+1]) * N[i+1,p-1](u)
-            let degree_next_knot = knots[cp_index + degree + 1];
-            let denominator2 = degree_next_knot - next_knot;
-            if denominator2 > f64::EPSILON {
+            let degree_next_knot =
+                <T as From<f64>>::from(knots[cp_index + degree + 1]);
+            let denominator2_real =
+                knots[cp_index + degree + 1] - knots[cp_index + 1];
+
+            if denominator2_real > f64::EPSILON {
+                let denominator2 = degree_next_knot - next_knot;
                 right = (degree_next_knot - u_coord) / denominator2
                     * Self::basis_function(
                         cp_index + 1,
@@ -495,26 +546,33 @@ impl<const DEGREE: usize> NUBSInterpolator<DEGREE> {
     /// # Returns
     ///
     /// Parameter value in [0, 1] corresponding to the input x-coordinate.
-    fn value_to_u_coordinate(value_x: f64, control_points_x: &[f64]) -> f64 {
+    fn value_to_u_coordinate<T: InterpolationValue>(
+        value_x: T,
+        control_points_x: &[f64],
+    ) -> T {
         if control_points_x.is_empty() {
-            return 0.0;
+            return T::zero();
         }
 
-        let first_x = control_points_x[0];
-        let last_x = control_points_x[control_points_x.len() - 1];
+        let first_x = <T as From<f64>>::from(control_points_x[0]);
+        let last_x = <T as From<f64>>::from(
+            control_points_x[control_points_x.len() - 1],
+        );
 
         // Clamp to parameter bounds.
-        if value_x <= first_x {
-            0.0
-        } else if value_x >= last_x {
-            1.0
+        let value_x_real = value_x.to_real();
+
+        if value_x_real <= control_points_x[0] {
+            T::zero()
+        } else if value_x_real >= control_points_x[control_points_x.len() - 1] {
+            T::one()
         } else {
             // Linear approximation to chord length parameterization.
             //
             // This provides a simple but effective mapping that
             // preserves the relative spacing of control points in
             // parameter space.
-            inverse_lerp_f64(first_x, last_x, value_x)
+            inverse_lerp(first_x, last_x, value_x)
         }
     }
 
@@ -582,10 +640,10 @@ impl<const DEGREE: usize> CurveInterpolator for NUBSInterpolator<DEGREE> {
     /// # Returns
     ///
     /// Interpolated y-value at the specified x-coordinate
-    fn interpolate(&self, value_x: f64) -> f64 {
+    fn interpolate<T: InterpolationValue>(&self, value_x: T) -> T {
         let x_points = self.control_points_x.borrow();
         if x_points.is_empty() {
-            return 0.0;
+            return T::zero();
         }
         drop(x_points); // Release borrow early.
 
@@ -601,19 +659,19 @@ impl<const DEGREE: usize> CurveInterpolator for NUBSInterpolator<DEGREE> {
         // evaluate only the (degree + 1) non-zero basis functions.
         let n = x_points.len();
         let u_coord = Self::value_to_u_coordinate(value_x, &x_points);
-        let span = Self::find_knot_span(u_coord, x_points.len(), &knots);
+        let span = Self::find_knot_span(u_coord, n, &knots);
 
         // Evaluate B-spline using only the non-zero basis functions.
         //
         // Due to local support, only basis functions [span-degree,
         // span] are non-zero.
-        let mut result = 0.0;
+        let mut result = T::zero();
         let start_idx = span.saturating_sub(DEGREE);
         let end_idx = span.min(n - 1);
 
         for i in start_idx..=end_idx {
             let basis = Self::basis_function(i, DEGREE, u_coord, &knots);
-            result += basis * y_points[i];
+            result = result + basis * <T as From<f64>>::from(y_points[i]);
         }
 
         result
@@ -664,7 +722,7 @@ pub struct CubicSplineInterpolator {
 }
 
 impl CubicSplineInterpolator {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             control_points_x: RefCell::new(Vec::new()),
             control_points_y: RefCell::new(Vec::new()),
@@ -959,26 +1017,27 @@ impl CurveInterpolator for CubicSplineInterpolator {
 
     /// Interpolates a y-value for the given x-coordinate using cubic
     /// B-spline curves.
-    fn interpolate(&self, value_x: f64) -> f64 {
+    fn interpolate<T: InterpolationValue>(&self, value_x: T) -> T {
         let x_points = self.control_points_x.borrow();
         let n = x_points.len();
 
         // Handle edge cases.
         if n == 0 {
-            return 0.0;
+            return T::zero();
         }
         if n == 1 {
             let y_points = self.control_points_y.borrow();
-            return y_points[0];
+            return <T as From<f64>>::from(y_points[0]);
         }
 
-        if value_x <= x_points[0] {
+        let value_x_real = value_x.to_real();
+        if value_x_real <= x_points[0] {
             let y_points = self.control_points_y.borrow();
-            return y_points[0];
+            return <T as From<f64>>::from(y_points[0]);
         }
-        if value_x >= x_points[n - 1] {
+        if value_x_real >= x_points[n - 1] {
             let y_points = self.control_points_y.borrow();
-            return y_points[n - 1];
+            return <T as From<f64>>::from(y_points[n - 1]);
         }
         drop(x_points); // Release early.
 
@@ -989,26 +1048,24 @@ impl CurveInterpolator for CubicSplineInterpolator {
         let x_points = self.control_points_x.borrow();
         let coefficients = self.coefficients.borrow();
 
-        // Binary search to find the correct segment.
-        //
-        // Invariant:
-        // control_points_x[left] <= value_x < control_points_x[right]
-        let mut left = 0;
-        let mut right = n - 1;
-        while left < right - 1 {
-            let mid = (left + right) / 2;
-            if value_x < x_points[mid] {
-                right = mid;
-            } else {
-                left = mid;
+        // Find segment.
+        let mut segment_idx = 0;
+        for i in 0..(n - 1) {
+            if value_x_real >= x_points[i] && value_x_real < x_points[i + 1] {
+                segment_idx = i;
+                break;
             }
         }
-        let segment_idx = left;
 
-        // Evaluate the cubic polynomial for this segment.
-        let dx = value_x - x_points[segment_idx];
+        // Evaluate polynomial with generic type.
+        let dx = value_x - <T as From<f64>>::from(x_points[segment_idx]);
         let coef = &coefficients[segment_idx];
-        ((coef.a * dx + coef.b) * dx + coef.c) * dx + coef.d
+        let a = <T as From<f64>>::from(coef.a);
+        let b = <T as From<f64>>::from(coef.b);
+        let c = <T as From<f64>>::from(coef.c);
+        let d = <T as From<f64>>::from(coef.d);
+
+        ((a * dx + b) * dx + c) * dx + d
     }
 }
 
@@ -1039,6 +1096,253 @@ impl Interpolator {
     }
 }
 
+/// Standalone linear interpolation function that accepts Y coordinates as parameters.
+/// This is designed for curve fitting optimization where Y coordinates are the parameters
+/// being optimized and may be Dual<f64> numbers for automatic differentiation.
+pub fn linear_interpolate_with_control_points<T>(
+    value_x: T,
+    control_points_x: &[f64],
+    control_points_y: &[T],
+) -> T
+where
+    T: Copy
+        + std::ops::Add<Output = T>
+        + std::ops::Sub<Output = T>
+        + std::ops::Mul<Output = T>
+        + std::ops::Div<Output = T>
+        + From<f64>
+        + num_traits::Zero
+        + num_traits::Float
+        + num_traits::ToPrimitive,
+{
+    assert_eq!(control_points_x.len(), control_points_y.len());
+
+    if control_points_y.is_empty() {
+        return T::zero();
+    }
+    if control_points_y.len() == 1 {
+        return control_points_y[0];
+    }
+
+    // Use real part for comparisons
+    let value_x_real = value_x.to_f64().unwrap_or(0.0);
+
+    // Find which control points bracket the value_x
+    for i in 0..(control_points_x.len() - 1) {
+        if value_x_real >= control_points_x[i]
+            && value_x_real <= control_points_x[i + 1]
+        {
+            // Linear interpolation between the two control points
+            let x1 = <T as From<f64>>::from(control_points_x[i]);
+            let x2 = <T as From<f64>>::from(control_points_x[i + 1]);
+            let y1 = control_points_y[i];
+            let y2 = control_points_y[i + 1];
+
+            // Handle identical x coordinates
+            if (control_points_x[i + 1] - control_points_x[i]).abs()
+                < f64::EPSILON
+            {
+                return y1;
+            }
+
+            return linear_interpolate_point_y_value_at_value_x(
+                value_x, x1, y1, x2, y2,
+            );
+        }
+    }
+
+    // If we're outside the range, return the closest endpoint
+    if value_x_real < control_points_x[0] {
+        control_points_y[0]
+    } else {
+        control_points_y[control_points_y.len() - 1]
+    }
+}
+
+/// Standalone NUBS interpolation function that accepts Y coordinates as parameters.
+/// This is designed for curve fitting optimization where Y coordinates are the parameters
+/// being optimized and may be Dual<f64> numbers for automatic differentiation.
+pub fn nubs_interpolate_with_control_points<T>(
+    value_x: T,
+    control_points_x: &[f64],
+    control_points_y: &[T],
+    degree: usize,
+) -> T
+where
+    T: Copy
+        + std::ops::Add<Output = T>
+        + std::ops::Sub<Output = T>
+        + std::ops::Mul<Output = T>
+        + std::ops::Div<Output = T>
+        + From<f64>
+        + num_traits::Zero
+        + num_traits::Float
+        + num_traits::ToPrimitive
+        + num_traits::One,
+{
+    assert_eq!(control_points_x.len(), control_points_y.len());
+    assert!(
+        (1..=3).contains(&degree),
+        "NUBS degree must be between 1 and 3"
+    );
+
+    let n = control_points_y.len();
+    let min_points = degree + 1;
+
+    if n == 0 {
+        return T::zero();
+    }
+    if n == 1 {
+        return control_points_y[0];
+    }
+    if n < min_points {
+        // Fall back to linear interpolation if we don't have enough points
+        return linear_interpolate_with_control_points(
+            value_x,
+            control_points_x,
+            control_points_y,
+        );
+    }
+
+    // Generate knot vector (same logic as NUBSInterpolator)
+    let n_knots = n + degree + 1;
+    let mut knots = vec![0.0; n_knots];
+
+    // Clamp the first and last (degree+1) knots
+    for i in 0..=degree {
+        knots[i] = 0.0;
+        knots[n_knots - 1 - i] = 1.0;
+    }
+
+    // Interior knots uniformly spaced
+    let n_interior = n.saturating_sub(degree + 1);
+    if n_interior > 0 {
+        for i in 1..=n_interior {
+            knots[degree + i] = i as f64 / (n_interior + 1) as f64;
+        }
+    }
+
+    // Map value_x to parameter space
+    let u_coord = if control_points_x.is_empty() {
+        T::zero()
+    } else {
+        let first_x = <T as From<f64>>::from(control_points_x[0]);
+        let last_x = <T as From<f64>>::from(control_points_x[n - 1]);
+        let value_x_real = value_x.to_f64().unwrap_or(0.0);
+
+        if value_x_real <= control_points_x[0] {
+            T::zero()
+        } else if value_x_real >= control_points_x[n - 1] {
+            T::one()
+        } else {
+            inverse_lerp(first_x, last_x, value_x)
+        }
+    };
+
+    // Find knot span
+    let span = {
+        let u_coord_real = u_coord.to_f64().unwrap_or(0.0);
+        if u_coord_real >= 1.0 - f64::EPSILON {
+            n - 1
+        } else {
+            let mut span = degree;
+            for i in degree..n {
+                if i < knots.len() - 1
+                    && u_coord_real >= knots[i]
+                    && u_coord_real < knots[i + 1]
+                {
+                    span = i;
+                    break;
+                }
+            }
+            span.min(n - 1)
+        }
+    };
+
+    // Evaluate B-spline using Cox-de Boor recursion (reusing the basis function logic)
+    let mut result = T::zero();
+    let start_idx = span.saturating_sub(degree);
+    let end_idx = span.min(n - 1);
+
+    for i in start_idx..=end_idx {
+        let basis = basis_function(i, degree, u_coord, &knots);
+        result = result + basis * control_points_y[i];
+    }
+
+    result
+}
+
+/// Cox-de Boor basis function evaluation for standalone NUBS interpolation.
+/// This is a standalone version that doesn't require a NUBSInterpolator instance.
+fn basis_function<T>(
+    control_point_index: usize,
+    degree: usize,
+    u_coord: T,
+    knots: &[f64],
+) -> T
+where
+    T: Copy
+        + std::ops::Add<Output = T>
+        + std::ops::Sub<Output = T>
+        + std::ops::Mul<Output = T>
+        + std::ops::Div<Output = T>
+        + From<f64>
+        + num_traits::Zero
+        + num_traits::Float
+        + num_traits::ToPrimitive
+        + num_traits::One,
+{
+    let cp_index = control_point_index;
+    let current_knot = <T as From<f64>>::from(knots[cp_index]);
+    let next_knot = <T as From<f64>>::from(knots[cp_index + 1]);
+
+    // Base case: degree 0 basis functions are indicator functions.
+    if degree == 0 {
+        let u_coord_real = u_coord.to_f64().unwrap_or(0.0);
+        let current_knot_real = knots[cp_index];
+        let next_knot_real = knots[cp_index + 1];
+
+        let in_range =
+            u_coord_real >= current_knot_real && u_coord_real < next_knot_real;
+        let at_end = next_knot_real >= 1.0 - f64::EPSILON
+            && u_coord_real >= 1.0 - f64::EPSILON;
+
+        if in_range || at_end {
+            T::one()
+        } else {
+            T::zero()
+        }
+    } else {
+        let mut left = T::zero();
+        let mut right = T::zero();
+
+        // Left side of the recursion
+        let degree_current_knot =
+            <T as From<f64>>::from(knots[cp_index + degree]);
+        let denominator1_real = knots[cp_index + degree] - knots[cp_index];
+
+        if denominator1_real > f64::EPSILON {
+            let denominator1 = degree_current_knot - current_knot;
+            left = (u_coord - current_knot) / denominator1
+                * basis_function(cp_index, degree - 1, u_coord, knots);
+        }
+
+        // Right side of the recursion
+        let degree_next_knot =
+            <T as From<f64>>::from(knots[cp_index + degree + 1]);
+        let denominator2_real =
+            knots[cp_index + degree + 1] - knots[cp_index + 1];
+
+        if denominator2_real > f64::EPSILON {
+            let denominator2 = degree_next_knot - next_knot;
+            right = (degree_next_knot - u_coord) / denominator2
+                * basis_function(cp_index + 1, degree - 1, u_coord, knots);
+        }
+
+        left + right
+    }
+}
+
 pub fn evaluate_curve_points(
     x_values: &[f64],
     control_points_x: &[f64],
@@ -1051,7 +1355,7 @@ pub fn evaluate_curve_points(
     x_values
         .iter()
         .map(|&x| {
-            let y = interpolator.interpolate(x);
+            let y = interpolator.interpolate_f64(x);
             (x, y)
         })
         .collect()

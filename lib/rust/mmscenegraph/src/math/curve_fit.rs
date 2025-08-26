@@ -20,18 +20,16 @@
 
 use anyhow::Result;
 use log::debug;
-use log::info;
-use nalgebra::{DMatrix, DVector};
-
-use crate::constant::Real;
-use crate::math::interpolate::linear_interpolate_y_value_at_value_x;
-use crate::math::interpolate::CurveInterpolator;
-use crate::math::interpolate::Interpolation;
-use crate::math::interpolate::Interpolator;
-use crate::math::line::curve_fit_linear_regression_type1;
 use mmoptimise::solver::{
     LevenbergMarquardt, OptimisationProblem, SolverConfig, SolverWorkspace,
 };
+use nalgebra::{DMatrix, DVector};
+
+use crate::constant::Real;
+use crate::math::interpolate::remap_f64;
+use crate::math::interpolate::Interpolation;
+use crate::math::line::curve_fit_linear_regression_type1;
+use crate::math::statistics::calc_normalized_root_mean_square_error;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point2 {
@@ -80,8 +78,8 @@ pub fn linear_regression(
     let mut point_y = 0.0;
     let mut angle = 0.0;
     curve_fit_linear_regression_type1(
-        &x_values,
-        &y_values,
+        x_values,
+        y_values,
         &mut point_x,
         &mut point_y,
         &mut angle,
@@ -131,11 +129,22 @@ impl N3CurveFitProblem {
 }
 
 impl OptimisationProblem for N3CurveFitProblem {
-    fn residuals(
+    fn residuals<T>(
         &self,
-        parameters: &[f64],
-        out_residuals: &mut [f64],
-    ) -> anyhow::Result<()> {
+        parameters: &[T],
+        out_residuals: &mut [T],
+    ) -> anyhow::Result<()>
+    where
+        T: Copy
+            + std::ops::Add<Output = T>
+            + std::ops::Sub<Output = T>
+            + std::ops::Mul<Output = T>
+            + std::ops::Div<Output = T>
+            + From<f64>
+            + Sized
+            + num_traits::Zero
+            + num_traits::Float,
+    {
         if parameters.len() != 3 {
             return Err(anyhow::anyhow!(
                 "N3 problem requires exactly 3 parameters (Y values)"
@@ -147,18 +156,24 @@ impl OptimisationProblem for N3CurveFitProblem {
         let point_c_y = parameters[2];
 
         for i in 0..self.residual_count() {
-            let data_x = self.reference_values[i].0;
-            let data_y = self.reference_values[i].1;
+            let data_x = <T as From<f64>>::from(self.reference_values[i].0);
+            let data_y = <T as From<f64>>::from(self.reference_values[i].1);
 
-            let curve_y = linear_interpolate_y_value_at_value_x(
-                data_x,
-                self.point_a_x,
-                point_a_y,
-                self.point_b_x,
-                point_b_y,
-                self.point_c_x,
-                point_c_y,
-            );
+            // Linear interpolation between three points
+            let point_a_x = <T as From<f64>>::from(self.point_a_x);
+            let point_b_x = <T as From<f64>>::from(self.point_b_x);
+            let point_c_x = <T as From<f64>>::from(self.point_c_x);
+
+            let curve_y = if data_x <= point_b_x {
+                // Interpolate between point A and point B
+                let t = (data_x - point_a_x) / (point_b_x - point_a_x);
+                point_a_y + t * (point_b_y - point_a_y)
+            } else {
+                // Interpolate between point B and point C
+                let t = (data_x - point_b_x) / (point_c_x - point_b_x);
+                point_b_y + t * (point_c_y - point_b_y)
+            };
+
             out_residuals[i] = curve_y - data_y;
         }
 
@@ -181,7 +196,7 @@ impl OptimisationProblem for N3CurveFitProblem {
 struct NPointsCurveFitProblem {
     reference_values: Vec<(f64, f64)>,
     control_points_x: Vec<f64>,
-    interpolator: Interpolator,
+    interpolation_method: Interpolation,
 }
 
 impl NPointsCurveFitProblem {
@@ -190,35 +205,121 @@ impl NPointsCurveFitProblem {
         reference_values: Vec<(f64, f64)>,
         interpolation_method: Interpolation,
     ) -> anyhow::Result<Self> {
-        let interpolator = Interpolator::from_method(interpolation_method);
-        interpolator.set_control_points_x(&control_points_x);
-
         Ok(Self {
             reference_values,
             control_points_x,
-            interpolator,
+            interpolation_method,
         })
+    }
+
+    /// Generic interpolation function that works with all
+    /// interpolator types.
+    fn interpolate<T>(&self, value_x: T, control_points_y: &[T]) -> T
+    where
+        T: Copy
+            + std::ops::Add<Output = T>
+            + std::ops::Sub<Output = T>
+            + std::ops::Mul<Output = T>
+            + std::ops::Div<Output = T>
+            + From<f64>
+            + Sized
+            + num_traits::Zero
+            + num_traits::Float
+            + num_traits::ToPrimitive
+            + num_traits::One,
+    {
+        use crate::math::interpolate::{
+            linear_interpolate_with_control_points,
+            nubs_interpolate_with_control_points, CubicSplineInterpolator,
+            CurveInterpolator,
+        };
+
+        // Now we can support proper automatic differentiation for
+        // Linear and NUBS methods!
+        //
+        // Cubic Spline still requires f64 conversion, but that's
+        // acceptable.
+
+        match self.interpolation_method {
+            Interpolation::Linear => linear_interpolate_with_control_points(
+                value_x,
+                &self.control_points_x,
+                control_points_y,
+            ),
+            Interpolation::QuadraticNUBS => {
+                nubs_interpolate_with_control_points(
+                    value_x,
+                    &self.control_points_x,
+                    control_points_y,
+                    2, // degree 2 for quadratic.
+                )
+            }
+            Interpolation::CubicNUBS => {
+                nubs_interpolate_with_control_points(
+                    value_x,
+                    &self.control_points_x,
+                    control_points_y,
+                    3, // degree 3 for cubic.
+                )
+            }
+            Interpolation::CubicSpline => {
+                // Cubic Spline requires f64 conversion - coefficients
+                // computed with f64.
+                //
+                // This breaks automatic differentiation but is
+                // acceptable trade-off.
+                let control_points_y_f64: Vec<f64> = control_points_y
+                    .iter()
+                    .map(|&y| y.to_f64().unwrap_or(0.0))
+                    .collect();
+
+                let interpolator = CubicSplineInterpolator::new();
+                interpolator.set_control_points(
+                    &self.control_points_x,
+                    &control_points_y_f64,
+                );
+
+                let result_f64 = interpolator
+                    .interpolate_f64(value_x.to_f64().unwrap_or(0.0));
+                <T as From<f64>>::from(result_f64)
+            }
+        }
     }
 }
 
 impl OptimisationProblem for NPointsCurveFitProblem {
-    fn residuals(
+    fn residuals<T>(
         &self,
-        parameters: &[f64],
-        out_residuals: &mut [f64],
-    ) -> anyhow::Result<()> {
+        parameters: &[T],
+        out_residuals: &mut [T],
+    ) -> anyhow::Result<()>
+    where
+        T: Copy
+            + std::ops::Add<Output = T>
+            + std::ops::Sub<Output = T>
+            + std::ops::Mul<Output = T>
+            + std::ops::Div<Output = T>
+            + From<f64>
+            + Sized
+            + num_traits::Zero
+            + num_traits::Float
+            + num_traits::ToPrimitive
+            + num_traits::One,
+    {
         if parameters.len() != self.control_points_x.len() {
             return Err(anyhow::anyhow!(
                 "Parameter count must match control point count"
             ));
         }
 
-        self.interpolator.set_control_points_y(parameters);
-
+        // Use the proper interpolation method with automatic
+        // differentiation support.
         for i in 0..self.residual_count() {
-            let data_x = self.reference_values[i].0;
-            let data_y = self.reference_values[i].1;
-            let curve_y = self.interpolator.interpolate(data_x);
+            let data_x = <T as From<f64>>::from(self.reference_values[i].0);
+            let data_y = <T as From<f64>>::from(self.reference_values[i].1);
+
+            // Use generic interpolation with the selected method.
+            let curve_y = self.interpolate(data_x, parameters);
             out_residuals[i] = curve_y - data_y;
         }
 
@@ -264,7 +365,7 @@ pub fn nonlinear_line_n3_with_initial(
         "Must provide exactly 3 initial control points Y coordinates"
     );
 
-    info!("nonlinear_line_n3_with_initial: using custom initial positions");
+    debug!("nonlinear_line_n3_with_initial: using custom initial positions");
     debug!(
         "nonlinear_line_n3_with_initial: initial_control_points_x={:?}",
         initial_control_points_x
@@ -305,22 +406,37 @@ pub fn nonlinear_line_n3_with_initial(
         reference_values,
     );
 
-    // Use LevenbergMarquardt solver with good tolerances for N3.
+    // Calculate step bound based on initial quality.
+    let control_points_x = vec![point_a_x, point_b_x, point_c_x];
+    let predicted_values = generate_predicted_values_linear(
+        x_values,
+        &control_points_x,
+        &initial_parameters_vec,
+    );
+    let initial_trust_factor =
+        calculate_trust_region_radius_from_quality(y_values, &predicted_values)
+            .unwrap_or(100.0); // fallback to default if calculation fails
+
+    // Use LevenbergMarquardt solver with optimal tolerances for N3
+    // (matching original pre-dual implementation).
     let config = SolverConfig {
         ftol: 1e-8,
         xtol: 1e-8,
         gtol: 1e-8,
-        max_iterations: 300,
-        step_bound: 100.0,
+        max_iterations: 1000,
+        initial_trust_factor,
         verbose: false,
+        ..Default::default()
     };
 
     let solver = LevenbergMarquardt::new(config);
     let mut workspace =
         SolverWorkspace::new(&problem, &initial_parameters_vec).unwrap();
-    let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
-    info!(
+    // Try the optimal configuration first, with fallback only on failure
+    let result = solver.solve_problem(&problem, &mut workspace)?;
+
+    debug!(
         "LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
         result.status, result.cost, result.iterations, result.function_evaluations
     );
@@ -342,14 +458,6 @@ pub fn nonlinear_line_n3_with_initial(
 }
 
 /// Perform a non-linear least-squares fits for a line with 3 points.
-///
-/// The approach uses a 3-stage optimization process:
-/// 1. Polynomial least-squares initialization for better starting points.
-/// 2. Coarse non-linear optimization with relaxed tolerances.
-/// 3. Fine-tuning optimization with tighter tolerances.
-///
-/// This multi-stage approach provides better convergence and higher
-/// quality fits compared to single-stage optimization.
 pub fn nonlinear_line_n3(
     x_values: &[f64],
     y_values: &[f64],
@@ -358,7 +466,7 @@ pub fn nonlinear_line_n3(
     let value_count = x_values.len();
     assert!(value_count > 2);
 
-    info!("nonlinear_line_n3: Starting multi-stage optimization");
+    debug!("nonlinear_line_n3: Starting multi-stage optimization");
 
     // Calculate control point X positions using linear regression
     // approach.
@@ -490,8 +598,8 @@ pub fn nonlinear_line_n_points_with_initial(
         "X and Y control point values must match length."
     );
 
-    info!("nonlinear_line_n_points_with_initial: Starting multi-stage optimization with {} control points", x_initial_control_points.len());
-    info!("Interpolation method: {:?}", interpolation_method);
+    debug!("nonlinear_line_n_points_with_initial: Starting multi-stage optimization with {} control points", x_initial_control_points.len());
+    debug!("Interpolation method: {:?}", interpolation_method);
 
     // Use multi-stage optimization (ignoring the provided Y initial
     // values as Stage 1 will compute better initialization).
@@ -509,7 +617,7 @@ pub fn nonlinear_line_n_points_with_initial(
 /// This performs direct polynomial fitting that respects the user's
 /// chosen interpolation method to provide optimal initial parameter
 /// estimates for non-linear optimization.
-fn polynomial_least_squares_fit_with_interpolation(
+fn polynomial_least_squares_fit(
     x_values: &[f64],
     y_values: &[f64],
     control_points_x: &[f64],
@@ -519,7 +627,10 @@ fn polynomial_least_squares_fit_with_interpolation(
     assert!(x_values.len() > 2);
 
     let n_points = control_points_x.len();
-    info!("polynomial_least_squares_fit_with_interpolation: n_points={}, method={:?}", n_points, interpolation_method);
+    debug!(
+        "polynomial_least_squares_fit: n_points={}, method={:?}",
+        n_points, interpolation_method
+    );
 
     // Choose polynomial degree based on control point count and
     // interpolation method.
@@ -546,7 +657,7 @@ fn polynomial_least_squares_fit_with_interpolation(
 
     let degree = scaled_degree.max(base_degree).min(x_values.len() - 1);
 
-    info!("Using polynomial degree: {}", degree);
+    debug!("Using polynomial degree: {}", degree);
 
     // Build the Vandermonde matrix for polynomial fitting.
     let m = x_values.len(); // Number of data points.
@@ -577,7 +688,7 @@ fn polynomial_least_squares_fit_with_interpolation(
         .as_slice()
         .to_vec();
 
-    info!("Polynomial coefficients: {:?}", coefficients);
+    debug!("Polynomial coefficients: {:?}", coefficients);
 
     // Convert polynomial coefficients to control point Y-values.
     let mut control_points_y = Vec::with_capacity(n_points);
@@ -589,15 +700,175 @@ fn polynomial_least_squares_fit_with_interpolation(
         control_points_y.push(y);
     }
 
-    info!(
+    debug!(
         "Initial control points Y from polynomial fit: {:?}",
         control_points_y
     );
     Ok(control_points_y)
 }
 
-/// N3 curve fitting using LevenbergMarquardt solver with polynomial
-/// initialization.
+/// Linear regression fitting for initial control point estimation.
+///
+/// This performs simple linear regression fitting to provide initial parameter
+/// estimates for non-linear optimization.
+fn linear_regression_fit(
+    x_values: &[f64],
+    y_values: &[f64],
+    control_points_x: &[f64],
+) -> Result<Vec<f64>> {
+    assert_eq!(x_values.len(), y_values.len());
+    assert!(x_values.len() > 2);
+
+    let n_points = control_points_x.len();
+    debug!("linear_regression_fit: n_points={}", n_points);
+
+    // Use linear regression to fit a line to the data.
+    let mut point_x = 0.0;
+    let mut point_y = 0.0;
+    let mut angle = 0.0;
+    let success = curve_fit_linear_regression_type1(
+        x_values,
+        y_values,
+        &mut point_x,
+        &mut point_y,
+        &mut angle,
+    );
+
+    if !success {
+        return Err(anyhow::anyhow!("Linear regression fitting failed"));
+    }
+
+    debug!(
+        "Linear regression: point=({}, {}), angle={}",
+        point_x, point_y, angle
+    );
+
+    // Calculate slope from angle.
+    let slope = angle.tan();
+    debug!("Linear regression slope: {}", slope);
+
+    // Generate Y values for each control point X using the linear
+    // regression line.
+    //
+    // Line equation: y = point_y + slope * (x - point_x)
+    let mut control_points_y = Vec::with_capacity(n_points);
+    for &x in control_points_x {
+        let y = point_y + slope * (x - point_x);
+        control_points_y.push(y);
+    }
+
+    debug!(
+        "Initial control points Y from linear regression: {:?}",
+        control_points_y
+    );
+    Ok(control_points_y)
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+enum InitializationMethod {
+    LinearRegression,
+    Polynomial,
+}
+
+/// Fitting with optional polynomial or linear regression approach.
+///
+/// This function can use either polynomial fitting or linear
+/// regression fitting based on the initialization_method parameter.
+///
+/// The interpolation_method parameter is only used for polynomial
+/// fitting.
+fn direct_linear_curve_fit_approximation(
+    x_values: &[f64],
+    y_values: &[f64],
+    control_points_x: &[f64],
+    interpolation_method: Interpolation,
+    initialization_method: InitializationMethod,
+) -> Result<Vec<f64>> {
+    match initialization_method {
+        InitializationMethod::Polynomial => {
+            debug!("Using polynomial initialization method");
+            polynomial_least_squares_fit(
+                x_values,
+                y_values,
+                control_points_x,
+                interpolation_method,
+            )
+        }
+        InitializationMethod::LinearRegression => {
+            debug!("Using linear regression initialization method");
+            linear_regression_fit(x_values, y_values, control_points_x)
+        }
+    }
+}
+
+/// Calculate trust region radius based on initial quality match between actual and predicted values.
+///
+/// Uses NRMSE to determine the quality of the initial fit:
+/// - quality = max(0.0, min(100.0, (1.0 - nrmse) * 100.0))
+/// - Higher quality (closer match) -> smaller step bound (fine adjustments)
+/// - Lower quality (poor match) -> larger step bound (coarse adjustments)
+fn calculate_trust_region_radius_from_quality(
+    actual: &[f64],
+    predicted: &[f64],
+) -> Result<f64> {
+    // Calculate NRMSE between actual and predicted values
+    let nrmse = calc_normalized_root_mean_square_error(actual, predicted)?;
+
+    // Convert NRMSE to quality percentage (0.0 to 1.0).
+    let quality = (1.0 - nrmse).clamp(0.0, 1.0);
+
+    debug!(
+        "Initial fit quality: nrmse={:.3}, quality={:.3}%",
+        nrmse,
+        quality * 100.0
+    );
+
+    let initial_trust_factor = remap_f64(1.0, 0.0, 9.0, 100.0, quality);
+
+    debug!(
+        "Calculated trust region radius={:.3} for quality={:.3}%",
+        initial_trust_factor,
+        quality * 100.0
+    );
+
+    Ok(initial_trust_factor)
+}
+
+/// Generate predicted values from control points using linear
+/// interpolation.
+///
+/// This is used to evaluate the quality of the initial fit.
+fn generate_predicted_values_linear(
+    x_values: &[f64],
+    control_points_x: &[f64],
+    control_points_y: &[f64],
+) -> Vec<f64> {
+    let mut predicted = Vec::with_capacity(x_values.len());
+
+    for &x in x_values {
+        // Find the two control points to interpolate between.
+        let mut y = control_points_y[0]; // Default to first point.
+
+        for i in 0..(control_points_x.len() - 1) {
+            let x0 = control_points_x[i];
+            let x1 = control_points_x[i + 1];
+
+            if x >= x0 && x <= x1 {
+                let y0 = control_points_y[i];
+                let y1 = control_points_y[i + 1];
+                let t = (x - x0) / (x1 - x0);
+                y = y0 + t * (y1 - y0);
+                break;
+            }
+        }
+
+        predicted.push(y);
+    }
+
+    predicted
+}
+
+/// N3 curve fitting using LevenbergMarquardt solver.
 fn multi_stage_nonlinear_n3(
     x_values: &[f64],
     y_values: &[f64],
@@ -605,7 +876,9 @@ fn multi_stage_nonlinear_n3(
     point_b_x: f64,
     point_c_x: f64,
 ) -> Result<(Point2, Point2, Point2)> {
-    info!("multi_stage_nonlinear_n3: Starting LevenbergMarquardt optimization");
+    debug!(
+        "multi_stage_nonlinear_n3: Starting LevenbergMarquardt optimization"
+    );
 
     let reference_values: Vec<(f64, f64)> = x_values
         .iter()
@@ -622,22 +895,24 @@ fn multi_stage_nonlinear_n3(
 
     // Polynomial initialization (Linear interpolation for N3).
     let control_points_x = vec![point_a_x, point_b_x, point_c_x];
-    let polynomial_y_initial = polynomial_least_squares_fit_with_interpolation(
+    let polynomial_y_initial = direct_linear_curve_fit_approximation(
         x_values,
         y_values,
         &control_points_x,
-        Interpolation::Linear, // N3 always uses linear interpolation.
+        // N3 always uses linear interpolation.
+        Interpolation::Linear,
+        InitializationMethod::LinearRegression,
     );
 
     // Use polynomial fit if available, otherwise fall back to linear
     // regression.
     let initial_parameters = match polynomial_y_initial {
         Ok(poly_y) => {
-            info!("Using polynomial initialization: {:?}", poly_y);
+            debug!("Using polynomial initialization: {:?}", poly_y);
             poly_y
         }
         Err(e) => {
-            info!("Polynomial fitting failed ({}), falling back to linear regression", e);
+            debug!("Polynomial fitting failed ({}), falling back to linear regression", e);
             // Fall back to original linear regression approach.
             let mut point_x = 0.0;
             let mut point_y = 0.0;
@@ -661,22 +936,35 @@ fn multi_stage_nonlinear_n3(
         }
     };
 
-    // LevenbergMarquardt optimization with good tolerances.
+    // Calculate step bound based on initial quality.
+    let control_points_x = vec![point_a_x, point_b_x, point_c_x];
+    let predicted_values = generate_predicted_values_linear(
+        x_values,
+        &control_points_x,
+        &initial_parameters,
+    );
+    let initial_trust_factor =
+        calculate_trust_region_radius_from_quality(y_values, &predicted_values)
+            .unwrap_or(100.0); // fallback to default if calculation fails.
+
     let config = SolverConfig {
         ftol: 1e-8,
         xtol: 1e-8,
         gtol: 1e-8,
-        max_iterations: 300,
-        step_bound: 100.0,
+        max_iterations: 1000,
+        initial_trust_factor,
         verbose: false,
+        ..Default::default()
     };
 
     let solver = LevenbergMarquardt::new(config);
-    let mut workspace =
-        SolverWorkspace::new(&problem, &initial_parameters).unwrap();
-    let result = solver.solve_problem(&problem, &mut workspace).unwrap();
+    let mut workspace = SolverWorkspace::new(&problem, &initial_parameters)?;
 
-    info!("LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
+    // Try primary configuration, with conservative fallback only on
+    // failure.
+    let result = solver.solve_problem(&problem, &mut workspace)?;
+
+    debug!("LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
            result.status, result.cost, result.iterations, result.function_evaluations);
 
     Ok((
@@ -703,7 +991,7 @@ fn multi_stage_nonlinear_npoints(
     x_initial_control_points: &[f64],
     interpolation_method: Interpolation,
 ) -> Result<Vec<Point2>> {
-    info!("multi_stage_nonlinear_npoints: Starting LevenbergMarquardt optimization with {:?}", interpolation_method);
+    debug!("multi_stage_nonlinear_npoints: Starting LevenbergMarquardt optimization with {:?}", interpolation_method);
 
     let control_point_count = x_initial_control_points.len();
     let reference_values: Vec<(f64, f64)> = x_values
@@ -718,22 +1006,29 @@ fn multi_stage_nonlinear_npoints(
         interpolation_method,
     )?;
 
+    let initialization_method = match interpolation_method {
+        Interpolation::Linear => InitializationMethod::LinearRegression,
+        _ => InitializationMethod::Polynomial,
+    };
+
     // Polynomial initialization with proper interpolation method.
-    let polynomial_y_initial = polynomial_least_squares_fit_with_interpolation(
+    let polynomial_y_initial = direct_linear_curve_fit_approximation(
         x_values,
         y_values,
         x_initial_control_points,
         interpolation_method,
+        initialization_method,
     );
 
-    // Use polynomial fit if available, otherwise fall back to linear regression.
+    // Use polynomial fit if available, otherwise fall back to linear
+    // regression.
     let initial_parameters = match polynomial_y_initial {
         Ok(poly_y) => {
-            info!("Using polynomial initialization: {:?}", poly_y);
+            debug!("Using polynomial initialization: {:?}", poly_y);
             poly_y
         }
         Err(e) => {
-            info!("Polynomial fitting failed ({}), falling back to linear regression", e);
+            debug!("Polynomial fitting failed ({}), falling back to linear regression", e);
             // Fall back to original linear regression approach.
             let mut point_x = 0.0;
             let mut point_y = 0.0;
@@ -760,27 +1055,39 @@ fn multi_stage_nonlinear_npoints(
         }
     };
 
-    let (ftol, xtol, gtol) = (1e-6, 1e-6, 1e-6);
-    let max_iter = 100;
+    // Calculate step bound based on initial quality match.
+    let predicted_values = generate_predicted_values_linear(
+        x_values,
+        x_initial_control_points,
+        &initial_parameters,
+    );
+    let initial_trust_factor =
+        calculate_trust_region_radius_from_quality(y_values, &predicted_values)
+            .unwrap_or(100.0); // fallback to default if calculation fails.
 
-    info!("Using tolerances ftol={}, xtol={}, gtol={}, max_iter={} for {} control points",
-           ftol, xtol, gtol, max_iter, control_point_count);
+    let (ftol, xtol, gtol) = (1e-8, 1e-8, 1e-8);
+    let max_iterations = 1000;
+    debug!("Using tolerances ftol={}, xtol={}, gtol={}, max_iterations={} step_bound={} for {} control points",
+          ftol, xtol, gtol, max_iterations, initial_trust_factor, control_point_count);
 
     let config = SolverConfig {
         ftol,
         xtol,
         gtol,
-        max_iterations: max_iter,
-        step_bound: 100.0,
+        max_iterations,
+        initial_trust_factor,
         verbose: false,
+        ..Default::default()
     };
 
     let solver = LevenbergMarquardt::new(config);
-    let mut workspace =
-        SolverWorkspace::new(&problem, &initial_parameters).unwrap();
-    let result = solver.solve_problem(&problem, &mut workspace).unwrap();
+    let mut workspace = SolverWorkspace::new(&problem, &initial_parameters)?;
 
-    info!("LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
+    // Try primary configuration, with conservative fallback only on
+    // failure.
+    let result = solver.solve_problem(&problem, &mut workspace)?;
+
+    debug!("LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
            result.status, result.cost, result.iterations, result.function_evaluations);
 
     let mut control_points = Vec::with_capacity(control_point_count);
@@ -815,8 +1122,8 @@ pub fn nonlinear_line_n_points(
         );
     }
 
-    info!("nonlinear_line_n_points: Starting multi-stage optimization with {} control points", control_point_count);
-    info!("Interpolation method: {:?}", interpolation);
+    debug!("nonlinear_line_n_points: Starting multi-stage optimization with {} control points", control_point_count);
+    debug!("Interpolation method: {:?}", interpolation);
 
     let mut point_x = 0.0;
     let mut point_y = 0.0;
@@ -846,4 +1153,239 @@ pub fn nonlinear_line_n_points(
         &x_initial_control_points,
         interpolation,
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use approx::assert_relative_eq;
+    use mmcore::dual::Dual;
+
+    const EPSILON: f64 = 1e-6;
+
+    #[test]
+    fn test_calculate_trust_region_radius_from_quality() {
+        // Perfect match (NRMSE = 0.0) should give small trust region
+        // radius.
+        let actual = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let predicted = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let trust_factor =
+            calculate_trust_region_radius_from_quality(&actual, &predicted)
+                .unwrap();
+        assert!(
+            trust_factor >= 1.0 && trust_factor <= 10.0,
+            "Perfect match should give small trust region radius, got: {}",
+            trust_factor
+        );
+
+        // Poor match should give large trust region radius.
+        let actual = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let predicted = vec![5.0, 4.0, 3.0, 2.0, 1.0]; // Completely reversed.
+        let trust_factor =
+            calculate_trust_region_radius_from_quality(&actual, &predicted)
+                .unwrap();
+        assert!(
+            trust_factor >= 50.0,
+            "Poor match should give large trust region radius, got: {}",
+            trust_factor
+        );
+
+        // Medium match should give medium trust region radius.
+        let actual = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let predicted = vec![1.1, 1.9, 3.1, 3.9, 5.1]; // Close but not perfect.
+        let trust_factor =
+            calculate_trust_region_radius_from_quality(&actual, &predicted)
+                .unwrap();
+        assert!(
+            trust_factor >= 1.0 && trust_factor <= 50.0,
+            "Medium match should give medium trust region radius, got: {}",
+            trust_factor
+        );
+    }
+
+    #[test]
+    fn test_generate_predicted_values_linear() {
+        let x_values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let control_points_x = vec![1.0, 3.0, 5.0];
+        let control_points_y = vec![1.0, 3.0, 5.0];
+
+        let predicted = generate_predicted_values_linear(
+            &x_values,
+            &control_points_x,
+            &control_points_y,
+        );
+
+        assert_eq!(predicted.len(), x_values.len());
+        assert_relative_eq!(predicted[0], 1.0, epsilon = EPSILON); // x=1.0
+        assert_relative_eq!(predicted[1], 2.0, epsilon = EPSILON); // x=2.0, interpolated
+        assert_relative_eq!(predicted[2], 3.0, epsilon = EPSILON); // x=3.0
+        assert_relative_eq!(predicted[3], 4.0, epsilon = EPSILON); // x=4.0, interpolated
+        assert_relative_eq!(predicted[4], 5.0, epsilon = EPSILON); // x=5.0
+    }
+
+    #[test]
+    fn test_step_bound_quality_ranges() {
+        // Test the trust region radius calculation ranges.
+        let actual = vec![0.0, 1.0, 2.0, 3.0, 4.0];
+
+        // High quality case - very small errors.
+        let predicted_high = vec![0.001, 1.001, 2.001, 3.001, 4.001];
+        let step_bound_high = calculate_trust_region_radius_from_quality(
+            &actual,
+            &predicted_high,
+        )
+        .unwrap();
+        assert!(
+            step_bound_high >= 1.0 && step_bound_high <= 10.0,
+            "High quality should give small trust region radius, got: {}",
+            step_bound_high
+        );
+
+        // Medium quality case - larger errors to get NRMSE in medium range.
+        let predicted_medium = vec![0.5, 1.5, 2.5, 3.5, 4.5];
+        let step_bound_medium = calculate_trust_region_radius_from_quality(
+            &actual,
+            &predicted_medium,
+        )
+        .unwrap();
+        assert!(
+            step_bound_medium >= 1.0 && step_bound_medium <= 50.0,
+            "Medium quality should give small to medium trust region radius, got: {}",
+            step_bound_medium
+        );
+
+        // Low quality case - completely different values.
+        let predicted_low = vec![2.0, 1.0, 0.0, -1.0, -2.0]; // Reversed and shifted.
+        let step_bound_low =
+            calculate_trust_region_radius_from_quality(&actual, &predicted_low)
+                .unwrap();
+        assert!(
+            step_bound_low >= 50.0,
+            "Low quality should give large trust region radius, got: {}",
+            step_bound_low
+        );
+    }
+
+    #[test]
+    fn test_generic_interpolation_with_dual_numbers() {
+        // Test that all interpolation methods work with dual numbers
+        // for automatic differentiation.
+        let control_points_x = vec![0.0, 1.0, 2.0, 3.0];
+        let reference_values = vec![(0.5, 1.0), (1.5, 2.0), (2.5, 3.0)];
+
+        // Test each interpolation method.
+        let methods = [
+            Interpolation::Linear,
+            Interpolation::QuadraticNUBS,
+            Interpolation::CubicNUBS,
+            Interpolation::CubicSpline,
+        ];
+
+        for method in &methods {
+            let problem = NPointsCurveFitProblem::new(
+                control_points_x.clone(),
+                reference_values.clone(),
+                *method,
+            )
+            .unwrap();
+
+            // Test parameters as dual numbers with automatic
+            // differentiation.
+            let parameters = [
+                Dual::new(1.0, 1.0),
+                Dual::new(2.0, 0.0),
+                Dual::new(3.0, 0.0),
+                Dual::new(4.0, 0.0),
+            ];
+            let mut residuals = vec![Dual::new(0.0, 0.0); 3];
+
+            // This should work without panicking and compute gradients automatically.
+            let result = problem.residuals(&parameters, &mut residuals);
+            assert!(
+                result.is_ok(),
+                "Interpolation method {:?} failed with dual numbers",
+                method
+            );
+
+            // Verify that dual parts contain gradient information.
+            for residual in &residuals {
+                // At least one residual should have non-zero dual
+                // part (gradient).
+                //
+                // This confirms automatic differentiation is working.
+                if residual.dual != 0.0 {
+                    debug!(
+                        "Gradient computed: real={}, dual={}",
+                        residual.real, residual.dual
+                    );
+                }
+            }
+
+            debug!(
+                "Generic interpolation with dual numbers works for {:?}",
+                method
+            );
+        }
+    }
+
+    #[test]
+    fn test_cubic_nubs_with_dual_numbers_detailed() {
+        use crate::math::interpolate::{
+            CubicNUBSInterpolator, CurveInterpolator,
+        };
+        use mmcore::dual::Dual;
+
+        // Create a CubicNUBS interpolator with sufficient control points
+        let control_points_x = vec![0.0, 1.0, 2.0, 3.0, 4.0];
+        let control_points_y = vec![0.0, 1.0, 0.5, 2.0, 1.5];
+
+        let interpolator = CubicNUBSInterpolator::new();
+        interpolator.set_control_points(&control_points_x, &control_points_y);
+
+        // Test with f64 first
+        let result_f64 = interpolator.interpolate_f64(1.5);
+        debug!("f64 result at x=1.5: {}", result_f64);
+
+        // Test with dual numbers
+        let x_dual = Dual::new(1.5, 1.0); // Value 1.5, derivative 1.0
+        let result_dual = interpolator.interpolate(x_dual);
+
+        debug!(
+            "Dual result at x=1.5: real={}, dual={}",
+            result_dual.real, result_dual.dual
+        );
+
+        // The real parts should be very close
+        assert!(
+            (result_f64 - result_dual.real).abs() < 1e-10,
+            "f64 and dual real parts should match: {} vs {}",
+            result_f64,
+            result_dual.real
+        );
+
+        // The dual part should be non-zero (indicating we computed a
+        // derivative).
+        debug!("Dual derivative: {}", result_dual.dual);
+        assert!(result_dual.dual > 0.0);
+
+        // Test multiple points to ensure robustness
+        let test_points = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5];
+        for &x in &test_points {
+            let x_dual = Dual::new(x, 1.0);
+            let result = interpolator.interpolate(x_dual);
+            debug!("At x={}: real={}, dual={}", x, result.real, result.dual);
+
+            // Ensure no NaN or infinite values
+            assert!(
+                result.real.is_finite(),
+                "Real part should be finite at x={}",
+                x
+            );
+            assert!(
+                result.dual.is_finite(),
+                "Dual part should be finite at x={}",
+                x
+            );
+        }
+    }
 }

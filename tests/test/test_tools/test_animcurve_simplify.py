@@ -39,11 +39,13 @@ DISTRIBUTIONS = [
 
 INTERPOLATION_LINEAR = 'linear'
 INTERPOLATION_CUBIC_NUBS = 'cubic_nubs'
+INTERPOLATION_QUADRATIC_NUBS = 'quadratic_nubs'
 INTERPOLATION_CUBIC_SPLINE = 'cubic_spline'
 INTERPOLATIONS = [
     INTERPOLATION_LINEAR,
     INTERPOLATION_CUBIC_NUBS,
-    INTERPOLATION_CUBIC_SPLINE,
+    INTERPOLATION_QUADRATIC_NUBS,
+    # INTERPOLATION_CUBIC_SPLINE,  # This is not used, and will be deprecated.
 ]
 
 # Statistic type identifiers from the C++ code.
@@ -130,7 +132,7 @@ QUALITY_THRESHOLDS = {
     3: 96.35,  # 3 control points
     4: 97.0,  # 4 control points
     5: 97.20,  # 5 control points
-    16: 97.70,  # 16 control points: high fidelity
+    16: 97.50,  # 16 control points: high fidelity.
 }
 
 

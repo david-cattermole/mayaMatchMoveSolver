@@ -827,8 +827,12 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "approx",
+ "criterion",
  "log",
+ "mmcore_rust",
  "nalgebra",
+ "num-traits",
+ "rayon",
  "thiserror 2.0.3",
 ]
 
@@ -850,6 +854,7 @@ dependencies = [
  "enum_dispatch",
  "fastapprox",
  "log",
+ "mmcore_rust",
  "mmoptimise_rust",
  "nalgebra",
  "ndarray",

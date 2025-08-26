@@ -20,6 +20,7 @@ approx = { workspace = true }
 enum_dispatch = { workspace = true }
 fastapprox = { workspace = true }
 log = { workspace = true }
+mmcore = { package = "mmcore_rust", path = "../mmcore" }
 mmoptimise = { package = "mmoptimise_rust", path = "../mmoptimise" }
 nalgebra = { workspace = true }
 ndarray = { workspace = true }

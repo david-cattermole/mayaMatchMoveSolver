@@ -25,6 +25,7 @@ pub use solver::LevenbergMarquardt;
 pub use solver::OptimisationError;
 pub use solver::OptimisationProblem;
 pub use solver::OptimisationResult;
+pub use solver::ScalingMode;
 pub use solver::SolverConfig;
 pub use solver::SolverStatus;
 pub use solver::SolverWorkspace;

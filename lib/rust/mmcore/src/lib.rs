@@ -19,3 +19,4 @@
 //
 
 pub mod pathutils;
+pub mod dual;

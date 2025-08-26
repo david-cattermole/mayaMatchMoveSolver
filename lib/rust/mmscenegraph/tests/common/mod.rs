@@ -42,11 +42,35 @@ pub const CHART_RESOLUTION: (u32, u32) = (1024, 1024);
 
 #[allow(dead_code)]
 pub fn find_data_dir() -> Result<PathBuf> {
-    let directory = PathBuf::from("C:/Users/catte/dev/mayaMatchMoveSolver/lib/rust/mmscenegraph/tests/data/");
+    // // "<project_root>/lib/rust/mmscenegraph/tests/common/mod.rs"
+    // let this_file = file!();
+
+    // "<project_root>/target/debug/deps/curve_curvature-a1543a4f123cfc9f"
+    let mut directory = PathBuf::from(std::env::current_exe().unwrap());
+
+    // "<project_root>/target/debug/deps"
+    assert!(directory.pop());
+
+    // "<project_root>/target/debug"
+    assert!(directory.pop());
+
+    // "<project_root>/target"
+    assert!(directory.pop());
+
+    // "<project_root>"
+    assert!(directory.pop());
+
+    // "<project_root>/lib/rust/mmscenegraph/tests/data"
+    directory.push("lib");
+    directory.push("rust");
+    directory.push("mmscenegraph");
+    directory.push("tests");
+    directory.push("data");
+
     if directory.is_dir() {
         Ok(directory)
     } else {
-        bail!("Could not find data directory directory.")
+        bail!("Could not find data directory {:?}.", directory)
     }
 }
 

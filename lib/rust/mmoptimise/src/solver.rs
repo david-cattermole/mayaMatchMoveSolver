@@ -40,14 +40,69 @@ pub enum OptimisationError {
     NumericalInstability,
 }
 
+/// Status codes indicating how the solver terminated.
+///
+/// These status codes help interpret the quality and reliability of
+/// the optimization result.  Understanding what each status means is
+/// crucial for debugging and validating solutions.
+///
+/// ## Convergence Status Meanings
+///
+/// ### Successful Convergence
+/// - **`Success`**: Converged to optimal solution within all tolerances. This is the ideal outcome.
+/// - **`ToleranceReached`**: Met one or more tolerance criteria (ftol, xtol, or gtol). Usually indicates good convergence.
+/// - **`SmallCostReduction`**: Cost reduction below threshold, indicating we're near an optimum.
+/// - **`SmallStepSize`**: Step size below threshold, suggesting we're at a local minimum.
+/// - **`SmallGradient`**: Gradient norm below threshold, indicating a stationary point.
+///
+/// ### Termination Conditions
+/// - **`MaxIterationsReached`**: Hit iteration limit. May need more iterations or better initial guess.
+/// - **`FunctionCallsExceeded`**: Hit function evaluation limit. Consider increasing limit or improving problem conditioning.
+///
+/// ## Interpreting Results
+///
+/// ```rust
+/// use mmoptimise_rust::{SolverStatus, is_success};
+///
+/// let result = solver.solve_problem(&problem, &mut workspace)?;
+///
+/// match result.status {
+///     SolverStatus::Success => {
+///         println!("Optimal solution found!");
+///         // result.parameters contains the optimal values
+///     },
+///     SolverStatus::ToleranceReached => {
+///         println!("Good convergence achieved");
+///         // Check result.cost to verify solution quality
+///     },
+///     SolverStatus::MaxIterationsReached => {
+///         println!("Need more iterations or better initial guess");
+///         // Consider increasing max_iterations or improving starting point
+///     },
+///     _ => {
+///         if is_success(result.status) {
+///             println!("Converged successfully: {:?}", result.status);
+///         } else {
+///             println!("Solver had difficulties: {:?}", result.status);
+///         }
+///     }
+/// }
+/// ```
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum SolverStatus {
+    /// Converged to optimal solution within all tolerances.
     Success,
+    /// Met one or more tolerance criteria.
     ToleranceReached,
+    /// Hit iteration limit (may need more iterations).
     MaxIterationsReached,
+    /// Hit function evaluation limit.
     FunctionCallsExceeded,
+    /// Cost reduction below threshold (near optimum).
     SmallCostReduction,
+    /// Step size below threshold (near optimum).
     SmallStepSize,
+    /// Gradient norm below threshold (near optimum).
     SmallGradient,
 }
 
@@ -63,16 +118,111 @@ pub struct OptimisationResult {
     pub message: &'static str,
 }
 
+/// Parameter scaling modes for improving solver convergence.
+///
+/// Scaling helps normalize parameters with different units or magnitudes,
+/// which is crucial for solver stability and convergence speed.
+///
+/// ## When to Use Each Mode
+///
+/// | Mode       | Description                                         | Best For                                                    |
+/// |------------+-----------------------------------------------------+-------------------------------------------------------------|
+/// | **Auto**   | Automatically scales based on Jacobian column norms | Most problems (recommended default)                         |
+/// | **Manual** | User-provided scaling factors for each parameter    | When you know parameter ranges and units                    |
+/// | **None**   | No scaling applied                                  | Well-conditioned problems with similar parameter magnitudes |
+/// +------------+-----------------------------------------------------+-------------------------------------------------------------+
+///
+/// ## Examples
+///
+/// ```rust
+/// use mmoptimise_rust::ScalingMode;
+///
+/// // Recommended for most problems
+/// let auto_config = SolverConfig {
+///     scaling_mode: ScalingMode::Auto,
+///     ..Default::default()
+/// };
+///
+/// // Manual scaling when parameters have very different ranges
+/// let manual_config = SolverConfig {
+///     scaling_mode: ScalingMode::Manual,
+///     ..Default::default()
+/// };
+/// // Then set scaling: solver.set_scaling(&mut workspace, &[1.0, 1000.0, 0.001]);
+/// ```
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ScalingMode {
-    /// No scaling applied.
+    /// No scaling applied - use when parameters are already well-scaled.
     None,
-    /// Scale based on initial Jacobian column norms.
+    /// Automatically scale based on initial Jacobian column norms (recommended).
     Auto,
-    /// User-provided scaling factors.
+    /// User-provided scaling factors for fine-tuned control.
     Manual,
 }
 
+/// Configuration parameters for the Levenberg-Marquardt solver.
+///
+/// This structure controls all aspects of solver behavior, from convergence tolerances
+/// to trust region management. Proper configuration is crucial for achieving good
+/// performance on different types of optimization problems.
+///
+/// ## Parameter Reference
+///
+/// | Parameter                  | Description           | Typical Range  | When to Adjust                         |
+/// |----------------------------+-----------------------+----------------+----------------------------------------|
+/// | `ftol`                     | Function tolerance    | 1e-6 to 1e-12  | Tighter for high precision             |
+/// | `xtol`                     | Parameter tolerance   | 1e-6 to 1e-12  | Tighter for parameter accuracy         |
+/// | `gtol`                     | Gradient tolerance    | 1e-6 to 1e-12  | Tighter for gradient-based convergence |
+/// | `initial_trust_factor`     | Trust region radius   | 10.0 to 1000.0 | Larger for well-conditioned problems   |
+/// | `min_step_quality`         | Step acceptance ratio | 1e-4 to 1e-2   | Lower for difficult problems           |
+/// | `max_iterations`           | Iteration limit       | 100 to 5000    | Higher for complex problems            |
+/// | `max_function_evaluations` | Function call limit   | 1000 to 50000  | Higher for expensive functions         |
+/// |----------------------------+-----------------------+----------------+----------------------------------------|
+///
+/// ## Configuration Guidelines by Problem Type
+///
+/// | Problem Type              | Recommended Settings                     | Notes                               |
+/// |---------------------------+------------------------------------------+-------------------------------------|
+/// | **Well-conditioned**      | `Default`                                | Standard settings work well         |
+/// | **High precision needed** | Tight tolerances (1e-12)                 | Scientific/engineering applications |
+/// | **Fast approximation**    | Relaxed tolerances (1e-4)                | Real-time or interactive use        |
+/// | **Ill-conditioned**       | `ScalingMode::Auto` + conservative steps | Difficult optimization landscapes   |
+/// | **Large-scale**           | Higher iteration/evaluation limits       | Many parameters or residuals        |
+/// |---------------------------+------------------------------------------+-------------------------------------|
+///
+/// ## Examples
+///
+/// ```rust
+/// use mmoptimise_rust::{SolverConfig, ScalingMode};
+///
+/// // High-precision configuration for demanding problems
+/// let precise_config = SolverConfig {
+///     ftol: 1e-12,                     // Very tight function tolerance.
+///     xtol: 1e-12,                     // Very tight parameter tolerance.
+///     gtol: 1e-12,                     // Very tight gradient tolerance.
+///     max_iterations: 1000,
+///     max_function_evaluations: 10000,
+///     initial_trust_factor: 100.0,     // Large trust region radius.
+///     scaling_mode: ScalingMode::Auto, // Automatic parameter scaling.
+///     min_step_quality: 1e-4,          // Standard step acceptance.
+///     verbose: true,                   // Enable detailed logging.
+///     epsilon_factor: 1.0,             // Standard numerical precision.
+/// };
+///
+/// // Fast approximation for real-time use
+/// let fast_config = SolverConfig {
+///     ftol: 1e-4,                      // Relaxed tolerances.
+///     xtol: 1e-4,
+///     gtol: 1e-4,
+///     max_iterations: 50,              // Fewer iterations.
+///     max_function_evaluations: 500,
+///     initial_trust_factor: 10.0,      // Smaller steps for stability.
+///     scaling_mode: ScalingMode::Auto,
+///     min_step_quality: 1e-3,          // Accept lower quality steps.
+///     verbose: false,
+///     epsilon_factor: 1.0,
+/// };
+/// ```
 #[derive(Debug, Clone, Copy)]
 pub struct SolverConfig {
     /// Function tolerance - convergence when relative reduction in cost is below this.
@@ -125,8 +275,136 @@ pub fn is_success(status: SolverStatus) -> bool {
     )
 }
 
+/// Trait for defining optimization problems compatible with the
+/// Levenberg-Marquardt solver.
+///
+/// This trait allows you to define custom optimization problems by
+/// implementing residual computation. The solver uses automatic
+/// differentiation (dual numbers) to compute gradients, so your
+/// residual function must work with generic numeric types.
+///
+/// ## Requirements
+///
+/// - **Overdetermined system**: `residual_count() >= parameter_count()`.
+/// - **Differentiable**: Residual function must be smooth and differentiable.
+/// - **Generic numerics**: Must work with both `f64` and `Dual<f64>` types.
+///
+/// ## Implementation Guidelines
+///
+/// 1. **Residual Definition**: Define residuals as `predicted - actual` or similar.
+/// 2. **Numerical Stability**: Avoid operations that can cause NaN or infinite values.
+/// 3. **Parameter Scaling**: Consider parameter magnitudes when designing the problem.
+/// 4. **Testing**: Always test your residual function before optimization.
+///
+/// ## Basic Example: Exponential Curve Fitting
+///
+/// ```rust
+/// use mmoptimise_rust::{OptimisationProblem, LevenbergMarquardt, SolverWorkspace};
+/// use anyhow::Result;
+/// use std::ops::{Add, Sub, Mul, Div};
+/// use num_traits::{Float, Zero};
+///
+/// // Fit y = a * exp(b * x) + c to data
+/// struct ExponentialFitting {
+///     x_data: Vec<f64>,
+///     y_data: Vec<f64>,
+/// }
+///
+/// impl OptimisationProblem for ExponentialFitting {
+///     fn residuals<T>(
+///         &self,
+///         parameters: &[T],
+///         out_residuals: &mut [T],
+///     ) -> Result<()>
+///     where
+///         T: Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T>
+///             + From<f64> + Sized + Zero + Float,
+///     {
+///         // Parameters: [a, b, c] for y = a * exp(b * x) + c
+///         let a = parameters[0];
+///         let b = parameters[1];
+///         let c = parameters[2];
+///
+///         for (i, (&x, &y)) in self.x_data.iter().zip(&self.y_data).enumerate() {
+///             let x_val = T::from(x);
+///             let y_val = T::from(y);
+///             let predicted = a * (b * x_val).exp() + c;
+///
+///             // Residual = predicted - actual
+///             out_residuals[i] = predicted - y_val;
+///         }
+///         Ok(())
+///     }
+///
+///     fn parameter_count(&self) -> usize { 3 }  // [a, b, c]
+///     fn residual_count(&self) -> usize { self.x_data.len() }
+/// }
+///
+/// // Usage
+/// fn solve_curve_fitting() -> Result<()> {
+///     let problem = ExponentialFitting {
+///         x_data: vec![0.0, 1.0, 2.0, 3.0, 4.0],
+///         y_data: vec![1.0, 2.7, 7.4, 20.1, 54.6], // Approximate exp(x) data
+///     };
+///
+///     let solver = LevenbergMarquardt::with_defaults();
+///     let initial_params = vec![1.0, 1.0, 0.0]; // Initial guess: a=1, b=1, c=0
+///
+///     let mut workspace = SolverWorkspace::new(&problem, &initial_params)?;
+///     let result = solver.solve_problem(&problem, &mut workspace)?;
+///
+///     println!("Converged in {} iterations", result.iterations);
+///     println!("Final parameters: a={:.3}, b={:.3}, c={:.3}",
+///         result.parameters[0], result.parameters[1], result.parameters[2]);
+///     Ok(())
+/// }
+/// ```
+///
+/// ## Advanced Example: Parameter Constraints
+///
+/// ```rust
+/// // For problems with parameter bounds or constraints, transform parameters.
+/// struct ConstrainedProblem {
+///     data: Vec<(f64, f64)>,
+/// }
+///
+/// impl OptimisationProblem for ConstrainedProblem {
+///     fn residuals<T>(&self, parameters: &[T], out_residuals: &mut [T]) -> Result<()>
+///     where T: Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T>
+///             + From<f64> + Sized + Zero + Float,
+///     {
+///         // Transform parameter to ensure positivity: param = exp(raw_param)
+///         let positive_param = parameters[0].exp();
+///
+///         for (i, &(x, y)) in self.data.iter().enumerate() {
+///             let x_val = T::from(x);
+///             let y_val = T::from(y);
+///             let predicted = positive_param * x_val;
+///             out_residuals[i] = predicted - y_val;
+///         }
+///         Ok(())
+///     }
+///
+///     fn parameter_count(&self) -> usize { 1 }
+///     fn residual_count(&self) -> usize { self.data.len() }
+/// }
+/// ```
 pub trait OptimisationProblem {
     /// Compute residuals for both f64 and Dual<f64> types.
+    ///
+    /// This function must compute the residual vector for the given
+    /// parameters.  The solver uses automatic differentiation, so
+    /// this function must work with generic numeric types (both f64
+    /// and Dual<f64>).
+    ///
+    /// # Parameters
+    ///
+    /// - `parameters`: Input parameters (length = `parameter_count()`).
+    /// - `out_residuals`: Output residuals (length = `residual_count()`).
+    ///
+    /// # Returns
+    ///
+    /// `Ok(())` on success, or an error if computation fails.
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -143,10 +421,10 @@ pub trait OptimisationProblem {
             + Zero
             + Float;
 
-    /// Number of parameters.
+    /// Number of optimization parameters.
     fn parameter_count(&self) -> usize;
 
-    /// Number of residuals.
+    /// Number of residual equations (must be >= parameter_count).
     fn residual_count(&self) -> usize;
 }
 
@@ -293,7 +571,141 @@ impl SolverWorkspace {
     }
 }
 
-/// Levenberg-Marquardt solver.
+/// Levenberg-Marquardt solver with trust region management.
+///
+/// This is a robust implementation of the Levenberg-Marquardt
+/// algorithm for non-linear least squares optimization. It uses
+/// automatic differentiation for gradient computation, QR
+/// decomposition for numerical stability, and adaptive trust region
+/// management.
+///
+/// ## Algorithm Features
+///
+/// - **Automatic Differentiation**: Uses dual numbers for exact gradient computation
+/// - **Trust Region Management**: Adaptive step size control for robust convergence
+/// - **Parameter Scaling**: Automatic or manual scaling for better conditioning
+/// - **QR Decomposition**: Numerically stable linear system solving
+/// - **Workspace Reuse**: Efficient memory management for repeated optimizations
+///
+/// ## Usage Patterns
+///
+/// ### Basic Usage
+/// ```rust
+/// let solver = LevenbergMarquardt::with_defaults();
+/// let mut workspace = SolverWorkspace::new(&problem, &initial_params)?;
+/// let result = solver.solve_problem(&problem, &mut workspace)?;
+/// ```
+///
+/// ### Custom Configuration
+/// ```rust
+/// let config = SolverConfig {
+///     ftol: 1e-8,
+///     max_iterations: 500,
+///     scaling_mode: ScalingMode::Auto,
+///     verbose: true,
+///     ..Default::default()
+/// };
+/// let solver = LevenbergMarquardt::new(config);
+/// ```
+///
+/// ## Troubleshooting Guide
+///
+/// ### Poor Convergence
+///
+/// **Symptoms**: Slow convergence, reaches max iterations, or gets stuck
+///
+/// **Solutions**:
+/// ```rust
+/// // Try different initial parameters
+/// let initial_params = vec![0.1, 0.1, 0.1]; // Instead of all zeros
+///
+/// // Enable automatic scaling
+/// let config = SolverConfig {
+///     scaling_mode: ScalingMode::Auto,
+///     initial_trust_factor: 100.0, // More aggressive optimization
+///     ..Default::default()
+/// };
+///
+/// // Relax tolerances for difficult problems
+/// let config = SolverConfig {
+///     ftol: 1e-6,  // Less strict
+///     xtol: 1e-6,
+///     gtol: 1e-6,
+///     ..Default::default()
+/// };
+/// ```
+///
+/// ### Slow Convergence
+///
+/// **Symptoms**: Takes many iterations, small progress per iteration
+///
+/// **Solutions**:
+/// ```rust
+/// // Conservative approach for stability
+/// let config = SolverConfig {
+///     initial_trust_factor: 10.0,  // Smaller steps
+///     max_iterations: 2000,        // More iterations allowed
+///     min_step_quality: 1e-6,      // Accept smaller improvements
+///     ..Default::default()
+/// };
+/// ```
+///
+/// ### Numerical Instability
+///
+/// **Symptoms**: NaN results, solver errors, non-finite costs
+///
+/// **Solutions**:
+/// ```rust
+/// // Check problem formulation
+/// assert!(problem.residual_count() >= problem.parameter_count(),
+///         "Need at least as many residuals as parameters");
+///
+/// // Manual parameter scaling for different ranges
+/// let scaling = vec![1.0, 1000.0, 0.001]; // Scale parameters appropriately
+/// solver.set_scaling(&mut workspace, &scaling)?;
+///
+/// // Test residual function
+/// let test_params = vec![1.0, 2.0, 3.0];
+/// let mut residuals = vec![0.0; problem.residual_count()];
+/// problem.residuals(&test_params, &mut residuals)?;
+/// assert!(residuals.iter().all(|&r| r.is_finite()));
+/// ```
+///
+/// ### Debugging Tips
+///
+/// ```rust
+/// // Enable verbose logging for iteration details
+/// let config = SolverConfig {
+///     verbose: true,
+///     ..Default::default()
+/// };
+///
+/// // Monitor convergence progress
+/// let result = solver.solve_problem(&problem, &mut workspace)?;
+/// println!("Status: {:?}", result.status);
+/// println!("Final cost: {:.6e}", result.cost);
+/// println!("Iterations: {}", result.iterations);
+/// println!("Function evaluations: {}", result.function_evaluations);
+/// ```
+///
+/// ## Performance Tips
+///
+/// - **Workspace Reuse**: Create workspace once, reuse for similar problems
+/// - **Parameter Scaling**: Use `ScalingMode::Auto` for most problems
+/// - **Function Profiling**: Profile residual computation for bottlenecks
+/// - **Initial Guess**: Good initial parameters dramatically improve convergence
+///
+/// ## When to Use Different Configurations
+///
+/// | Scenario                      | Configuration                                  | Reasoning                   |
+/// |-------------------------------+------------------------------------------------+-----------------------------|
+/// | **Well-conditioned problems** | `Default`                                      | Standard settings work well |
+/// | **High precision needed**     | Tight tolerances (1e-12)                       | Scientific applications     |
+/// | **Real-time applications**    | Relaxed tolerances (1e-4), low max_iterations  | Speed over precision        |
+/// | **Ill-conditioned problems**  | `ScalingMode::Auto`, conservative trust region | Numerical stability         |
+/// | **Large-scale problems**      | Higher limits, workspace reuse                 | Memory and time efficiency  |
+/// |-------------------------------+------------------------------------------------+-----------------------------|
+
 pub struct LevenbergMarquardt {
     config: SolverConfig,
 }

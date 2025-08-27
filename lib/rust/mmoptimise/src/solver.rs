@@ -179,13 +179,76 @@ pub struct SolverWorkspace {
 }
 
 impl SolverWorkspace {
-    // TODO: Add a new method to reuse an existing SolverWorkspace
-    // memory as long as the parameter count and residual count is the
-    // same.
-    //
-    // So the new SolverWorkspace will be initialized from new
-    // parameters, and the workspace data will be zeroed as needed, but
-    // no new memory will be allocated.
+    /// Reuse an existing SolverWorkspace with new initial parameters.
+    ///
+    /// Allows reusing the allocated memory of an existing workspace
+    /// as long as the parameter count and residual count match the
+    /// new problem.  All workspace data is properly reset, but no new
+    /// memory is allocated.
+    pub fn reuse_with<P: OptimisationProblem>(
+        &mut self,
+        problem: &P,
+        initial_parameters: &[f64],
+    ) -> Result<()> {
+        let n = problem.parameter_count();
+        let m = problem.residual_count();
+
+        if n != self.n {
+            return Err(OptimisationError::InvalidInput(format!(
+                "Parameter count mismatch: workspace has {}, problem has {}",
+                self.n, n
+            ))
+            .into());
+        }
+
+        if m != self.m {
+            return Err(OptimisationError::InvalidInput(format!(
+                "Residual count mismatch: workspace has {}, problem has {}",
+                self.m, m
+            ))
+            .into());
+        }
+
+        if initial_parameters.len() != n {
+            return Err(OptimisationError::InvalidInput(format!(
+                "Expected {} parameters, got {}",
+                n,
+                initial_parameters.len()
+            ))
+            .into());
+        }
+
+        if m < n {
+            return Err(OptimisationError::InvalidInput(
+                "Number of residuals must be >= number of parameters"
+                    .to_string(),
+            )
+            .into());
+        }
+
+        // Update parameter vectors with new initial values
+        self.parameters.copy_from_slice(initial_parameters);
+        self.trial_parameters.copy_from_slice(initial_parameters);
+        self.best_parameters.copy_from_slice(initial_parameters);
+
+        // Reset all workspace data without reallocating memory.
+        self.residuals.fill(0.0);
+        self.trial_residuals.fill(0.0);
+        self.best_residuals.fill(0.0);
+        self.jacobian.fill(0.0);
+        self.r_matrix.fill(0.0);
+        self.q_matrix.fill(0.0);
+        self.qtf.fill(0.0);
+        self.step.fill(0.0);
+        self.scaling.fill(1.0);
+
+        for i in 0..n {
+            self.permutation[i] = i;
+        }
+
+        Ok(())
+    }
+
     pub fn new<P: OptimisationProblem>(
         problem: &P,
         initial_parameters: &[f64],
@@ -1918,6 +1981,170 @@ mod tests {
                 result.cost < 1e-6,
                 "Should find a good local minimum with low cost"
             );
+        }
+    }
+
+    #[test]
+    fn test_solver_workspace_reuse() {
+        let problem = RosenbrockProblem::new();
+
+        let initial_parameters1 = vec![0.0, 0.0];
+        let mut workspace =
+            SolverWorkspace::new(&problem, &initial_parameters1).unwrap();
+
+        // Verify initial state.
+        assert_eq!(workspace.parameters[0], 0.0);
+        assert_eq!(workspace.parameters[1], 0.0);
+        assert_eq!(workspace.n, 2);
+        assert_eq!(workspace.m, 2);
+
+        let initial_parameters2 = vec![1.5, -0.5];
+        workspace
+            .reuse_with(&problem, &initial_parameters2)
+            .unwrap();
+
+        // Verify workspace was properly reset.
+        assert_eq!(workspace.parameters[0], 1.5);
+        assert_eq!(workspace.parameters[1], -0.5);
+        assert_eq!(workspace.trial_parameters[0], 1.5);
+        assert_eq!(workspace.trial_parameters[1], -0.5);
+        assert_eq!(workspace.best_parameters[0], 1.5);
+        assert_eq!(workspace.best_parameters[1], -0.5);
+
+        for i in 0..workspace.m {
+            assert_eq!(workspace.residuals[i], 0.0);
+            assert_eq!(workspace.trial_residuals[i], 0.0);
+            assert_eq!(workspace.best_residuals[i], 0.0);
+        }
+
+        for i in 0..workspace.m {
+            for j in 0..workspace.n {
+                assert_eq!(workspace.jacobian[(i, j)], 0.0);
+            }
+        }
+
+        for i in 0..workspace.n {
+            for j in 0..workspace.n {
+                assert_eq!(workspace.r_matrix[(i, j)], 0.0);
+            }
+            assert_eq!(workspace.qtf[i], 0.0);
+            assert_eq!(workspace.step[i], 0.0);
+            assert_eq!(workspace.scaling[i], 1.0);
+            assert_eq!(workspace.permutation[i], i);
+        }
+
+        // Test that reused workspace works with solver.
+        let solver = LevenbergMarquardt::with_defaults();
+        let result = solver.solve_problem(&problem, &mut workspace).unwrap();
+
+        assert!(is_success(result.status));
+        assert_relative_eq!(result.parameters[0], 1.0, epsilon = 1e-4);
+        assert_relative_eq!(result.parameters[1], 1.0, epsilon = 1e-4);
+
+        println!("\nWorkspace reuse test:");
+        println!("  Reused workspace from [1.5, -0.5] and converged to [{:.6}, {:.6}]",
+                 result.parameters[0], result.parameters[1]);
+        println!("  Cost: {:.6e}", result.cost);
+    }
+
+    #[test]
+    fn test_solver_workspace_reuse_dimension_mismatch() {
+        let problem2d = RosenbrockProblem::new(); // 2 parameters, 2 residuals
+
+        // Create workspace for 2D problem
+        let initial_parameters = vec![0.0, 0.0];
+        let mut workspace =
+            SolverWorkspace::new(&problem2d, &initial_parameters).unwrap();
+
+        // Try to reuse with incompatible problem dimensions
+        // Create a mock 3-parameter problem
+        struct Mock3DProblem;
+        impl OptimisationProblem for Mock3DProblem {
+            fn residuals<T>(
+                &self,
+                _parameters: &[T],
+                _out_residuals: &mut [T],
+            ) -> Result<()>
+            where
+                T: Copy
+                    + Add<Output = T>
+                    + Sub<Output = T>
+                    + Mul<Output = T>
+                    + Div<Output = T>
+                    + From<f64>
+                    + Sized
+                    + Zero
+                    + Float,
+            {
+                Ok(())
+            }
+            fn parameter_count(&self) -> usize {
+                3
+            }
+            fn residual_count(&self) -> usize {
+                3
+            }
+        }
+
+        let problem3d = Mock3DProblem;
+        let parameters3d = vec![0.0, 0.0, 0.0];
+
+        // This should fail with dimension mismatch
+        let result = workspace.reuse_with(&problem3d, &parameters3d);
+        assert!(result.is_err());
+
+        // Test parameter count mismatch
+        let wrong_params = vec![0.0, 0.0, 0.0]; // 3 params for 2D problem
+        let result = workspace.reuse_with(&problem2d, &wrong_params);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_solver_workspace_reuse_performance() {
+        let problem = RosenbrockProblem::new();
+
+        // Create workspace once
+        let initial_parameters = vec![0.0, 0.0];
+        let mut workspace =
+            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+
+        // Test multiple reuses with different starting points
+        let starting_points = vec![
+            vec![0.5, 0.5],
+            vec![-1.2, 1.0],
+            vec![2.0, -1.0],
+            vec![-0.5, 2.5],
+        ];
+
+        let solver = LevenbergMarquardt::with_defaults();
+
+        for (i, start_point) in starting_points.iter().enumerate() {
+            // Reuse workspace
+            workspace.reuse_with(&problem, start_point).unwrap();
+
+            // Solve
+            let result =
+                solver.solve_problem(&problem, &mut workspace).unwrap();
+
+            println!(
+                "\nReuse test {} from [{:.1}, {:.1}]:",
+                i + 1,
+                start_point[0],
+                start_point[1]
+            );
+            println!(
+                "  Converged to [{:.6}, {:.6}], cost: {:.6e}, iterations: {}",
+                result.parameters[0],
+                result.parameters[1],
+                result.cost,
+                result.iterations
+            );
+
+            // All should converge to (1, 1)
+            assert!(is_success(result.status));
+            assert_relative_eq!(result.parameters[0], 1.0, epsilon = 1e-4);
+            assert_relative_eq!(result.parameters[1], 1.0, epsilon = 1e-4);
+            assert!(result.cost < 1e-8);
         }
     }
 }

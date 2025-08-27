@@ -265,7 +265,6 @@ impl PowellProblem {
     }
 }
 
-
 impl OptimisationProblem for PowellProblem {
     fn residuals<T>(
         &self,
@@ -410,7 +409,6 @@ impl CurveFittingProblem {
     }
 }
 
-
 impl OptimisationProblem for CurveFittingProblem {
     fn residuals<T>(
         &self,
@@ -474,7 +472,6 @@ impl BukinN6Problem {
         ]
     }
 }
-
 
 impl OptimisationProblem for BukinN6Problem {
     fn residuals<T>(
@@ -543,7 +540,6 @@ impl GoldsteinPriceFunction {
         ]
     }
 }
-
 
 impl OptimisationProblem for GoldsteinPriceFunction {
     fn residuals<T>(
@@ -614,6 +610,35 @@ pub fn run_benchmark<P: OptimisationProblem>(
 
     let start = std::time::Instant::now();
     let result = solver.solve_problem(problem, &mut workspace)?;
+    let duration = start.elapsed();
+
+    let success = mmoptimise_rust::is_success(result.status);
+    Ok((
+        duration,
+        success,
+        result.iterations,
+        result.function_evaluations,
+        result.cost,
+    ))
+}
+
+/// Run a benchmark with a reused workspace for improved performance.
+///
+/// This function allows reusing an existing workspace to avoid memory
+/// allocations when running multiple benchmarks with the same problem
+/// structure.
+pub fn run_benchmark_with_workspace<P: OptimisationProblem>(
+    problem: &P,
+    config: &BenchmarkConfig,
+    starting_point: &StartingPoint,
+    workspace: &mut SolverWorkspace,
+) -> Result<(std::time::Duration, bool, usize, usize, f64)> {
+    let solver = LevenbergMarquardt::new(config.config);
+
+    workspace.reuse_with(problem, &starting_point.parameters)?;
+
+    let start = std::time::Instant::now();
+    let result = solver.solve_problem(problem, workspace)?;
     let duration = start.elapsed();
 
     let success = mmoptimise_rust::is_success(result.status);

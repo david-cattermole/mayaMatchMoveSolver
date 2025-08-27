@@ -23,6 +23,7 @@
 use criterion::{
     black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
 };
+use mmoptimise_rust::SolverWorkspace;
 use std::time::Duration;
 
 mod common;
@@ -36,13 +37,23 @@ fn bench_rosenbrock_configs(c: &mut Criterion) {
     let configs = BenchmarkConfig::default_configs();
     let starting_points = RosenbrockProblem::starting_points();
 
+    let mut workspace =
+        SolverWorkspace::new(&problem, &starting_points[0].parameters)
+            .expect("Failed to create workspace");
+
     for config in &configs {
         for start_point in &starting_points {
             let bench_id = BenchmarkId::new(config.name, start_point.name);
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark(&problem, config, start_point).unwrap(),
+                        run_benchmark_with_workspace(
+                            &problem,
+                            config,
+                            start_point,
+                            &mut workspace,
+                        )
+                        .unwrap(),
                     )
                 });
             });
@@ -72,14 +83,23 @@ fn bench_rosenbrock_variants(c: &mut Criterion) {
         ),
     ];
 
+    let mut workspace =
+        SolverWorkspace::new(&variants[0].1, &starting_points[0].parameters)
+            .expect("Failed to create workspace");
+
     for (variant_name, problem) in &variants {
         for start_point in &starting_points {
             let bench_id = BenchmarkId::new(*variant_name, start_point.name);
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark(problem, default_config, start_point)
-                            .unwrap(),
+                        run_benchmark_with_workspace(
+                            problem,
+                            default_config,
+                            start_point,
+                            &mut workspace,
+                        )
+                        .unwrap(),
                     )
                 });
             });
@@ -119,13 +139,22 @@ fn bench_rosenbrock_starting_points(c: &mut Criterion) {
         },
     ];
 
+    let mut workspace =
+        SolverWorkspace::new(&problem, &challenging_points[0].parameters)
+            .expect("Failed to create workspace");
+
     for start_point in &challenging_points {
         let bench_id = BenchmarkId::from_parameter(start_point.name);
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark(&problem, default_config, start_point)
-                        .unwrap(),
+                    run_benchmark_with_workspace(
+                        &problem,
+                        default_config,
+                        start_point,
+                        &mut workspace,
+                    )
+                    .unwrap(),
                 )
             });
         });
@@ -133,10 +162,101 @@ fn bench_rosenbrock_starting_points(c: &mut Criterion) {
     group.finish();
 }
 
+/// Benchmark using SolverWorkspace::new() for each iteration (baseline)
+fn bench_rosenbrock_memory_comparison_new(c: &mut Criterion) {
+    let mut group = c.benchmark_group("rosenbrock_memory_comparison");
+    group.measurement_time(Duration::from_secs(10));
+
+    let problem = RosenbrockProblem::new();
+    let default_config = &BenchmarkConfig::default_configs()[0];
+    let starting_points = vec![
+        StartingPoint {
+            name: "Point1",
+            parameters: vec![0.0, 0.0],
+        },
+        StartingPoint {
+            name: "Point2",
+            parameters: vec![-1.2, 1.0],
+        },
+        StartingPoint {
+            name: "Point3",
+            parameters: vec![2.0, -1.0],
+        },
+        StartingPoint {
+            name: "Point4",
+            parameters: vec![-0.5, 2.5],
+        },
+    ];
+
+    group.bench_function("using_new", |b| {
+        b.iter(|| {
+            for start_point in &starting_points {
+                black_box(
+                    run_benchmark(&problem, default_config, start_point)
+                        .unwrap(),
+                );
+            }
+        })
+    });
+
+    group.finish();
+}
+
+/// Benchmark using SolverWorkspace::reuse_with() (optimized)
+fn bench_rosenbrock_memory_comparison_reuse(c: &mut Criterion) {
+    let mut group = c.benchmark_group("rosenbrock_memory_comparison");
+    group.measurement_time(Duration::from_secs(10));
+
+    let problem = RosenbrockProblem::new();
+    let default_config = &BenchmarkConfig::default_configs()[0];
+    let starting_points = vec![
+        StartingPoint {
+            name: "Point1",
+            parameters: vec![0.0, 0.0],
+        },
+        StartingPoint {
+            name: "Point2",
+            parameters: vec![-1.2, 1.0],
+        },
+        StartingPoint {
+            name: "Point3",
+            parameters: vec![2.0, -1.0],
+        },
+        StartingPoint {
+            name: "Point4",
+            parameters: vec![-0.5, 2.5],
+        },
+    ];
+
+    group.bench_function("using_reuse_with", |b| {
+        let mut workspace =
+            SolverWorkspace::new(&problem, &starting_points[0].parameters)
+                .expect("Failed to create workspace");
+
+        b.iter(|| {
+            for start_point in &starting_points {
+                black_box(
+                    run_benchmark_with_workspace(
+                        &problem,
+                        default_config,
+                        start_point,
+                        &mut workspace,
+                    )
+                    .unwrap(),
+                );
+            }
+        })
+    });
+
+    group.finish();
+}
+
 criterion_group!(
     benches,
     bench_rosenbrock_configs,
     bench_rosenbrock_variants,
-    bench_rosenbrock_starting_points
+    bench_rosenbrock_starting_points,
+    bench_rosenbrock_memory_comparison_new,
+    bench_rosenbrock_memory_comparison_reuse
 );
 criterion_main!(benches);

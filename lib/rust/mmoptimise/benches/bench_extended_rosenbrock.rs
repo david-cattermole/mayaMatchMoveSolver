@@ -23,6 +23,7 @@
 use criterion::{
     black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
 };
+use mmoptimise_rust::SolverWorkspace;
 use std::time::Duration;
 
 mod common;
@@ -40,14 +41,23 @@ fn bench_extended_rosenbrock_dimensions(c: &mut Criterion) {
         let problem = ExtendedRosenbrockProblem::new(n);
         let starting_points = ExtendedRosenbrockProblem::starting_points(n);
 
+        let mut workspace =
+            SolverWorkspace::new(&problem, &starting_points[0].parameters)
+                .expect("Failed to create workspace");
+
         for start_point in &starting_points {
             let bench_id =
                 BenchmarkId::new(format!("dim_{}", n), start_point.name);
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark(&problem, default_config, start_point)
-                            .unwrap(),
+                        run_benchmark_with_workspace(
+                            &problem,
+                            default_config,
+                            start_point,
+                            &mut workspace,
+                        )
+                        .unwrap(),
                     )
                 });
             });
@@ -68,13 +78,23 @@ fn bench_extended_rosenbrock_configs(c: &mut Criterion) {
     ];
     let starting_points = ExtendedRosenbrockProblem::starting_points(8);
 
+    let mut workspace =
+        SolverWorkspace::new(&problem, &starting_points[0].parameters)
+            .expect("Failed to create workspace");
+
     for config in &configs {
         for start_point in &starting_points {
             let bench_id = BenchmarkId::new(config.name, start_point.name);
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark(&problem, config, start_point).unwrap(),
+                        run_benchmark_with_workspace(
+                            &problem,
+                            config,
+                            start_point,
+                            &mut workspace,
+                        )
+                        .unwrap(),
                     )
                 });
             });
@@ -107,11 +127,21 @@ fn bench_extended_rosenbrock_scalability(c: &mut Criterion) {
                 .collect(),
         };
 
+        let mut workspace =
+            SolverWorkspace::new(&problem, &start_point.parameters)
+                .expect("Failed to create workspace");
+
         let bench_id = BenchmarkId::from_parameter(format!("{}D", n));
         group.bench_with_input(bench_id, &start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark(&problem, fast_config, start_point).unwrap(),
+                    run_benchmark_with_workspace(
+                        &problem,
+                        fast_config,
+                        start_point,
+                        &mut workspace,
+                    )
+                    .unwrap(),
                 )
             });
         });

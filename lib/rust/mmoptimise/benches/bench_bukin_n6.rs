@@ -23,7 +23,7 @@
 use criterion::{
     black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
 };
-use mmoptimise_rust::{ScalingMode, SolverConfig};
+use mmoptimise_rust::{ScalingMode, SolverConfig, SolverWorkspace};
 use std::time::Duration;
 
 mod common;
@@ -43,6 +43,10 @@ fn bench_bukin_n6_configs(c: &mut Criterion) {
     ];
     let starting_points = BukinN6Problem::starting_points();
 
+    let mut workspace =
+        SolverWorkspace::new(&problem, &starting_points[0].parameters)
+            .expect("Failed to create workspace");
+
     for config in &configs {
         for start_point in &starting_points {
             let bench_id = BenchmarkId::new(config.name, start_point.name);
@@ -50,15 +54,19 @@ fn bench_bukin_n6_configs(c: &mut Criterion) {
                 b.iter(|| {
                     // Use unwrap_or to handle potential solver failures gracefully.
                     black_box(
-                        run_benchmark(&problem, config, start_point).unwrap_or(
-                            (
-                                Duration::from_millis(0),
-                                false,
-                                0,
-                                0,
-                                f64::INFINITY,
-                            ),
-                        ),
+                        run_benchmark_with_workspace(
+                            &problem,
+                            config,
+                            start_point,
+                            &mut workspace,
+                        )
+                        .unwrap_or((
+                            Duration::from_millis(0),
+                            false,
+                            0,
+                            0,
+                            f64::INFINITY,
+                        )),
                     )
                 });
             });
@@ -73,7 +81,7 @@ fn bench_bukin_n6_starting_points(c: &mut Criterion) {
 
     let problem = BukinN6Problem;
     // Use high precision for this difficult problem.
-    let high_precision_config = &BenchmarkConfig::default_configs()[1]; 
+    let high_precision_config = &BenchmarkConfig::default_configs()[1];
 
     // Extended set of starting points within the valid domain.
     let challenging_points = vec![
@@ -107,19 +115,28 @@ fn bench_bukin_n6_starting_points(c: &mut Criterion) {
         },
     ];
 
+    let mut workspace =
+        SolverWorkspace::new(&problem, &challenging_points[0].parameters)
+            .expect("Failed to create workspace");
+
     for start_point in &challenging_points {
         let bench_id = BenchmarkId::from_parameter(start_point.name);
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark(&problem, high_precision_config, start_point)
-                        .unwrap_or((
-                            Duration::from_millis(0),
-                            false,
-                            0,
-                            0,
-                            f64::INFINITY,
-                        )),
+                    run_benchmark_with_workspace(
+                        &problem,
+                        high_precision_config,
+                        start_point,
+                        &mut workspace,
+                    )
+                    .unwrap_or((
+                        Duration::from_millis(0),
+                        false,
+                        0,
+                        0,
+                        f64::INFINITY,
+                    )),
                 )
             });
         });
@@ -130,7 +147,7 @@ fn bench_bukin_n6_starting_points(c: &mut Criterion) {
 fn bench_bukin_n6_robustness(c: &mut Criterion) {
     let mut group = c.benchmark_group("bukin_n6_robustness");
     // Longest time for robustness testing.
-    group.measurement_time(Duration::from_secs(25)); 
+    group.measurement_time(Duration::from_secs(25));
 
     let problem = BukinN6Problem;
     let standard_start = StartingPoint {
@@ -173,12 +190,22 @@ fn bench_bukin_n6_robustness(c: &mut Criterion) {
         },
     ];
 
+    let mut workspace =
+        SolverWorkspace::new(&problem, &standard_start.parameters)
+            .expect("Failed to create workspace");
+
     for config in &robustness_configs {
         let bench_id = BenchmarkId::from_parameter(config.name);
         group.bench_with_input(bench_id, &standard_start, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark(&problem, config, start_point).unwrap_or((
+                    run_benchmark_with_workspace(
+                        &problem,
+                        config,
+                        start_point,
+                        &mut workspace,
+                    )
+                    .unwrap_or((
                         Duration::from_millis(0),
                         false,
                         0,

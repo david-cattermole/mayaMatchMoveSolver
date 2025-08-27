@@ -22,7 +22,7 @@
 use criterion::{
     black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
 };
-use mmoptimise_rust::SolverConfig;
+use mmoptimise_rust::{SolverConfig, SolverWorkspace};
 use std::time::Duration;
 
 mod common;
@@ -36,13 +36,23 @@ fn bench_goldstein_price_configs(c: &mut Criterion) {
     let configs = BenchmarkConfig::default_configs();
     let starting_points = GoldsteinPriceFunction::starting_points();
 
+    let mut workspace =
+        SolverWorkspace::new(&problem, &starting_points[0].parameters)
+            .expect("Failed to create workspace");
+
     for config in &configs {
         for start_point in &starting_points {
             let bench_id = BenchmarkId::new(config.name, start_point.name);
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark(&problem, config, start_point).unwrap(),
+                        run_benchmark_with_workspace(
+                            &problem,
+                            config,
+                            start_point,
+                            &mut workspace,
+                        )
+                        .unwrap(),
                     )
                 });
             });
@@ -98,13 +108,22 @@ fn bench_goldstein_price_starting_points(c: &mut Criterion) {
         },
     ];
 
+    let mut workspace =
+        SolverWorkspace::new(&problem, &challenging_points[0].parameters)
+            .expect("Failed to create workspace");
+
     for start_point in &challenging_points {
         let bench_id = BenchmarkId::from_parameter(start_point.name);
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark(&problem, default_config, start_point)
-                        .unwrap(),
+                    run_benchmark_with_workspace(
+                        &problem,
+                        default_config,
+                        start_point,
+                        &mut workspace,
+                    )
+                    .unwrap(),
                 )
             });
         });
@@ -132,11 +151,23 @@ fn bench_goldstein_price_local_minima(c: &mut Criterion) {
         parameters: vec![0.5, -0.5],
     };
 
+    let mut workspace =
+        SolverWorkspace::new(&problem, &central_start.parameters)
+            .expect("Failed to create workspace");
+
     for config in &minima_configs {
         let bench_id = BenchmarkId::from_parameter(config.name);
         group.bench_with_input(bench_id, &central_start, |b, start_point| {
             b.iter(|| {
-                black_box(run_benchmark(&problem, config, start_point).unwrap())
+                black_box(
+                    run_benchmark_with_workspace(
+                        &problem,
+                        config,
+                        start_point,
+                        &mut workspace,
+                    )
+                    .unwrap(),
+                )
             });
         });
     }
@@ -186,6 +217,10 @@ fn bench_goldstein_price_convergence_study(c: &mut Criterion) {
         },
     ];
 
+    let mut workspace =
+        SolverWorkspace::new(&problem, &challenging_start.parameters)
+            .expect("Failed to create workspace");
+
     for config in &convergence_configs {
         let bench_id = BenchmarkId::from_parameter(config.name);
         group.bench_with_input(
@@ -194,7 +229,13 @@ fn bench_goldstein_price_convergence_study(c: &mut Criterion) {
             |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark(&problem, config, start_point).unwrap(),
+                        run_benchmark_with_workspace(
+                            &problem,
+                            config,
+                            start_point,
+                            &mut workspace,
+                        )
+                        .unwrap(),
                     )
                 });
             },

@@ -7,6 +7,15 @@ everything is working as expected.
 On Linux run:
 ```commandline
 $ cd <project root>
+
+# Using convenience test scripts:
+$ bash scripts/test_mmSolver_linux_maya2024.bash
+# We can test specific files like this:
+$ bash scripts/test_mmSolver_linux_maya2024.bash tests/test/test_api/test_attribute.py
+# Run all API tests:
+$ bash scripts/test_mmSolver_linux_maya2024.bash tests/test/test_api/
+
+# Manual execution:
 $ /usr/autodesk/mayaVERSION/bin/mayapy tests/runTests.py
 # We can test specific files like this:
 $ /usr/autodesk/mayaVERSION/bin/mayapy tests/runTests.py tests/test/test_api/test_attribute.py
@@ -15,6 +24,15 @@ $ /usr/autodesk/mayaVERSION/bin/mayapy tests/runTests.py tests/test/test_api/tes
 On Windows run:
 ```cmd
 > CD <project root>
+
+REM Using convenience test scripts:
+> scripts\test_mmSolver_windows64_maya2024.bat
+REM We can test specific files like this:
+> scripts\test_mmSolver_windows64_maya2024.bat tests\test\test_api\test_attribute.py
+REM Run all API tests:
+> scripts\test_mmSolver_windows64_maya2024.bat tests\test\test_api\
+
+REM Manual execution:
 > "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy" tests\runTests.py > tests.log
 REM We can test specific files like this:
 > "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy" tests\runTests.py tests\test\test_api\test_attribute.py > tests.log

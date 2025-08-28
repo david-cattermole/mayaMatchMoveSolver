@@ -237,3 +237,52 @@ For details of building the project, please see
 [BUILD_LINUX.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD_LINUX.md)
 or
 [BUILD_WINDOWS.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD_WINDOWS.md).
+
+# Testing mmSolver
+
+After building mmSolver, you can run the test suite to verify everything is
+working correctly.
+
+## Test Scripts
+
+Convenience test scripts are provided for easy testing:
+
+| Test Script Name                      | Operating System |
+| ------------                          | -----------      |
+| test_mmSolver_linux_mayaXXXX.bash     | Linux            |
+| test_mmSolver_windows64_mayaXXXX.bat  | Windows          |
+
+## Running Tests
+
+On Linux:
+```commandline
+# Go to root of project directory.
+$ cd <project root>
+
+# Run full test suite for Maya 2024
+$ bash scripts/test_mmSolver_linux_maya2024.bash
+
+# Run specific test file
+$ bash scripts/test_mmSolver_linux_maya2024.bash tests/test/test_api/test_solve_robotArm.py
+
+# Run all API tests
+$ bash scripts/test_mmSolver_linux_maya2024.bash tests/test/test_api/
+```
+
+On Windows:
+```cmd
+:: Go to root of project directory.
+> CD <project root>
+
+:: Run full test suite for Maya 2024
+> scripts\test_mmSolver_windows64_maya2024.bat
+
+:: Run specific test file
+> scripts\test_mmSolver_windows64_maya2024.bat tests\test\test_api\test_solve_robotArm.py
+
+:: Run all API tests
+> scripts\test_mmSolver_windows64_maya2024.bat tests\test\test_api\
+```
+
+For more information about testing, see the Testing section in
+[tests/README.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/tests/README.md).

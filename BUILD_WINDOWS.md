@@ -135,11 +135,25 @@ The easiest way to clean build files is using make targets:
 > make clean_mmSolver_2023
 > make clean_mmSolver_2025
 > make clean_mmSolver_2026
+
+:: Clean OpenColorIO build files for Maya 2024
+> make clean_openColorIO_2024
+
+:: Clean OpenColorIO for other Maya versions
+> make clean_openColorIO_2018
+> make clean_openColorIO_2019
+> make clean_openColorIO_2020
+> make clean_openColorIO_2022
+> make clean_openColorIO_2023
+> make clean_openColorIO_2025
+> make clean_openColorIO_2026
 ```
 
 ## Direct Script Execution
 
 You can also run the clean scripts directly:
+
+### mmSolver Clean Scripts
 
 ```cmd
 :: Clean for Maya 2024
@@ -155,24 +169,49 @@ You can also run the clean scripts directly:
 > scripts\clean_mmSolver_windows64_maya2026.bat
 ```
 
+### OpenColorIO Clean Scripts
+
+```cmd
+:: Clean OpenColorIO for Maya 2024
+> scripts\clean_openColorIO_windows64_maya2024.bat
+
+:: Clean for other versions
+> scripts\clean_openColorIO_windows64_maya2018.bat
+> scripts\clean_openColorIO_windows64_maya2019.bat
+> scripts\clean_openColorIO_windows64_maya2020.bat
+> scripts\clean_openColorIO_windows64_maya2022.bat
+> scripts\clean_openColorIO_windows64_maya2023.bat
+> scripts\clean_openColorIO_windows64_maya2025.bat
+> scripts\clean_openColorIO_windows64_maya2026.bat
+```
+
 ## Custom Build Directory Cleaning
 
 If you set a custom build directory using `BUILD_DIR_BASE`, you can clean it the
 same way:
 
 ```cmd
-:: Set a custom build directory and clean
+:: Set a custom build directory and clean mmSolver
 > SET BUILD_DIR_BASE=D:\custom\build\path
 > make clean_mmSolver_2024
+
+:: Clean OpenColorIO with custom build directory
+> SET BUILD_DIR_BASE=D:\custom\build\path
+> make clean_openColorIO_2024
 
 :: Or using direct script execution
 > SET BUILD_DIR_BASE=D:\custom\build\path
 > scripts\clean_mmSolver_windows64_maya2024.bat
+
+> SET BUILD_DIR_BASE=D:\custom\build\path
+> scripts\clean_openColorIO_windows64_maya2024.bat
 ```
 
 ## What Gets Cleaned
 
-The clean scripts remove only mmSolver-specific build directories:
+### mmSolver Clean Scripts
+
+The mmSolver clean scripts remove only mmSolver-specific build directories:
 
 - `%BUILD_DIR_BASE%\build_mmsolver\cmake_windows64_maya*_Release\`
 - `%BUILD_DIR_BASE%\build_mmsolver\python_venv_windows64_maya*\`
@@ -180,6 +219,14 @@ The clean scripts remove only mmSolver-specific build directories:
 
 **Important:** OpenColorIO dependencies and other third-party libraries in the
 `build_opencolorio\` directory are preserved.
+
+### OpenColorIO Clean Scripts
+
+The OpenColorIO clean scripts remove OpenColorIO-specific build directories:
+
+- `%BUILD_DIR_BASE%\build_opencolorio\`
+
+**Important:** mmSolver build artifacts are preserved when cleaning OpenColorIO.
 
 ## Complete Example Workflow
 
@@ -196,6 +243,9 @@ REM Run tests
 
 REM Clean build files when done
 > make clean_mmSolver_2024
+
+REM Clean OpenColorIO if needed (frees significant disk space)
+> make clean_openColorIO_2024
 ```
 
 # Build Release Packages from Scratch

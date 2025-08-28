@@ -13,7 +13,8 @@
 .PHONY: help \
 	build_2018 build_2019 build_2020 build_2022 build_2023 build_2024 build_2025 build_2026 \
 	test_2018 test_2019 test_2020 test_2022 test_2023 test_2024 test_2025 test_2026 \
-	clean_mmSolver_2018 clean_mmSolver_2019 clean_mmSolver_2020 clean_mmSolver_2022 clean_mmSolver_2023 clean_mmSolver_2024 clean_mmSolver_2025 clean_mmSolver_2026
+	clean_mmSolver_2018 clean_mmSolver_2019 clean_mmSolver_2020 clean_mmSolver_2022 clean_mmSolver_2023 clean_mmSolver_2024 clean_mmSolver_2025 clean_mmSolver_2026 \
+	clean_openColorIO_2018 clean_openColorIO_2019 clean_openColorIO_2020 clean_openColorIO_2022 clean_openColorIO_2023 clean_openColorIO_2024 clean_openColorIO_2025 clean_openColorIO_2026
 
 # Default target
 help:
@@ -48,12 +49,21 @@ help:
 	@echo "  clean_mmSolver_2024     Clean mmSolver build for Maya 2024"
 	@echo "  clean_mmSolver_2025     Clean mmSolver build for Maya 2025"
 	@echo "  clean_mmSolver_2026     Clean mmSolver build for Maya 2026"
+	@echo "  clean_openColorIO_2018  Clean OpenColorIO build for Maya 2018"
+	@echo "  clean_openColorIO_2019  Clean OpenColorIO build for Maya 2019"
+	@echo "  clean_openColorIO_2020  Clean OpenColorIO build for Maya 2020"
+	@echo "  clean_openColorIO_2022  Clean OpenColorIO build for Maya 2022"
+	@echo "  clean_openColorIO_2023  Clean OpenColorIO build for Maya 2023"
+	@echo "  clean_openColorIO_2024  Clean OpenColorIO build for Maya 2024"
+	@echo "  clean_openColorIO_2025  Clean OpenColorIO build for Maya 2025"
+	@echo "  clean_openColorIO_2026  Clean OpenColorIO build for Maya 2026"
 	@echo ""
 	@echo "Examples:"
 	@echo "  make build_2024"
 	@echo "  make test_2024"
 	@echo "  make test_2024 tests/test/test_api/test_solve_robotArm.py"
 	@echo "  make clean_mmSolver_2024"
+	@echo "  make clean_openColorIO_2024"
 
 # Build targets
 build_2018:
@@ -129,3 +139,28 @@ clean_mmSolver_2025:
 
 clean_mmSolver_2026:
 	bash scripts/clean_mmSolver_linux_maya2026.bash
+
+# OpenColorIO clean targets
+clean_openColorIO_2018:
+	bash scripts/clean_openColorIO_linux_maya2018.bash
+
+clean_openColorIO_2019:
+	bash scripts/clean_openColorIO_linux_maya2019.bash
+
+clean_openColorIO_2020:
+	bash scripts/clean_openColorIO_linux_maya2020.bash
+
+clean_openColorIO_2022:
+	bash scripts/clean_openColorIO_linux_maya2022.bash
+
+clean_openColorIO_2023:
+	bash scripts/clean_openColorIO_linux_maya2023.bash
+
+clean_openColorIO_2024:
+	bash scripts/clean_openColorIO_linux_maya2024.bash
+
+clean_openColorIO_2025:
+	bash scripts/clean_openColorIO_linux_maya2025.bash
+
+clean_openColorIO_2026:
+	bash scripts/clean_openColorIO_linux_maya2026.bash

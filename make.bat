@@ -42,6 +42,16 @@ if "%1" == "clean_mmSolver_2024" goto clean_mmSolver_2024
 if "%1" == "clean_mmSolver_2025" goto clean_mmSolver_2025
 if "%1" == "clean_mmSolver_2026" goto clean_mmSolver_2026
 
+REM OpenColorIO Clean targets
+if "%1" == "clean_openColorIO_2018" goto clean_openColorIO_2018
+if "%1" == "clean_openColorIO_2019" goto clean_openColorIO_2019
+if "%1" == "clean_openColorIO_2020" goto clean_openColorIO_2020
+if "%1" == "clean_openColorIO_2022" goto clean_openColorIO_2022
+if "%1" == "clean_openColorIO_2023" goto clean_openColorIO_2023
+if "%1" == "clean_openColorIO_2024" goto clean_openColorIO_2024
+if "%1" == "clean_openColorIO_2025" goto clean_openColorIO_2025
+if "%1" == "clean_openColorIO_2026" goto clean_openColorIO_2026
+
 echo Unknown target: %1
 goto help
 
@@ -78,11 +88,22 @@ echo   clean_mmSolver_2024     Clean mmSolver build for Maya 2024
 echo   clean_mmSolver_2025     Clean mmSolver build for Maya 2025
 echo   clean_mmSolver_2026     Clean mmSolver build for Maya 2026
 echo.
+echo Clean OpenColorIO targets:
+echo   clean_openColorIO_2018  Clean OpenColorIO build for Maya 2018
+echo   clean_openColorIO_2019  Clean OpenColorIO build for Maya 2019
+echo   clean_openColorIO_2020  Clean OpenColorIO build for Maya 2020
+echo   clean_openColorIO_2022  Clean OpenColorIO build for Maya 2022
+echo   clean_openColorIO_2023  Clean OpenColorIO build for Maya 2023
+echo   clean_openColorIO_2024  Clean OpenColorIO build for Maya 2024
+echo   clean_openColorIO_2025  Clean OpenColorIO build for Maya 2025
+echo   clean_openColorIO_2026  Clean OpenColorIO build for Maya 2026
+echo.
 echo Examples:
 echo   make build_2024
 echo   make test_2024
 echo   make test_2024 tests\test\test_api\test_solve_robotArm.py
 echo   make clean_mmSolver_2024
+echo   make clean_openColorIO_2024
 goto end
 
 REM Build targets
@@ -190,6 +211,39 @@ goto end
 
 :clean_mmSolver_2026
 call scripts\clean_mmSolver_windows64_maya2026.bat
+goto end
+
+REM OpenColorIO Clean targets
+:clean_openColorIO_2018
+call scripts\clean_openColorIO_windows64_maya2018.bat
+goto end
+
+:clean_openColorIO_2019
+call scripts\clean_openColorIO_windows64_maya2019.bat
+goto end
+
+:clean_openColorIO_2020
+call scripts\clean_openColorIO_windows64_maya2020.bat
+goto end
+
+:clean_openColorIO_2022
+call scripts\clean_openColorIO_windows64_maya2022.bat
+goto end
+
+:clean_openColorIO_2023
+call scripts\clean_openColorIO_windows64_maya2023.bat
+goto end
+
+:clean_openColorIO_2024
+call scripts\clean_openColorIO_windows64_maya2024.bat
+goto end
+
+:clean_openColorIO_2025
+call scripts\clean_openColorIO_windows64_maya2025.bat
+goto end
+
+:clean_openColorIO_2026
+call scripts\clean_openColorIO_windows64_maya2026.bat
 goto end
 
 :end

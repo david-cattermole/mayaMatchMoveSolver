@@ -17,6 +17,7 @@ python/mmSolver/constant.py
 docs/source/conf.py
 compile_commands.json
 tools/lensdistortion/tests/test_output/*.exr
+target/*
 
 test*.pstat
 test*.txt

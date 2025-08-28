@@ -104,6 +104,97 @@ have build for.
 For more information about testing, see the Testing section in
 [DEVELOPER.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/DEVELOPER.md).
 
+# Cleaning Build Files
+
+After building mmSolver on Linux, you may want to clean the build directories to
+free up disk space or prepare for a clean build. The clean scripts remove only
+the mmSolver-specific build artifacts while preserving OpenColorIO and other
+dependencies.
+
+## Using Make Targets
+
+The easiest way to clean build files is using make targets:
+
+```commandline
+# Go to root of project directory
+$ cd <project root>
+
+# Clean mmSolver build files for Maya 2024
+$ make clean_mmSolver_2024
+
+# Clean for other Maya versions
+$ make clean_mmSolver_2018
+$ make clean_mmSolver_2019
+$ make clean_mmSolver_2020
+$ make clean_mmSolver_2022
+$ make clean_mmSolver_2023
+$ make clean_mmSolver_2025
+$ make clean_mmSolver_2026
+```
+
+## Direct Script Execution
+
+You can also run the clean scripts directly:
+
+```commandline
+# Clean for Maya 2024
+$ bash scripts/clean_mmSolver_linux_maya2024.bash
+
+# Clean for other versions
+$ bash scripts/clean_mmSolver_linux_maya2018.bash
+$ bash scripts/clean_mmSolver_linux_maya2019.bash
+$ bash scripts/clean_mmSolver_linux_maya2020.bash
+$ bash scripts/clean_mmSolver_linux_maya2022.bash
+$ bash scripts/clean_mmSolver_linux_maya2023.bash
+$ bash scripts/clean_mmSolver_linux_maya2025.bash
+$ bash scripts/clean_mmSolver_linux_maya2026.bash
+```
+
+## Custom Build Directory Cleaning
+
+If you set a custom build directory using `BUILD_DIR_BASE`, you can clean it the
+same way:
+
+```bash
+# Clean with custom build directory
+$ export BUILD_DIR_BASE=/path/to/custom/build/directory
+$ make clean_mmSolver_2024
+
+# Or set it inline with the clean command
+$ BUILD_DIR_BASE=/path/to/custom/build/directory make clean_mmSolver_2024
+
+# Using direct script execution
+$ BUILD_DIR_BASE=/path/to/custom/build/directory bash scripts/clean_mmSolver_linux_maya2024.bash
+```
+
+## What Gets Cleaned
+
+The clean scripts remove only mmSolver-specific build directories:
+
+- `${BUILD_DIR_BASE}/build_mmsolver/cmake_linux_maya*_Release/`
+- `${BUILD_DIR_BASE}/build_mmsolver/python_venv_linux_maya*/`
+- `${BUILD_DIR_BASE}/build_mmsolver/rust_linux_maya*/`
+
+**Important:** OpenColorIO dependencies and other third-party libraries in the
+`build_opencolorio/` directory are preserved.
+
+## Complete Example Workflow
+
+Here's an example showing build, test, and clean workflow:
+
+```commandline
+$ cd <project root>
+
+# Build for Maya 2024
+$ make build_2024
+
+# Run tests
+$ make test_2024
+
+# Clean build files when done
+$ make clean_mmSolver_2024
+```
+
 # Build Release Packages from Scratch
 
 NOTE: It is recommended to use the Docker containers for building

@@ -211,7 +211,7 @@ $ cd <project root>
 
 # Build mmSolver, compile UI files, compile Maya plug-in, build
 # documentation, create module and install to home directory.
-$ bash scripts/build_mmSolver_linux_mayaXXXX.bash
+$ make build_XXXX
 ```
 
 On Windows:
@@ -221,7 +221,7 @@ On Windows:
 
 :: Build mmSolver, compile UI files, compile Maya plug-in, build
 :: documentation, create module and install to home directory.
-> scripts/build_mmSolver_windows64_mayaXXXX.bat
+> make build_XXXX
 ```
 
 # Building mmSolver
@@ -260,13 +260,13 @@ On Linux:
 $ cd <project root>
 
 # Run full test suite for Maya 2024
-$ bash scripts/test_mmSolver_linux_maya2024.bash
+$ make test_2024
 
 # Run specific test file
-$ bash scripts/test_mmSolver_linux_maya2024.bash tests/test/test_api/test_solve_robotArm.py
+$ make test_2024 tests/test/test_api/test_solve_robotArm.py
 
 # Run all API tests
-$ bash scripts/test_mmSolver_linux_maya2024.bash tests/test/test_api/
+$ make test_2024 tests/test/test_api/
 ```
 
 On Windows:
@@ -275,13 +275,13 @@ On Windows:
 > CD <project root>
 
 :: Run full test suite for Maya 2024
-> scripts\test_mmSolver_windows64_maya2024.bat
+> make test_2024
 
 :: Run specific test file
-> scripts\test_mmSolver_windows64_maya2024.bat tests\test\test_api\test_solve_robotArm.py
+> make test_2024 tests\test\test_api\test_solve_robotArm.py
 
 :: Run all API tests
-> scripts\test_mmSolver_windows64_maya2024.bat tests\test\test_api\
+> make test_2024 tests\test\test_api\
 ```
 
 For more information about testing, see the Testing section in

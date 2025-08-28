@@ -48,7 +48,7 @@ and configure the CMake variables.
 Run these commands, on Windows:
 ```cmd
 > CD <project root>
-> scripts\build_mmSolver_windows64_mayaXXXX.bat
+> make build_XXXX
 
 # Run tests (optional, but encouraged)
 > CD <project root>
@@ -93,6 +93,9 @@ expected.
 On Windows:
 ```cmd
 > CD <project root>
+> make test_VERSION
+
+# Or run tests directly with mayapy.
 > "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy.exe" tests\runTests.py > tests.log
 ```
 

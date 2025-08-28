@@ -48,7 +48,7 @@ and configure the CMake variables.
 Run these commands, on Linux:
 ```commandline
 $ cd <project root>
-$ ./scripts/build_mmSolver_linux_mayaXXXX.bash
+$ make build_XXXX
 
 # Run tests (optional, but encouraged)
 $ cd <project root>
@@ -92,6 +92,9 @@ expected.
 On Linux:
 ```commandline
 $ cd <project root>
+$ make test_VERSION
+
+# Or run tests directly with mayapy.
 $ /usr/autodesk/mayaVERSION/bin/mayapy tests/runTests.py
 ```
 

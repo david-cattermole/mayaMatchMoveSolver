@@ -314,8 +314,10 @@ fn calculate_derivatives_identity_pop1() -> Result<()> {
     let output_dir = find_output_dir()?;
     let in_file_path =
         construct_input_file_path(&data_dir, "identity_pop1.chan")?;
-    let out_file_path =
-        construct_output_file_path(&output_dir, "derivatives_identity_pop1.png")?;
+    let out_file_path = construct_output_file_path(
+        &output_dir,
+        "derivatives_identity_pop1.png",
+    )?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
@@ -360,8 +362,10 @@ fn calculate_derivatives_identity_pop2() -> Result<()> {
     let output_dir = find_output_dir()?;
     let in_file_path =
         construct_input_file_path(&data_dir, "identity_pop2.chan")?;
-    let out_file_path =
-        construct_output_file_path(&output_dir, "derivatives_identity_pop2.png")?;
+    let out_file_path = construct_output_file_path(
+        &output_dir,
+        "derivatives_identity_pop2.png",
+    )?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
@@ -406,8 +410,10 @@ fn calculate_derivatives_identity_pop3() -> Result<()> {
     let output_dir = find_output_dir()?;
     let in_file_path =
         construct_input_file_path(&data_dir, "identity_pop3.chan")?;
-    let out_file_path =
-        construct_output_file_path(&output_dir, "derivatives_identity_pop3.png")?;
+    let out_file_path = construct_output_file_path(
+        &output_dir,
+        "derivatives_identity_pop3.png",
+    )?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
@@ -452,8 +458,10 @@ fn calculate_derivatives_identity_pop4() -> Result<()> {
     let output_dir = find_output_dir()?;
     let in_file_path =
         construct_input_file_path(&data_dir, "identity_pop4.chan")?;
-    let out_file_path =
-        construct_output_file_path(&output_dir, "derivatives_identity_pop4.png")?;
+    let out_file_path = construct_output_file_path(
+        &output_dir,
+        "derivatives_identity_pop4.png",
+    )?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
@@ -499,7 +507,7 @@ fn calculate_derivatives_bounce_5_up_down_raw() -> Result<()> {
     let in_file_path =
         construct_input_file_path(&data_dir, "bounce_5_up_down_raw.chan")?;
     let out_file_path = construct_output_file_path(
-        &data_dir,
+        &output_dir,
         "derivatives_bounce_5_up_down_raw.png",
     )?;
 
@@ -649,7 +657,7 @@ fn calculate_derivatives_bounce_5_up_down_variance3() -> Result<()> {
         "bounce_5_up_down_variance3.chan",
     )?;
     let out_file_path = construct_output_file_path(
-        &data_dir,
+        &output_dir,
         "derivatives_bounce_5_up_down_variance3.png",
     )?;
 
@@ -699,7 +707,7 @@ fn calculate_derivatives_bounce_5_up_down_variance4() -> Result<()> {
         "bounce_5_up_down_variance4.chan",
     )?;
     let out_file_path = construct_output_file_path(
-        &data_dir,
+        &output_dir,
         "derivatives_bounce_5_up_down_variance4.png",
     )?;
 

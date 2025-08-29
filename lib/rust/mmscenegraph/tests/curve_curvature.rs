@@ -33,6 +33,7 @@ use crate::common::chan_data_filter_only_y;
 use crate::common::construct_input_file_path;
 use crate::common::construct_output_file_path;
 use crate::common::find_data_dir;
+use crate::common::find_output_dir;
 // use crate::common::print_chan_data;
 use crate::common::print_curvature_arrays;
 use crate::common::read_chan_file;
@@ -49,9 +50,9 @@ fn calculate_curvature1() -> Result<()> {
     let chart_title = "calculate_curvature1";
     let chart_resolution = CHART_RESOLUTION;
 
-    let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "calculate_curvature1.png")?;
+        construct_output_file_path(&output_dir, "calculate_curvature1.png")?;
 
     // Constant speed, upwards.
     let x_values = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
@@ -118,9 +119,9 @@ fn calculate_curvature2() -> Result<()> {
     let chart_title = "calculate_curvature2";
     let chart_resolution = CHART_RESOLUTION;
 
-    let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "calculate_curvature2.png")?;
+        construct_output_file_path(&output_dir, "calculate_curvature2.png")?;
 
     // Constant velocity, downwards.
     let x_values = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
@@ -187,9 +188,9 @@ fn calculate_curvature3() -> Result<()> {
     let chart_title = "calculate_curvature3";
     let chart_resolution = CHART_RESOLUTION;
 
-    let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "calculate_curvature3.png")?;
+        construct_output_file_path(&output_dir, "calculate_curvature3.png")?;
 
     // Variable velocity.
     let x_values = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
@@ -242,9 +243,9 @@ fn calculate_curvature4() -> Result<()> {
     let chart_title = "calculate_curvature4";
     let chart_resolution = CHART_RESOLUTION;
 
-    let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "calculate_curvature4.png")?;
+        construct_output_file_path(&output_dir, "calculate_curvature4.png")?;
 
     let x_values = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
     let y_values = vec![0.0, 1.0, 4.0, 9.0, 16.0, 25.0, 36.0]; // f(x) = x^2
@@ -307,10 +308,11 @@ fn calculate_curvature_identity_pop1() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path =
         construct_input_file_path(&data_dir, "identity_pop1.chan")?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "curvature_identity_pop1.png")?;
+        construct_output_file_path(&output_dir, "curvature_identity_pop1.png")?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
@@ -354,10 +356,11 @@ fn calculate_curvature_identity_pop2() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path =
         construct_input_file_path(&data_dir, "identity_pop2.chan")?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "curvature_identity_pop2.png")?;
+        construct_output_file_path(&output_dir, "curvature_identity_pop2.png")?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
@@ -401,10 +404,11 @@ fn calculate_curvature_identity_pop3() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path =
         construct_input_file_path(&data_dir, "identity_pop3.chan")?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "curvature_identity_pop3.png")?;
+        construct_output_file_path(&output_dir, "curvature_identity_pop3.png")?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
@@ -448,10 +452,11 @@ fn calculate_curvature_identity_pop4() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path =
         construct_input_file_path(&data_dir, "identity_pop4.chan")?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "curvature_identity_pop4.png")?;
+        construct_output_file_path(&output_dir, "curvature_identity_pop4.png")?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
@@ -495,10 +500,11 @@ fn calculate_curvature_bounce_5_up_down_raw() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path =
         construct_input_file_path(&data_dir, "bounce_5_up_down_raw.chan")?;
     let out_file_path = construct_output_file_path(
-        &data_dir,
+        &output_dir,
         "curvature_bounce_5_up_down_raw.png",
     )?;
 
@@ -544,12 +550,13 @@ fn calculate_curvature_bounce_5_up_down_variance1() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(
         &data_dir,
         "bounce_5_up_down_variance1.chan",
     )?;
     let out_file_path = construct_output_file_path(
-        &data_dir,
+        &output_dir,
         "curvature_bounce_5_up_down_variance1.png",
     )?;
 
@@ -595,12 +602,13 @@ fn calculate_curvature_bounce_5_up_down_variance2() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(
         &data_dir,
         "bounce_5_up_down_variance2.chan",
     )?;
     let out_file_path = construct_output_file_path(
-        &data_dir,
+        &output_dir,
         "curvature_bounce_5_up_down_variance2.png",
     )?;
 
@@ -646,12 +654,13 @@ fn calculate_curvature_bounce_5_up_down_variance3() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(
         &data_dir,
         "bounce_5_up_down_variance3.chan",
     )?;
     let out_file_path = construct_output_file_path(
-        &data_dir,
+        &output_dir,
         "curvature_bounce_5_up_down_variance3.png",
     )?;
 
@@ -697,12 +706,13 @@ fn calculate_curvature_bounce_5_up_down_variance4() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(
         &data_dir,
         "bounce_5_up_down_variance4.chan",
     )?;
     let out_file_path = construct_output_file_path(
-        &data_dir,
+        &output_dir,
         "curvature_bounce_5_up_down_variance4.png",
     )?;
 

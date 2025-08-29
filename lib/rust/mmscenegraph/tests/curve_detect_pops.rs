@@ -33,6 +33,7 @@ use crate::common::chan_data_filter_only_y;
 use crate::common::construct_input_file_path;
 use crate::common::construct_output_file_path;
 use crate::common::find_data_dir;
+use crate::common::find_output_dir;
 use crate::common::print_actual_pops;
 use crate::common::print_chan_data;
 use crate::common::read_chan_file;
@@ -89,10 +90,11 @@ fn pops_common(
     Vec<(Real, Real)>,
 )> {
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path_pop =
         construct_input_file_path(&data_dir, in_pop_file_name)?;
     let in_file_path = construct_input_file_path(&data_dir, in_raw_file_name)?;
-    let out_file_path = construct_output_file_path(&data_dir, out_file_name)?;
+    let out_file_path = construct_output_file_path(&output_dir, out_file_name)?;
 
     let data_pop = read_chan_file(&in_file_path_pop.as_os_str())?;
     let data_raw = read_chan_file(&in_file_path.as_os_str())?;

@@ -33,6 +33,7 @@ use crate::common::chan_data_filter_only_y;
 use crate::common::construct_input_file_path;
 use crate::common::construct_output_file_path;
 use crate::common::find_data_dir;
+use crate::common::find_output_dir;
 use crate::common::read_chan_file;
 use crate::common::save_chart_curves_compare_two;
 use crate::common::CHART_RESOLUTION;
@@ -46,12 +47,13 @@ fn curve_smooth_gaussian1() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(
         &data_dir,
         "bounce_5_up_down_variance4.chan",
     )?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "curve_smooth_gaussian1.png")?;
+        construct_output_file_path(&output_dir, "curve_smooth_gaussian1.png")?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     let x_values = chan_data_filter_only_x(&data);
@@ -90,12 +92,13 @@ fn curve_smooth_gaussian2() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(
         &data_dir,
         "bounce_5_up_down_variance4.chan",
     )?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "curve_smooth_gaussian2.png")?;
+        construct_output_file_path(&output_dir, "curve_smooth_gaussian2.png")?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     let x_values = chan_data_filter_only_x(&data);
@@ -131,12 +134,13 @@ fn curve_smooth_gaussian5() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(
         &data_dir,
         "bounce_5_up_down_variance4.chan",
     )?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "curve_smooth_gaussian5.png")?;
+        construct_output_file_path(&output_dir, "curve_smooth_gaussian5.png")?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     let x_values = chan_data_filter_only_x(&data);
@@ -172,12 +176,13 @@ fn curve_smooth_gaussian10() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(
         &data_dir,
         "bounce_5_up_down_variance4.chan",
     )?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "curve_smooth_gaussian10.png")?;
+        construct_output_file_path(&output_dir, "curve_smooth_gaussian10.png")?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     let x_values = chan_data_filter_only_x(&data);
@@ -213,12 +218,13 @@ fn curve_smooth_gaussian25() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(
         &data_dir,
         "bounce_5_up_down_variance4.chan",
     )?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "curve_smooth_gaussian25.png")?;
+        construct_output_file_path(&output_dir, "curve_smooth_gaussian25.png")?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     let x_values = chan_data_filter_only_x(&data);
@@ -254,12 +260,13 @@ fn curve_smooth_gaussian50() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(
         &data_dir,
         "bounce_5_up_down_variance4.chan",
     )?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "curve_smooth_gaussian50.png")?;
+        construct_output_file_path(&output_dir, "curve_smooth_gaussian50.png")?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     let x_values = chan_data_filter_only_x(&data);
@@ -295,12 +302,13 @@ fn curve_smooth_gaussian100() -> Result<()> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(
         &data_dir,
         "bounce_5_up_down_variance4.chan",
     )?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "curve_smooth_gaussian100.png")?;
+        construct_output_file_path(&output_dir, "curve_smooth_gaussian100.png")?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     let x_values = chan_data_filter_only_x(&data);

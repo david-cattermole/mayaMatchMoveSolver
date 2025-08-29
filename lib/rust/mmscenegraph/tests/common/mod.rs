@@ -75,6 +75,39 @@ pub fn find_data_dir() -> Result<PathBuf> {
 }
 
 #[allow(dead_code)]
+pub fn find_output_dir() -> Result<PathBuf> {
+    // "<project_root>/target/debug/deps/curve_curvature-a1543a4f123cfc9f"
+    let mut directory = PathBuf::from(std::env::current_exe().unwrap());
+
+    // "<project_root>/target/debug/deps"
+    assert!(directory.pop());
+
+    // "<project_root>/target/debug"
+    assert!(directory.pop());
+
+    // "<project_root>/target"
+    assert!(directory.pop());
+
+    // "<project_root>"
+    assert!(directory.pop());
+
+    // "<project_root>/lib/rust/mmscenegraph/tests/output"
+    directory.push("lib");
+    directory.push("rust");
+    directory.push("mmscenegraph");
+    directory.push("tests");
+    directory.push("output");
+
+    // Create the output directory if it doesn't exist
+    if !directory.exists() {
+        std::fs::create_dir_all(&directory)
+            .map_err(|e| anyhow::anyhow!("Failed to create output directory {:?}: {}", directory, e))?;
+    }
+
+    Ok(directory)
+}
+
+#[allow(dead_code)]
 pub fn construct_input_file_path(
     base_dir: &Path,
     file_name: &str,

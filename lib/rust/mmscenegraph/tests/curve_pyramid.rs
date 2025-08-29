@@ -33,6 +33,7 @@ use crate::common::chan_data_filter_only_y;
 use crate::common::construct_input_file_path;
 use crate::common::construct_output_file_path;
 use crate::common::find_data_dir;
+use crate::common::find_output_dir;
 // use crate::common::print_chan_data;
 use crate::common::print_curvature_arrays;
 use crate::common::read_chan_file;
@@ -51,8 +52,9 @@ fn curve_pyramid_common(
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
+    let output_dir = find_output_dir()?;
     let in_file_path = construct_input_file_path(&data_dir, in_file_name)?;
-    let out_file_path = construct_output_file_path(&data_dir, out_file_name)?;
+    let out_file_path = construct_output_file_path(&output_dir, out_file_name)?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);

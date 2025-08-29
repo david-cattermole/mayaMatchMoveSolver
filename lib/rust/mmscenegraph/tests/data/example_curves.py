@@ -17,7 +17,7 @@ def _sample_attr(start_frame, end_frame, node_attr):
 
 
 def _write_data(name, data, output_directory):
-    output_dir = os.path.expandvars(output_directory)
+    output_dir = os.path.expanduser(output_directory)
     file_path = os.path.join(output_dir, name + '.chan')
     with open(file_path, 'w') as f:
         for sample in data:
@@ -52,7 +52,7 @@ def _set_sample_attr(node_attr, data):
 
 
 output_directory = (
-    '${USERPROFILE}/dev/mayaMatchMoveSolver/lib/rust/mmscenegraph/tests/data'
+    '~/dev/mayaMatchMoveSolver/lib/rust/mmscenegraph/tests/data'
 )
 
 start_frame = 1001

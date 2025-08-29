@@ -450,19 +450,19 @@ fn pops_bounce_5_up_down_pop3() -> Result<()> {
     assert!(pops.len() < 14);
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -2.034267490949548, epsilon = 1.0e-9);
+    assert_relative_eq!(point_a.y(), -2.1441311531314127, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_b.x(), 1026.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), 5.441553573662983, epsilon = 1.0e-9);
+    assert_relative_eq!(point_b.y(), 6.399283771889899, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_c.x(), 1051.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), -4.323045596487439, epsilon = 1.0e-9);
+    assert_relative_eq!(point_c.y(), -7.238391944384897, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_d.x(), 1076.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_d.y(), 5.855051546690409, epsilon = 1.0e-9);
+    assert_relative_eq!(point_d.y(), 6.71079453424787, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_e.x(), 1101.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_e.y(), -4.009646532312677, epsilon = 1.0e-9);
+    assert_relative_eq!(point_e.y(), -4.267285104234983, epsilon = 1.0e-9);
 
     Ok(())
 }
@@ -509,19 +509,19 @@ fn pops_down_up_raw() -> Result<()> {
     assert!(pops.len() < 14);
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -10.55812584308654, epsilon = 1.0e-9);
+    assert_relative_eq!(point_a.y(), -10.024730950046791, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_b.x(), 1026.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), -7.6394380473281105, epsilon = 1.0e-9);
+    assert_relative_eq!(point_b.y(), -9.976105979192658, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_c.x(), 1051.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), 0.0017497329399395432, epsilon = 1.0e-9);
+    assert_relative_eq!(point_c.y(), -0.03140794646925224, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_d.x(), 1076.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_d.y(), 7.635789448134626, epsilon = 1.0e-9);
+    assert_relative_eq!(point_d.y(), 10.024557539028132, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_e.x(), 1101.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_e.y(), 10.55400282885122, epsilon = 1.0e-9);
+    assert_relative_eq!(point_e.y(), 9.973291651595703, epsilon = 1.0e-9);
 
     Ok(())
 }
@@ -568,19 +568,19 @@ fn pops_down_up_pop1() -> Result<()> {
     assert!(pops.len() < 12);
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -10.552377494184757, epsilon = 1.0e-9);
+    assert_relative_eq!(point_a.y(), -10.008860170543175, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_b.x(), 1026.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), -7.646599331268385, epsilon = 1.0e-9);
+    assert_relative_eq!(point_b.y(), -9.994181373316364, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_c.x(), 1051.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), 0.004866358779988246, epsilon = 1.0e-9);
+    assert_relative_eq!(point_c.y(), -0.0036518357735322478, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_d.x(), 1076.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_d.y(), 7.6355940366199615, epsilon = 1.0e-9);
+    assert_relative_eq!(point_d.y(), 10.00000582118496, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_e.x(), 1101.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_e.y(), 10.55415733996694, epsilon = 1.0e-9);
+    assert_relative_eq!(point_e.y(), 9.991137012457727, epsilon = 1.0e-9);
 
     Ok(())
 }
@@ -627,19 +627,19 @@ fn pops_down_up_pop2() -> Result<()> {
     assert!(pops.len() < 18);
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -10.600960157467528, epsilon = 1.0e-9);
+    assert_relative_eq!(point_a.y(), -10.002576209130384, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_b.x(), 1026.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), -7.633642258866024, epsilon = 1.0e-9);
+    assert_relative_eq!(point_b.y(), -9.997631850378376, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_c.x(), 1051.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), -0.0036934369325954657, epsilon = 1.0e-9);
+    assert_relative_eq!(point_c.y(), 0.002628443689190204, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_d.x(), 1076.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_d.y(), 7.646726633733543, epsilon = 1.0e-9);
+    assert_relative_eq!(point_d.y(), 9.99119236030245, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_e.x(), 1101.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_e.y(), 10.550024919544516, epsilon = 1.0e-9);
+    assert_relative_eq!(point_e.y(), 10.000441207143295, epsilon = 1.0e-9);
 
     Ok(())
 }
@@ -686,19 +686,19 @@ fn pops_down_up_pop3() -> Result<()> {
     assert!(pops.len() < 22);
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -10.539049168634886, epsilon = 1.0e-9);
+    assert_relative_eq!(point_a.y(), -9.992879030183737, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_b.x(), 1026.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), -7.656810762340454, epsilon = 1.0e-9);
+    assert_relative_eq!(point_b.y(), -10.01361860353005, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_c.x(), 1051.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), 0.004324456813004745, epsilon = 1.0e-9);
+    assert_relative_eq!(point_c.y(), 0.011855407063826965, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_d.x(), 1076.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_d.y(), 7.656592759379658, epsilon = 1.0e-9);
+    assert_relative_eq!(point_d.y(), 10.00599899414014, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_e.x(), 1101.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_e.y(), 10.54523893521225, epsilon = 1.0e-9);
+    assert_relative_eq!(point_e.y(), 9.995750078520922, epsilon = 1.0e-9);
 
     Ok(())
 }

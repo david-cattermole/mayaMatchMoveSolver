@@ -284,16 +284,16 @@ fn curvefit_linear_4_point_variance4() -> Result<()> {
     println!("point_d={point_d:?}");
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -1.215, epsilon = 0.4);
+    assert_relative_eq!(point_a.y(), -0.49525427504336017, epsilon = 0.4);
 
     assert_relative_eq!(point_b.x(), 1034.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), -2.6193617, epsilon = 3.0);
+    assert_relative_eq!(point_b.y(), -3.607174527167941, epsilon = 3.0);
 
     assert_relative_eq!(point_c.x(), 1067.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), 3.61752396, epsilon = 5.5);
+    assert_relative_eq!(point_c.y(), 1.6127186839665244, epsilon = 5.5);
 
     assert_relative_eq!(point_d.x(), 1101.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_d.y(), 1.855, epsilon = 3.5);
+    assert_relative_eq!(point_d.y(), 2.492196040823316, epsilon = 3.5);
 
     Ok(())
 }

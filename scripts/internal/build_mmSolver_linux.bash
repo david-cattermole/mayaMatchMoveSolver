@@ -51,23 +51,9 @@ INSTALL_MODULE_DIR="${HOME}/maya/${MAYA_VERSION}/modules"
 # For developer use. Make ZIP packages ready to distribute to others.
 BUILD_PACKAGE=1
 
-# What directory to build the project in?
-#
-# Note: BUILD_DIR_BASE should already be set by the calling script.
-# If not, use default location.
-if [ -z "$BUILD_DIR_BASE" ]; then
-    BUILD_DIR_BASE="${PROJECT_ROOT}/.."
-fi
+# Directory configuration handled by centralised build_config_linux.bash.
 echo "Build root directory base: ${BUILD_DIR_BASE}"
-
-# OpenColorIO build dir.
-BUILD_OCIO_DIR_NAME="build_opencolorio"
-BUILD_OCIO_DIR_BASE="${BUILD_DIR_BASE}/${BUILD_OCIO_DIR_NAME}"
 echo "Build OpenColorIO directory base: ${BUILD_OCIO_DIR_BASE}"
-
-# mmSolverLibs build dir.
-BUILD_MMSOLVERLIBS_DIR_NAME="build_mmsolverlibs"
-BUILD_MMSOLVERLIBS_DIR_BASE="${BUILD_DIR_BASE}/${BUILD_MMSOLVERLIBS_DIR_NAME}"
 echo "Build mmSolverLibs directory base: ${BUILD_MMSOLVERLIBS_DIR_BASE}"
 
 # What type of build? "Release" or "Debug"?
@@ -105,27 +91,28 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PROJECT_ROOT=`readlink -f ${DIR}/../..`
 echo "Project Root: ${PROJECT_ROOT}"
 
+# Source centralised build configuration.
+source "${PROJECT_ROOT}/scripts/internal/build_config_linux.bash"
+
 # Set up Python environment.
-PYTHON_VIRTUAL_ENV_DIR_NAME="python_venv_linux_maya${MAYA_VERSION}"
+#
+# PYTHON_VIRTUAL_ENV_DIR_NAME is defined in centralised config
 source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"
 
-# mmSolver build dir (now includes mmSolverLibs).
-BUILD_MMSOLVER_DIR_NAME="build_mmsolver"
-BUILD_MMSOLVER_DIR_BASE="${BUILD_DIR_BASE}/${BUILD_MMSOLVER_DIR_NAME}"
+# Directory configuration handled by centralised config.
 echo "Build mmSolver directory base: ${BUILD_MMSOLVER_DIR_BASE}"
+echo "Build mmSolver docs directory base: ${BUILD_DOCS_DIR_BASE}"
 
-# Where to find the mmsolverlibs Rust libraries and headers (now built as part of mmSolver).
+# Where to find the mmsolverlibs Rust libraries and headers.
 MMSOLVERLIBS_ROOT="${PROJECT_ROOT}/lib"
 MMSOLVERLIBS_RUST_ROOT="${MMSOLVERLIBS_ROOT}/mmsolverlibs"
-MMSOLVERLIBS_CPP_TARGET_DIR="${BUILD_MMSOLVER_DIR_BASE}/rust_linux_maya${MAYA_VERSION}"
-MMSOLVERLIBS_LIB_DIR="${MMSOLVERLIBS_CPP_TARGET_DIR}/${BUILD_TYPE_DIR}"
-MMSOLVERLIBS_RUST_DIR="${MMSOLVERLIBS_CPP_TARGET_DIR}/${BUILD_TYPE_DIR}"
+MMSOLVERLIBS_LIB_DIR="${BUILD_MMSOLVER_RUST_DIR}/${BUILD_TYPE_DIR}"
+MMSOLVERLIBS_RUST_DIR="${BUILD_MMSOLVER_RUST_DIR}/${BUILD_TYPE_DIR}"
 
 # Paths for dependencies.
-EXTERNAL_BUILD_DIR="${BUILD_OCIO_DIR_BASE}/cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}/ext/dist"
-OCIO_INSTALL_DIR="${BUILD_OCIO_DIR_BASE}/install/maya${MAYA_VERSION}_linux/"
-OCIO_CMAKE_CONFIG_DIR="${OCIO_INSTALL_DIR}/lib64/cmake/OpenColorIO/"
-OCIO_CMAKE_FIND_MODULES_DIR="${BUILD_OCIO_DIR_BASE}/source/maya${MAYA_VERSION}_linux/${OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME}/share/cmake/modules"
+EXTERNAL_BUILD_DIR="${BUILD_OCIO_CMAKE_DIR}/ext/dist"
+OCIO_CMAKE_CONFIG_DIR="${BUILD_OCIO_INSTALL_DIR}/lib64/cmake/OpenColorIO/"
+OCIO_CMAKE_FIND_MODULES_DIR="${BUILD_OCIO_SOURCE_DIR}/${OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME}/share/cmake/modules"
 
 expat_DIR="${EXTERNAL_BUILD_DIR}/${EXPAT_RELATIVE_CMAKE_DIR}"
 expat_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include/"
@@ -171,16 +158,15 @@ MMSOLVERLIBS_CXXBRIDGE_EXE="${HOME}/.cargo/bin/cxxbridge"
 # Build mmSolverLibs Rust code first
 echo "Building mmsolverlibs Rust libraries... (${MMSOLVERLIBS_ROOT})"
 cd ${MMSOLVERLIBS_RUST_ROOT}
-${RUST_CARGO_EXE} build --release --target-dir ${MMSOLVERLIBS_CPP_TARGET_DIR}
+${RUST_CARGO_EXE} build --release --target-dir ${BUILD_MMSOLVER_RUST_DIR}
 
 # A local copy of LDPK to reduce the amount of downloads to the
 # 3DEqualizer website (LDPK doesn't have a git repo to clone from).
 LDPK_URL="${PROJECT_ROOT}/external/archives/ldpk-2.12.0.tar"
 
-# Build mmSolver project (now includes mmSolverLibs)
+# Build mmSolver project.
 cd ${BUILD_DIR_BASE}
-BUILD_DIR_NAME="cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}"
-BUILD_DIR="${BUILD_MMSOLVER_DIR_BASE}/${BUILD_DIR_NAME}"
+BUILD_DIR="${BUILD_MMSOLVER_CMAKE_DIR}"
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
@@ -215,6 +201,7 @@ ${CMAKE_EXE} \
     -DMMSOLVERLIBS_CXXBRIDGE_EXE=${MMSOLVERLIBS_CXXBRIDGE_EXE} \
     -DMMSOLVERLIBS_BUILD_TESTS=0 \
     -DMMSOLVER_DOWNLOAD_DEPENDENCIES=ON \
+    -DBUILD_DOCS_DIR_BASE=${BUILD_DOCS_DIR_BASE} \
     -Dmmsolverlibs_rust_DIR=${MMSOLVERLIBS_RUST_DIR} \
     -Dldpk_URL=${LDPK_URL} \
     -DOpenColorIO_DIR=${OCIO_CMAKE_CONFIG_DIR} \

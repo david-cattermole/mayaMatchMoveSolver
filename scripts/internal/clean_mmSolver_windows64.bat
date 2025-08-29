@@ -33,16 +33,19 @@ IF "%MAYA_VERSION%"=="" (
     exit /b 1
 )
 
-:: Build location - where to clean the project build files.
-SET BUILD_DIR_BASE=%CD%\..
+:: The root of this project.
+SET PROJECT_ROOT=%CD%
+
+:: Source centralised build configuration.
+CALL "%PROJECT_ROOT%\scripts\internal\build_config_windows64.bat"
 
 ECHO Cleaning mmSolver build directories for Maya %MAYA_VERSION%...
 ECHO Build directory base: %BUILD_DIR_BASE%
 
 :: Remove mmSolver-specific build directories.
-SET CMAKE_DIR=%BUILD_DIR_BASE%\build_mmsolver\cmake_windows64_maya%MAYA_VERSION%_Release
-SET PYTHON_VENV_DIR=%BUILD_DIR_BASE%\build_mmsolver\python_venv_windows64_maya%MAYA_VERSION%
-SET RUST_DIR=%BUILD_DIR_BASE%\build_mmsolver\rust_windows64_maya%MAYA_VERSION%
+SET CMAKE_DIR=%BUILD_MMSOLVER_CMAKE_DIR%
+SET PYTHON_VENV_DIR=%BUILD_MMSOLVER_PYTHON_VENV_DIR%
+SET RUST_DIR=%BUILD_MMSOLVER_RUST_DIR%
 
 IF EXIST "%CMAKE_DIR%" (
     ECHO Removing directory: %CMAKE_DIR%

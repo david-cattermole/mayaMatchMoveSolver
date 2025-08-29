@@ -32,8 +32,13 @@ if [ -z "$MAYA_VERSION" ]; then
     exit 1
 fi
 
-# Build location - where to clean the project build files.
-BUILD_DIR_BASE="$(pwd)/.."
+# Path to this script.
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# The root of this project.
+PROJECT_ROOT=`readlink -f ${DIR}/../..`
+
+# Source centralised build configuration.
+source "${PROJECT_ROOT}/scripts/internal/build_config_linux.bash"
 
 # The -e flag causes the script to exit as soon as one command returns
 # a non-zero exit code.
@@ -44,17 +49,11 @@ CWD=`pwd`
 echo "Cleaning OpenColorIO build directories for Maya ${MAYA_VERSION}..."
 echo "Build directory base: ${BUILD_DIR_BASE}"
 
-# OpenColorIO build directory
-OCIO_BUILD_DIR="${BUILD_DIR_BASE}/build_opencolorio"
-
-# Remove OpenColorIO-specific build directories for this Maya version
+# Remove OpenColorIO-specific build directories for this Maya version.
 BUILD_DIRS=(
-    "${OCIO_BUILD_DIR}/cmake_linux_maya${MAYA_VERSION}_Release"
-    "${OCIO_BUILD_DIR}/cmake_win64_maya${MAYA_VERSION}_Release"
-    "${OCIO_BUILD_DIR}/install/maya${MAYA_VERSION}_linux"
-    "${OCIO_BUILD_DIR}/install/maya${MAYA_VERSION}_windows64"
-    "${OCIO_BUILD_DIR}/source/maya${MAYA_VERSION}_linux"
-    "${OCIO_BUILD_DIR}/source/maya${MAYA_VERSION}_windows64"
+    "${BUILD_OCIO_CMAKE_DIR}"
+    "${BUILD_OCIO_INSTALL_DIR}"
+    "${BUILD_OCIO_SOURCE_DIR}"
 )
 
 for dir in "${BUILD_DIRS[@]}"; do

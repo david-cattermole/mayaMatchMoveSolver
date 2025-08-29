@@ -233,6 +233,13 @@ To build the project you can use the build scripts provided.
 | build_mmSolver_linux_mayaXXXX.bash    | Linux            |
 | build_mmSolver_windows64_mayaXXXX.bat | Windows          |
 
+## Custom Build Directory
+
+You can override the default build directory location by setting the
+`BUILD_DIR_BASE` environment variable before running any build script. This
+allows you to build in a custom location instead of the default parent
+directory.
+
 For details of building the project, please see
 [BUILD_LINUX.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD_LINUX.md)
 or

@@ -31,21 +31,12 @@ SETLOCAL
 SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
 
-:: What directory to build the project in?
-::
-:: Note: BUILD_DIR_BASE should already be set by the calling script.
-:: If not, use default location.
-IF "%BUILD_DIR_BASE%"=="" SET BUILD_DIR_BASE=%PROJECT_ROOT%\..
+:: Source centralised build configuration.
+CALL "%PROJECT_ROOT%\scripts\internal\build_config_windows64.bat"
+
+:: Directory configuration handled by centralised build_config_windows64.bat.
 ECHO Build root directory base: %BUILD_DIR_BASE%
-
-:: OpenColorIO build dir.
-SET BUILD_OCIO_DIR_NAME=build_opencolorio
-SET BUILD_OCIO_DIR_BASE=%BUILD_DIR_BASE%\%BUILD_OCIO_DIR_NAME%
 ECHO Build OpenColorIO directory base: %BUILD_OCIO_DIR_BASE%
-
-:: mmSolver build dir (now includes mmSolverLibs).
-SET BUILD_MMSOLVER_DIR_NAME=build_mmsolver
-SET BUILD_MMSOLVER_DIR_BASE=%BUILD_DIR_BASE%\%BUILD_MMSOLVER_DIR_NAME%
 ECHO Build mmSolver directory base: %BUILD_MMSOLVER_DIR_BASE%
 
 :: Run the Python API and Solver tests inside Maya, after a
@@ -102,27 +93,23 @@ SET MMSOLVER_BUILD_TESTS=0
 :: problems. Set to ON to enable, and OFF to disable.
 SET MMSOLVER_BUILD_VERBOSE=OFF
 
-SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya%MAYA_VERSION%
-
 :: Note: There is no need to deactivate the virtual environment because
 :: this batch script is 'SETLOCAL' (see top of file) and therefore no
 :: environment variables are leaked into the calling environment.
 CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat
 
-:: Where to find the mmsolverlibs Rust libraries and headers (now built as part of mmSolver).
+:: Where to find the mmsolverlibs Rust libraries and headers.
 SET MMSOLVERLIBS_ROOT=%PROJECT_ROOT%\lib
 SET MMSOLVERLIBS_RUST_ROOT=%MMSOLVERLIBS_ROOT%\mmsolverlibs
-SET MMSOLVERLIBS_CPP_TARGET_DIR=%BUILD_MMSOLVER_DIR_BASE%\rust_windows64_maya%MAYA_VERSION%
-SET MMSOLVERLIBS_LIB_DIR=%MMSOLVERLIBS_CPP_TARGET_DIR%\%BUILD_TYPE_DIR%
-SET MMSOLVERLIBS_RUST_DIR=%MMSOLVERLIBS_CPP_TARGET_DIR%\%BUILD_TYPE_DIR%
+SET MMSOLVERLIBS_LIB_DIR=%BUILD_MMSOLVER_RUST_DIR%\%BUILD_TYPE_DIR%
+SET MMSOLVERLIBS_RUST_DIR=%BUILD_MMSOLVER_RUST_DIR%\%BUILD_TYPE_DIR%
 
 SET MMSOLVERLIBS_BUILD_TESTS=0
 
 :: Paths for dependencies.
-SET EXTERNAL_OCIO_BUILD_DIR=%BUILD_OCIO_DIR_BASE%\cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%\ext\dist
-SET OCIO_INSTALL_DIR=%BUILD_OCIO_DIR_BASE%\install\maya%MAYA_VERSION%_windows64\
-SET OCIO_CMAKE_CONFIG_DIR=%OCIO_INSTALL_DIR%\lib\cmake\OpenColorIO\
-SET OCIO_CMAKE_FIND_MODULES_DIR=%BUILD_OCIO_DIR_BASE%\source\maya%MAYA_VERSION%_windows64\%OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME%\share\cmake\modules
+SET EXTERNAL_OCIO_BUILD_DIR=%BUILD_OCIO_CMAKE_DIR%\ext\dist
+SET OCIO_CMAKE_CONFIG_DIR=%BUILD_OCIO_INSTALL_DIR%\lib\cmake\OpenColorIO\
+SET OCIO_CMAKE_FIND_MODULES_DIR=%BUILD_OCIO_SOURCE_DIR%\%OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME%\share\cmake\modules
 :: Convert back-slashes to forward-slashes.
 :: https://stackoverflow.com/questions/23542453/change-backslash-to-forward-slash-in-windows-batch-file
 SET "OCIO_CMAKE_FIND_MODULES_DIR=%OCIO_CMAKE_FIND_MODULES_DIR:\=/%"
@@ -171,7 +158,7 @@ SET "MMSOLVERLIBS_CXXBRIDGE_EXE=%MMSOLVERLIBS_CXXBRIDGE_EXE:\=/%"
 :: Build mmSolverLibs Rust code first
 ECHO Building mmsolverlibs Rust libraries... (%MMSOLVERLIBS_ROOT%)
 CHDIR "%MMSOLVERLIBS_RUST_ROOT%"
-%RUST_CARGO_EXE% build %RELEASE_FLAG% --target-dir "%MMSOLVERLIBS_CPP_TARGET_DIR%"
+%RUST_CARGO_EXE% build %RELEASE_FLAG% --target-dir "%BUILD_MMSOLVER_RUST_DIR%"
 if errorlevel 1 goto failed_to_build_rust
 
 :: MinGW is a common install for developers on Windows and
@@ -219,16 +206,13 @@ SET CMAKE_GENERATOR=Ninja
 SET CMAKE_C_COMPILER=cl
 SET CMAKE_CXX_COMPILER=cl
 
-:: Build mmSolver project (now includes mmSolverLibs)
-SET BUILD_DIR_NAME=cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%
-SET BUILD_DIR=%BUILD_MMSOLVER_DIR_BASE%\%BUILD_DIR_NAME%
+:: Build mmSolver project.
+SET BUILD_DIR=%BUILD_MMSOLVER_CMAKE_DIR%
 ECHO BUILD_DIR_BASE: %BUILD_DIR_BASE%
-ECHO BUILD_DIR_NAME: %BUILD_DIR_NAME%
 ECHO BUILD_DIR: %BUILD_DIR%
 CHDIR "%BUILD_DIR_BASE%"
 MKDIR "%BUILD_MMSOLVER_DIR_NAME%"
-CHDIR "%BUILD_MMSOLVER_DIR_BASE%"
-MKDIR "%BUILD_DIR_NAME%"
+MKDIR "%BUILD_DIR%"
 CHDIR "%BUILD_DIR%"
 
 %CMAKE_EXE% -G %CMAKE_GENERATOR% ^

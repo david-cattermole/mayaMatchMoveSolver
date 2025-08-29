@@ -20,16 +20,13 @@
 #
 # Builds the Maya MatchMove Solver project.
 
-# Build location - where to build the project.
-#
-# Defaults to ${PROJECT_ROOT}/.. if not set.
-if [ -z "$BUILD_DIR_BASE" ]; then
-    BUILD_DIR_BASE="$(pwd)/.."
-fi
-
 # Maya
 MAYA_VERSION=2019
 MAYA_LOCATION=/usr/autodesk/maya2019/
+
+# Source centralized build configuration.
+CWD=`pwd`
+source "${CWD}/scripts/internal/build_config_linux.bash"
 
 # Executable names/paths used for build process.
 PYTHON_EXE=python

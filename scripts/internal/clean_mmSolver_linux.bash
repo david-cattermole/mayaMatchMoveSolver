@@ -32,8 +32,13 @@ if [ -z "$MAYA_VERSION" ]; then
     exit 1
 fi
 
-# Build location - where to clean the project build files.
-BUILD_DIR_BASE="$(pwd)/.."
+# Path to this script.
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# The root of this project.
+PROJECT_ROOT=`readlink -f ${DIR}/../..`
+
+# Source centralised build configuration.
+source "${PROJECT_ROOT}/scripts/internal/build_config_linux.bash"
 
 # The -e flag causes the script to exit as soon as one command returns
 # a non-zero exit code.
@@ -46,9 +51,9 @@ echo "Build directory base: ${BUILD_DIR_BASE}"
 
 # Remove mmSolver-specific build directories
 BUILD_DIRS=(
-    "${BUILD_DIR_BASE}/build_mmsolver/cmake_linux_maya${MAYA_VERSION}_Release"
-    "${BUILD_DIR_BASE}/build_mmsolver/python_venv_linux_maya${MAYA_VERSION}"
-    "${BUILD_DIR_BASE}/build_mmsolver/rust_linux_maya${MAYA_VERSION}"
+    "${BUILD_MMSOLVER_CMAKE_DIR}"
+    "${BUILD_MMSOLVER_PYTHON_VENV_DIR}"
+    "${BUILD_MMSOLVER_RUST_DIR}"
 )
 
 for dir in "${BUILD_DIRS[@]}"; do

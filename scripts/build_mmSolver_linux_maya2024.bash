@@ -20,16 +20,13 @@
 #
 # Builds the Maya MatchMove Solver project.
 
-# Build location - where to build the project.
-#
-# Defaults to ${PROJECT_ROOT}/.. if not set.
-if [ -z "$BUILD_DIR_BASE" ]; then
-    BUILD_DIR_BASE="$(pwd)/.."
-fi
-
 # Maya
 MAYA_VERSION=2024
 MAYA_LOCATION=/usr/autodesk/maya2024/
+
+# Source centralized build configuration.
+CWD=`pwd`
+source "${CWD}/scripts/internal/build_config_linux.bash"
 
 # Executable names/paths used for build process.
 #
@@ -65,8 +62,6 @@ CXX_STANDARD=14
 # The -e flag causes the script to exit as soon as one command returns
 # a non-zero exit code.
 set -ev
-
-CWD=`pwd`
 
 # These scripts assume 'RUST_CARGO_EXE' has been set to the Rust
 # 'cargo' executable.

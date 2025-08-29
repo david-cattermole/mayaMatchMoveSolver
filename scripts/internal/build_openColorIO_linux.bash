@@ -47,22 +47,10 @@ set -ev
 # Store the current working directory, to return to.
 CWD=`pwd`
 
-# What directory to build the project in?
-#
-# Note: BUILD_DIR_BASE should already be set by the calling script.
-# If not, use default location.
-if [ -z "$BUILD_DIR_BASE" ]; then
-    BUILD_DIR_BASE="${PROJECT_ROOT}/.."
-fi
+# Directory configuration handled by centralised build_config_linux.bash.
 echo "Build root directory base: ${BUILD_DIR_BASE}"
-
-# OpenColorIO build related stuff will go here.
-BUILD_OCIO_DIR_NAME="build_opencolorio"
-BUILD_OCIO_DIR_BASE="${BUILD_DIR_BASE}/${BUILD_OCIO_DIR_NAME}"
 echo "Build OpenColorIO directory base: ${BUILD_OCIO_DIR_BASE}"
-
-# Install directory.
-OCIO_INSTALL_PATH="${BUILD_OCIO_DIR_BASE}/install/maya${MAYA_VERSION}_linux/"
+echo "OCIO install path: ${BUILD_OCIO_INSTALL_DIR}"
 
 # What type of build? "Release" or "Debug"?
 BUILD_TYPE=Release
@@ -77,13 +65,15 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PROJECT_ROOT=`readlink -f ${DIR}/../..`
 echo "Project Root: ${PROJECT_ROOT}"
 
+# Source centralised build configuration.
+source "${PROJECT_ROOT}/scripts/internal/build_config_linux.bash"
+
 # We don't want to find system packages.
 CMAKE_IGNORE_PATH="/lib;/lib64;/usr;/usr/lib;/usr/lib64;/usr/local;/usr/local/lib;/usr/local/lib64;"
 
 # Build OpenColorIO project
 cd ${BUILD_DIR_BASE}
-BUILD_DIR_NAME="cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}"
-BUILD_DIR="${BUILD_OCIO_DIR_BASE}/${BUILD_DIR_NAME}"
+BUILD_DIR="${BUILD_OCIO_CMAKE_DIR}"
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
@@ -96,7 +86,7 @@ if [ ! -f "${SOURCE_TARBALL}" ]; then
 fi
 
 # Extract the OpenColorIO archive.
-EXTRACT_OUT_DIR="${BUILD_OCIO_DIR_BASE}/source/maya${MAYA_VERSION}_linux"
+EXTRACT_OUT_DIR="${BUILD_OCIO_SOURCE_DIR}"
 if [ ! -d "${EXTRACT_OUT_DIR}" ]; then
     echo "${EXTRACT_OUT_DIR} does not exist, creating it..."
     mkdir -p "${EXTRACT_OUT_DIR}"
@@ -120,7 +110,7 @@ MMSOLVER_OCIO_NAMESPACE="OpenColorIO_mmSolver"
 ${CMAKE_EXE} \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-    -DCMAKE_INSTALL_PREFIX=${OCIO_INSTALL_PATH} \
+    -DCMAKE_INSTALL_PREFIX=${BUILD_OCIO_INSTALL_DIR} \
     -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH} \
     -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
     -DCMAKE_CXX_STANDARD=${CXX_STANDARD} \

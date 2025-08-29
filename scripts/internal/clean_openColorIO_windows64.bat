@@ -33,24 +33,23 @@ IF "%MAYA_VERSION%"=="" (
     EXIT /b 1
 )
 
-:: Build location - where to clean the project build files.
-IF "%BUILD_DIR_BASE%"=="" SET BUILD_DIR_BASE=%CD%\..
+:: The root of this project.
+SET PROJECT_ROOT=%CD%
+
+:: Source centralised build configuration.
+CALL "%PROJECT_ROOT%\scripts\internal\build_config_windows64.bat"
 
 ECHO Cleaning OpenColorIO build directories for Maya %MAYA_VERSION%...
 ECHO Build directory base: %BUILD_DIR_BASE%
 
-:: OpenColorIO build directory
-SET OCIO_BUILD_DIR=%BUILD_DIR_BASE%\build_opencolorio
+:: Remove OpenColorIO-specific build directories for this Maya version.
+SET BUILD_DIRS[0]=%BUILD_OCIO_CMAKE_WIN64_DIR%
+SET BUILD_DIRS[1]=%BUILD_OCIO_INSTALL_WIN64_DIR%
+SET BUILD_DIRS[2]=%BUILD_OCIO_SOURCE_WIN64_DIR%
 
-:: Remove OpenColorIO-specific build directories for this Maya version
-SET BUILD_DIRS[0]=%OCIO_BUILD_DIR%\cmake_linux_maya%MAYA_VERSION%_Release
-SET BUILD_DIRS[1]=%OCIO_BUILD_DIR%\cmake_win64_maya%MAYA_VERSION%_Release
-SET BUILD_DIRS[2]=%OCIO_BUILD_DIR%\install\maya%MAYA_VERSION%_linux
-SET BUILD_DIRS[3]=%OCIO_BUILD_DIR%\install\maya%MAYA_VERSION%_windows64
-SET BUILD_DIRS[4]=%OCIO_BUILD_DIR%\source\maya%MAYA_VERSION%_linux
-SET BUILD_DIRS[5]=%OCIO_BUILD_DIR%\source\maya%MAYA_VERSION%_windows64
-
-FOR /L %%i IN (0,1,5) DO (
+:: TODO: Check this loop. It's probably easier to just do this
+:: sequentially for each directory, there are only 3.
+FOR /L %%i IN (0,1,2) DO (
     CALL SET "dir=%%BUILD_DIRS[%%i]%%"
     CALL ECHO Checking directory: %%dir%%
     IF EXIST "%%dir%%" (

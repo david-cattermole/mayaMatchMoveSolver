@@ -21,17 +21,15 @@ SETLOCAL
 ::
 :: Builds the Maya MatchMove Solver project.
 
-:: Build location - where to build the project.
-::
-:: Defaults to %PROJECT_ROOT%\..\build_repro if not set.
-IF "%BUILD_DIR_BASE%"=="" SET BUILD_DIR_BASE=%CD%\..
-
 :: Maya directories
 ::
 :: Note: Do not enclose the MAYA_VERSION in quotes, it will
 ::       lead to tears.
 SET MAYA_VERSION=2026
 SET MAYA_LOCATION="%PROGRAMFILES%\Autodesk\Maya2026"
+
+:: Source centralized build configuration.
+CALL "%CD%\scripts\internal\build_config_windows64.bat"
 
 :: Executable names/paths used for build process.
 SET PYTHON_EXE=python

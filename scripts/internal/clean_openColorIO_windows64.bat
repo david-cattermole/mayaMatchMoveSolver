@@ -43,21 +43,29 @@ ECHO Cleaning OpenColorIO build directories for Maya %MAYA_VERSION%...
 ECHO Build directory base: %BUILD_DIR_BASE%
 
 :: Remove OpenColorIO-specific build directories for this Maya version.
-SET BUILD_DIRS[0]=%BUILD_OCIO_CMAKE_WIN64_DIR%
-SET BUILD_DIRS[1]=%BUILD_OCIO_INSTALL_WIN64_DIR%
-SET BUILD_DIRS[2]=%BUILD_OCIO_SOURCE_WIN64_DIR%
+SET CMAKE_DIR=%BUILD_OCIO_CMAKE_DIR%
+SET INSTALL_DIR=%BUILD_OCIO_INSTALL_DIR%
+SET SOURCE_DIR=%BUILD_OCIO_SOURCE_DIR%
 
-:: TODO: Check this loop. It's probably easier to just do this
-:: sequentially for each directory, there are only 3.
-FOR /L %%i IN (0,1,2) DO (
-    CALL SET "dir=%%BUILD_DIRS[%%i]%%"
-    CALL ECHO Checking directory: %%dir%%
-    IF EXIST "%%dir%%" (
-        ECHO Removing directory: %%dir%%
-        RMDIR /S /Q "%%dir%%"
-    ) ELSE (
-        ECHO Directory does not exist ^(skipping^): %%dir%%
-    )
+IF EXIST "%CMAKE_DIR%" (
+    ECHO Removing directory: %CMAKE_DIR%
+    RMDIR /S /Q "%CMAKE_DIR%"
+) ELSE (
+    ECHO Directory does not exist (skipping): %CMAKE_DIR%
+)
+
+IF EXIST "%INSTALL_DIR%" (
+    ECHO Removing directory: %INSTALL_DIR%
+    RMDIR /S /Q "%INSTALL_DIR%"
+) ELSE (
+    ECHO Directory does not exist (skipping): %INSTALL_DIR%
+)
+
+IF EXIST "%SOURCE_DIR%" (
+    ECHO Removing directory: %SOURCE_DIR%
+    RMDIR /S /Q "%SOURCE_DIR%"
+) ELSE (
+    ECHO Directory does not exist (skipping): %SOURCE_DIR%
 )
 
 ECHO OpenColorIO build cleanup completed for Maya %MAYA_VERSION%.

@@ -5,7 +5,16 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
-BUILDDIR      = build_linux_maya$(MAYA_VERSION)
+
+# External build directory setup.
+#
+# Use environment variable if set, otherwise fall back to local
+# directory.
+ifdef BUILD_DOCS_DIR_BASE
+	BUILDDIR      = $(BUILD_DOCS_DIR_BASE)/cmake_linux_maya$(MAYA_VERSION)_Release
+else
+	BUILDDIR      = build_linux_maya$(MAYA_VERSION)
+endif
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4

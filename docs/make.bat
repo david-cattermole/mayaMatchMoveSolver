@@ -5,7 +5,15 @@ REM Command file for Sphinx documentation
 if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
-set BUILDDIR=build_win64_maya%MAYA_VERSION%
+REM External build directory setup.
+REM
+REM Use environment variable if set, otherwise fall back to local
+REM directory.
+if defined BUILD_DOCS_DIR_BASE (
+	set BUILDDIR=%BUILD_DOCS_DIR_BASE%/cmake_win64_maya%MAYA_VERSION%_Release
+) else (
+	set BUILDDIR=build_win64_maya%MAYA_VERSION%
+)
 set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% source
 set I18NSPHINXOPTS=%SPHINXOPTS% source
 if NOT "%PAPER%" == "" (

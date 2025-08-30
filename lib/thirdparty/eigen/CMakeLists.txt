@@ -67,18 +67,16 @@ if(NOT eigen3_cxx_features OR eigen3_cxx_features STREQUAL "eigen3_cxx_features-
   target_compile_features(Eigen3 INTERFACE cxx_std_14)
 endif()
 
-# Set version information
+# Set export name.
 set_target_properties(eigen PROPERTIES
-  VERSION "3.4.0"
   EXPORT_NAME "Eigen3::Eigen"
 )
 
 # Set properties for Eigen3 if we created it here
 if(TARGET Eigen3)
-  get_target_property(eigen3_version Eigen3 VERSION)
-  if(NOT eigen3_version OR eigen3_version STREQUAL "eigen3_version-NOTFOUND")
+  get_target_property(eigen3_export_name Eigen3 EXPORT_NAME)
+  if(NOT eigen3_export_name OR eigen3_export_name STREQUAL "eigen3_export_name-NOTFOUND")
     set_target_properties(Eigen3 PROPERTIES
-      VERSION "3.4.0"
       EXPORT_NAME "Eigen3"
     )
   endif()

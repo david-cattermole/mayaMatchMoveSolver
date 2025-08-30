@@ -18,6 +18,7 @@ docs/source/conf.py
 compile_commands.json
 tools/lensdistortion/tests/test_output/*.exr
 target/*
+TAGS
 
 test*.pstat
 test*.txt

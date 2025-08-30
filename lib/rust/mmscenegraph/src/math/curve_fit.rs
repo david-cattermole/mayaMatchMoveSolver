@@ -468,43 +468,124 @@ pub fn nonlinear_line_n3(
 
     debug!("nonlinear_line_n3: Starting multi-stage optimization");
 
-    // Calculate control point X positions using linear regression
-    // approach.
-    let mut point_x = 0.0;
-    let mut point_y = 0.0;
-    let mut dir_x = 0.0;
-    let mut dir_y = 0.0;
-    control_point_guess_from_linear_regression(
-        x_values,
-        y_values,
-        &mut point_x,
-        &mut point_y,
-        &mut dir_x,
-        &mut dir_y,
-    );
-
     let x_first = x_values[0];
     let x_last = x_values[value_count - 1];
-    let x_diff = (x_last - x_first) / 2.0;
-    debug!("x_first={x_first}, x_last={x_last}, x_diff={x_diff}");
-
-    // Scale up to X axis range.
-    let dir_x = dir_x * x_diff;
+    debug!("x_first={x_first}, x_last={x_last}");
 
     // Define control point X coordinates.
-    let point_a_x = point_x - dir_x;
-    let point_b_x = point_x;
-    let point_c_x = point_x + dir_x;
+    let point_a_x = x_first;
+    let point_b_x = x_first + ((x_last - x_first) * 0.5);
+    let point_c_x = x_last;
 
     debug!(
         "Control point X coordinates: a={}, b={}, c={}",
         point_a_x, point_b_x, point_c_x
     );
 
-    // Use multi-stage optimization.
-    multi_stage_nonlinear_n3(
-        x_values, y_values, point_a_x, point_b_x, point_c_x,
-    )
+    debug!("Starting LevenbergMarquardt optimization");
+
+    assert!(point_a_x <= x_first);
+    assert!(point_c_x >= x_last);
+
+    let reference_values: Vec<(f64, f64)> = x_values
+        .iter()
+        .zip(y_values)
+        .map(|(&x, &y)| (x, y))
+        .collect();
+
+    let problem = N3CurveFitProblem::new(
+        point_a_x,
+        point_b_x,
+        point_c_x,
+        reference_values,
+    );
+
+    // Polynomial initialization (Linear interpolation for N3).
+    let control_points_x = vec![point_a_x, point_b_x, point_c_x];
+    let polynomial_y_initial = direct_linear_curve_fit_approximation(
+        x_values,
+        y_values,
+        &control_points_x,
+        // N3 always uses linear interpolation.
+        Interpolation::Linear,
+        InitializationMethod::LinearRegression,
+    );
+
+    // Use polynomial fit if available, otherwise fall back to linear
+    // regression.
+    let initial_parameters = match polynomial_y_initial {
+        Ok(poly_y) => {
+            debug!("Using polynomial initialization: {:?}", poly_y);
+            poly_y
+        }
+        Err(e) => {
+            debug!("Polynomial fitting failed ({}), falling back to linear regression", e);
+            // Fall back to original linear regression approach.
+            let mut point_x = 0.0;
+            let mut point_y = 0.0;
+            let mut dir_x = 0.0;
+            let mut dir_y = 0.0;
+            control_point_guess_from_linear_regression(
+                x_values,
+                y_values,
+                &mut point_x,
+                &mut point_y,
+                &mut dir_x,
+                &mut dir_y,
+            );
+
+            let x_diff = (x_last - x_first) / 2.0;
+            let dir_y = dir_y * x_diff;
+
+            vec![point_y - dir_y, point_y, point_y + dir_y]
+        }
+    };
+
+    // Calculate step bound based on initial quality.
+    let control_points_x = vec![point_a_x, point_b_x, point_c_x];
+    let predicted_values = generate_predicted_values_linear(
+        x_values,
+        &control_points_x,
+        &initial_parameters,
+    );
+    let initial_trust_factor =
+        calculate_trust_region_radius_from_quality(y_values, &predicted_values)
+            .unwrap_or(100.0); // fallback to default if calculation fails.
+
+    let config = SolverConfig {
+        ftol: 1e-8,
+        xtol: 1e-8,
+        gtol: 1e-8,
+        max_iterations: 1000,
+        initial_trust_factor,
+        verbose: false,
+        ..Default::default()
+    };
+
+    let solver = LevenbergMarquardt::new(config);
+    let mut workspace = SolverWorkspace::new(&problem, &initial_parameters)?;
+
+    // Try primary configuration, with conservative fallback only on
+    // failure.
+    let result = solver.solve_problem(&problem, &mut workspace)?;
+
+    debug!("LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
+           result.status, result.cost, result.iterations, result.function_evaluations);
+
+    Ok((
+        Point2 {
+            x: point_a_x,
+            y: result.parameters[0],
+        },
+        Point2 {
+            x: point_b_x,
+            y: result.parameters[1],
+        },
+        Point2 {
+            x: point_c_x,
+            y: result.parameters[2],
+        },
+    ))
 }
 
 fn control_point_guess_from_linear_regression(
@@ -552,12 +633,25 @@ fn generate_evenly_space_control_points(
     let x_last = x_values[x_values.len() - 1];
     let x_range = x_last - x_first;
 
-    // Generate evenly spaced control points along x-axis.
+    // Generate control points that respect bounds correctness:
+    // - First and last control points are exactly on the data boundaries.
+    // - Middle control points are placed outside the data range.
     let mut x_initial_control_points = Vec::with_capacity(control_point_count);
     let mut y_initial_control_points = Vec::with_capacity(control_point_count);
+
     for i in 0..control_point_count {
-        let mix = i as f64 / (control_point_count - 1) as f64;
-        let x = (x_first + (mix * x_range)).floor();
+        let x = if i == 0 {
+            // First control point is exactly on first data boundary.
+            x_first
+        } else if i == control_point_count - 1 {
+            // Last control point is exactly on last data boundary.
+            x_last
+        } else {
+            // Middle control points stay inside data boundaries.
+            let mix = i as f64 / (control_point_count - 1) as f64;
+            (x_first + (mix * x_range)).floor()
+        };
+
         x_initial_control_points.push(x);
 
         // Initial y-values based on linear regression line.
@@ -601,9 +695,7 @@ pub fn nonlinear_line_n_points_with_initial(
     debug!("nonlinear_line_n_points_with_initial: Starting multi-stage optimization with {} control points", x_initial_control_points.len());
     debug!("Interpolation method: {:?}", interpolation_method);
 
-    // Use multi-stage optimization (ignoring the provided Y initial
-    // values as Stage 1 will compute better initialization).
-    multi_stage_nonlinear_npoints(
+    general_nonlinear_npoints(
         x_values,
         y_values,
         x_initial_control_points,
@@ -868,130 +960,15 @@ fn generate_predicted_values_linear(
     predicted
 }
 
-/// N3 curve fitting using LevenbergMarquardt solver.
-fn multi_stage_nonlinear_n3(
-    x_values: &[f64],
-    y_values: &[f64],
-    point_a_x: f64,
-    point_b_x: f64,
-    point_c_x: f64,
-) -> Result<(Point2, Point2, Point2)> {
-    debug!(
-        "multi_stage_nonlinear_n3: Starting LevenbergMarquardt optimization"
-    );
-
-    let reference_values: Vec<(f64, f64)> = x_values
-        .iter()
-        .zip(y_values)
-        .map(|(&x, &y)| (x, y))
-        .collect();
-
-    let problem = N3CurveFitProblem::new(
-        point_a_x,
-        point_b_x,
-        point_c_x,
-        reference_values,
-    );
-
-    // Polynomial initialization (Linear interpolation for N3).
-    let control_points_x = vec![point_a_x, point_b_x, point_c_x];
-    let polynomial_y_initial = direct_linear_curve_fit_approximation(
-        x_values,
-        y_values,
-        &control_points_x,
-        // N3 always uses linear interpolation.
-        Interpolation::Linear,
-        InitializationMethod::LinearRegression,
-    );
-
-    // Use polynomial fit if available, otherwise fall back to linear
-    // regression.
-    let initial_parameters = match polynomial_y_initial {
-        Ok(poly_y) => {
-            debug!("Using polynomial initialization: {:?}", poly_y);
-            poly_y
-        }
-        Err(e) => {
-            debug!("Polynomial fitting failed ({}), falling back to linear regression", e);
-            // Fall back to original linear regression approach.
-            let mut point_x = 0.0;
-            let mut point_y = 0.0;
-            let mut dir_x = 0.0;
-            let mut dir_y = 0.0;
-            control_point_guess_from_linear_regression(
-                x_values,
-                y_values,
-                &mut point_x,
-                &mut point_y,
-                &mut dir_x,
-                &mut dir_y,
-            );
-
-            let x_first = x_values[0];
-            let x_last = x_values[x_values.len() - 1];
-            let x_diff = (x_last - x_first) / 2.0;
-            let dir_y = dir_y * x_diff;
-
-            vec![point_y - dir_y, point_y, point_y + dir_y]
-        }
-    };
-
-    // Calculate step bound based on initial quality.
-    let control_points_x = vec![point_a_x, point_b_x, point_c_x];
-    let predicted_values = generate_predicted_values_linear(
-        x_values,
-        &control_points_x,
-        &initial_parameters,
-    );
-    let initial_trust_factor =
-        calculate_trust_region_radius_from_quality(y_values, &predicted_values)
-            .unwrap_or(100.0); // fallback to default if calculation fails.
-
-    let config = SolverConfig {
-        ftol: 1e-8,
-        xtol: 1e-8,
-        gtol: 1e-8,
-        max_iterations: 1000,
-        initial_trust_factor,
-        verbose: false,
-        ..Default::default()
-    };
-
-    let solver = LevenbergMarquardt::new(config);
-    let mut workspace = SolverWorkspace::new(&problem, &initial_parameters)?;
-
-    // Try primary configuration, with conservative fallback only on
-    // failure.
-    let result = solver.solve_problem(&problem, &mut workspace)?;
-
-    debug!("LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
-           result.status, result.cost, result.iterations, result.function_evaluations);
-
-    Ok((
-        Point2 {
-            x: point_a_x,
-            y: result.parameters[0],
-        },
-        Point2 {
-            x: point_b_x,
-            y: result.parameters[1],
-        },
-        Point2 {
-            x: point_c_x,
-            y: result.parameters[2],
-        },
-    ))
-}
-
 /// N-points curve fitting using LevenbergMarquardt solver with
 /// polynomial initialization.
-fn multi_stage_nonlinear_npoints(
+fn general_nonlinear_npoints(
     x_values: &[f64],
     y_values: &[f64],
     x_initial_control_points: &[f64],
     interpolation_method: Interpolation,
 ) -> Result<Vec<Point2>> {
-    debug!("multi_stage_nonlinear_npoints: Starting LevenbergMarquardt optimization with {:?}", interpolation_method);
+    debug!("general_nonlinear_npoints: Starting LevenbergMarquardt optimization with {:?}", interpolation_method);
 
     let control_point_count = x_initial_control_points.len();
     let reference_values: Vec<(f64, f64)> = x_values
@@ -1028,7 +1005,7 @@ fn multi_stage_nonlinear_npoints(
             poly_y
         }
         Err(e) => {
-            debug!("Polynomial fitting failed ({}), falling back to linear regression", e);
+            debug!("Polynomial fitting failed ({}), falling back to linear regression.", e);
             // Fall back to original linear regression approach.
             let mut point_x = 0.0;
             let mut point_y = 0.0;
@@ -1065,7 +1042,9 @@ fn multi_stage_nonlinear_npoints(
         calculate_trust_region_radius_from_quality(y_values, &predicted_values)
             .unwrap_or(100.0); // fallback to default if calculation fails.
 
-    let (ftol, xtol, gtol) = (1e-8, 1e-8, 1e-8);
+    let ftol = 1e-8;
+    let xtol = 1e-8;
+    let gtol = 1e-8;
     let max_iterations = 1000;
     debug!("Using tolerances ftol={}, xtol={}, gtol={}, max_iterations={} step_bound={} for {} control points",
           ftol, xtol, gtol, max_iterations, initial_trust_factor, control_point_count);
@@ -1147,7 +1126,7 @@ pub fn nonlinear_line_n_points(
         dir_y,
     )?;
 
-    multi_stage_nonlinear_npoints(
+    general_nonlinear_npoints(
         x_values,
         y_values,
         &x_initial_control_points,

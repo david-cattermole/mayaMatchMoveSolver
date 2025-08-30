@@ -35,10 +35,7 @@ use crate::common::find_output_dir;
 use crate::common::print_actual_pops;
 use crate::common::print_chan_data;
 use crate::common::read_chan_file;
-use crate::common::save_chart_linear_n3_regression_pop;
-use crate::common::save_chart_linear_n_points_regression;
-use crate::common::save_chart_linear_n_points_regression_pop;
-use crate::common::save_chart_linear_regression_pop;
+use crate::common::save_chart_n_points_regression;
 use crate::common::CHART_RESOLUTION;
 
 use mmscenegraph_rust::constant::Real;
@@ -120,10 +117,11 @@ fn keypoints_common(
         interpolation_method,
     );
 
-    save_chart_linear_n_points_regression(
+    save_chart_n_points_regression(
         &data_raw,
         &xy_values_eval,
         &points,
+        interpolation_method,
         chart_title,
         &out_file_path.as_os_str(),
         chart_resolution,

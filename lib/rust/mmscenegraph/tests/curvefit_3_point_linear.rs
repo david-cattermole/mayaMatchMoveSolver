@@ -32,11 +32,12 @@ use crate::common::find_output_dir;
 #[allow(unused_imports)]
 use crate::common::print_chan_data;
 use crate::common::read_chan_file;
-use crate::common::save_chart_linear_n3_regression;
+use crate::common::save_chart_n3_regression;
 use crate::common::CHART_RESOLUTION;
 
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n3;
 use mmscenegraph_rust::math::curve_fit::Point2;
+use mmscenegraph_rust::math::interpolate::Interpolation;
 
 fn curvefit_common(
     chart_title: &str,
@@ -64,12 +65,13 @@ fn curvefit_common(
     println!("point_b={point_b:?}");
     println!("point_c={point_c:?}");
 
-    save_chart_linear_n3_regression(
+    save_chart_n3_regression(
         &data_raw,
         &data,
         point_a,
         point_b,
         point_c,
+        Interpolation::Linear,
         chart_title,
         &out_file_path.as_os_str(),
         chart_resolution,

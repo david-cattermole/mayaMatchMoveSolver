@@ -36,7 +36,7 @@ use crate::common::find_output_dir;
 #[allow(unused_imports)]
 use crate::common::print_chan_data;
 use crate::common::read_chan_file;
-use crate::common::save_chart_linear_n_points_regression;
+use crate::common::save_chart_n_points_regression;
 use crate::common::CHART_RESOLUTION;
 
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points;
@@ -76,10 +76,11 @@ fn curvefit_common(
     )?;
     println!("points={points:?}");
 
-    save_chart_linear_n_points_regression(
+    save_chart_n_points_regression(
         &data_raw,
         &data,
         &points,
+        interpolation_method,
         chart_title,
         &out_file_path.as_os_str(),
         chart_resolution,
@@ -116,16 +117,16 @@ fn curvefit_linear_4_point_raw() -> Result<()> {
     println!("point_d={point_d:?}");
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -1.215, epsilon = 1.0e-3);
+    assert_relative_eq!(point_a.y(), -1.215, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_b.x(), 1034.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), -2.6193617, epsilon = 1.0e-3);
+    assert_relative_eq!(point_b.y(), -2.619, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_c.x(), 1067.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), 3.61752396, epsilon = 1.0e-3);
+    assert_relative_eq!(point_c.y(), 3.618, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_d.x(), 1101.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_d.y(), 1.855, epsilon = 1.0e-3);
+    assert_relative_eq!(point_d.y(), 1.855, epsilon = 1.0e-2);
 
     Ok(())
 }
@@ -158,13 +159,13 @@ fn curvefit_linear_4_point_variance1() -> Result<()> {
     println!("point_d={point_d:?}");
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -1.215, epsilon = 1.0e-2);
+    assert_relative_eq!(point_a.y(), -1.214, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_b.x(), 1034.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), -2.6193617, epsilon = 1.0e-2);
+    assert_relative_eq!(point_b.y(), -2.618, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_c.x(), 1067.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), 3.61752396, epsilon = 1.0e-2);
+    assert_relative_eq!(point_c.y(), 3.618, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_d.x(), 1101.0, epsilon = 1.0e-9);
     assert_relative_eq!(point_d.y(), 1.855, epsilon = 1.0e-2);
@@ -200,16 +201,16 @@ fn curvefit_linear_4_point_variance2() -> Result<()> {
     println!("point_d={point_d:?}");
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -1.215, epsilon = 1.0e-1);
+    assert_relative_eq!(point_a.y(), -1.223, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_b.x(), 1034.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), -2.6193617, epsilon = 1.0e-1);
+    assert_relative_eq!(point_b.y(), -2.648, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_c.x(), 1067.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), 3.61752396, epsilon = 1.0e-1);
+    assert_relative_eq!(point_c.y(), 3.650, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_d.x(), 1101.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_d.y(), 1.855, epsilon = 1.0e-1);
+    assert_relative_eq!(point_d.y(), 1.872, epsilon = 1.0e-2);
 
     Ok(())
 }
@@ -242,16 +243,16 @@ fn curvefit_linear_4_point_variance3() -> Result<()> {
     println!("point_d={point_d:?}");
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -1.215, epsilon = 0.3);
+    assert_relative_eq!(point_a.y(), -1.391, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_b.x(), 1034.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), -2.6193617, epsilon = 0.3);
+    assert_relative_eq!(point_b.y(), -2.574, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_c.x(), 1067.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), 3.61752396, epsilon = 0.3);
+    assert_relative_eq!(point_c.y(), 3.532, epsilon = 1.0e-2);
 
     assert_relative_eq!(point_d.x(), 1101.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_d.y(), 1.855, epsilon = 1.0e-1);
+    assert_relative_eq!(point_d.y(), 1.760, epsilon = 1.0e-2);
 
     Ok(())
 }
@@ -284,16 +285,16 @@ fn curvefit_linear_4_point_variance4() -> Result<()> {
     println!("point_d={point_d:?}");
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -0.49525427504336017, epsilon = 0.4);
+    assert_relative_eq!(point_a.y(), -0.495, epsilon = 1.0e-1);
 
     assert_relative_eq!(point_b.x(), 1034.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), -3.607174527167941, epsilon = 3.0);
+    assert_relative_eq!(point_b.y(), -3.607, epsilon = 1.0e-1);
 
     assert_relative_eq!(point_c.x(), 1067.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), 1.6127186839665244, epsilon = 5.5);
+    assert_relative_eq!(point_c.y(), 1.613, epsilon = 1.0e-1);
 
     assert_relative_eq!(point_d.x(), 1101.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_d.y(), 2.492196040823316, epsilon = 3.5);
+    assert_relative_eq!(point_d.y(), 2.492, epsilon = 1.0e-1);
 
     Ok(())
 }

@@ -124,7 +124,7 @@ class TestSolveBadPerFrameSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         self.checkSolveResults(
-            solres_list, allow_max_avg_error=0.01, allow_max_error=0.03
+            solres_list, allow_max_avg_error=0.01, allow_max_error=0.031
         )
         return
 

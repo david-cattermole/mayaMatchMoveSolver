@@ -118,6 +118,8 @@ with Rust code in simple and a safe way.
 is used to store 3D vectors, matrices, perform linear algebra, and is
 also required for `OpenMVG` (see below).
 
+NOTE: Eigen is included inside mmSolver - there is no need to install it.
+
 ## CMinpack
 
 [CMinpack 1.3.8](https://github.com/devernay/cminpack/releases/tag/v1.3.8)
@@ -125,6 +127,8 @@ is required for non-linear least-squares minimization.
 
 This solver is not as sophisticated as Ceres and may be deprecated in a
 future release (in favor of [Ceres Solver](http://ceres-solver.org/))
+
+NOTE: CMinpack is included inside mmSolver - there is no need to install it.
 
 ## Ceres Solver
 
@@ -143,6 +147,8 @@ Ceres Solver is not optional, and is required for `OpenMVG` features.
 In a future version of mmSolver Ceres may replace CMinpack as the
 default and recommended solving engine.
 
+NOTE: Ceres Solver is included inside mmSolver - there is no need to install it.
+
 ## OpenMVG
 
 [OpenMVG 2.0](https://github.com/openMVG/openMVG/releases/tag/v2.0) is
@@ -153,6 +159,8 @@ features. Only a sub-set of OpenMVG is included with mmSolver.
 OpenMVG is not a third-party dependency, because it's included inside
 mmSolver. OpenMVG requires Eigen and Ceres Solver internally.
 
+NOTE: OpenMVG is included inside mmSolver - there is no need to install it.
+
 ## Lens Distortion Plug-in Kit
 
 [Lens Distortion Plug-in Kit (LDPK)](https://www.3dequalizer.com/?site=tech_docs)
@@ -161,6 +169,8 @@ creators of 3DEqualizer.
 
 The LDPK provides a standard set of lens distortion features and the
 ability to provide custom lens distortion plug-ins.
+
+NOTE: LDPK is included inside mmSolver - there is no need to install it.
 
 ## Python
 

@@ -51,21 +51,21 @@ IF EXIST "%CMAKE_DIR%" (
     ECHO Removing directory: %CMAKE_DIR%
     RMDIR /S /Q "%CMAKE_DIR%"
 ) ELSE (
-    ECHO Directory does not exist (skipping): %CMAKE_DIR%
+    ECHO Directory does not exist, skipping: %CMAKE_DIR%
 )
 
 IF EXIST "%INSTALL_DIR%" (
     ECHO Removing directory: %INSTALL_DIR%
     RMDIR /S /Q "%INSTALL_DIR%"
 ) ELSE (
-    ECHO Directory does not exist (skipping): %INSTALL_DIR%
+    ECHO Directory does not exist, skipping: %INSTALL_DIR%
 )
 
 IF EXIST "%SOURCE_DIR%" (
     ECHO Removing directory: %SOURCE_DIR%
     RMDIR /S /Q "%SOURCE_DIR%"
 ) ELSE (
-    ECHO Directory does not exist (skipping): %SOURCE_DIR%
+    ECHO Directory does not exist, skipping: %SOURCE_DIR%
 )
 
 ECHO OpenColorIO build cleanup completed for Maya %MAYA_VERSION%.

@@ -21,12 +21,7 @@ SETLOCAL
 ::
 :: Cleans the OpenColorIO build directories for Maya 2022.
 
-:: Build location - where to clean the project build files.
-::
-:: Defaults to %PROJECT_ROOT%\.. if not set.
-IF "%BUILD_DIR_BASE%"=="" SET BUILD_DIR_BASE=%CD%\..
-
 :: Maya version
 SET MAYA_VERSION=2022
 
-CALL "%~dp0internal\clean_openColorIO_windows64.bat"
+CALL scripts\internal\clean_openColorIO_windows64.bat

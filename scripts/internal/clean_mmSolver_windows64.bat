@@ -51,21 +51,21 @@ IF EXIST "%CMAKE_DIR%" (
     ECHO Removing directory: %CMAKE_DIR%
     RMDIR /S /Q "%CMAKE_DIR%"
 ) ELSE (
-    ECHO Directory does not exist (skipping): %CMAKE_DIR%
+    ECHO Directory does not exist, skipping: %CMAKE_DIR%
 )
 
 IF EXIST "%PYTHON_VENV_DIR%" (
     ECHO Removing directory: %PYTHON_VENV_DIR%
     RMDIR /S /Q "%PYTHON_VENV_DIR%"
 ) ELSE (
-    ECHO Directory does not exist (skipping): %PYTHON_VENV_DIR%
+    ECHO Directory does not exist, skipping: %PYTHON_VENV_DIR%
 )
 
 IF EXIST "%RUST_DIR%" (
     ECHO Removing directory: %RUST_DIR%
     RMDIR /S /Q "%RUST_DIR%"
 ) ELSE (
-    ECHO Directory does not exist (skipping): %RUST_DIR%
+    ECHO Directory does not exist, skipping: %RUST_DIR%
 )
 
 ECHO mmSolver build cleanup completed for Maya %MAYA_VERSION%.

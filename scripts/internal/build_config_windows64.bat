@@ -38,7 +38,7 @@ IF "%MAYA_VERSION%"=="" (
 :: Can be overridden by setting BUILD_DIR_BASE environment variable.
 IF "%BUILD_DIR_BASE%"=="" SET BUILD_DIR_BASE=%CD%\..
 
-:: Build directory names
+:: Build directory names.
 SET BUILD_MMSOLVER_DIR_NAME=build_mmsolver
 SET BUILD_OCIO_DIR_NAME=build_opencolorio
 SET BUILD_MMSOLVERLIBS_DIR_NAME=build_mmsolverlibs

@@ -21,12 +21,7 @@ SETLOCAL
 ::
 :: Cleans the Maya MatchMove Solver build directories.
 
-:: Build location - where to clean the project build files.
-::
-:: Defaults to %PROJECT_ROOT%\..\build_repro if not set.
-IF "%BUILD_DIR_BASE%"=="" SET BUILD_DIR_BASE=%CD%\..
-
 :: Maya version
 SET MAYA_VERSION=2024
 
-CALL "%~dp0internal\clean_mmSolver_windows64.bat"
+CALL scripts\internal\clean_mmSolver_windows64.bat

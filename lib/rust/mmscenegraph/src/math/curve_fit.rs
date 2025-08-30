@@ -230,8 +230,7 @@ impl NPointsCurveFitProblem {
     {
         use crate::math::interpolate::{
             linear_interpolate_with_control_points,
-            nubs_interpolate_with_control_points, CubicSplineInterpolator,
-            CurveInterpolator,
+            nubs_interpolate_with_control_points,
         };
 
         // Now we can support proper automatic differentiation for
@@ -261,27 +260,6 @@ impl NPointsCurveFitProblem {
                     control_points_y,
                     3, // degree 3 for cubic.
                 )
-            }
-            Interpolation::CubicSpline => {
-                // Cubic Spline requires f64 conversion - coefficients
-                // computed with f64.
-                //
-                // This breaks automatic differentiation but is
-                // acceptable trade-off.
-                let control_points_y_f64: Vec<f64> = control_points_y
-                    .iter()
-                    .map(|&y| y.to_f64().unwrap_or(0.0))
-                    .collect();
-
-                let interpolator = CubicSplineInterpolator::new();
-                interpolator.set_control_points(
-                    &self.control_points_x,
-                    &control_points_y_f64,
-                );
-
-                let result_f64 = interpolator
-                    .interpolate_f64(value_x.to_f64().unwrap_or(0.0));
-                <T as From<f64>>::from(result_f64)
             }
         }
     }
@@ -683,7 +661,7 @@ pub fn nonlinear_line_n_points_with_initial(
     } else {
         assert!(
             x_initial_control_points.len() >= 3,
-            "Must have at least 3 control points for Interpolation::Linear, Interpolation::QuadraticNUBS or Interpolation::CubicSpline."
+            "Must have at least 3 control points for Interpolation::Linear, Interpolation::QuadraticNUBS or Interpolation::CubicNUBS."
         );
     }
     assert_eq!(
@@ -732,7 +710,7 @@ fn polynomial_least_squares_fit(
     let base_degree = match interpolation_method {
         Interpolation::Linear => 1,
         Interpolation::QuadraticNUBS => 2,
-        Interpolation::CubicSpline | Interpolation::CubicNUBS => 3,
+        Interpolation::CubicNUBS => 3,
     };
 
     // Scale degree with control point count for better
@@ -1097,7 +1075,7 @@ pub fn nonlinear_line_n_points(
     } else {
         assert!(
             control_point_count >= 3,
-            "Must have at least 3 control points for Interpolation::Linear, Interpolation::QuadraticNUBS or Interpolation::CubicSpline."
+            "Must have at least 3 control points for Interpolation::Linear, Interpolation::QuadraticNUBS or Interpolation::CubicNUBS."
         );
     }
 
@@ -1257,7 +1235,6 @@ mod tests {
             Interpolation::Linear,
             Interpolation::QuadraticNUBS,
             Interpolation::CubicNUBS,
-            Interpolation::CubicSpline,
         ];
 
         for method in &methods {

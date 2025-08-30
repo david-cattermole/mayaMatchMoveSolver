@@ -90,7 +90,6 @@
 #define INTERPOLATION_VALUE_LINEAR "linear"
 #define INTERPOLATION_VALUE_QUADRATIC_NUBS "quadratic_nubs"
 #define INTERPOLATION_VALUE_CUBIC_NUBS "cubic_nubs"
-#define INTERPOLATION_VALUE_CUBIC_SPLINE "cubic_spline"
 
 // When true, don't modify the animCurve, just return the
 // results. This allows users to analyse the anim curve but process
@@ -236,8 +235,6 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
             m_interpolation = mmsg::Interpolation::kQuadraticNUBS;
         } else if (value == INTERPOLATION_VALUE_CUBIC_NUBS) {
             m_interpolation = mmsg::Interpolation::kCubicNUBS;
-        } else if (value == INTERPOLATION_VALUE_CUBIC_SPLINE) {
-            m_interpolation = mmsg::Interpolation::kCubicSpline;
         } else {
             MMSOLVER_MAYA_ERR(CMD_NAME << ": Method value is invalid: "
                                        << "method=" << value.asChar());
@@ -269,13 +266,6 @@ MStatus MMAnimCurveSimplifyCmd::parseArgs(const MArgList &args) {
             MMSOLVER_MAYA_ERR(CMD_NAME
                               << ": keypoint count is below minimum (4)"
                                  " for Cubic NURB interpolation method.");
-            return MS::kFailure;
-        }
-    } else if (m_interpolation == mmsg::Interpolation::kCubicSpline) {
-        if (m_controlPointCount < 3) {
-            MMSOLVER_MAYA_ERR(CMD_NAME
-                              << ": keypoint count is below minimum (3)"
-                                 " for Cubic Spline interpolation method.");
             return MS::kFailure;
         }
     }

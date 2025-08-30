@@ -104,7 +104,6 @@ pub fn bind_to_core_interpolation_method(
         BindInterpolation::Linear => CoreInterpolation::Linear,
         BindInterpolation::QuadraticNUBS => CoreInterpolation::QuadraticNUBS,
         BindInterpolation::CubicNUBS => CoreInterpolation::CubicNUBS,
-        BindInterpolation::CubicSpline => CoreInterpolation::CubicSpline,
         _ => panic!("Invalid interpolation method: {:?}", value),
     }
 }
@@ -117,6 +116,5 @@ pub fn core_to_bind_interpolation_method(
         CoreInterpolation::Linear => BindInterpolation::Linear,
         CoreInterpolation::QuadraticNUBS => BindInterpolation::QuadraticNUBS,
         CoreInterpolation::CubicNUBS => BindInterpolation::CubicNUBS,
-        CoreInterpolation::CubicSpline => BindInterpolation::CubicSpline,
     }
 }

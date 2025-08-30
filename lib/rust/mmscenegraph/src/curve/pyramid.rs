@@ -162,9 +162,10 @@ fn downsample_curve_points(
         out_times.push(last_time);
     }
 
-    // Because cubic spline interpolation allows a smooth re-sampling between
-    // points, and does not have tangent issues on the boundaries.
-    let interpolation_method = Interpolation::CubicSpline;
+    // Because quadratic NUBS interpolation allows a smooth
+    // re-sampling between points, and does not have tangent issues on
+    // the boundaries.
+    let interpolation_method = Interpolation::QuadraticNUBS;
 
     let downsampled_xy =
         evaluate_curve_points(&out_times, times, values, interpolation_method);

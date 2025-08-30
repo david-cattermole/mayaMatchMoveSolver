@@ -12,6 +12,9 @@
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
+#if __cplusplus >= 202002L
+#include <ranges>
+#endif
 
 namespace rust {
 inline namespace cxxbridge1 {
@@ -43,8 +46,8 @@ template <>
 struct copy_assignable_if<false> {
   copy_assignable_if() noexcept = default;
   copy_assignable_if(const copy_assignable_if &) noexcept = default;
-  copy_assignable_if &operator=(const copy_assignable_if &) &noexcept = delete;
-  copy_assignable_if &operator=(copy_assignable_if &&) &noexcept = default;
+  copy_assignable_if &operator=(const copy_assignable_if &) & noexcept = delete;
+  copy_assignable_if &operator=(copy_assignable_if &&) & noexcept = default;
 };
 } // namespace detail
 
@@ -58,10 +61,10 @@ public:
   Slice(T *, std::size_t count) noexcept;
 
   template <typename C>
-  explicit Slice(C& c) : Slice(c.data(), c.size()) {}
+  explicit Slice(C &c) : Slice(c.data(), c.size()) {}
 
-  Slice &operator=(const Slice<T> &) &noexcept = default;
-  Slice &operator=(Slice<T> &&) &noexcept = default;
+  Slice &operator=(const Slice<T> &) & noexcept = default;
+  Slice &operator=(Slice<T> &&) & noexcept = default;
 
   T *data() const noexcept;
   std::size_t size() const noexcept;
@@ -93,10 +96,20 @@ private:
   std::array<std::uintptr_t, 2> repr;
 };
 
+#ifdef __cpp_deduction_guides
+template <typename C>
+explicit Slice(C &c)
+    -> Slice<std::remove_reference_t<decltype(*std::declval<C>().data())>>;
+#endif // __cpp_deduction_guides
+
 template <typename T>
 class Slice<T>::iterator final {
 public:
+#if __cplusplus >= 202002L
+  using iterator_category = std::contiguous_iterator_tag;
+#else
   using iterator_category = std::random_access_iterator_tag;
+#endif
   using value_type = T;
   using difference_type = std::ptrdiff_t;
   using pointer = typename std::add_pointer<T>::type;
@@ -114,6 +127,9 @@ public:
   iterator &operator+=(difference_type) noexcept;
   iterator &operator-=(difference_type) noexcept;
   iterator operator+(difference_type) const noexcept;
+  friend inline iterator operator+(difference_type lhs, iterator rhs) noexcept {
+    return rhs + lhs;
+  }
   iterator operator-(difference_type) const noexcept;
   difference_type operator-(const iterator &) const noexcept;
 
@@ -129,6 +145,11 @@ private:
   void *pos;
   std::size_t stride;
 };
+
+#if __cplusplus >= 202002L
+static_assert(std::ranges::contiguous_range<rust::Slice<const uint8_t>>);
+static_assert(std::contiguous_iterator<rust::Slice<const uint8_t>::iterator>);
+#endif
 
 template <typename T>
 Slice<T>::Slice() noexcept {
@@ -344,7 +365,7 @@ public:
   explicit Box(const T &);
   explicit Box(T &&);
 
-  Box &operator=(Box &&) &noexcept;
+  Box &operator=(Box &&) & noexcept;
 
   const T *operator->() const noexcept;
   const T &operator*() const noexcept;
@@ -420,7 +441,7 @@ Box<T>::~Box() noexcept {
 }
 
 template <typename T>
-Box<T> &Box<T>::operator=(Box &&other) &noexcept {
+Box<T> &Box<T>::operator=(Box &&other) & noexcept {
   if (this->ptr) {
     this->drop();
   }
@@ -503,7 +524,7 @@ public:
   Vec(Vec &&) noexcept;
   ~Vec() noexcept;
 
-  Vec &operator=(Vec &&) &noexcept;
+  Vec &operator=(Vec &&) & noexcept;
   Vec &operator=(const Vec &) &;
 
   std::size_t size() const noexcept;
@@ -577,7 +598,7 @@ Vec<T>::~Vec() noexcept {
 }
 
 template <typename T>
-Vec<T> &Vec<T>::operator=(Vec &&other) &noexcept {
+Vec<T> &Vec<T>::operator=(Vec &&other) & noexcept {
   this->drop();
   this->repr = other.repr;
   new (&other) Vec();
@@ -808,6 +829,12 @@ std::size_t align_of() {
 } // namespace cxxbridge1
 } // namespace rust
 
+#if __cplusplus >= 201402L
+#define CXX_DEFAULT_VALUE(value) = value
+#else
+#define CXX_DEFAULT_VALUE(value)
+#endif
+
 namespace mmscenegraph {
   enum class NodeType : ::std::uint8_t;
   struct Point3;
@@ -851,9 +878,9 @@ enum class NodeType : ::std::uint8_t {
 #ifndef CXXBRIDGE1_STRUCT_mmscenegraph$Point3
 #define CXXBRIDGE1_STRUCT_mmscenegraph$Point3
 struct Point3 final {
-  double x;
-  double y;
-  double z;
+  double x CXX_DEFAULT_VALUE(0);
+  double y CXX_DEFAULT_VALUE(0);
+  double z CXX_DEFAULT_VALUE(0);
 
   bool operator==(Point3 const &) const noexcept;
   bool operator!=(Point3 const &) const noexcept;
@@ -865,7 +892,7 @@ struct Point3 final {
 #define CXXBRIDGE1_STRUCT_mmscenegraph$NodeId
 struct NodeId final {
   ::mmscenegraph::NodeType node_type;
-  ::std::size_t index;
+  ::std::size_t index CXX_DEFAULT_VALUE(0);
 
   bool operator==(NodeId const &) const noexcept;
   bool operator!=(NodeId const &) const noexcept;
@@ -891,7 +918,7 @@ enum class AttrType : ::std::uint8_t {
 #define CXXBRIDGE1_STRUCT_mmscenegraph$AttrId
 struct AttrId final {
   ::mmscenegraph::AttrType attr_type;
-  ::std::size_t index;
+  ::std::size_t index CXX_DEFAULT_VALUE(0);
 
   bool operator==(AttrId const &) const noexcept;
   bool operator!=(AttrId const &) const noexcept;
@@ -1070,8 +1097,8 @@ struct CameraNode final {
   ::mmscenegraph::AttrId attr_far_clip_plane;
   ::mmscenegraph::AttrId attr_camera_scale;
   ::mmscenegraph::FilmFit film_fit;
-  ::std::int32_t render_image_width;
-  ::std::int32_t render_image_height;
+  ::std::int32_t render_image_width CXX_DEFAULT_VALUE(0);
+  ::std::int32_t render_image_height CXX_DEFAULT_VALUE(0);
 
   bool operator==(CameraNode const &) const noexcept;
   bool operator!=(CameraNode const &) const noexcept;
@@ -1206,7 +1233,6 @@ enum class Interpolation : ::std::uint8_t {
   kLinear = 1,
   kQuadraticNUBS = 2,
   kCubicNUBS = 3,
-  kCubicSpline = 4,
   kUnknown = 255,
 };
 #endif // CXXBRIDGE1_ENUM_mmscenegraph$Interpolation

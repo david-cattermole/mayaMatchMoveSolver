@@ -358,7 +358,6 @@ fn bench_n_points_interpolation_methods(c: &mut Criterion) {
         Interpolation::Linear,
         Interpolation::QuadraticNUBS,
         Interpolation::CubicNUBS,
-        Interpolation::CubicSpline,
     ];
 
     for &control_count in &control_point_counts {
@@ -443,7 +442,7 @@ fn bench_data_complexity_scenarios(c: &mut Criterion) {
     ];
 
     let control_points = 6;
-    let interpolation = Interpolation::CubicSpline;
+    let interpolation = Interpolation::QuadraticNUBS;
 
     for (scenario_name, (x_values, y_values)) in &scenarios {
         let bench_id = BenchmarkId::from_parameter(scenario_name);

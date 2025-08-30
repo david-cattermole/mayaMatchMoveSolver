@@ -493,8 +493,6 @@ pub mod ffi {
         #[cxx_name = "kCubicNUBS"]
         CubicNUBS = 3,
 
-        #[cxx_name = "kCubicSpline"]
-        CubicSpline = 4,
 
         #[cxx_name = "kUnknown"]
         Unknown = 255,

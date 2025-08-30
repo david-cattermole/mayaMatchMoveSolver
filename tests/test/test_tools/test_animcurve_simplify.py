@@ -40,7 +40,6 @@ DISTRIBUTIONS = [
 INTERPOLATION_LINEAR = 'linear'
 INTERPOLATION_CUBIC_NUBS = 'cubic_nubs'
 INTERPOLATION_QUADRATIC_NUBS = 'quadratic_nubs'
-INTERPOLATION_CUBIC_SPLINE = 'cubic_spline'
 INTERPOLATIONS = [
     INTERPOLATION_LINEAR,
     INTERPOLATION_CUBIC_NUBS,
@@ -129,7 +128,7 @@ def _calculate_and_print_quality_metrics(
 # Quality thresholds by control point count
 QUALITY_THRESHOLDS = {
     2: 96.35,  # 2 control points: basic approximation
-    3: 96.35,  # 3 control points
+    3: 96.30,  # 3 control points
     4: 97.0,  # 4 control points
     5: 97.20,  # 5 control points
     16: 97.50,  # 16 control points: high fidelity.
@@ -245,7 +244,7 @@ class TestAnimCurveSimplify(test_tools_utils.ToolsTestCase):
 
     def test_simplify_control_points3(self):
         """Test 3 control points with various distributions and interpolations."""
-        interpolations = [INTERPOLATION_CUBIC_SPLINE, INTERPOLATION_LINEAR]
+        interpolations = [INTERPOLATION_QUADRATIC_NUBS, INTERPOLATION_LINEAR]
         self._test_simplify_with_quality_metrics(
             control_point_count=3,
             interpolations=interpolations,

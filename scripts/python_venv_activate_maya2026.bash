@@ -28,12 +28,7 @@
 export MAYA_VERSION=2026
 
 # Set required variables for python_venv_activate.bash
-#
-# Python executable - edit this to point to an explicit python executable file.
-#
-# RockyLinux8 has Python 3.6 by default, but we use Python 3.9 because
-# it has better support for tools like 'ruff'.
-export PYTHON_EXE=python3.9
+export PYTHON_EXE=python3
 export PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_linux_maya2026
 
 # Call the internal venv activation script directly.

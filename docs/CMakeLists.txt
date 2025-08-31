@@ -52,18 +52,23 @@ set(input_files
         source/mmSolver.utils.rst
         )
 
+# Normalize the path to avoid escape sequence issues on Windows.
+file(TO_CMAKE_PATH "${BUILD_DOCS_DIR_BASE}" BUILD_DOCS_DIR_BASE)
+
+set(DOCS_LOCAL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/")
+set(DOCS_MODULE_DIR "${MODULE_FULL_NAME}/docs/")
+
+message(STATUS "Documentation local directory: ${DOCS_LOCAL_DIR}")
+message(STATUS "Documentation build directory: ${BUILD_DOCS_DIR_BASE}")
+message(STATUS "Documentation module directory: ${DOCS_MODULE_DIR}")
+
+# Ensure the external build directory exists.
+file(MAKE_DIRECTORY ${BUILD_DOCS_DIR_BASE})
+
 # Build Documentation (using Python Sphinx)
+set(input_file "${CMAKE_CURRENT_SOURCE_DIR}/source/index.html")
+set(output_file "${BUILD_DOCS_DIR_BASE}/html/py-modindex.html")
 if(SPHINX_AVAILABLE)
-    # Normalize the path to avoid escape sequence issues on Windows.
-    file(TO_CMAKE_PATH "${BUILD_DOCS_DIR_BASE}" BUILD_DOCS_DIR_BASE)
-    message(STATUS "Documentation build directory: ${BUILD_DOCS_DIR_BASE}")
-
-    # Ensure the external build directory exists.
-    file(MAKE_DIRECTORY ${BUILD_DOCS_DIR_BASE})
-
-    set(input_file source/index.html)
-    set(output_file ${BUILD_DOCS_DIR_BASE}/html/py-modindex.html)
-
     if(WIN32)
         set(DOCS_WRAPPER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/build_docs_with_venv.bat)
     else()
@@ -77,20 +82,48 @@ if(SPHINX_AVAILABLE)
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             DEPENDS ${input_files}
     )
-
     add_custom_target(
             build_documentation ALL
+            # TODO: Can we be smarter about what the documentation
+            # target depends on? For example listing all the Python
+            # code and the HTML and images for the site?
             DEPENDS ${output_file}
             COMMENT "Building Documentation (with Sphinx) (${input_file})..."
     )
-
-    if (MMSOLVER_BUILD_PLUGIN)
-        add_dependencies(mmSolver build_documentation)
-    endif ()
-
-    # Install Documentation
-    install(DIRECTORY "${BUILD_DOCS_DIR_BASE}/html/"
-            DESTINATION "${MODULE_FULL_NAME}/docs/html")
 else()
-    message(STATUS "Skipping documentation build because sphinx-build is not available")
+    # Without Sphinx, we just copy the placeholder page, so our
+    # installed package always has a file it can open.
+    add_custom_command(
+            OUTPUT ${output_file}
+            COMMAND ${CMAKE_COMMAND} -E copy ${input_file} ${BUILD_DOCS_DIR_BASE}/html/index.html
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            DEPENDS ${input_files}
+    )
+    add_custom_target(
+            build_documentation ALL
+            # TODO: Can we be smarter about what the documentation
+            # target depends on? For example listing all the Python
+            # code and the HTML and images for the site?
+            DEPENDS ${output_file}
+            COMMENT "Building Documentation (with placeholder file) (${input_file})..."
+    )
+endif()
+
+if (MMSOLVER_BUILD_PLUGIN)
+    add_dependencies(mmSolver build_documentation)
+endif ()
+
+# Install Documentation.
+if(EXISTS "${BUILD_DOCS_DIR_BASE}")
+    # NOTE: We already copied the placeholder file above, so we can
+    # install that, even if nothing else exists.
+    install(DIRECTORY "${BUILD_DOCS_DIR_BASE}/"
+        DESTINATION "${DOCS_MODULE_DIR}")
+elseif(EXISTS "${DOCS_LOCAL_DIR}")
+    # Install fallback documentation if sphinx-build is not available.
+    message(STATUS "Installing fallback documentation from ${CMAKE_CURRENT_SOURCE_DIR}/docs/build/")
+    install(DIRECTORY "${DOCS_LOCAL_DIR} "
+        DESTINATION "${DOCS_MODULE_DIR}")
+else()
+  message(WARNING "No documentation found to install. Skipping documentation installation.")
 endif()

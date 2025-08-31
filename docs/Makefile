@@ -11,7 +11,7 @@ PAPER         =
 # Use environment variable if set, otherwise fall back to local
 # directory.
 ifdef BUILD_DOCS_DIR_BASE
-	BUILDDIR      = $(BUILD_DOCS_DIR_BASE)/cmake_linux_maya$(MAYA_VERSION)_Release
+	BUILDDIR      = $(BUILD_DOCS_DIR_BASE)
 else
 	BUILDDIR      = build_linux_maya$(MAYA_VERSION)
 endif

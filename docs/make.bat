@@ -10,7 +10,7 @@ REM
 REM Use environment variable if set, otherwise fall back to local
 REM directory.
 if defined BUILD_DOCS_DIR_BASE (
-	set BUILDDIR=%BUILD_DOCS_DIR_BASE%/cmake_win64_maya%MAYA_VERSION%_Release
+	set BUILDDIR=%BUILD_DOCS_DIR_BASE%
 ) else (
 	set BUILDDIR=build_win64_maya%MAYA_VERSION%
 )

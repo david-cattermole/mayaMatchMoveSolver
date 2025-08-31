@@ -20,7 +20,7 @@ This tool can be used for interactive node depth editing on a single
 frame. For example this tool can be used for a character's hand, or or
 body control, it does not need to be used with mmSolver nodes.  For
 real-time interactive Screen-Space modifications of transform nodes,
-please use the :ref:`screen-space-transform-ref` tool.
+please use the :ref:`screen-space-transform-tool-ref` tool.
 
 Usage:
 

@@ -20,8 +20,12 @@
 ::
 :: Activates the Python development environment for Maya 2017.
 
-:: Set Maya version for the common venv activation script.
+:: Set Maya version for the venv activation script.
 SET MAYA_VERSION=2017
 
-:: Call the common venv activation script.
-CALL scripts\internal\python_venv_activate_common.bat
+:: Set required variables for python_venv_activate.bat
+SET PYTHON_EXE=python
+SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya2017
+
+:: Call the internal venv activation script directly.
+CALL scripts\internal\python_venv_activate.bat

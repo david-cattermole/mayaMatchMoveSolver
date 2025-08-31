@@ -54,6 +54,8 @@ set(input_files
 
 # Build Documentation (using Python Sphinx)
 if(SPHINX_AVAILABLE)
+    # Normalize the path to avoid escape sequence issues on Windows.
+    file(TO_CMAKE_PATH "${BUILD_DOCS_DIR_BASE}" BUILD_DOCS_DIR_BASE)
     message(STATUS "Documentation build directory: ${BUILD_DOCS_DIR_BASE}")
 
     # Ensure the external build directory exists.
@@ -61,10 +63,17 @@ if(SPHINX_AVAILABLE)
 
     set(input_file source/index.html)
     set(output_file ${BUILD_DOCS_DIR_BASE}/html/py-modindex.html)
+
+    if(WIN32)
+        set(DOCS_WRAPPER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/build_docs_with_venv.bat)
+    else()
+        set(DOCS_WRAPPER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/build_docs_with_venv.bash)
+    endif()
+
     add_custom_command(
             OUTPUT ${output_file}
             COMMAND ${CMAKE_COMMAND} -E copy ${input_file} ${BUILD_DOCS_DIR_BASE}/html/index.html
-            COMMAND ${CMAKE_COMMAND} -E env BUILD_DOCS_DIR_BASE=${BUILD_DOCS_DIR_BASE} MAYA_VERSION=${MAYA_VERSION} make html
+            COMMAND ${CMAKE_COMMAND} -E env BUILD_DOCS_DIR_BASE=${BUILD_DOCS_DIR_BASE} MAYA_VERSION=${MAYA_VERSION} ${DOCS_WRAPPER_SCRIPT}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             DEPENDS ${input_files}
     )

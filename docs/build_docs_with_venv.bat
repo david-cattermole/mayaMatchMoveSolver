@@ -1,6 +1,7 @@
 @ECHO OFF
+SETLOCAL
 ::
-:: Copyright (C) 2021 David Cattermole.
+:: Copyright (C) 2025 David Cattermole.
 ::
 :: This file is part of mmSolver.
 ::
@@ -18,14 +19,22 @@
 :: along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 :: ---------------------------------------------------------------------
 ::
-:: Activates the Python development environment for Maya 2025.
+:: Wrapper script to build documentation with proper Python virtual environment.
+::
 
-:: Set Maya version for the venv activation script.
-SET MAYA_VERSION=2025
+:: Get the project root (one level up from docs directory).
+SET PROJECT_ROOT=%~dp0..
+CD /D "%PROJECT_ROOT%"
 
-:: Set required variables for python_venv_activate.bat
-SET PYTHON_EXE=python
-SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya2025
+:: Activate the Python virtual environment for the specified Maya version.
+CALL "%PROJECT_ROOT%\scripts\python_venv_activate_maya%MAYA_VERSION%.bat"
+IF ERRORLEVEL 1 (
+    ECHO ERROR: Failed to activate Python virtual environment!
+    EXIT /B 1
+)
 
-:: Call the internal venv activation script directly.
-CALL scripts\internal\python_venv_activate.bat
+:: Change back to docs directory.
+CD /D "%PROJECT_ROOT%\docs"
+
+:: Run the make command with environment variables.
+make.bat html

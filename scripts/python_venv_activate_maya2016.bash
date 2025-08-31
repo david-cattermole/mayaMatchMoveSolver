@@ -24,8 +24,12 @@
 # $ source scripts/python_venv_activate_maya2016.bash
 #
 
-# Set Maya version for the common venv activation script.
+# Set Maya version for the venv activation script.
 export MAYA_VERSION=2016
 
-# Call the common venv activation script.
-source "$(pwd)/scripts/internal/python_venv_activate_common.bash"
+# Set required variables for python_venv_activate.bash
+export PYTHON_EXE=python
+export PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_linux_maya2016
+
+# Call the internal venv activation script directly.
+source "$(pwd)/scripts/internal/python_venv_activate.bash"

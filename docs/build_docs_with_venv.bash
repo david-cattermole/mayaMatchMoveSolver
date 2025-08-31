@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2022 David Cattermole.
+# Copyright (C) 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -18,18 +18,23 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# Activates the Python development environment for Maya 2024.
-#
-# This script should be sourced, NOT called, for example:
-# $ source scripts/python_venv_activate_maya2024.bash
+# Wrapper script to build documentation with proper Python virtual environment.
 #
 
-# Set Maya version for the venv activation script.
-export MAYA_VERSION=2024
+# Get the project root (one level up from docs directory).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+cd "${PROJECT_ROOT}"
 
-# Set required variables for python_venv_activate.bash
-export PYTHON_EXE=python3
-export PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_linux_maya2024
+# Activate the Python virtual environment for the specified Maya version.
+source "scripts/python_venv_activate_maya${MAYA_VERSION}.bash"
+if [ $? -ne 0 ]; then
+    echo "ERROR: Failed to activate Python virtual environment!"
+    exit 1
+fi
 
-# Call the internal venv activation script directly.
-source "$(pwd)/scripts/internal/python_venv_activate.bash"
+# Change back to docs directory.
+cd "${PROJECT_ROOT}/docs"
+
+# Run the make command with environment variables.
+make html

@@ -359,3 +359,127 @@ Options
   - Higher values (above 1.0) remove less pops, only fixing large spikes.
   - Lower values (below 1.0) remove more pops, smoothing out smaller variations.
   - For typical matchmove solves, however values between 0.5 and 1.5 work well.
+
+.. _attribute-curve-simplify-tool-ref:
+
+Attribute Curve Simplify
+------------------------
+
+.. figure:: images/tools_attribute_curve_simplify_ui.png
+    :alt: Attribute Curve Simplify UI
+    :align: center
+    :width: 80%
+
+The `Attribute Curve Simplify` tool reduces the number of keyframes in
+animation curves while preserving their overall shape and motion. This
+tool is particularly useful for optimizing dense animation data from
+solves or imported motion capture, creating cleaner curves that are
+easier to edit and perform better in Maya.
+
+The tool uses curve fitting algorithms to create simplified curves
+with a specified number of control points. It provides a real-time
+preview showing both the original and simplified curves, along with a
+quality-of-fit percentage indicating how closely the simplified curve
+matches the original animation.
+
+For example, after solving a camera with dense per-frame keyframes,
+you can use this tool to reduce hundreds of keyframes down to just a
+few control points while maintaining the essential motion
+characteristics.
+
+Usage:
+
+1) Select nodes with animation curves.
+
+   - The tool will look for selected attributes in the Channel Box.
+   - Or selected Graph Editor Outliner attributes.
+   - Or selected keyframes in the Graph Editor.
+
+2) Open the Attribute Curve Simplify UI:
+
+   - Shelf / Menu: ``mmSolver > Attribute Tools > Simplify Animation Curve``
+
+3) Configure the options:
+
+   - Set the frame range to process.
+   - Adjust the number of control points for the simplified curve.
+   - Choose the distribution method and interpolation type.
+
+4) Preview the results:
+
+   - Use the curve display to compare original vs simplified curves.
+   - Check the quality-of-fit percentage for each curve - 100% is perfect match.
+
+5) Apply the simplification:
+
+   - Click "Apply to Active Curve" for the currently previewed curve.
+   - Click "Apply to All" to process all selected curves at once.
+
+Python Command:
+
+.. code:: python
+
+    import mmSolver.tools.attributecurvesimplify.tool as tool
+
+    # Simplify curves with current settings.
+    tool.main()
+
+    # Open the UI window.
+    tool.open_window()
+
+Notes
++++++
+
+- The tool requires animation curves on the attributes to simplify. If
+  attributes aren't animated, bake them to animation curves first.
+
+- The simplified curves replace the original animation data. Use
+  Maya's undo feature if you need to revert changes.
+
+- All operations can be undone if needed.
+
+- Higher numbers of control points preserve more detail but result in
+  less simplification.
+
+- The "Auto Keypoints" distribution mode automatically detects
+  important keyframes to preserve, while "Uniform" spacing distributes
+  control points evenly across the time range.
+
+- Quality-of-fit percentages above 95% typically indicate excellent
+  curve approximation.
+
+- For curve spike removal (rather than keyframe reduction), consider
+  using the :ref:`Attribute Curve Filter Pops
+  <attribute-curve-filter-pops-tool-ref>` tool instead.
+
+Options
++++++++
+
+- **Frame Range** - Choose how to determine which frames to process:
+
+  - *Input AnimCurve* - Uses the full frame range of each animation curve.
+  - *Timeline (Inner)* - Uses the inner timeline range (highlighted region).
+  - *Timeline (Outer)* - Uses the outer timeline range.
+  - *Custom* - Manually specify start/end frames.
+
+- **Start/End** - When "Custom" frame range is selected, specify the
+  exact frame range to process.
+
+- **Control Points** - Number of control points for the simplified curve:
+
+  - Range: 2-32 control points.
+  - Default: 3 control points.
+  - More points preserve more detail but reduce simplification.
+  - Fewer points create smoother curves but may lose important motion
+    details.
+
+- **Distribution** - Method for positioning control points:
+
+  - *Uniform* - Evenly spaces control points across the time range.
+  - *Auto Keypoints* - Automatically detects and preserves important
+    keyframes.
+
+- **Interpolation** - Curve fitting method:
+
+  - *Linear* - Creates linear segments between control points.
+  - *Smooth* - Uses smooth interpolation (better for organic motion).

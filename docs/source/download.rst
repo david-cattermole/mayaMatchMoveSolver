@@ -14,14 +14,6 @@ Download the latest release **mmSolver v0.6.0**:
      - Link
 
    * - Linux
-     - Maya 2019
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.0/mayaMatchMoveSolver-0.6.0-maya2019-linux.tar.gz>`_
-
-   * - Linux
-     - Maya 2020
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.0/mayaMatchMoveSolver-0.6.0-maya2020-linux.tar.gz>`_
-
-   * - Linux
      - Maya 2022
      - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.0/mayaMatchMoveSolver-0.6.0-maya2022-linux.tar.gz>`_
 

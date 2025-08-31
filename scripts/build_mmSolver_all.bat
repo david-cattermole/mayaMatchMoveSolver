@@ -61,16 +61,6 @@ call scripts/build_mmSolver_windows64_maya2026.bat
 set DOCKERFILE_DIR=%PROJECT_ROOT%\share\docker
 set VOLUME="%PROJECT_ROOT%:/mmSolver"
 
-:: Linux - Maya 2019 Build
-set NAME=mmsolver-linux-maya2019-build
-docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2019" -t %NAME% "%PROJECT_ROOT%"
-docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2019.bash'"
-
-:: Linux - Maya 2020 Build
-set NAME=mmsolver-linux-maya2020-build
-docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2020" -t %NAME% "%PROJECT_ROOT%"
-docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2020.bash'"
-
 :: Linux - Maya 2022 Build
 set NAME=mmsolver-linux-maya2022-build
 docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2022" -t %NAME% "%PROJECT_ROOT%"

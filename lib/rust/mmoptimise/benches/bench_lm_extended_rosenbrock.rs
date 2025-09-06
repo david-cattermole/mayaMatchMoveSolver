@@ -23,7 +23,8 @@
 use criterion::{
     black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
 };
-use mmoptimise_rust::SolverWorkspace;
+use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtWorkspace;
+use mmoptimise_rust::solver::test_problems::ExtendedRosenbrockProblem;
 use std::time::Duration;
 
 mod common;
@@ -34,16 +35,18 @@ fn bench_extended_rosenbrock_dimensions(c: &mut Criterion) {
     // Longer for higher dimensions.
     group.measurement_time(Duration::from_secs(15));
 
-    let default_config = &BenchmarkConfig::default_configs()[0];
+    let (_, default_config) = levenberg_marquardt_configs()[0];
     let dimensions = vec![4, 8, 16, 32];
 
     for n in dimensions {
         let problem = ExtendedRosenbrockProblem::new(n);
-        let starting_points = ExtendedRosenbrockProblem::starting_points(n);
+        let starting_points = extended_rosenbrock_starting_points(n);
 
-        let mut workspace =
-            SolverWorkspace::new(&problem, &starting_points[0].parameters)
-                .expect("Failed to create workspace");
+        let mut workspace = LevenbergMarquardtWorkspace::new(
+            &problem,
+            &starting_points[0].parameters,
+        )
+        .expect("Failed to create workspace");
 
         for start_point in &starting_points {
             let bench_id =
@@ -51,7 +54,7 @@ fn bench_extended_rosenbrock_dimensions(c: &mut Criterion) {
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark_with_workspace(
+                        run_lm_benchmark_with_workspace(
                             &problem,
                             default_config,
                             start_point,
@@ -71,26 +74,24 @@ fn bench_extended_rosenbrock_configs(c: &mut Criterion) {
     group.measurement_time(Duration::from_secs(12));
 
     let problem = ExtendedRosenbrockProblem::new(8); // 8D problem.
-    let configs = vec![
-        BenchmarkConfig::default_configs()[0].clone(), // Default.
-        BenchmarkConfig::default_configs()[1].clone(), // HighPrecision.
-        BenchmarkConfig::default_configs()[2].clone(), // FastConvergence.
-    ];
-    let starting_points = ExtendedRosenbrockProblem::starting_points(8);
+    let configs = levenberg_marquardt_configs();
+    let starting_points = extended_rosenbrock_starting_points(8);
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &starting_points[0].parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &starting_points[0].parameters,
+    )
+    .expect("Failed to create workspace");
 
-    for config in &configs {
+    for (config_name, config) in &configs {
         for start_point in &starting_points {
-            let bench_id = BenchmarkId::new(config.name, start_point.name);
+            let bench_id = BenchmarkId::new(*config_name, start_point.name);
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark_with_workspace(
+                        run_lm_benchmark_with_workspace(
                             &problem,
-                            config,
+                            *config,
                             start_point,
                             &mut workspace,
                         )
@@ -109,7 +110,7 @@ fn bench_extended_rosenbrock_scalability(c: &mut Criterion) {
     group.measurement_time(Duration::from_secs(20));
 
     // FastConvergence for scalability.
-    let fast_config = &BenchmarkConfig::default_configs()[2];
+    let (_, fast_config) = levenberg_marquardt_configs()[2];
 
     // Test how execution time scales with problem size.
     let dimensions = vec![4, 8, 16, 32, 64];
@@ -128,14 +129,14 @@ fn bench_extended_rosenbrock_scalability(c: &mut Criterion) {
         };
 
         let mut workspace =
-            SolverWorkspace::new(&problem, &start_point.parameters)
+            LevenbergMarquardtWorkspace::new(&problem, &start_point.parameters)
                 .expect("Failed to create workspace");
 
         let bench_id = BenchmarkId::from_parameter(format!("{}D", n));
         group.bench_with_input(bench_id, &start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark_with_workspace(
+                    run_lm_benchmark_with_workspace(
                         &problem,
                         fast_config,
                         start_point,

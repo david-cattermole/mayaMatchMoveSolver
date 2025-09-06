@@ -20,10 +20,13 @@
 //! and often causes solvers to fail.  Success on this function
 //! indicates a very robust solver.
 
-use criterion::{
-    black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
+use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
+use mmoptimise_rust::solver::common::ParameterScalingMode;
+use mmoptimise_rust::solver::levenberg_marquardt::{
+    LevenbergMarquardtConfig, LevenbergMarquardtWorkspace,
 };
-use mmoptimise_rust::{ScalingMode, SolverConfig, SolverWorkspace};
+use mmoptimise_rust::solver::test_problems::BukinN6Problem;
+use std::hint::black_box;
 use std::time::Duration;
 
 mod common;
@@ -37,26 +40,28 @@ fn bench_bukin_n6_configs(c: &mut Criterion) {
 
     // Only test most relevant configs for this extremely difficult problem.
     let configs = vec![
-        BenchmarkConfig::default_configs()[0].clone(), // Default.
-        BenchmarkConfig::default_configs()[1].clone(), // HighPrecision.
-        BenchmarkConfig::default_configs()[5].clone(), // SmallTrustRegion.
+        levenberg_marquardt_configs()[0], // Default.
+        levenberg_marquardt_configs()[1], // HighPrecision.
+        levenberg_marquardt_configs()[3], // SmallTrustRegion.
     ];
-    let starting_points = BukinN6Problem::starting_points();
+    let starting_points = bukin_n6_starting_points();
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &starting_points[0].parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &starting_points[0].parameters,
+    )
+    .expect("Failed to create workspace");
 
-    for config in &configs {
+    for (config_name, config) in &configs {
         for start_point in &starting_points {
-            let bench_id = BenchmarkId::new(config.name, start_point.name);
+            let bench_id = BenchmarkId::new(*config_name, start_point.name);
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     // Use unwrap_or to handle potential solver failures gracefully.
                     black_box(
-                        run_benchmark_with_workspace(
+                        run_lm_benchmark_with_workspace(
                             &problem,
-                            config,
+                            *config,
                             start_point,
                             &mut workspace,
                         )
@@ -81,7 +86,7 @@ fn bench_bukin_n6_starting_points(c: &mut Criterion) {
 
     let problem = BukinN6Problem;
     // Use high precision for this difficult problem.
-    let high_precision_config = &BenchmarkConfig::default_configs()[1];
+    let high_precision_config = &levenberg_marquardt_configs()[1].1;
 
     // Extended set of starting points within the valid domain.
     let challenging_points = vec![
@@ -115,18 +120,20 @@ fn bench_bukin_n6_starting_points(c: &mut Criterion) {
         },
     ];
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &challenging_points[0].parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &challenging_points[0].parameters,
+    )
+    .expect("Failed to create workspace");
 
     for start_point in &challenging_points {
         let bench_id = BenchmarkId::from_parameter(start_point.name);
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark_with_workspace(
+                    run_lm_benchmark_with_workspace(
                         &problem,
-                        high_precision_config,
+                        *high_precision_config,
                         start_point,
                         &mut workspace,
                     )
@@ -155,53 +162,22 @@ fn bench_bukin_n6_robustness(c: &mut Criterion) {
         parameters: vec![-8.0, 0.5],
     };
 
-    // Test different solver strategies for this extremely difficult problem.
-    let robustness_configs = vec![
-        BenchmarkConfig {
-            name: "VeryHighPrecision",
-            config: SolverConfig {
-                ftol: 1e-15,
-                xtol: 1e-15,
-                gtol: 1e-15,
-                max_iterations: 2000,
-                max_function_evaluations: 20000,
-                ..Default::default()
-            },
-        },
-        BenchmarkConfig {
-            name: "VerySmallTrustRegion",
-            config: SolverConfig {
-                initial_trust_factor: 0.01,
-                max_iterations: 1500,
-                ..Default::default()
-            },
-        },
-        BenchmarkConfig {
-            name: "Conservative",
-            config: SolverConfig {
-                ftol: 1e-10,
-                xtol: 1e-10,
-                gtol: 1e-10,
-                initial_trust_factor: 0.1,
-                max_iterations: 1000,
-                scaling_mode: ScalingMode::Auto,
-                ..Default::default()
-            },
-        },
-    ];
+    // Test different solver strategies for this extremely difficult
+    // problem.
+    let configs = levenberg_marquardt_configs();
 
     let mut workspace =
-        SolverWorkspace::new(&problem, &standard_start.parameters)
+        LevenbergMarquardtWorkspace::new(&problem, &standard_start.parameters)
             .expect("Failed to create workspace");
 
-    for config in &robustness_configs {
-        let bench_id = BenchmarkId::from_parameter(config.name);
+    for (config_name, config) in &configs {
+        let bench_id = BenchmarkId::from_parameter(config_name);
         group.bench_with_input(bench_id, &standard_start, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark_with_workspace(
+                    run_lm_benchmark_with_workspace(
                         &problem,
-                        config,
+                        *config,
                         start_point,
                         &mut workspace,
                     )

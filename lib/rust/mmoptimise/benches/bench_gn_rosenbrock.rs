@@ -13,43 +13,58 @@
 // ====================================================================
 //
 
-//! Rosenbrock function benchmarks.
+//! Rosenbrock function benchmarks using Gauss-Newton solver.
 //!
 //! The Rosenbrock function is a classic optimization test problem
-//! that creates a narrow, curved valley. It's challenging for
-//! optimizers because the valley is easy to find but the minimum is
-//! difficult to reach.
+//! that creates a narrow, curved valley. Gauss-Newton is expected
+//! to perform well when starting near the optimum but may struggle
+//! from far starting points.
 
 use criterion::{
     black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
 };
-use mmoptimise_rust::SolverWorkspace;
+use mmoptimise_rust::solver::gauss_newton::GaussNewtonWorkspace;
+use mmoptimise_rust::solver::test_problems::RosenbrockProblem;
 use std::time::Duration;
 
 mod common;
 use common::*;
 
 fn bench_rosenbrock_configs(c: &mut Criterion) {
-    let mut group = c.benchmark_group("rosenbrock_configs");
+    let mut group = c.benchmark_group("gn_rosenbrock_configs");
     group.measurement_time(Duration::from_secs(10));
 
     let problem = RosenbrockProblem::new();
-    let configs = BenchmarkConfig::default_configs();
-    let starting_points = RosenbrockProblem::starting_points();
+    let configs = gauss_newton_configs();
+    // Use starting points closer to optimum for GN (it's less robust than LM/PDL)
+    let starting_points = vec![
+        StartingPoint {
+            name: "NearMinimum",
+            parameters: vec![0.8, 0.8],
+        },
+        StartingPoint {
+            name: "ModeratelyClose",
+            parameters: vec![0.5, 0.5],
+        },
+        StartingPoint {
+            name: "Origin",
+            parameters: vec![0.0, 0.0],
+        },
+    ];
 
     let mut workspace =
-        SolverWorkspace::new(&problem, &starting_points[0].parameters)
+        GaussNewtonWorkspace::new(&problem, &starting_points[0].parameters)
             .expect("Failed to create workspace");
 
-    for config in &configs {
+    for (config_name, config) in &configs {
         for start_point in &starting_points {
-            let bench_id = BenchmarkId::new(config.name, start_point.name);
+            let bench_id = BenchmarkId::new(*config_name, start_point.name);
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark_with_workspace(
+                        run_gn_benchmark_with_workspace(
                             &problem,
-                            config,
+                            *config,
                             start_point,
                             &mut workspace,
                         )
@@ -63,29 +78,37 @@ fn bench_rosenbrock_configs(c: &mut Criterion) {
 }
 
 fn bench_rosenbrock_variants(c: &mut Criterion) {
-    let mut group = c.benchmark_group("rosenbrock_variants");
+    let mut group = c.benchmark_group("gn_rosenbrock_variants");
     group.measurement_time(Duration::from_secs(8));
 
-    let default_config = &BenchmarkConfig::default_configs()[0];
-    let starting_points = RosenbrockProblem::starting_points();
+    // Use default Gauss-Newton config
+    let (_, default_config) = gauss_newton_configs()[0];
+    let starting_points = vec![
+        StartingPoint {
+            name: "NearMinimum",
+            parameters: vec![0.8, 0.8],
+        },
+        StartingPoint {
+            name: "Origin",
+            parameters: vec![0.0, 0.0],
+        },
+    ];
 
-    // Test different Rosenbrock parameter values.
+    // Test different Rosenbrock parameter values with easier settings for GN
     let variants = vec![
+        ("Easy_1_10", RosenbrockProblem::with_parameters(1.0, 10.0)),
         ("Standard_1_100", RosenbrockProblem::new()),
         (
             "Modified_2_50",
             RosenbrockProblem::with_parameters(2.0, 50.0),
         ),
-        ("Easy_1_10", RosenbrockProblem::with_parameters(1.0, 10.0)),
-        (
-            "Hard_0.5_200",
-            RosenbrockProblem::with_parameters(0.5, 200.0),
-        ),
     ];
 
-    let mut workspace =
-        SolverWorkspace::new(&variants[0].1, &starting_points[0].parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = GaussNewtonWorkspace::new(
+        &variants[0].1,
+        &starting_points[0].parameters,
+    )
+    .expect("Failed to create workspace");
 
     for (variant_name, problem) in &variants {
         for start_point in &starting_points {
@@ -93,7 +116,7 @@ fn bench_rosenbrock_variants(c: &mut Criterion) {
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark_with_workspace(
+                        run_gn_benchmark_with_workspace(
                             problem,
                             default_config,
                             start_point,
@@ -108,47 +131,51 @@ fn bench_rosenbrock_variants(c: &mut Criterion) {
     group.finish();
 }
 
-fn bench_rosenbrock_starting_points(c: &mut Criterion) {
-    let mut group = c.benchmark_group("rosenbrock_starting_points");
+fn bench_rosenbrock_convergence_basin(c: &mut Criterion) {
+    let mut group = c.benchmark_group("gn_rosenbrock_convergence_basin");
     group.measurement_time(Duration::from_secs(8));
 
     let problem = RosenbrockProblem::new();
-    let default_config = &BenchmarkConfig::default_configs()[0];
+    let (_, default_config) = gauss_newton_configs()[0];
 
-    // Extended set of challenging starting points.
-    let challenging_points = vec![
+    // Test convergence basin - points at increasing distances from optimum
+    let basin_points = vec![
         StartingPoint {
-            name: "VeryFar",
-            parameters: vec![-5.0, 5.0],
+            name: "VeryClose",
+            parameters: vec![0.95, 0.95],
         },
         StartingPoint {
-            name: "Saddle",
-            parameters: vec![0.0, 1.0],
+            name: "Close",
+            parameters: vec![0.8, 0.8],
         },
         StartingPoint {
-            name: "Ridge",
-            parameters: vec![1.0, 0.0],
+            name: "Moderate",
+            parameters: vec![0.6, 0.6],
         },
         StartingPoint {
-            name: "Opposite",
-            parameters: vec![-1.0, -1.0],
+            name: "Challenging",
+            parameters: vec![0.3, 0.3],
         },
         StartingPoint {
-            name: "Extreme",
-            parameters: vec![-10.0, 10.0],
+            name: "Difficult",
+            parameters: vec![0.0, 0.0],
+        },
+        StartingPoint {
+            name: "VeryDifficult",
+            parameters: vec![-0.5, 0.5],
         },
     ];
 
     let mut workspace =
-        SolverWorkspace::new(&problem, &challenging_points[0].parameters)
+        GaussNewtonWorkspace::new(&problem, &basin_points[0].parameters)
             .expect("Failed to create workspace");
 
-    for start_point in &challenging_points {
+    for start_point in &basin_points {
         let bench_id = BenchmarkId::from_parameter(start_point.name);
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark_with_workspace(
+                    run_gn_benchmark_with_workspace(
                         &problem,
                         default_config,
                         start_point,
@@ -162,29 +189,29 @@ fn bench_rosenbrock_starting_points(c: &mut Criterion) {
     group.finish();
 }
 
-/// Benchmark using SolverWorkspace::new() for each iteration (baseline)
+/// Benchmark using GaussNewtonWorkspace::new() for each iteration (baseline)
 fn bench_rosenbrock_memory_comparison_new(c: &mut Criterion) {
-    let mut group = c.benchmark_group("rosenbrock_memory_comparison");
+    let mut group = c.benchmark_group("gn_rosenbrock_memory_comparison");
     group.measurement_time(Duration::from_secs(10));
 
     let problem = RosenbrockProblem::new();
-    let default_config = &BenchmarkConfig::default_configs()[0];
+    let (_, default_config) = gauss_newton_configs()[0];
     let starting_points = vec![
         StartingPoint {
             name: "Point1",
-            parameters: vec![0.0, 0.0],
+            parameters: vec![0.8, 0.8],
         },
         StartingPoint {
             name: "Point2",
-            parameters: vec![-1.2, 1.0],
+            parameters: vec![0.6, 0.6],
         },
         StartingPoint {
             name: "Point3",
-            parameters: vec![2.0, -1.0],
+            parameters: vec![0.4, 0.4],
         },
         StartingPoint {
             name: "Point4",
-            parameters: vec![-0.5, 2.5],
+            parameters: vec![0.2, 0.2],
         },
     ];
 
@@ -192,7 +219,7 @@ fn bench_rosenbrock_memory_comparison_new(c: &mut Criterion) {
         b.iter(|| {
             for start_point in &starting_points {
                 black_box(
-                    run_benchmark(&problem, default_config, start_point)
+                    run_gn_benchmark(&problem, default_config, start_point)
                         .unwrap(),
                 );
             }
@@ -202,41 +229,41 @@ fn bench_rosenbrock_memory_comparison_new(c: &mut Criterion) {
     group.finish();
 }
 
-/// Benchmark using SolverWorkspace::reuse_with() (optimized)
+/// Benchmark using GaussNewtonWorkspace::reuse_with() (optimized)
 fn bench_rosenbrock_memory_comparison_reuse(c: &mut Criterion) {
-    let mut group = c.benchmark_group("rosenbrock_memory_comparison");
+    let mut group = c.benchmark_group("gn_rosenbrock_memory_comparison");
     group.measurement_time(Duration::from_secs(10));
 
     let problem = RosenbrockProblem::new();
-    let default_config = &BenchmarkConfig::default_configs()[0];
+    let (_, default_config) = gauss_newton_configs()[0];
     let starting_points = vec![
         StartingPoint {
             name: "Point1",
-            parameters: vec![0.0, 0.0],
+            parameters: vec![0.8, 0.8],
         },
         StartingPoint {
             name: "Point2",
-            parameters: vec![-1.2, 1.0],
+            parameters: vec![0.6, 0.6],
         },
         StartingPoint {
             name: "Point3",
-            parameters: vec![2.0, -1.0],
+            parameters: vec![0.4, 0.4],
         },
         StartingPoint {
             name: "Point4",
-            parameters: vec![-0.5, 2.5],
+            parameters: vec![0.2, 0.2],
         },
     ];
 
     group.bench_function("using_reuse_with", |b| {
         let mut workspace =
-            SolverWorkspace::new(&problem, &starting_points[0].parameters)
+            GaussNewtonWorkspace::new(&problem, &starting_points[0].parameters)
                 .expect("Failed to create workspace");
 
         b.iter(|| {
             for start_point in &starting_points {
                 black_box(
-                    run_benchmark_with_workspace(
+                    run_gn_benchmark_with_workspace(
                         &problem,
                         default_config,
                         start_point,
@@ -255,7 +282,7 @@ criterion_group!(
     benches,
     bench_rosenbrock_configs,
     bench_rosenbrock_variants,
-    bench_rosenbrock_starting_points,
+    bench_rosenbrock_convergence_basin,
     bench_rosenbrock_memory_comparison_new,
     bench_rosenbrock_memory_comparison_reuse
 );

@@ -20,9 +20,10 @@
 
 use anyhow::Result;
 use log::debug;
-use mmoptimise::solver::{
-    LevenbergMarquardt, OptimisationProblem, SolverConfig, SolverWorkspace,
-};
+use mmoptimise::solver::common::OptimisationProblem;
+use mmoptimise::solver::levenberg_marquardt::LevenbergMarquardtConfig;
+use mmoptimise::solver::levenberg_marquardt::LevenbergMarquardtSolver;
+use mmoptimise::solver::levenberg_marquardt::LevenbergMarquardtWorkspace;
 use nalgebra::{DMatrix, DVector};
 
 use crate::constant::Real;
@@ -104,7 +105,7 @@ pub fn linear_regression(
     Ok((point, angle))
 }
 
-/// N3 Curve Fitting Problem for LevenbergMarquardt solver.
+/// N3 Curve Fitting Problem for LevenbergMarquardtSolver solver.
 struct N3CurveFitProblem {
     reference_values: Vec<(f64, f64)>,
     point_a_x: f64,
@@ -192,7 +193,8 @@ impl OptimisationProblem for N3CurveFitProblem {
     }
 }
 
-/// N-points Curve Fitting Problem for LevenbergMarquardt solver.
+/// N-points Curve Fitting Problem for LevenbergMarquardtSolver
+/// solver.
 struct NPointsCurveFitProblem {
     reference_values: Vec<(f64, f64)>,
     control_points_x: Vec<f64>,
@@ -393,29 +395,30 @@ pub fn nonlinear_line_n3_with_initial(
     );
     let initial_trust_factor =
         calculate_trust_region_radius_from_quality(y_values, &predicted_values)
-            .unwrap_or(100.0); // fallback to default if calculation fails
+            .unwrap_or(100.0); // fallback to default if calculation fails.
 
-    // Use LevenbergMarquardt solver with optimal tolerances for N3
-    // (matching original pre-dual implementation).
-    let config = SolverConfig {
-        ftol: 1e-8,
-        xtol: 1e-8,
-        gtol: 1e-8,
+    // Use LevenbergMarquardtSolver solver with optimal tolerances for
+    // N3 (matching original pre-dual implementation).
+    let config = LevenbergMarquardtConfig {
+        function_tolerance: 1e-8,
+        parameter_tolerance: 1e-8,
+        gradient_tolerance: 1e-8,
         max_iterations: 1000,
         initial_trust_factor,
         verbose: false,
         ..Default::default()
     };
 
-    let solver = LevenbergMarquardt::new(config);
+    let solver = LevenbergMarquardtSolver::new(config);
     let mut workspace =
-        SolverWorkspace::new(&problem, &initial_parameters_vec).unwrap();
+        LevenbergMarquardtWorkspace::new(&problem, &initial_parameters_vec)
+            .unwrap();
 
     // Try the optimal configuration first, with fallback only on failure
     let result = solver.solve_problem(&problem, &mut workspace)?;
 
     debug!(
-        "LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
+        "LevenbergMarquardtSolver result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
         result.status, result.cost, result.iterations, result.function_evaluations
     );
 
@@ -460,7 +463,7 @@ pub fn nonlinear_line_n3(
         point_a_x, point_b_x, point_c_x
     );
 
-    debug!("Starting LevenbergMarquardt optimization");
+    debug!("Starting LevenbergMarquardtSolver optimization");
 
     assert!(point_a_x <= x_first);
     assert!(point_c_x >= x_last);
@@ -530,24 +533,25 @@ pub fn nonlinear_line_n3(
         calculate_trust_region_radius_from_quality(y_values, &predicted_values)
             .unwrap_or(100.0); // fallback to default if calculation fails.
 
-    let config = SolverConfig {
-        ftol: 1e-8,
-        xtol: 1e-8,
-        gtol: 1e-8,
+    let config = LevenbergMarquardtConfig {
+        function_tolerance: 1e-8,
+        parameter_tolerance: 1e-8,
+        gradient_tolerance: 1e-8,
         max_iterations: 1000,
         initial_trust_factor,
         verbose: false,
         ..Default::default()
     };
 
-    let solver = LevenbergMarquardt::new(config);
-    let mut workspace = SolverWorkspace::new(&problem, &initial_parameters)?;
+    let solver = LevenbergMarquardtSolver::new(config);
+    let mut workspace =
+        LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)?;
 
     // Try primary configuration, with conservative fallback only on
     // failure.
     let result = solver.solve_problem(&problem, &mut workspace)?;
 
-    debug!("LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
+    debug!("LevenbergMarquardtSolver result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
            result.status, result.cost, result.iterations, result.function_evaluations);
 
     Ok((
@@ -938,7 +942,7 @@ fn generate_predicted_values_linear(
     predicted
 }
 
-/// N-points curve fitting using LevenbergMarquardt solver with
+/// N-points curve fitting using LevenbergMarquardtSolver solver with
 /// polynomial initialization.
 fn general_nonlinear_npoints(
     x_values: &[f64],
@@ -946,7 +950,7 @@ fn general_nonlinear_npoints(
     x_initial_control_points: &[f64],
     interpolation_method: Interpolation,
 ) -> Result<Vec<Point2>> {
-    debug!("general_nonlinear_npoints: Starting LevenbergMarquardt optimization with {:?}", interpolation_method);
+    debug!("general_nonlinear_npoints: Starting LevenbergMarquardtSolver optimization with {:?}", interpolation_method);
 
     let control_point_count = x_initial_control_points.len();
     let reference_values: Vec<(f64, f64)> = x_values
@@ -1020,31 +1024,32 @@ fn general_nonlinear_npoints(
         calculate_trust_region_radius_from_quality(y_values, &predicted_values)
             .unwrap_or(100.0); // fallback to default if calculation fails.
 
-    let ftol = 1e-8;
-    let xtol = 1e-8;
-    let gtol = 1e-8;
+    let function_tolerance = 1e-8;
+    let parameter_tolerance = 1e-8;
+    let gradient_tolerance = 1e-8;
     let max_iterations = 1000;
-    debug!("Using tolerances ftol={}, xtol={}, gtol={}, max_iterations={} step_bound={} for {} control points",
-          ftol, xtol, gtol, max_iterations, initial_trust_factor, control_point_count);
+    debug!("Using tolerances function_tolerance={}, parameter_tolerance={}, gradient_tolerance={}, max_iterations={} step_bound={} for {} control points",
+          function_tolerance, parameter_tolerance, gradient_tolerance, max_iterations, initial_trust_factor, control_point_count);
 
-    let config = SolverConfig {
-        ftol,
-        xtol,
-        gtol,
+    let config = LevenbergMarquardtConfig {
+        function_tolerance,
+        parameter_tolerance,
+        gradient_tolerance,
         max_iterations,
         initial_trust_factor,
         verbose: false,
         ..Default::default()
     };
 
-    let solver = LevenbergMarquardt::new(config);
-    let mut workspace = SolverWorkspace::new(&problem, &initial_parameters)?;
+    let solver = LevenbergMarquardtSolver::new(config);
+    let mut workspace =
+        LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)?;
 
     // Try primary configuration, with conservative fallback only on
     // failure.
     let result = solver.solve_problem(&problem, &mut workspace)?;
 
-    debug!("LevenbergMarquardt result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
+    debug!("LevenbergMarquardtSolver result: status={:?}, cost={:.6e}, iterations={}, nfev={}",
            result.status, result.cost, result.iterations, result.function_evaluations);
 
     let mut control_points = Vec::with_capacity(control_point_count);

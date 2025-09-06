@@ -22,7 +22,8 @@
 use criterion::{
     black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
 };
-use mmoptimise_rust::SolverWorkspace;
+use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtWorkspace;
+use mmoptimise_rust::solver::test_problems::CurveFittingProblem;
 use std::time::Duration;
 
 mod common;
@@ -33,23 +34,25 @@ fn bench_curve_fitting_configs(c: &mut Criterion) {
     // Longer for noisy data.
     group.measurement_time(Duration::from_secs(12));
 
-    let problem = CurveFittingProblem::example_data1();
-    let configs = BenchmarkConfig::default_configs();
-    let starting_points = CurveFittingProblem::starting_points();
+    let problem = CurveFittingProblem::from_example_data();
+    let configs = levenberg_marquardt_configs();
+    let starting_points = curve_fitting_starting_points();
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &starting_points[0].parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &starting_points[0].parameters,
+    )
+    .expect("Failed to create workspace");
 
-    for config in &configs {
+    for (config_name, config) in &configs {
         for start_point in &starting_points {
-            let bench_id = BenchmarkId::new(config.name, start_point.name);
+            let bench_id = BenchmarkId::new(*config_name, start_point.name);
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark_with_workspace(
+                        run_lm_benchmark_with_workspace(
                             &problem,
-                            config,
+                            *config,
                             start_point,
                             &mut workspace,
                         )
@@ -66,8 +69,8 @@ fn bench_curve_fitting_starting_points(c: &mut Criterion) {
     let mut group = c.benchmark_group("curve_fitting_starting_points");
     group.measurement_time(Duration::from_secs(10));
 
-    let problem = CurveFittingProblem::example_data1();
-    let default_config = &BenchmarkConfig::default_configs()[0];
+    let problem = CurveFittingProblem::from_example_data();
+    let (_, default_config) = levenberg_marquardt_configs()[0];
 
     // Extended set of starting points for curve fitting
     let challenging_points = vec![
@@ -105,16 +108,18 @@ fn bench_curve_fitting_starting_points(c: &mut Criterion) {
         },
     ];
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &challenging_points[0].parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &challenging_points[0].parameters,
+    )
+    .expect("Failed to create workspace");
 
     for start_point in &challenging_points {
         let bench_id = BenchmarkId::from_parameter(start_point.name);
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark_with_workspace(
+                    run_lm_benchmark_with_workspace(
                         &problem,
                         default_config,
                         start_point,
@@ -132,34 +137,32 @@ fn bench_curve_fitting_precision_comparison(c: &mut Criterion) {
     let mut group = c.benchmark_group("curve_fitting_precision");
     group.measurement_time(Duration::from_secs(15));
 
-    let problem = CurveFittingProblem::example_data1();
+    let problem = CurveFittingProblem::from_example_data();
     let challenging_start = StartingPoint {
         name: "FarFromTrue",
         parameters: vec![1.0, -0.5],
     };
 
     // Compare different precision settings for noisy data.
-    let precision_configs = vec![
-        BenchmarkConfig::default_configs()[2].clone(), // FastConvergence.
-        BenchmarkConfig::default_configs()[0].clone(), // Default.
-        BenchmarkConfig::default_configs()[1].clone(), // HighPrecision.
-    ];
+    let precision_configs = levenberg_marquardt_configs();
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &challenging_start.parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &challenging_start.parameters,
+    )
+    .expect("Failed to create workspace");
 
-    for config in &precision_configs {
-        let bench_id = BenchmarkId::from_parameter(config.name);
+    for (config_name, config) in &precision_configs {
+        let bench_id = BenchmarkId::from_parameter(config_name);
         group.bench_with_input(
             bench_id,
             &challenging_start,
             |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark_with_workspace(
+                        run_lm_benchmark_with_workspace(
                             &problem,
-                            config,
+                            *config,
                             start_point,
                             &mut workspace,
                         )

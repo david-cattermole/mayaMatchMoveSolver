@@ -22,7 +22,10 @@
 use criterion::{
     black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
 };
-use mmoptimise_rust::{SolverConfig, SolverWorkspace};
+use mmoptimise_rust::solver::levenberg_marquardt::{
+    LevenbergMarquardtConfig, LevenbergMarquardtWorkspace,
+};
+use mmoptimise_rust::solver::test_problems::GoldsteinPriceFunction;
 use std::time::Duration;
 
 mod common;
@@ -33,22 +36,24 @@ fn bench_goldstein_price_configs(c: &mut Criterion) {
     group.measurement_time(Duration::from_secs(12));
 
     let problem = GoldsteinPriceFunction;
-    let configs = BenchmarkConfig::default_configs();
-    let starting_points = GoldsteinPriceFunction::starting_points();
+    let configs = levenberg_marquardt_configs();
+    let starting_points = goldstein_price_starting_points();
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &starting_points[0].parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &starting_points[0].parameters,
+    )
+    .expect("Failed to create workspace");
 
-    for config in &configs {
+    for (config_name, config) in &configs {
         for start_point in &starting_points {
-            let bench_id = BenchmarkId::new(config.name, start_point.name);
+            let bench_id = BenchmarkId::new(*config_name, start_point.name);
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark_with_workspace(
+                        run_lm_benchmark_with_workspace(
                             &problem,
-                            config,
+                            *config,
                             start_point,
                             &mut workspace,
                         )
@@ -66,7 +71,7 @@ fn bench_goldstein_price_starting_points(c: &mut Criterion) {
     group.measurement_time(Duration::from_secs(10));
 
     let problem = GoldsteinPriceFunction;
-    let default_config = &BenchmarkConfig::default_configs()[0];
+    let (_, default_config) = levenberg_marquardt_configs()[0];
 
     // Extended set of starting points to test local minima convergence
     let challenging_points = vec![
@@ -108,16 +113,18 @@ fn bench_goldstein_price_starting_points(c: &mut Criterion) {
         },
     ];
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &challenging_points[0].parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &challenging_points[0].parameters,
+    )
+    .expect("Failed to create workspace");
 
     for start_point in &challenging_points {
         let bench_id = BenchmarkId::from_parameter(start_point.name);
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark_with_workspace(
+                    run_lm_benchmark_with_workspace(
                         &problem,
                         default_config,
                         start_point,
@@ -138,12 +145,7 @@ fn bench_goldstein_price_local_minima(c: &mut Criterion) {
     let problem = GoldsteinPriceFunction;
 
     // Test how different configs handle the multiple local minima
-    let minima_configs = vec![
-        BenchmarkConfig::default_configs()[0].clone(), // Default
-        BenchmarkConfig::default_configs()[1].clone(), // HighPrecision
-        BenchmarkConfig::default_configs()[2].clone(), // FastConvergence
-        BenchmarkConfig::default_configs()[5].clone(), // SmallTrustRegion
-    ];
+    let minima_configs = levenberg_marquardt_configs();
 
     // Starting point that's equidistant from multiple local minima
     let central_start = StartingPoint {
@@ -152,17 +154,17 @@ fn bench_goldstein_price_local_minima(c: &mut Criterion) {
     };
 
     let mut workspace =
-        SolverWorkspace::new(&problem, &central_start.parameters)
+        LevenbergMarquardtWorkspace::new(&problem, &central_start.parameters)
             .expect("Failed to create workspace");
 
-    for config in &minima_configs {
-        let bench_id = BenchmarkId::from_parameter(config.name);
+    for (config_name, config) in &minima_configs {
+        let bench_id = BenchmarkId::from_parameter(config_name);
         group.bench_with_input(bench_id, &central_start, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark_with_workspace(
+                    run_lm_benchmark_with_workspace(
                         &problem,
-                        config,
+                        *config,
                         start_point,
                         &mut workspace,
                     )
@@ -186,52 +188,54 @@ fn bench_goldstein_price_convergence_study(c: &mut Criterion) {
 
     // Test different iteration limits to study convergence behavior
     let convergence_configs = vec![
-        BenchmarkConfig {
-            name: "QuickStop",
-            config: SolverConfig {
+        (
+            "QuickStop",
+            LevenbergMarquardtConfig {
                 max_iterations: 50,
                 ..Default::default()
             },
-        },
-        BenchmarkConfig {
-            name: "MediumStop",
-            config: SolverConfig {
+        ),
+        (
+            "MediumStop",
+            LevenbergMarquardtConfig {
                 max_iterations: 200,
                 ..Default::default()
             },
-        },
-        BenchmarkConfig {
-            name: "ExtendedStop",
-            config: SolverConfig {
+        ),
+        (
+            "ExtendedStop",
+            LevenbergMarquardtConfig {
                 max_iterations: 500,
                 ..Default::default()
             },
-        },
-        BenchmarkConfig {
-            name: "UnlimitedStop",
-            config: SolverConfig {
+        ),
+        (
+            "UnlimitedStop",
+            LevenbergMarquardtConfig {
                 max_iterations: 1000,
                 max_function_evaluations: 10000,
                 ..Default::default()
             },
-        },
+        ),
     ];
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &challenging_start.parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &challenging_start.parameters,
+    )
+    .expect("Failed to create workspace");
 
-    for config in &convergence_configs {
-        let bench_id = BenchmarkId::from_parameter(config.name);
+    for (config_name, config) in &convergence_configs {
+        let bench_id = BenchmarkId::from_parameter(config_name);
         group.bench_with_input(
             bench_id,
             &challenging_start,
             |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark_with_workspace(
+                        run_lm_benchmark_with_workspace(
                             &problem,
-                            config,
+                            *config,
                             start_point,
                             &mut workspace,
                         )

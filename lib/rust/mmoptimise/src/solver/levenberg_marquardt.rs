@@ -18,161 +18,26 @@
 // ====================================================================
 //
 
+use crate::solver::common::*;
 use anyhow::Result;
 use log::{debug, info, warn};
 use mmcore::dual::Dual;
 use nalgebra::{DMatrix, DVector};
-use num_traits::{Float, Zero};
-use std::ops::{Add, Div, Mul, Sub};
-use thiserror::Error;
-
-#[derive(Error, Debug)]
-pub enum OptimisationError {
-    #[error("Invalid input parameters: {0}")]
-    InvalidInput(String),
-    #[error("Solver failed: {0}")]
-    SolverError(String),
-    #[error("Maximum iterations reached")]
-    MaxIterationsReached,
-    #[error("Function evaluation limit exceeded")]
-    FunctionCallsExceeded,
-    #[error("Numerical instability detected")]
-    NumericalInstability,
-}
-
-/// Status codes indicating how the solver terminated.
-///
-/// These status codes help interpret the quality and reliability of
-/// the optimization result.  Understanding what each status means is
-/// crucial for debugging and validating solutions.
-///
-/// ## Convergence Status Meanings
-///
-/// ### Successful Convergence
-/// - **`Success`**: Converged to optimal solution within all tolerances. This is the ideal outcome.
-/// - **`ToleranceReached`**: Met one or more tolerance criteria (ftol, xtol, or gtol). Usually indicates good convergence.
-/// - **`SmallCostReduction`**: Cost reduction below threshold, indicating we're near an optimum.
-/// - **`SmallStepSize`**: Step size below threshold, suggesting we're at a local minimum.
-/// - **`SmallGradient`**: Gradient norm below threshold, indicating a stationary point.
-///
-/// ### Termination Conditions
-/// - **`MaxIterationsReached`**: Hit iteration limit. May need more iterations or better initial guess.
-/// - **`FunctionCallsExceeded`**: Hit function evaluation limit. Consider increasing limit or improving problem conditioning.
-///
-/// ## Interpreting Results
-///
-/// ```rust
-/// use mmoptimise_rust::{SolverStatus, is_success};
-///
-/// let result = solver.solve_problem(&problem, &mut workspace)?;
-///
-/// match result.status {
-///     SolverStatus::Success => {
-///         println!("Optimal solution found!");
-///         // result.parameters contains the optimal values
-///     },
-///     SolverStatus::ToleranceReached => {
-///         println!("Good convergence achieved");
-///         // Check result.cost to verify solution quality
-///     },
-///     SolverStatus::MaxIterationsReached => {
-///         println!("Need more iterations or better initial guess");
-///         // Consider increasing max_iterations or improving starting point
-///     },
-///     _ => {
-///         if is_success(result.status) {
-///             println!("Converged successfully: {:?}", result.status);
-///         } else {
-///             println!("Solver had difficulties: {:?}", result.status);
-///         }
-///     }
-/// }
-/// ```
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum SolverStatus {
-    /// Converged to optimal solution within all tolerances.
-    Success,
-    /// Met one or more tolerance criteria.
-    ToleranceReached,
-    /// Hit iteration limit (may need more iterations).
-    MaxIterationsReached,
-    /// Hit function evaluation limit.
-    FunctionCallsExceeded,
-    /// Cost reduction below threshold (near optimum).
-    SmallCostReduction,
-    /// Step size below threshold (near optimum).
-    SmallStepSize,
-    /// Gradient norm below threshold (near optimum).
-    SmallGradient,
-}
-
-#[derive(Debug, Clone)]
-pub struct OptimisationResult {
-    pub status: SolverStatus,
-    pub parameters: Vec<f64>,
-    pub residuals: Vec<f64>,
-    pub cost: f64,
-    pub iterations: usize,
-    pub function_evaluations: usize,
-    pub jacobian_evaluations: usize,
-    pub message: &'static str,
-}
-
-/// Parameter scaling modes for improving solver convergence.
-///
-/// Scaling helps normalize parameters with different units or magnitudes,
-/// which is crucial for solver stability and convergence speed.
-///
-/// ## When to Use Each Mode
-///
-/// | Mode       | Description                                         | Best For                                                    |
-/// |------------+-----------------------------------------------------+-------------------------------------------------------------|
-/// | **Auto**   | Automatically scales based on Jacobian column norms | Most problems (recommended default)                         |
-/// | **Manual** | User-provided scaling factors for each parameter    | When you know parameter ranges and units                    |
-/// | **None**   | No scaling applied                                  | Well-conditioned problems with similar parameter magnitudes |
-/// +------------+-----------------------------------------------------+-------------------------------------------------------------+
-///
-/// ## Examples
-///
-/// ```rust
-/// use mmoptimise_rust::ScalingMode;
-///
-/// // Recommended for most problems
-/// let auto_config = SolverConfig {
-///     scaling_mode: ScalingMode::Auto,
-///     ..Default::default()
-/// };
-///
-/// // Manual scaling when parameters have very different ranges
-/// let manual_config = SolverConfig {
-///     scaling_mode: ScalingMode::Manual,
-///     ..Default::default()
-/// };
-/// // Then set scaling: solver.set_scaling(&mut workspace, &[1.0, 1000.0, 0.001]);
-/// ```
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum ScalingMode {
-    /// No scaling applied - use when parameters are already well-scaled.
-    None,
-    /// Automatically scale based on initial Jacobian column norms (recommended).
-    Auto,
-    /// User-provided scaling factors for fine-tuned control.
-    Manual,
-}
 
 /// Configuration parameters for the Levenberg-Marquardt solver.
 ///
-/// This structure controls all aspects of solver behavior, from convergence tolerances
-/// to trust region management. Proper configuration is crucial for achieving good
-/// performance on different types of optimization problems.
+/// Controls all aspects of solver behavior, from convergence
+/// tolerances to trust region management. Proper configuration is
+/// crucial for achieving good performance on different types of
+/// optimization problems.
 ///
 /// ## Parameter Reference
 ///
 /// | Parameter                  | Description           | Typical Range  | When to Adjust                         |
 /// |----------------------------+-----------------------+----------------+----------------------------------------|
-/// | `ftol`                     | Function tolerance    | 1e-6 to 1e-12  | Tighter for high precision             |
-/// | `xtol`                     | Parameter tolerance   | 1e-6 to 1e-12  | Tighter for parameter accuracy         |
-/// | `gtol`                     | Gradient tolerance    | 1e-6 to 1e-12  | Tighter for gradient-based convergence |
+/// | `function_tolerance`       | Function tolerance    | 1e-6 to 1e-12  | Tighter for high precision             |
+/// | `parameter_tolerance`      | Parameter tolerance   | 1e-6 to 1e-12  | Tighter for parameter accuracy         |
+/// | `gradient_tolerance`       | Gradient tolerance    | 1e-6 to 1e-12  | Tighter for gradient-based convergence |
 /// | `initial_trust_factor`     | Trust region radius   | 10.0 to 1000.0 | Larger for well-conditioned problems   |
 /// | `min_step_quality`         | Step acceptance ratio | 1e-4 to 1e-2   | Lower for difficult problems           |
 /// | `max_iterations`           | Iteration limit       | 100 to 5000    | Higher for complex problems            |
@@ -181,56 +46,63 @@ pub enum ScalingMode {
 ///
 /// ## Configuration Guidelines by Problem Type
 ///
-/// | Problem Type              | Recommended Settings                     | Notes                               |
-/// |---------------------------+------------------------------------------+-------------------------------------|
-/// | **Well-conditioned**      | `Default`                                | Standard settings work well         |
-/// | **High precision needed** | Tight tolerances (1e-12)                 | Scientific/engineering applications |
-/// | **Fast approximation**    | Relaxed tolerances (1e-4)                | Real-time or interactive use        |
-/// | **Ill-conditioned**       | `ScalingMode::Auto` + conservative steps | Difficult optimization landscapes   |
-/// | **Large-scale**           | Higher iteration/evaluation limits       | Many parameters or residuals        |
-/// |---------------------------+------------------------------------------+-------------------------------------|
+/// | Problem Type              | Recommended Settings                              | Notes                               |
+/// |---------------------------+---------------------------------------------------+-------------------------------------|
+/// | **Well-conditioned**      | `Default`                                         | Standard settings work well         |
+/// | **High precision needed** | Tight tolerances (1e-12)                          | Scientific/engineering applications |
+/// | **Fast approximation**    | Relaxed tolerances (1e-4)                         | Real-time or interactive use        |
+/// | **Ill-conditioned**       | `ParameterScalingMode::Auto` + conservative steps | Difficult optimization landscapes   |
+/// | **Large-scale**           | Higher iteration/evaluation limits                | Many parameters or residuals        |
+/// |---------------------------+---------------------------------------------------+-------------------------------------|
 ///
 /// ## Examples
 ///
 /// ```rust
-/// use mmoptimise_rust::{SolverConfig, ScalingMode};
+/// use mmoptimise_rust::solver::common::ParameterScalingMode;
+/// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtConfig;
 ///
 /// // High-precision configuration for demanding problems
-/// let precise_config = SolverConfig {
-///     ftol: 1e-12,                     // Very tight function tolerance.
-///     xtol: 1e-12,                     // Very tight parameter tolerance.
-///     gtol: 1e-12,                     // Very tight gradient tolerance.
+/// let precise_config = LevenbergMarquardtConfig {
+///     function_tolerance: 1e-12,       // Very tight function tolerance.
+///     parameter_tolerance: 1e-12,      // Very tight parameter tolerance.
+///     gradient_tolerance: 1e-12,       // Very tight gradient tolerance.
+///     absolute_cost_tolerance: 1e-12,  // Very tight absolute cost threshold.
 ///     max_iterations: 1000,
 ///     max_function_evaluations: 10000,
 ///     initial_trust_factor: 100.0,     // Large trust region radius.
-///     scaling_mode: ScalingMode::Auto, // Automatic parameter scaling.
+///     scaling_mode: ParameterScalingMode::Auto, // Automatic parameter scaling.
 ///     min_step_quality: 1e-4,          // Standard step acceptance.
 ///     verbose: true,                   // Enable detailed logging.
 ///     epsilon_factor: 1.0,             // Standard numerical precision.
 /// };
 ///
 /// // Fast approximation for real-time use
-/// let fast_config = SolverConfig {
-///     ftol: 1e-4,                      // Relaxed tolerances.
-///     xtol: 1e-4,
-///     gtol: 1e-4,
+/// let fast_config = LevenbergMarquardtConfig {
+///     function_tolerance: 1e-4,        // Relaxed tolerances.
+///     parameter_tolerance: 1e-4,
+///     gradient_tolerance: 1e-4,
+///     absolute_cost_tolerance: 1e-4,   // Relaxed absolute cost threshold.
 ///     max_iterations: 50,              // Fewer iterations.
 ///     max_function_evaluations: 500,
 ///     initial_trust_factor: 10.0,      // Smaller steps for stability.
-///     scaling_mode: ScalingMode::Auto,
+///     scaling_mode: ParameterScalingMode::Auto,
 ///     min_step_quality: 1e-3,          // Accept lower quality steps.
 ///     verbose: false,
 ///     epsilon_factor: 1.0,
 /// };
+///
+/// // Verify the configurations
+/// assert_eq!(precise_config.function_tolerance, 1e-12);
+/// assert_eq!(fast_config.max_iterations, 50);
 /// ```
 #[derive(Debug, Clone, Copy)]
-pub struct SolverConfig {
+pub struct LevenbergMarquardtConfig {
     /// Function tolerance - convergence when relative reduction in cost is below this.
-    pub ftol: f64,
+    pub function_tolerance: f64,
     /// Parameter tolerance - convergence when relative change in parameters is below this.
-    pub xtol: f64,
+    pub parameter_tolerance: f64,
     /// Gradient tolerance - convergence when gradient norm is below this.
-    pub gtol: f64,
+    pub gradient_tolerance: f64,
     /// Maximum number of iterations.
     pub max_iterations: usize,
     /// Maximum number of function evaluations.
@@ -238,198 +110,39 @@ pub struct SolverConfig {
     /// Initial trust region radius factor.
     pub initial_trust_factor: f64,
     /// Scaling mode for parameters.
-    pub scaling_mode: ScalingMode,
-    /// Minimum acceptable step quality ratio..
+    pub scaling_mode: ParameterScalingMode,
+    /// Minimum acceptable step quality ratio.
     pub min_step_quality: f64,
     /// Enable verbose output.
     pub verbose: bool,
     /// Machine epsilon multiplier for numerical tolerances.
     pub epsilon_factor: f64,
+    /// Absolute cost tolerance - convergence when cost is below this absolute
+    /// threshold. Used in conjunction with relative improvements to determine
+    /// convergence.
+    pub absolute_cost_tolerance: f64,
 }
 
-impl Default for SolverConfig {
+impl Default for LevenbergMarquardtConfig {
     fn default() -> Self {
         Self {
-            ftol: 1e-6,
-            xtol: 1e-6,
-            gtol: 1e-6,
+            function_tolerance: 1e-6,
+            parameter_tolerance: 1e-6,
+            gradient_tolerance: 1e-6,
             max_iterations: 300,
             max_function_evaluations: 3000,
             initial_trust_factor: 100.0,
-            scaling_mode: ScalingMode::Auto,
+            scaling_mode: ParameterScalingMode::Auto,
             min_step_quality: 1e-4,
             verbose: false,
             epsilon_factor: 1.0,
+            absolute_cost_tolerance: 1e-6,
         }
     }
 }
 
-pub fn is_success(status: SolverStatus) -> bool {
-    matches!(
-        status,
-        SolverStatus::Success
-            | SolverStatus::ToleranceReached
-            | SolverStatus::SmallCostReduction
-            | SolverStatus::SmallStepSize
-            | SolverStatus::SmallGradient
-    )
-}
-
-/// Trait for defining optimization problems compatible with the
-/// Levenberg-Marquardt solver.
-///
-/// This trait allows you to define custom optimization problems by
-/// implementing residual computation. The solver uses automatic
-/// differentiation (dual numbers) to compute gradients, so your
-/// residual function must work with generic numeric types.
-///
-/// ## Requirements
-///
-/// - **Overdetermined system**: `residual_count() >= parameter_count()`.
-/// - **Differentiable**: Residual function must be smooth and differentiable.
-/// - **Generic numerics**: Must work with both `f64` and `Dual<f64>` types.
-///
-/// ## Implementation Guidelines
-///
-/// 1. **Residual Definition**: Define residuals as `predicted - actual` or similar.
-/// 2. **Numerical Stability**: Avoid operations that can cause NaN or infinite values.
-/// 3. **Parameter Scaling**: Consider parameter magnitudes when designing the problem.
-/// 4. **Testing**: Always test your residual function before optimization.
-///
-/// ## Basic Example: Exponential Curve Fitting
-///
-/// ```rust
-/// use mmoptimise_rust::{OptimisationProblem, LevenbergMarquardt, SolverWorkspace};
-/// use anyhow::Result;
-/// use std::ops::{Add, Sub, Mul, Div};
-/// use num_traits::{Float, Zero};
-///
-/// // Fit y = a * exp(b * x) + c to data
-/// struct ExponentialFitting {
-///     x_data: Vec<f64>,
-///     y_data: Vec<f64>,
-/// }
-///
-/// impl OptimisationProblem for ExponentialFitting {
-///     fn residuals<T>(
-///         &self,
-///         parameters: &[T],
-///         out_residuals: &mut [T],
-///     ) -> Result<()>
-///     where
-///         T: Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T>
-///             + From<f64> + Sized + Zero + Float,
-///     {
-///         // Parameters: [a, b, c] for y = a * exp(b * x) + c
-///         let a = parameters[0];
-///         let b = parameters[1];
-///         let c = parameters[2];
-///
-///         for (i, (&x, &y)) in self.x_data.iter().zip(&self.y_data).enumerate() {
-///             let x_val = T::from(x);
-///             let y_val = T::from(y);
-///             let predicted = a * (b * x_val).exp() + c;
-///
-///             // Residual = predicted - actual
-///             out_residuals[i] = predicted - y_val;
-///         }
-///         Ok(())
-///     }
-///
-///     fn parameter_count(&self) -> usize { 3 }  // [a, b, c]
-///     fn residual_count(&self) -> usize { self.x_data.len() }
-/// }
-///
-/// // Usage
-/// fn solve_curve_fitting() -> Result<()> {
-///     let problem = ExponentialFitting {
-///         x_data: vec![0.0, 1.0, 2.0, 3.0, 4.0],
-///         y_data: vec![1.0, 2.7, 7.4, 20.1, 54.6], // Approximate exp(x) data
-///     };
-///
-///     let solver = LevenbergMarquardt::with_defaults();
-///     let initial_params = vec![1.0, 1.0, 0.0]; // Initial guess: a=1, b=1, c=0
-///
-///     let mut workspace = SolverWorkspace::new(&problem, &initial_params)?;
-///     let result = solver.solve_problem(&problem, &mut workspace)?;
-///
-///     println!("Converged in {} iterations", result.iterations);
-///     println!("Final parameters: a={:.3}, b={:.3}, c={:.3}",
-///         result.parameters[0], result.parameters[1], result.parameters[2]);
-///     Ok(())
-/// }
-/// ```
-///
-/// ## Advanced Example: Parameter Constraints
-///
-/// ```rust
-/// // For problems with parameter bounds or constraints, transform parameters.
-/// struct ConstrainedProblem {
-///     data: Vec<(f64, f64)>,
-/// }
-///
-/// impl OptimisationProblem for ConstrainedProblem {
-///     fn residuals<T>(&self, parameters: &[T], out_residuals: &mut [T]) -> Result<()>
-///     where T: Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T>
-///             + From<f64> + Sized + Zero + Float,
-///     {
-///         // Transform parameter to ensure positivity: param = exp(raw_param)
-///         let positive_param = parameters[0].exp();
-///
-///         for (i, &(x, y)) in self.data.iter().enumerate() {
-///             let x_val = T::from(x);
-///             let y_val = T::from(y);
-///             let predicted = positive_param * x_val;
-///             out_residuals[i] = predicted - y_val;
-///         }
-///         Ok(())
-///     }
-///
-///     fn parameter_count(&self) -> usize { 1 }
-///     fn residual_count(&self) -> usize { self.data.len() }
-/// }
-/// ```
-pub trait OptimisationProblem {
-    /// Compute residuals for both f64 and Dual<f64> types.
-    ///
-    /// This function must compute the residual vector for the given
-    /// parameters.  The solver uses automatic differentiation, so
-    /// this function must work with generic numeric types (both f64
-    /// and Dual<f64>).
-    ///
-    /// # Parameters
-    ///
-    /// - `parameters`: Input parameters (length = `parameter_count()`).
-    /// - `out_residuals`: Output residuals (length = `residual_count()`).
-    ///
-    /// # Returns
-    ///
-    /// `Ok(())` on success, or an error if computation fails.
-    fn residuals<T>(
-        &self,
-        parameters: &[T],
-        out_residuals: &mut [T],
-    ) -> Result<()>
-    where
-        T: Copy
-            + Add<Output = T>
-            + Sub<Output = T>
-            + Mul<Output = T>
-            + Div<Output = T>
-            + From<f64>
-            + Sized
-            + Zero
-            + Float;
-
-    /// Number of optimization parameters.
-    fn parameter_count(&self) -> usize;
-
-    /// Number of residual equations (must be >= parameter_count).
-    fn residual_count(&self) -> usize;
-}
-
 #[derive(Debug)]
-pub struct SolverWorkspace {
+pub struct LevenbergMarquardtWorkspace {
     // Problem dimensions.
     n: usize, // number of parameters.
     m: usize, // number of residuals.
@@ -456,8 +169,8 @@ pub struct SolverWorkspace {
     permutation: Vec<usize>,
 }
 
-impl SolverWorkspace {
-    /// Reuse an existing SolverWorkspace with new initial parameters.
+impl LevenbergMarquardtWorkspace {
+    /// Reuse an existing LevenbergMarquardtWorkspace with new initial parameters.
     ///
     /// Allows reusing the allocated memory of an existing workspace
     /// as long as the parameter count and residual count match the
@@ -581,143 +294,188 @@ impl SolverWorkspace {
 ///
 /// ## Algorithm Features
 ///
-/// - **Automatic Differentiation**: Uses dual numbers for exact gradient computation
-/// - **Trust Region Management**: Adaptive step size control for robust convergence
-/// - **Parameter Scaling**: Automatic or manual scaling for better conditioning
-/// - **QR Decomposition**: Numerically stable linear system solving
-/// - **Workspace Reuse**: Efficient memory management for repeated optimizations
+/// - **Automatic Differentiation**: Uses dual numbers for exact gradient computation.
+/// - **Trust Region Management**: Adaptive step size control for robust convergence.
+/// - **Parameter Scaling**: Automatic or manual scaling for better conditioning.
+/// - **QR Decomposition**: Numerically stable linear system solving.
+/// - **Workspace Reuse**: Efficient memory management for repeated optimizations.
 ///
 /// ## Usage Patterns
 ///
 /// ### Basic Usage
 /// ```rust
-/// let solver = LevenbergMarquardt::with_defaults();
-/// let mut workspace = SolverWorkspace::new(&problem, &initial_params)?;
-/// let result = solver.solve_problem(&problem, &mut workspace)?;
+/// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtSolver;
+/// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtWorkspace;
+/// use mmoptimise_rust::solver::test_problems::RosenbrockProblem;
+///
+/// let solver = LevenbergMarquardtSolver::with_defaults();
+/// let problem = RosenbrockProblem::new();
+/// let initial_params = vec![0.0, 0.0];
+/// let mut workspace = LevenbergMarquardtWorkspace::new(&problem, &initial_params).unwrap();
+/// let result = solver.solve_problem(&problem, &mut workspace).unwrap();
+///
+/// // Verify it worked
+/// assert!(result.iterations > 0);
+/// assert!(result.cost < 1e-6);  // Default absolute_cost_tolerance.
 /// ```
 ///
 /// ### Custom Configuration
 /// ```rust
-/// let config = SolverConfig {
-///     ftol: 1e-8,
+/// use mmoptimise_rust::solver::common::ParameterScalingMode;
+/// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtConfig;
+/// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtSolver;
+///
+/// let config = LevenbergMarquardtConfig {
+///     function_tolerance: 1e-8,
 ///     max_iterations: 500,
-///     scaling_mode: ScalingMode::Auto,
-///     verbose: true,
+///     scaling_mode: ParameterScalingMode::Auto,
+///     verbose: false,
 ///     ..Default::default()
 /// };
-/// let solver = LevenbergMarquardt::new(config);
+/// let solver = LevenbergMarquardtSolver::new(config);
+///
+/// // Configuration is ready for use with the solver
+/// assert_eq!(config.function_tolerance, 1e-8);
+/// assert_eq!(config.max_iterations, 500);
 /// ```
 ///
 /// ## Troubleshooting Guide
 ///
 /// ### Poor Convergence
 ///
-/// **Symptoms**: Slow convergence, reaches max iterations, or gets stuck
+/// **Symptoms**: Slow convergence, reaches max iterations, or gets stuck.
 ///
 /// **Solutions**:
 /// ```rust
+/// use mmoptimise_rust::solver::common::ParameterScalingMode;
+/// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtConfig;
+///
 /// // Try different initial parameters
-/// let initial_params = vec![0.1, 0.1, 0.1]; // Instead of all zeros
+/// let initial_params = vec![0.1, 0.1, 0.1]; // Instead of all zeros.
 ///
 /// // Enable automatic scaling
-/// let config = SolverConfig {
-///     scaling_mode: ScalingMode::Auto,
-///     initial_trust_factor: 100.0, // More aggressive optimization
+/// let config = LevenbergMarquardtConfig {
+///     scaling_mode: ParameterScalingMode::Auto,
+///     initial_trust_factor: 100.0, // More aggressive optimization.
 ///     ..Default::default()
 /// };
 ///
 /// // Relax tolerances for difficult problems
-/// let config = SolverConfig {
-///     ftol: 1e-6,  // Less strict
-///     xtol: 1e-6,
-///     gtol: 1e-6,
+/// let relaxed_config = LevenbergMarquardtConfig {
+///     function_tolerance: 1e-6,  // Less strict.
+///     parameter_tolerance: 1e-6,
+///     gradient_tolerance: 1e-6,
 ///     ..Default::default()
 /// };
+///
+/// assert_eq!(initial_params.len(), 3);
+/// assert_eq!(config.scaling_mode, ParameterScalingMode::Auto);
+/// assert_eq!(relaxed_config.function_tolerance, 1e-6);
 /// ```
 ///
 /// ### Slow Convergence
 ///
-/// **Symptoms**: Takes many iterations, small progress per iteration
+/// **Symptoms**: Takes many iterations, small progress per iteration.
 ///
 /// **Solutions**:
 /// ```rust
+/// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtConfig;
+///
 /// // Conservative approach for stability
-/// let config = SolverConfig {
-///     initial_trust_factor: 10.0,  // Smaller steps
-///     max_iterations: 2000,        // More iterations allowed
-///     min_step_quality: 1e-6,      // Accept smaller improvements
+/// let config = LevenbergMarquardtConfig {
+///     initial_trust_factor: 10.0,  // Smaller steps.
+///     max_iterations: 2000,        // More iterations allowed.
+///     min_step_quality: 1e-6,      // Accept smaller improvements.
 ///     ..Default::default()
 /// };
+///
+/// assert_eq!(config.initial_trust_factor, 10.0);
+/// assert_eq!(config.max_iterations, 2000);
 /// ```
 ///
 /// ### Numerical Instability
 ///
-/// **Symptoms**: NaN results, solver errors, non-finite costs
+/// **Symptoms**: NaN results, solver errors, non-finite costs.
 ///
 /// **Solutions**:
 /// ```rust
+/// use mmoptimise_rust::solver::common::OptimisationProblem;
+/// use mmoptimise_rust::solver::test_problems::RosenbrockProblem;
+///
 /// // Check problem formulation
+/// let problem = RosenbrockProblem::new();
 /// assert!(problem.residual_count() >= problem.parameter_count(),
 ///         "Need at least as many residuals as parameters");
 ///
 /// // Manual parameter scaling for different ranges
 /// let scaling = vec![1.0, 1000.0, 0.001]; // Scale parameters appropriately
-/// solver.set_scaling(&mut workspace, &scaling)?;
+/// assert_eq!(scaling.len(), 3);
 ///
 /// // Test residual function
-/// let test_params = vec![1.0, 2.0, 3.0];
-/// let mut residuals = vec![0.0; problem.residual_count()];
-/// problem.residuals(&test_params, &mut residuals)?;
+/// let test_params = vec![1.0f64, 2.0f64];
+/// let mut residuals = vec![0.0f64; problem.residual_count()];
+/// problem.residuals(&test_params, &mut residuals).unwrap();
 /// assert!(residuals.iter().all(|&r| r.is_finite()));
 /// ```
 ///
 /// ### Debugging Tips
 ///
 /// ```rust
+/// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtConfig;
+/// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtSolver;
+/// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtWorkspace;
+/// use mmoptimise_rust::solver::test_problems::RosenbrockProblem;
+///
 /// // Enable verbose logging for iteration details
-/// let config = SolverConfig {
-///     verbose: true,
+/// let config = LevenbergMarquardtConfig {
+///     verbose: false,  // Set to true to see iteration details.
+///     max_iterations: 10,  // Limit iterations for testing.
 ///     ..Default::default()
 /// };
 ///
-/// // Monitor convergence progress
-/// let result = solver.solve_problem(&problem, &mut workspace)?;
-/// println!("Status: {:?}", result.status);
-/// println!("Final cost: {:.6e}", result.cost);
-/// println!("Iterations: {}", result.iterations);
-/// println!("Function evaluations: {}", result.function_evaluations);
+/// // Monitor convergence progress.
+/// let solver = LevenbergMarquardtSolver::new(config);
+/// let problem = RosenbrockProblem::new();
+/// let initial_params = vec![0.0, 0.0];
+/// let mut workspace = LevenbergMarquardtWorkspace::new(&problem, &initial_params).unwrap();
+/// let result = solver.solve_problem(&problem, &mut workspace).unwrap();
+///
+/// // Verify we have results.
+/// assert!(result.iterations > 0);
+/// assert!(result.function_evaluations > 0);
+/// assert!(result.cost.is_finite());
 /// ```
 ///
 /// ## Performance Tips
 ///
-/// - **Workspace Reuse**: Create workspace once, reuse for similar problems
-/// - **Parameter Scaling**: Use `ScalingMode::Auto` for most problems
-/// - **Function Profiling**: Profile residual computation for bottlenecks
-/// - **Initial Guess**: Good initial parameters dramatically improve convergence
+/// - **Workspace Reuse**: Create workspace once, reuse for similar problems.
+/// - **Parameter Scaling**: Use `ParameterScalingMode::Auto` for most problems.
+/// - **Function Profiling**: Profile residual computation for bottlenecks.
+/// - **Initial Guess**: Good initial parameters dramatically improve convergence.
 ///
 /// ## When to Use Different Configurations
 ///
-/// | Scenario                      | Configuration                                  | Reasoning                   |
-/// |-------------------------------+------------------------------------------------+-----------------------------|
-/// | **Well-conditioned problems** | `Default`                                      | Standard settings work well |
-/// | **High precision needed**     | Tight tolerances (1e-12)                       | Scientific applications     |
-/// | **Real-time applications**    | Relaxed tolerances (1e-4), low max_iterations  | Speed over precision        |
-/// | **Ill-conditioned problems**  | `ScalingMode::Auto`, conservative trust region | Numerical stability         |
-/// | **Large-scale problems**      | Higher limits, workspace reuse                 | Memory and time efficiency  |
-/// |-------------------------------+------------------------------------------------+-----------------------------|
-
-pub struct LevenbergMarquardt {
-    config: SolverConfig,
+/// | Scenario                      | Configuration                                           | Reasoning                    |
+/// |-------------------------------|---------------------------------------------------------|------------------------------|
+/// | **Well-conditioned problems** | `Default`                                               | Standard settings work well  |
+/// | **High precision needed**     | Tight tolerances (1e-12)                                | Scientific applications      |
+/// | **Real-time applications**    | Relaxed tolerances (1e-4), low max_iterations           | Speed over precision         |
+/// | **Ill-conditioned problems**  | `ParameterScalingMode::Auto`, conservative trust region | Numerical stability          |
+/// | **Large-scale problems**      | Higher limits, workspace reuse                          | Memory and time efficiency   |
+/// --------------------------------------------------------------------------------------------------------------------------
+///
+pub struct LevenbergMarquardtSolver {
+    config: LevenbergMarquardtConfig,
 }
 
-impl LevenbergMarquardt {
-    pub fn new(config: SolverConfig) -> Self {
+impl LevenbergMarquardtSolver {
+    pub fn new(config: LevenbergMarquardtConfig) -> Self {
         Self { config }
     }
 
     pub fn with_defaults() -> Self {
         Self {
-            config: SolverConfig::default(),
+            config: LevenbergMarquardtConfig::default(),
         }
     }
 
@@ -730,7 +488,7 @@ impl LevenbergMarquardt {
     fn compute_jacobian<P: OptimisationProblem>(
         &self,
         problem: &P,
-        workspace: &mut SolverWorkspace,
+        workspace: &mut LevenbergMarquardtWorkspace,
     ) -> Result<usize> {
         let n = workspace.n;
         let m = workspace.m;
@@ -773,7 +531,10 @@ impl LevenbergMarquardt {
     }
 
     /// Perform QR decomposition with column pivoting.
-    fn qr_decomposition(&self, workspace: &mut SolverWorkspace) -> Result<()> {
+    fn qr_decomposition(
+        &self,
+        workspace: &mut LevenbergMarquardtWorkspace,
+    ) -> Result<()> {
         let n = workspace.n;
         let m = workspace.m;
 
@@ -813,7 +574,7 @@ impl LevenbergMarquardt {
     /// Solve the trust region subproblem.
     fn solve_trust_region(
         &self,
-        workspace: &mut SolverWorkspace,
+        workspace: &mut LevenbergMarquardtWorkspace,
         delta: f64,
         lambda: &mut f64,
     ) -> Result<f64> {
@@ -912,14 +673,14 @@ impl LevenbergMarquardt {
     }
 
     /// Update parameter scaling based on Jacobian column norms
-    fn update_scaling(&self, workspace: &mut SolverWorkspace) {
+    fn update_scaling(&self, workspace: &mut LevenbergMarquardtWorkspace) {
         let n = workspace.n;
 
         match self.config.scaling_mode {
-            ScalingMode::None => {
+            ParameterScalingMode::None => {
                 workspace.scaling.fill(1.0);
             }
-            ScalingMode::Auto => {
+            ParameterScalingMode::Auto => {
                 // Scale by column norms of Jacobian.
                 for j in 0..n {
                     let col_norm = workspace.jacobian.column(j).norm();
@@ -929,7 +690,7 @@ impl LevenbergMarquardt {
                     }
                 }
             }
-            ScalingMode::Manual => {
+            ParameterScalingMode::Manual => {
                 // User has provided scaling, keep it unchanged.
             }
         }
@@ -939,7 +700,7 @@ impl LevenbergMarquardt {
     pub fn solve_problem<P: OptimisationProblem>(
         &self,
         problem: &P,
-        workspace: &mut SolverWorkspace,
+        workspace: &mut LevenbergMarquardtWorkspace,
     ) -> Result<OptimisationResult> {
         let n = workspace.n;
         let _m = workspace.m;
@@ -1009,8 +770,8 @@ impl LevenbergMarquardt {
                     (previous_cost - current_cost) / previous_cost.max(1.0);
                 // Only check convergence if improvement is small AND
                 // cost is reasonably small.
-                if relative_improvement < self.config.ftol
-                    && current_cost < 1e-6
+                if relative_improvement < self.config.function_tolerance
+                    && current_cost < self.config.absolute_cost_tolerance
                 {
                     debug!(
                         "Converged: relative cost improvement below tolerance"
@@ -1037,7 +798,9 @@ impl LevenbergMarquardt {
             self.qr_decomposition(workspace)?;
 
             // Update scaling on first iteration or if requested.
-            if iteration == 0 || self.config.scaling_mode == ScalingMode::Auto {
+            if iteration == 0
+                || self.config.scaling_mode == ParameterScalingMode::Auto
+            {
                 self.update_scaling(workspace);
             }
 
@@ -1061,7 +824,7 @@ impl LevenbergMarquardt {
 
             // Compute gradient norm for convergence check.
             let gradient_norm = workspace.qtf.norm() / current_cost.max(1.0);
-            if gradient_norm < self.config.gtol {
+            if gradient_norm < self.config.gradient_tolerance {
                 debug!("Converged: gradient norm below tolerance");
                 return Ok(OptimisationResult {
                     status: SolverStatus::SmallGradient,
@@ -1173,7 +936,8 @@ impl LevenbergMarquardt {
                     let param_norm = workspace.parameters.norm().max(1.0);
 
                     // Parameter change convergence.
-                    if step_norm < self.config.xtol * param_norm {
+                    if step_norm < self.config.parameter_tolerance * param_norm
+                    {
                         debug!("Converged: step size below tolerance");
                         return Ok(OptimisationResult {
                             status: SolverStatus::SmallStepSize,
@@ -1192,9 +956,11 @@ impl LevenbergMarquardt {
 
                     // Cost reduction convergence (only check if cost
                     // is small enough).
-                    if current_cost < 1e-4
-                        && actual_reduction < self.config.ftol * current_cost
-                        && predicted_reduction < self.config.ftol * current_cost
+                    if current_cost < self.config.absolute_cost_tolerance
+                        && actual_reduction
+                            < self.config.function_tolerance * current_cost
+                        && predicted_reduction
+                            < self.config.function_tolerance * current_cost
                     {
                         debug!("Converged: small cost reduction");
                         return Ok(OptimisationResult {
@@ -1280,7 +1046,7 @@ impl LevenbergMarquardt {
     /// Set user-provided scaling factors.
     pub fn set_scaling(
         &self,
-        workspace: &mut SolverWorkspace,
+        workspace: &mut LevenbergMarquardtWorkspace,
         scaling: &[f64],
     ) -> Result<()> {
         if scaling.len() != workspace.n {
@@ -1309,89 +1075,23 @@ impl LevenbergMarquardt {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::solver::test_problems::{
+        BukinN6Problem, CurveFittingProblem, GoldsteinPriceFunction,
+        Mock3DProblem, RosenbrockProblem,
+    };
     use approx::assert_relative_eq;
-
-    /// The Rosenbrock function - a classic optimization test problem.
-    /// f(x, y) = (a - x)^2 + b*(y - x^2)^2
-    ///
-    /// The global minimum is at (x, y) = (a, a^2) with f = 0
-    /// Default values: a = 1, b = 100, so minimum at (1, 1)
-    ///
-    /// This creates a narrow, curved valley which is challenging for optimizers.
-    pub struct RosenbrockProblem {
-        a: f64,
-        b: f64,
-    }
-
-    impl RosenbrockProblem {
-        pub fn new() -> Self {
-            Self { a: 1.0, b: 100.0 }
-        }
-
-        pub fn with_parameters(a: f64, b: f64) -> Self {
-            Self { a, b }
-        }
-    }
-
-    impl Default for RosenbrockProblem {
-        fn default() -> Self {
-            Self::new()
-        }
-    }
-
-    impl OptimisationProblem for RosenbrockProblem {
-        fn residuals<T>(
-            &self,
-            parameters: &[T],
-            out_residuals: &mut [T],
-        ) -> Result<()>
-        where
-            T: Copy
-                + Add<Output = T>
-                + Sub<Output = T>
-                + Mul<Output = T>
-                + Div<Output = T>
-                + From<f64>
-                + Sized
-                + Zero
-                + Float,
-        {
-            if parameters.len() != 2 {
-                return Err(OptimisationError::InvalidInput(
-                    "Rosenbrock problem requires exactly 2 parameters"
-                        .to_string(),
-                )
-                .into());
-            }
-
-            let x = parameters[0];
-            let y = parameters[1];
-            let a = <T as From<f64>>::from(self.a);
-            let b = <T as From<f64>>::from(self.b);
-
-            out_residuals[0] = a - x;
-            out_residuals[1] = b.sqrt() * (y - x * x);
-
-            Ok(())
-        }
-
-        fn parameter_count(&self) -> usize {
-            2
-        }
-
-        fn residual_count(&self) -> usize {
-            2
-        }
-    }
+    use num_traits::{Float, Zero};
+    use std::ops::{Add, Div, Mul, Sub};
 
     #[test]
     fn test_rosenbrock_from_origin() {
         let problem = RosenbrockProblem::new();
-        let solver = LevenbergMarquardt::with_defaults();
+        let solver = LevenbergMarquardtSolver::with_defaults();
 
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         println!("\nRosenbrock from origin:");
@@ -1403,7 +1103,7 @@ mod tests {
         println!("  Iterations: {}", result.iterations);
         println!("  Status: {:?}", result.status);
 
-        assert!(is_success(result.status));
+        assert!(result.status.is_success());
         assert_relative_eq!(result.parameters[0], 1.0, epsilon = 1e-4);
         assert_relative_eq!(result.parameters[1], 1.0, epsilon = 1e-4);
         assert!(result.cost < 1e-8);
@@ -1413,18 +1113,19 @@ mod tests {
     fn test_rosenbrock_from_far_point() {
         let problem = RosenbrockProblem::new();
 
-        let config = SolverConfig {
-            ftol: 1e-8,
-            xtol: 1e-8,
-            gtol: 1e-8,
+        let config = LevenbergMarquardtConfig {
+            function_tolerance: 1e-8,
+            parameter_tolerance: 1e-8,
+            gradient_tolerance: 1e-8,
             max_iterations: 500,
             ..Default::default()
         };
-        let solver = LevenbergMarquardt::new(config);
+        let solver = LevenbergMarquardtSolver::new(config);
 
         let initial_parameters = vec![-1.2, 1.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         println!("\nRosenbrock from (-1.2, 1.0):");
@@ -1436,7 +1137,7 @@ mod tests {
         println!("  Iterations: {}", result.iterations);
         println!("  Status: {:?}", result.status);
 
-        assert!(is_success(result.status));
+        assert!(result.status.is_success());
         assert_relative_eq!(result.parameters[0], 1.0, epsilon = 1e-4);
         assert_relative_eq!(result.parameters[1], 1.0, epsilon = 1e-4);
         assert!(result.cost < 1e-10);
@@ -1448,37 +1149,40 @@ mod tests {
         let initial_parameters = vec![0.5, 0.5];
 
         // Test with no scaling.
-        let config_none = SolverConfig {
-            scaling_mode: ScalingMode::None,
+        let config_none = LevenbergMarquardtConfig {
+            scaling_mode: ParameterScalingMode::None,
             ..Default::default()
         };
-        let solver_none = LevenbergMarquardt::new(config_none);
+        let solver_none = LevenbergMarquardtSolver::new(config_none);
         let mut workspace_none =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result_none = solver_none
             .solve_problem(&problem, &mut workspace_none)
             .unwrap();
 
         // Test with auto scaling.
-        let config_auto = SolverConfig {
-            scaling_mode: ScalingMode::Auto,
+        let config_auto = LevenbergMarquardtConfig {
+            scaling_mode: ParameterScalingMode::Auto,
             ..Default::default()
         };
-        let solver_auto = LevenbergMarquardt::new(config_auto);
+        let solver_auto = LevenbergMarquardtSolver::new(config_auto);
         let mut workspace_auto =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result_auto = solver_auto
             .solve_problem(&problem, &mut workspace_auto)
             .unwrap();
 
         // Test with manual scaling.
-        let config_manual = SolverConfig {
-            scaling_mode: ScalingMode::Manual,
+        let config_manual = LevenbergMarquardtConfig {
+            scaling_mode: ParameterScalingMode::Manual,
             ..Default::default()
         };
-        let solver_manual = LevenbergMarquardt::new(config_manual);
+        let solver_manual = LevenbergMarquardtSolver::new(config_manual);
         let mut workspace_manual =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         solver_manual
             .set_scaling(&mut workspace_manual, &[2.0, 1.0])
             .unwrap();
@@ -1501,9 +1205,9 @@ mod tests {
         );
 
         // All should converge successfully.
-        assert!(is_success(result_none.status));
-        assert!(is_success(result_auto.status));
-        assert!(is_success(result_manual.status));
+        assert!(result_none.status.is_success());
+        assert!(result_auto.status.is_success());
+        assert!(result_manual.status.is_success());
     }
 
     #[test]
@@ -1543,12 +1247,13 @@ mod tests {
     #[test]
     fn test_solver_rosenbrock_from_origin() {
         let problem = RosenbrockProblem::new();
-        let solver = LevenbergMarquardt::with_defaults();
+        let solver = LevenbergMarquardtSolver::with_defaults();
 
         // Start from origin - moderately difficult.
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         println!("\nRosenbrock from origin:");
@@ -1562,7 +1267,7 @@ mod tests {
         println!("  Status: {:?}", result.status);
 
         // Check convergence to minimum.
-        assert!(is_success(result.status));
+        assert!(result.status.is_success());
         assert_relative_eq!(result.parameters[0], 1.0, epsilon = 1e-4);
         assert_relative_eq!(result.parameters[1], 1.0, epsilon = 1e-4);
         assert!(result.cost < 1e-8);
@@ -1573,20 +1278,21 @@ mod tests {
         let problem = RosenbrockProblem::new();
 
         // Use reasonable tolerances for better convergence.
-        let config = SolverConfig {
-            ftol: 1e-8,
-            xtol: 1e-8,
-            gtol: 1e-8,
+        let config = LevenbergMarquardtConfig {
+            function_tolerance: 1e-8,
+            parameter_tolerance: 1e-8,
+            gradient_tolerance: 1e-8,
             max_iterations: 500,
             verbose: false,
             ..Default::default()
         };
-        let solver = LevenbergMarquardt::new(config);
+        let solver = LevenbergMarquardtSolver::new(config);
 
         // Start from a challenging point far from minimum.
         let initial_parameters = vec![-1.2, 1.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         println!("\nRosenbrock from (-1.2, 1.0):");
@@ -1600,7 +1306,7 @@ mod tests {
         println!("  Status: {:?}", result.status);
 
         // Check convergence to minimum.
-        assert!(is_success(result.status));
+        assert!(result.status.is_success());
         assert_relative_eq!(result.parameters[0], 1.0, epsilon = 1e-5);
         assert_relative_eq!(result.parameters[1], 1.0, epsilon = 1e-5);
         assert!(result.cost < 1e-11);
@@ -1608,17 +1314,17 @@ mod tests {
 
     #[test]
     fn test_solver_rosenbrock_multiple_starting_points() {
-        let config = SolverConfig {
-            ftol: 1e-6,
-            xtol: 1e-6,
-            gtol: 1e-6,
+        let config = LevenbergMarquardtConfig {
+            function_tolerance: 1e-6,
+            parameter_tolerance: 1e-6,
+            gradient_tolerance: 1e-6,
             max_iterations: 500,
             verbose: false,
             ..Default::default()
         };
 
         let problem = RosenbrockProblem::new();
-        let solver = LevenbergMarquardt::new(config);
+        let solver = LevenbergMarquardtSolver::new(config);
 
         // Test from multiple starting points.
         let starting_points = vec![
@@ -1630,7 +1336,8 @@ mod tests {
 
         for (i, initial_parameters) in starting_points.iter().enumerate() {
             let mut workspace =
-                SolverWorkspace::new(&problem, initial_parameters).unwrap();
+                LevenbergMarquardtWorkspace::new(&problem, initial_parameters)
+                    .unwrap();
             let result =
                 solver.solve_problem(&problem, &mut workspace).unwrap();
 
@@ -1650,7 +1357,7 @@ mod tests {
 
             // All should converge to (1, 1).
             assert!(
-                is_success(result.status),
+                result.status.is_success(),
                 "Failed from starting point {:?}",
                 initial_parameters
             );
@@ -1664,11 +1371,12 @@ mod tests {
     fn test_solver_modified_rosenbrock() {
         // Test with different a and b values.
         let problem = RosenbrockProblem::with_parameters(2.0, 50.0);
-        let solver = LevenbergMarquardt::with_defaults();
+        let solver = LevenbergMarquardtSolver::with_defaults();
 
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         println!("\nModified Rosenbrock (a=2, b=50):");
@@ -1680,7 +1388,7 @@ mod tests {
         println!("  Iterations: {}", result.iterations);
 
         // Should converge to (2, 4) for a=2.
-        assert!(is_success(result.status));
+        assert!(result.status.is_success());
         assert_relative_eq!(result.parameters[0], 2.0, epsilon = 5e-5);
         assert_relative_eq!(result.parameters[1], 4.0, epsilon = 15e-5);
         assert!(result.cost < 5e-10);
@@ -1691,19 +1399,20 @@ mod tests {
         let problem = RosenbrockProblem::new();
 
         // Test with very tight tolerances to trigger max iterations.
-        let config = SolverConfig {
-            ftol: 1e-15,
-            xtol: 1e-15,
-            gtol: 1e-15,
+        let config = LevenbergMarquardtConfig {
+            function_tolerance: 1e-15,
+            parameter_tolerance: 1e-15,
+            gradient_tolerance: 1e-15,
             max_iterations: 10, // Very few iterations.
             verbose: false,
             ..Default::default()
         };
-        let solver = LevenbergMarquardt::new(config);
+        let solver = LevenbergMarquardtSolver::new(config);
 
         let initial_parameters = vec![-1.0, 1.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         println!("\nRosenbrock with max_iterations=10:");
@@ -1737,12 +1446,13 @@ mod tests {
     #[test]
     fn test_solver_near_minimum_start() {
         let problem = RosenbrockProblem::new();
-        let solver = LevenbergMarquardt::with_defaults();
+        let solver = LevenbergMarquardtSolver::with_defaults();
 
         // Start very close to minimum.
         let initial_parameters = vec![0.999, 0.999];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         println!("\nRosenbrock from near minimum:");
@@ -1758,7 +1468,7 @@ mod tests {
         println!("  Iterations: {}", result.iterations);
 
         // Should converge very quickly.
-        assert!(is_success(result.status));
+        assert!(result.status.is_success());
         assert!(
             result.iterations < 10,
             "Should converge quickly from near minimum"
@@ -1774,22 +1484,23 @@ mod tests {
 
         // Test with very small trust region radius to force step
         // limiting.
-        let config = SolverConfig {
-            ftol: 1e-9,
-            xtol: 1e-9,
-            gtol: 1e-9,
+        let config = LevenbergMarquardtConfig {
+            function_tolerance: 1e-9,
+            parameter_tolerance: 1e-9,
+            gradient_tolerance: 1e-9,
             max_iterations: 300, // More iterations since steps are limited.
             initial_trust_factor: 0.1, // Very small trust region radius.
             verbose: true, // Enable verbose to see step limiting messages.
             ..Default::default()
         };
-        let solver = LevenbergMarquardt::new(config);
+        let solver = LevenbergMarquardtSolver::new(config);
 
         // Start from a challenging point that would normally take
         // large steps.
         let initial_parameters = vec![-2.0, 2.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         println!(
@@ -1810,7 +1521,7 @@ mod tests {
 
         // Should eventually converge to minimum (1, 1), but may take
         // more iterations.
-        assert!(is_success(result.status));
+        assert!(result.status.is_success());
         assert_relative_eq!(result.parameters[0], 1.0, epsilon = 1e-4);
         assert_relative_eq!(result.parameters[1], 1.0, epsilon = 1e-4);
         assert!(result.cost < 1e-8);
@@ -1829,35 +1540,37 @@ mod tests {
         let initial_parameters = vec![-1.0, 1.0];
 
         // Test with default trust region radius (large).
-        let config_large = SolverConfig {
-            ftol: 1e-9,
-            xtol: 1e-9,
-            gtol: 1e-9,
+        let config_large = LevenbergMarquardtConfig {
+            function_tolerance: 1e-9,
+            parameter_tolerance: 1e-9,
+            gradient_tolerance: 1e-9,
             initial_trust_factor: 100.0, // Large trust region radius.
             max_iterations: 100,
             verbose: false,
             ..Default::default()
         };
-        let solver_large = LevenbergMarquardt::new(config_large);
+        let solver_large = LevenbergMarquardtSolver::new(config_large);
         let mut workspace_large =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result_large = solver_large
             .solve_problem(&problem, &mut workspace_large)
             .unwrap();
 
         // Test with small trust region radius.
-        let config_small = SolverConfig {
-            ftol: 1e-9,
-            xtol: 1e-9,
-            gtol: 1e-9,
+        let config_small = LevenbergMarquardtConfig {
+            function_tolerance: 1e-9,
+            parameter_tolerance: 1e-9,
+            gradient_tolerance: 1e-9,
             initial_trust_factor: 0.3, // Small trust region radius.
             max_iterations: 200,
             verbose: false,
             ..Default::default()
         };
-        let solver_small = LevenbergMarquardt::new(config_small);
+        let solver_small = LevenbergMarquardtSolver::new(config_small);
         let mut workspace_small =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result_small = solver_small
             .solve_problem(&problem, &mut workspace_small)
             .unwrap();
@@ -1873,8 +1586,8 @@ mod tests {
         );
 
         // Both should converge successfully.
-        assert!(is_success(result_large.status));
-        assert!(is_success(result_small.status));
+        assert!(result_large.status.is_success());
+        assert!(result_small.status.is_success());
 
         // Both should reach the minimum.
         assert_relative_eq!(result_large.parameters[0], 1.0, epsilon = 1e-4);
@@ -1899,24 +1612,25 @@ mod tests {
 
         // Test with very large trust region radius (should behave
         // like unlimited).
-        let config_huge = SolverConfig {
-            ftol: 1e-9,
-            xtol: 1e-9,
-            gtol: 1e-9,
+        let config_huge = LevenbergMarquardtConfig {
+            function_tolerance: 1e-9,
+            parameter_tolerance: 1e-9,
+            gradient_tolerance: 1e-9,
             initial_trust_factor: 1000.0, // Very large trust region radius.
             max_iterations: 100,
             verbose: false,
             ..Default::default()
         };
-        let solver_huge = LevenbergMarquardt::new(config_huge);
+        let solver_huge = LevenbergMarquardtSolver::new(config_huge);
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result =
             solver_huge.solve_problem(&problem, &mut workspace).unwrap();
 
         // Should converge normally.
-        assert!(is_success(result.status));
+        assert!(result.status.is_success());
         assert_relative_eq!(result.parameters[0], 1.0, epsilon = 2e-4);
         assert_relative_eq!(result.parameters[1], 1.0, epsilon = 2e-4);
 
@@ -1927,155 +1641,25 @@ mod tests {
         );
     }
 
-    /// Curve fitting problem - fitting y = exp(m*x + c) to noisy data.
-    pub struct CurveFittingProblem {
-        x_data: Vec<f64>,
-        y_data: Vec<f64>,
-    }
-
-    impl CurveFittingProblem {
-        pub fn from_ceres_example() -> Self {
-            // Data from the C code example
-            let data = vec![
-                (0.000000e+00, 1.133898e+00),
-                (7.500000e-02, 1.334902e+00),
-                (1.500000e-01, 1.213546e+00),
-                (2.250000e-01, 1.252016e+00),
-                (3.000000e-01, 1.392265e+00),
-                (3.750000e-01, 1.314458e+00),
-                (4.500000e-01, 1.472541e+00),
-                (5.250000e-01, 1.536218e+00),
-                (6.000000e-01, 1.355679e+00),
-                (6.750000e-01, 1.463566e+00),
-                (7.500000e-01, 1.490201e+00),
-                (8.250000e-01, 1.658699e+00),
-                (9.000000e-01, 1.067574e+00),
-                (9.750000e-01, 1.464629e+00),
-                (1.050000e+00, 1.402653e+00),
-                (1.125000e+00, 1.713141e+00),
-                (1.200000e+00, 1.527021e+00),
-                (1.275000e+00, 1.702632e+00),
-                (1.350000e+00, 1.423899e+00),
-                (1.425000e+00, 1.543078e+00),
-                (1.500000e+00, 1.664015e+00),
-                (1.575000e+00, 1.732484e+00),
-                (1.650000e+00, 1.543296e+00),
-                (1.725000e+00, 1.959523e+00),
-                (1.800000e+00, 1.685132e+00),
-                (1.875000e+00, 1.951791e+00),
-                (1.950000e+00, 2.095346e+00),
-                (2.025000e+00, 2.361460e+00),
-                (2.100000e+00, 2.169119e+00),
-                (2.175000e+00, 2.061745e+00),
-                (2.250000e+00, 2.178641e+00),
-                (2.325000e+00, 2.104346e+00),
-                (2.400000e+00, 2.584470e+00),
-                (2.475000e+00, 1.914158e+00),
-                (2.550000e+00, 2.368375e+00),
-                (2.625000e+00, 2.686125e+00),
-                (2.700000e+00, 2.712395e+00),
-                (2.775000e+00, 2.499511e+00),
-                (2.850000e+00, 2.558897e+00),
-                (2.925000e+00, 2.309154e+00),
-                (3.000000e+00, 2.869503e+00),
-                (3.075000e+00, 3.116645e+00),
-                (3.150000e+00, 3.094907e+00),
-                (3.225000e+00, 2.471759e+00),
-                (3.300000e+00, 3.017131e+00),
-                (3.375000e+00, 3.232381e+00),
-                (3.450000e+00, 2.944596e+00),
-                (3.525000e+00, 3.385343e+00),
-                (3.600000e+00, 3.199826e+00),
-                (3.675000e+00, 3.423039e+00),
-                (3.750000e+00, 3.621552e+00),
-                (3.825000e+00, 3.559255e+00),
-                (3.900000e+00, 3.530713e+00),
-                (3.975000e+00, 3.561766e+00),
-                (4.050000e+00, 3.544574e+00),
-                (4.125000e+00, 3.867945e+00),
-                (4.200000e+00, 4.049776e+00),
-                (4.275000e+00, 3.885601e+00),
-                (4.350000e+00, 4.110505e+00),
-                (4.425000e+00, 4.345320e+00),
-                (4.500000e+00, 4.161241e+00),
-                (4.575000e+00, 4.363407e+00),
-                (4.650000e+00, 4.161576e+00),
-                (4.725000e+00, 4.619728e+00),
-                (4.800000e+00, 4.737410e+00),
-                (4.875000e+00, 4.727863e+00),
-                (4.950000e+00, 4.669206e+00),
-            ];
-
-            let (x_data, y_data): (Vec<_>, Vec<_>) = data.into_iter().unzip();
-            Self { x_data, y_data }
-        }
-    }
-
-    impl OptimisationProblem for CurveFittingProblem {
-        fn residuals<T>(
-            &self,
-            parameters: &[T],
-            out_residuals: &mut [T],
-        ) -> Result<()>
-        where
-            T: Copy
-                + Add<Output = T>
-                + Sub<Output = T>
-                + Mul<Output = T>
-                + Div<Output = T>
-                + From<f64>
-                + Sized
-                + Zero
-                + Float,
-        {
-            if parameters.len() != 2 {
-                return Err(OptimisationError::InvalidInput(
-                    "Curve fitting requires 2 parameters (m, c)".to_string(),
-                )
-                .into());
-            }
-
-            let m = parameters[0];
-            let c = parameters[1];
-
-            for (i, (x, y)) in self.x_data.iter().zip(&self.y_data).enumerate()
-            {
-                let x_val = <T as From<f64>>::from(*x);
-                let y_val = <T as From<f64>>::from(*y);
-                // Residual: y - exp(m*x + c)
-                out_residuals[i] = y_val - (m * x_val + c).exp();
-            }
-
-            Ok(())
-        }
-
-        fn parameter_count(&self) -> usize {
-            2
-        }
-
-        fn residual_count(&self) -> usize {
-            self.x_data.len()
-        }
-    }
-
     #[test]
     fn test_curve_fitting() {
-        let problem = CurveFittingProblem::from_ceres_example();
+        let problem = CurveFittingProblem::from_example_data();
 
         // Curve fitting with noisy data may need more iterations
-        let config = SolverConfig {
+        let config = LevenbergMarquardtConfig {
             max_iterations: 1000,
-            ftol: 1e-8,
-            xtol: 1e-8,
-            gtol: 1e-8,
+            function_tolerance: 1e-8,
+            parameter_tolerance: 1e-8,
+            gradient_tolerance: 1e-8,
             ..Default::default()
         };
-        let solver = LevenbergMarquardt::new(config);
+        let solver = LevenbergMarquardtSolver::new(config);
 
-        // Start from (0, 0) as in the C example
+        // Start from (0, 0).
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         println!("\nCurve fitting (exponential):");
@@ -2091,7 +1675,7 @@ mod tests {
         // Due to noise, we won't recover exactly these values
         // For curve fitting with noisy data, accept MaxIterationsReached if parameters are reasonable
         assert!(
-            is_success(result.status)
+            result.status.is_success()
             || result.status == SolverStatus::MaxIterationsReached
             || result.status == SolverStatus::FunctionCallsExceeded,
             "Expected successful convergence, max iterations, or function calls exceeded, got: {:?}", result.status
@@ -2100,88 +1684,26 @@ mod tests {
         assert_relative_eq!(result.parameters[1], 0.1, epsilon = 0.3); // More relaxed
     }
 
-    /// Bukin function N.6
-    /// f(x, y) = 100 * sqrt(|y - 0.01*x^2|) + 0.01 * |x + 10|
-    /// Global minimum: f(-10, 1) = 0
-    /// Domain: -15 <= x <= -5, -3 <= y <= 3
-    /// This is a very difficult function with a narrow valley
-    pub struct BukinN6Problem;
-
-    impl OptimisationProblem for BukinN6Problem {
-        fn residuals<T>(
-            &self,
-            parameters: &[T],
-            out_residuals: &mut [T],
-        ) -> Result<()>
-        where
-            T: Copy
-                + Add<Output = T>
-                + Sub<Output = T>
-                + Mul<Output = T>
-                + Div<Output = T>
-                + From<f64>
-                + Sized
-                + Zero
-                + Float,
-        {
-            if parameters.len() != 2 {
-                return Err(OptimisationError::InvalidInput(
-                    "Bukin N6 requires 2 parameters".to_string(),
-                )
-                .into());
-            }
-
-            let x = parameters[0];
-            let y = parameters[1];
-
-            let point_zero_one = <T as From<f64>>::from(0.01);
-            let ten = <T as From<f64>>::from(10.0);
-
-            // Split into two residuals to form a least squares problem
-            // f(x,y) = r1^2 + r2^2 where:
-            // r1 = 10 * (|y - 0.01*x^2|)^(1/4)  (fourth root to get sqrt when squared)
-            // r2 = 0.1 * sqrt(|x + 10|)
-
-            let term1 = (y - point_zero_one * x * x).abs();
-            let term2 = (x + ten).abs();
-
-            // Use fourth root for first term so squaring gives sqrt
-            out_residuals[0] = <T as From<f64>>::from(10.0)
-                * term1.powf(<T as From<f64>>::from(0.25));
-            // Use sqrt for second term
-            out_residuals[1] = <T as From<f64>>::from(0.1) * term2.sqrt();
-
-            Ok(())
-        }
-
-        fn parameter_count(&self) -> usize {
-            2
-        }
-
-        fn residual_count(&self) -> usize {
-            2
-        }
-    }
-
     #[test]
     fn test_bukin_n6() {
         let problem = BukinN6Problem;
 
         // Use tighter tolerances for this difficult problem
-        let config = SolverConfig {
-            ftol: 1e-12,
-            xtol: 1e-12,
-            gtol: 1e-12,
+        let config = LevenbergMarquardtConfig {
+            function_tolerance: 1e-12,
+            parameter_tolerance: 1e-12,
+            gradient_tolerance: 1e-12,
             max_iterations: 500,
             verbose: false,
             ..Default::default()
         };
-        let solver = LevenbergMarquardt::new(config);
+        let solver = LevenbergMarquardtSolver::new(config);
 
         // Start from a point in the valid domain but away from minimum
         let initial_parameters = vec![-5.0, 0.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         println!("\nBukin N6 function:");
@@ -2196,7 +1718,7 @@ mod tests {
 
         // This is an extremely difficult function with many local minima
         // Accept any local minimum as long as the solver converges and finds a low cost
-        assert!(is_success(result.status));
+        assert!(result.status.is_success());
 
         // Check if we found the global minimum (-10, 1) or accept a local minimum
         let found_global = (result.parameters[0] - (-10.0)).abs() < 0.1
@@ -2213,89 +1735,10 @@ mod tests {
         }
     }
 
-    /// Goldstein-Price function
-    /// A complex function with multiple local minima
-    /// Global minimum: f(0, -1) = 3
-    pub struct GoldsteinPriceFunction;
-
-    impl OptimisationProblem for GoldsteinPriceFunction {
-        fn residuals<T>(
-            &self,
-            parameters: &[T],
-            out_residuals: &mut [T],
-        ) -> Result<()>
-        where
-            T: Copy
-                + Add<Output = T>
-                + Sub<Output = T>
-                + Mul<Output = T>
-                + Div<Output = T>
-                + From<f64>
-                + Sized
-                + Zero
-                + Float,
-        {
-            if parameters.len() != 2 {
-                return Err(OptimisationError::InvalidInput(
-                    "Goldstein-Price requires 2 parameters".to_string(),
-                )
-                .into());
-            }
-
-            let x = parameters[0];
-            let y = parameters[1];
-
-            // The Goldstein-Price function is:
-            // f(x,y) = [1 + (x + y + 1)^2 * (19 - 14x + 3x^2 - 14y + 6xy + 3y^2)]
-            //        * [30 + (2x - 3y)^2 * (18 - 32x + 12x^2 + 48y - 36xy + 27y^2)]
-
-            // To convert to least squares, split into two residuals
-            // r1 = sqrt(term1) - sqrt(1 + (1+1+1)^2 * 19) at minimum
-            // r2 = sqrt(term2) - sqrt(30) at minimum
-            // This ensures m >= n constraint while maintaining the same optimization
-
-            let one = <T as From<f64>>::from(1.0);
-            let term1_base = x + y + one;
-            let term1_mult = <T as From<f64>>::from(19.0)
-                - <T as From<f64>>::from(14.0) * x
-                + <T as From<f64>>::from(3.0) * x * x
-                - <T as From<f64>>::from(14.0) * y
-                + <T as From<f64>>::from(6.0) * x * y
-                + <T as From<f64>>::from(3.0) * y * y;
-            let term1 = one + term1_base * term1_base * term1_mult;
-
-            let term2_base = <T as From<f64>>::from(2.0) * x
-                - <T as From<f64>>::from(3.0) * y;
-            let term2_mult = <T as From<f64>>::from(18.0)
-                - <T as From<f64>>::from(32.0) * x
-                + <T as From<f64>>::from(12.0) * x * x
-                + <T as From<f64>>::from(48.0) * y
-                - <T as From<f64>>::from(36.0) * x * y
-                + <T as From<f64>>::from(27.0) * y * y;
-            let term2 = <T as From<f64>>::from(30.0)
-                + term2_base * term2_base * term2_mult;
-
-            // Split into two residuals to satisfy m >= n
-            out_residuals[0] = term1.sqrt() - <T as From<f64>>::from(1.0);
-            out_residuals[1] =
-                term2.sqrt() - <T as From<f64>>::from(30.0f64.sqrt());
-
-            Ok(())
-        }
-
-        fn parameter_count(&self) -> usize {
-            2
-        }
-
-        fn residual_count(&self) -> usize {
-            2
-        }
-    }
-
     #[test]
     fn test_goldstein_price() {
         let problem = GoldsteinPriceFunction;
-        let solver = LevenbergMarquardt::with_defaults();
+        let solver = LevenbergMarquardtSolver::with_defaults();
 
         // Test from multiple starting points as this function has multiple local minima
         let starting_points = vec![
@@ -2306,7 +1749,8 @@ mod tests {
 
         for (i, initial_parameters) in starting_points.iter().enumerate() {
             let mut workspace =
-                SolverWorkspace::new(&problem, initial_parameters).unwrap();
+                LevenbergMarquardtWorkspace::new(&problem, initial_parameters)
+                    .unwrap();
             let result =
                 solver.solve_problem(&problem, &mut workspace).unwrap();
 
@@ -2317,11 +1761,12 @@ mod tests {
                 initial_parameters[1]
             );
             println!(
-                "  Final: [{:.6}, {:.6}]",
-                result.parameters[0], result.parameters[1]
+                "  Final: [{:.6}, {:.6}], cost: {:.6e}, iters: {}",
+                result.parameters[0],
+                result.parameters[1],
+                result.cost,
+                result.iterations
             );
-            println!("  Cost: {:.6e}", result.cost);
-            println!("  Iterations: {}", result.iterations);
 
             // Global minimum at (0, -1) with f = 3 (so residual = 0)
             if (result.parameters[0] - 0.0).abs() < 0.1
@@ -2337,7 +1782,7 @@ mod tests {
                 );
                 // Accept both successful convergence and max iterations for difficult starting points
                 assert!(
-                    is_success(result.status) || matches!(result.status, SolverStatus::MaxIterationsReached),
+                    result.status.is_success() || matches!(result.status, SolverStatus::MaxIterationsReached),
                     "Expected successful convergence or max iterations, got {:?}", result.status
                 );
             }
@@ -2348,20 +1793,21 @@ mod tests {
     fn test_goldstein_price_from_near_minimum() {
         let problem = GoldsteinPriceFunction;
 
-        let config = SolverConfig {
-            ftol: 1e-12,
-            xtol: 1e-12,
-            gtol: 1e-12,
+        let config = LevenbergMarquardtConfig {
+            function_tolerance: 1e-12,
+            parameter_tolerance: 1e-12,
+            gradient_tolerance: 1e-12,
             max_iterations: 100,
             verbose: false,
             ..Default::default()
         };
-        let solver = LevenbergMarquardt::new(config);
+        let solver = LevenbergMarquardtSolver::new(config);
 
         // Start very close to the global minimum
         let initial_parameters = vec![0.01, -0.99];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         println!("\nGoldstein-Price from near global minimum:");
@@ -2374,7 +1820,7 @@ mod tests {
         println!("  Iterations: {}", result.iterations);
 
         // Check if we converged to the expected global minimum or a nearby local minimum
-        assert!(is_success(result.status));
+        assert!(result.status.is_success());
 
         // The Goldstein-Price function is complex with multiple local minima
         // Starting near (0, -1) might converge to a nearby local minimum
@@ -2402,7 +1848,8 @@ mod tests {
 
         let initial_parameters1 = vec![0.0, 0.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters1).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters1)
+                .unwrap();
 
         // Verify initial state.
         assert_eq!(workspace.parameters[0], 0.0);
@@ -2446,10 +1893,10 @@ mod tests {
         }
 
         // Test that reused workspace works with solver.
-        let solver = LevenbergMarquardt::with_defaults();
+        let solver = LevenbergMarquardtSolver::with_defaults();
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
-        assert!(is_success(result.status));
+        assert!(result.status.is_success());
         assert_relative_eq!(result.parameters[0], 1.0, epsilon = 1e-4);
         assert_relative_eq!(result.parameters[1], 1.0, epsilon = 1e-4);
 
@@ -2461,66 +1908,105 @@ mod tests {
 
     #[test]
     fn test_solver_workspace_reuse_dimension_mismatch() {
-        let problem2d = RosenbrockProblem::new(); // 2 parameters, 2 residuals
+        let problem2d = RosenbrockProblem::new(); // 2 parameters, 2 residuals.
 
         // Create workspace for 2D problem
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
-            SolverWorkspace::new(&problem2d, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem2d, &initial_parameters)
+                .unwrap();
 
-        // Try to reuse with incompatible problem dimensions
-        // Create a mock 3-parameter problem
-        struct Mock3DProblem;
-        impl OptimisationProblem for Mock3DProblem {
-            fn residuals<T>(
-                &self,
-                _parameters: &[T],
-                _out_residuals: &mut [T],
-            ) -> Result<()>
-            where
-                T: Copy
-                    + Add<Output = T>
-                    + Sub<Output = T>
-                    + Mul<Output = T>
-                    + Div<Output = T>
-                    + From<f64>
-                    + Sized
-                    + Zero
-                    + Float,
-            {
-                Ok(())
-            }
-            fn parameter_count(&self) -> usize {
-                3
-            }
-            fn residual_count(&self) -> usize {
-                3
-            }
-        }
-
+        // Try to reuse with incompatible problem dimensions. Create a mock
+        // 3-parameter problem.
         let problem3d = Mock3DProblem;
         let parameters3d = vec![0.0, 0.0, 0.0];
 
-        // This should fail with dimension mismatch
+        // This should fail with dimension mismatch.
         let result = workspace.reuse_with(&problem3d, &parameters3d);
         assert!(result.is_err());
 
-        // Test parameter count mismatch
-        let wrong_params = vec![0.0, 0.0, 0.0]; // 3 params for 2D problem
+        // Test parameter count mismatch.
+        let wrong_params = vec![0.0, 0.0, 0.0]; // 3 params for 2D problem.
         let result = workspace.reuse_with(&problem2d, &wrong_params);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_configurable_absolute_cost_tolerance() {
+        let problem = RosenbrockProblem::new();
+
+        // Test with very strict absolute cost tolerance.
+        let config_strict = LevenbergMarquardtConfig {
+            function_tolerance: 1e-6,
+            absolute_cost_tolerance: 1e-12, // Very strict.
+            max_iterations: 500,
+            ..Default::default()
+        };
+        let solver_strict = LevenbergMarquardtSolver::new(config_strict);
+
+        let initial_parameters = vec![0.1, 0.1]; // Close to optimum.
+        let mut workspace_strict =
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
+        let result_strict = solver_strict
+            .solve_problem(&problem, &mut workspace_strict)
+            .unwrap();
+
+        // Test with relaxed absolute cost tolerance.
+        let config_relaxed = LevenbergMarquardtConfig {
+            function_tolerance: 1e-6,
+            absolute_cost_tolerance: 1e-3, // Very relaxed.
+            max_iterations: 500,
+            ..Default::default()
+        };
+        let solver_relaxed = LevenbergMarquardtSolver::new(config_relaxed);
+
+        let mut workspace_relaxed =
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
+        let result_relaxed = solver_relaxed
+            .solve_problem(&problem, &mut workspace_relaxed)
+            .unwrap();
+
+        println!(
+            "\nLevenberg-Marquardt configurable absolute cost tolerance test:"
+        );
+        println!(
+            "  Strict tolerance (1e-12): {} iterations, cost: {:.6e}",
+            result_strict.iterations, result_strict.cost
+        );
+        println!(
+            "  Relaxed tolerance (1e-3): {} iterations, cost: {:.6e}",
+            result_relaxed.iterations, result_relaxed.cost
+        );
+
+        // Both should converge successfully
+        assert!(result_strict.status.is_success());
+        assert!(result_relaxed.status.is_success());
+
+        // Both should reach the minimum
+        assert_relative_eq!(result_strict.parameters[0], 1.0, epsilon = 1e-5);
+        assert_relative_eq!(result_strict.parameters[1], 1.0, epsilon = 1e-5);
+        assert_relative_eq!(result_relaxed.parameters[0], 1.0, epsilon = 1e-5);
+        assert_relative_eq!(result_relaxed.parameters[1], 1.0, epsilon = 1e-5);
+
+        // The strict tolerance should potentially achieve a lower cost
+        // (though both should be very good starting from a point close to optimum)
+        assert!(result_strict.cost < 1e-9);
+        assert!(result_relaxed.cost < 1e-2); // More relaxed expectation
     }
 
     #[test]
     fn test_solver_workspace_reuse_performance() {
         let problem = RosenbrockProblem::new();
 
-        // Create workspace once
+        // Create workspace once.
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
-            SolverWorkspace::new(&problem, &initial_parameters).unwrap();
+            LevenbergMarquardtWorkspace::new(&problem, &initial_parameters)
+                .unwrap();
 
-        // Test multiple reuses with different starting points
+        // Test multiple reuses with different starting points.
         let starting_points = vec![
             vec![0.5, 0.5],
             vec![-1.2, 1.0],
@@ -2528,13 +2014,11 @@ mod tests {
             vec![-0.5, 2.5],
         ];
 
-        let solver = LevenbergMarquardt::with_defaults();
+        let solver = LevenbergMarquardtSolver::with_defaults();
 
         for (i, start_point) in starting_points.iter().enumerate() {
-            // Reuse workspace
             workspace.reuse_with(&problem, start_point).unwrap();
 
-            // Solve
             let result =
                 solver.solve_problem(&problem, &mut workspace).unwrap();
 
@@ -2552,8 +2036,8 @@ mod tests {
                 result.iterations
             );
 
-            // All should converge to (1, 1)
-            assert!(is_success(result.status));
+            // All should converge to (1, 1).
+            assert!(result.status.is_success());
             assert_relative_eq!(result.parameters[0], 1.0, epsilon = 1e-4);
             assert_relative_eq!(result.parameters[1], 1.0, epsilon = 1e-4);
             assert!(result.cost < 1e-8);

@@ -22,7 +22,8 @@
 use criterion::{
     black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
 };
-use mmoptimise_rust::SolverWorkspace;
+use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtWorkspace;
+use mmoptimise_rust::solver::test_problems::PowellProblem;
 use std::time::Duration;
 
 mod common;
@@ -33,22 +34,24 @@ fn bench_powell_configs(c: &mut Criterion) {
     group.measurement_time(Duration::from_secs(10));
 
     let problem = PowellProblem;
-    let configs = BenchmarkConfig::default_configs();
-    let starting_points = PowellProblem::starting_points();
+    let configs = levenberg_marquardt_configs();
+    let starting_points = powell_starting_points();
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &starting_points[0].parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &starting_points[0].parameters,
+    )
+    .expect("Failed to create workspace");
 
-    for config in &configs {
+    for (config_name, config) in &configs {
         for start_point in &starting_points {
-            let bench_id = BenchmarkId::new(config.name, start_point.name);
+            let bench_id = BenchmarkId::new(*config_name, start_point.name);
             group.bench_with_input(bench_id, start_point, |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark_with_workspace(
+                        run_lm_benchmark_with_workspace(
                             &problem,
-                            config,
+                            *config,
                             start_point,
                             &mut workspace,
                         )
@@ -66,7 +69,7 @@ fn bench_powell_starting_points(c: &mut Criterion) {
     group.measurement_time(Duration::from_secs(8));
 
     let problem = PowellProblem;
-    let default_config = &BenchmarkConfig::default_configs()[0];
+    let (_, default_config) = levenberg_marquardt_configs()[0];
 
     // Extended set of challenging starting points for Powell's
     // function.
@@ -101,16 +104,18 @@ fn bench_powell_starting_points(c: &mut Criterion) {
         },
     ];
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &challenging_points[0].parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &challenging_points[0].parameters,
+    )
+    .expect("Failed to create workspace");
 
     for start_point in &challenging_points {
         let bench_id = BenchmarkId::from_parameter(start_point.name);
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_benchmark_with_workspace(
+                    run_lm_benchmark_with_workspace(
                         &problem,
                         default_config,
                         start_point,
@@ -136,27 +141,25 @@ fn bench_powell_scaling_modes(c: &mut Criterion) {
 
     // Test different scaling modes - Powell's function benefits from
     // scaling.
-    let scaling_configs = vec![
-        BenchmarkConfig::default_configs()[0].clone(), // Default (Auto).
-        BenchmarkConfig::default_configs()[3].clone(), // NoScaling.
-        BenchmarkConfig::default_configs()[4].clone(), // ManualScaling.
-    ];
+    let scaling_configs = levenberg_marquardt_configs();
 
-    let mut workspace =
-        SolverWorkspace::new(&problem, &challenging_start.parameters)
-            .expect("Failed to create workspace");
+    let mut workspace = LevenbergMarquardtWorkspace::new(
+        &problem,
+        &challenging_start.parameters,
+    )
+    .expect("Failed to create workspace");
 
-    for config in &scaling_configs {
-        let bench_id = BenchmarkId::from_parameter(config.name);
+    for (config_name, config) in &scaling_configs {
+        let bench_id = BenchmarkId::from_parameter(config_name);
         group.bench_with_input(
             bench_id,
             &challenging_start,
             |b, start_point| {
                 b.iter(|| {
                     black_box(
-                        run_benchmark_with_workspace(
+                        run_lm_benchmark_with_workspace(
                             &problem,
-                            config,
+                            *config,
                             start_point,
                             &mut workspace,
                         )

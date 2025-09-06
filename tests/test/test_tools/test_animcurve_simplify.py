@@ -44,7 +44,6 @@ INTERPOLATIONS = [
     INTERPOLATION_LINEAR,
     INTERPOLATION_CUBIC_NUBS,
     INTERPOLATION_QUADRATIC_NUBS,
-    # INTERPOLATION_CUBIC_SPLINE,  # This is not used, and will be deprecated.
 ]
 
 # Statistic type identifiers from the C++ code.

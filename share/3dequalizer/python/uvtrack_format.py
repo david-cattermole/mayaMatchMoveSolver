@@ -22,7 +22,7 @@ Generate track data from the given 2D points in 3DEqualizer.
 
 Files in 'UV Track' format should have file extension '.uv'.
 
-See ./python/mmSolver/tools/loadmarker/lib/formats/uvtrack.py for details
+See ./python/mmSolver/utils/loadmarker/formats/uvtrack.py for details
 of the '.uv' file format.
 """
 # 3DE4.script.hide:     true

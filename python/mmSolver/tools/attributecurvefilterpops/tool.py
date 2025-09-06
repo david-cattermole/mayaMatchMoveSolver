@@ -113,6 +113,8 @@ def main():
 
 
 def open_window():
+    mmapi.load_plugin()
+
     import mmSolver.tools.attributecurvefilterpops.ui.attrcurvefilterpops_window as window
 
     window.main()

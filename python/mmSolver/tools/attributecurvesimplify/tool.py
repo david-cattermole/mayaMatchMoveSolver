@@ -131,6 +131,8 @@ def main(anim_curve_nodes=None):
 
 
 def open_window():
+    mmapi.load_plugin()
+
     import mmSolver.tools.attributecurvesimplify.ui.attrcurvesimplify_window as window
 
     window.main()

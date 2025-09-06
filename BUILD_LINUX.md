@@ -16,7 +16,7 @@ On a Linux host Bash terminal, run:
 ```commandline
 $ cd <project root>
 $ docker buildx build --file share/docker/Dockerfile_mayaXXXX -t mmsolver-linux-mayaXXXX-build .
-$ docker container run --volume "${pwd}:/mmSolver" mmsolver-linux-mayaXXXX-build bash
+$ docker container run --interactive --tty --volume "${PWD}:/mmSolver" mmsolver-linux-mayaXXXX-build bash
 
 # Inside the docker container
 $ ./scripts/build_mmSolver_linux_mayaXXXX.bash

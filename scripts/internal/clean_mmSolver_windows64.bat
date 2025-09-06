@@ -46,6 +46,7 @@ ECHO Build directory base: %BUILD_DIR_BASE%
 SET CMAKE_DIR=%BUILD_MMSOLVER_CMAKE_DIR%
 SET PYTHON_VENV_DIR=%BUILD_MMSOLVER_PYTHON_VENV_DIR%
 SET RUST_DIR=%BUILD_MMSOLVER_RUST_DIR%
+SET DOCS_DIR=%BUILD_DOCS_DIR_BASE%
 
 IF EXIST "%CMAKE_DIR%" (
     ECHO Removing directory: %CMAKE_DIR%
@@ -67,6 +68,14 @@ IF EXIST "%RUST_DIR%" (
 ) ELSE (
     ECHO Directory does not exist, skipping: %RUST_DIR%
 )
+
+IF EXIST "%DOCS_DIR%" (
+    ECHO Removing directory: %DOCS_DIR%
+    RMDIR /S /Q "%DOCS_DIR%"
+) ELSE (
+    ECHO Directory does not exist, skipping: %DOCS_DIR%
+)
+
 
 ECHO mmSolver build cleanup completed for Maya %MAYA_VERSION%.
 

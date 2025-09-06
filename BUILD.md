@@ -55,10 +55,10 @@ may fail to generate.
 
 ### Ninja
 
-As of mmSolver v0.4.0, the [Ninja build system](https://ninja-build.org/)
-is used in the default Windows Batch scripts - Linux build
-scripts are not affected. Alternate build systems will likely work
-(such as NMake or Visual Studio projects) but are not tested.
+As of mmSolver v0.4.0 (Windows) and v0.6.1 (Linux), the [Ninja build
+system](https://ninja-build.org/) is used in the default build
+scripts. Alternate build systems will likely work (such as NMake or Visual
+Studio projects) but are not tested.
 
 ## C++ Compiler
 

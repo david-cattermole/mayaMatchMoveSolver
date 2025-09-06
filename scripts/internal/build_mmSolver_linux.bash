@@ -164,6 +164,9 @@ ${RUST_CARGO_EXE} build --release --target-dir ${BUILD_MMSOLVER_RUST_DIR}
 # 3DEqualizer website (LDPK doesn't have a git repo to clone from).
 LDPK_URL="${PROJECT_ROOT}/external/archives/ldpk-2.12.0.tar"
 
+# Optionally use "UNIX Makefiles" as the build system generator.
+CMAKE_GENERATOR="Ninja"
+
 # Build mmSolver project.
 cd ${BUILD_DIR_BASE}
 BUILD_DIR="${BUILD_MMSOLVER_CMAKE_DIR}"
@@ -171,7 +174,7 @@ mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
 export MAYA_VERSION=${MAYA_VERSION}
-${CMAKE_EXE} \
+${CMAKE_EXE} -G ${CMAKE_GENERATOR}\
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_MODULE_DIR} \
     -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH} \

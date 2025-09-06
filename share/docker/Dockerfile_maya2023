@@ -142,6 +142,7 @@ RUN yum install --assumeyes \
        rh-git218 \
        llvm-toolset-7-clang-tools-extra \
        cmake3 \
+       ninja-build \
        devtoolset-9-gcc \
        devtoolset-9-gcc-c++ \
        devtoolset-9-make

@@ -143,6 +143,7 @@ RUN dnf install --assumeyes \
        git \
        python39 \
        cmake \
+       ninja-build \
        clang-tools-extra \
        gcc-toolset-11
 

@@ -101,13 +101,16 @@ fi
 
 echo "Building opencolorio... (${SOURCE_ROOT})"
 
+# Optionally use "UNIX Makefiles" as the build system generator.
+CMAKE_GENERATOR="Ninja"
+
 # Renaming the library name and C++ namespace, is so that software
 # looking for the "regular" OpenColorIO will not conflict with the
 # mmSolver library.
 MMSOLVER_OCIO_LIBNAME_SUFFIX="_mmSolver"
 MMSOLVER_OCIO_NAMESPACE="OpenColorIO_mmSolver"
 
-${CMAKE_EXE} \
+${CMAKE_EXE} -G ${CMAKE_GENERATOR} \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DCMAKE_INSTALL_PREFIX=${BUILD_OCIO_INSTALL_DIR} \

@@ -12,11 +12,11 @@ Linux, such as "Autodesk_Maya_2019_Linux_64bit.tgz", located in the
 `<project root>/external/archives`. The Docker scripts will
 automatically install Maya inside the Docker image.
 
-On a Linux (or Windows) host Bash or Power Shell terminal, run:
+On a Linux host Bash terminal, run:
 ```commandline
 $ cd <project root>
-$ docker build --file share/docker/Dockerfile_mayaXXXX -t mmsolver-linux-mayaXXXX-build .
-$ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-mayaXXXX-build bash
+$ docker buildx build --file share/docker/Dockerfile_mayaXXXX -t mmsolver-linux-mayaXXXX-build .
+$ docker container run --volume "${pwd}:/mmSolver" mmsolver-linux-mayaXXXX-build bash
 
 # Inside the docker container
 $ ./scripts/build_mmSolver_linux_mayaXXXX.bash

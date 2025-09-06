@@ -35,35 +35,23 @@ use crate::scenebake::shim_bake_scene_graph;
 use crate::scenegraph::shim_create_scene_graph_box;
 use crate::scenegraph::ShimSceneGraph;
 use crate::statistics::{
-    shim_calc_coefficient_of_determination,
-    shim_calc_interquartile_range,
-    shim_calc_local_minima_maxima,
-    shim_calc_mean_absolute_deviation,
-    shim_calc_mean_absolute_error,
-    shim_calc_median_absolute_deviation,
+    shim_calc_coefficient_of_determination, shim_calc_interquartile_range,
+    shim_calc_local_minima_maxima, shim_calc_mean_absolute_deviation,
+    shim_calc_mean_absolute_error, shim_calc_median_absolute_deviation,
     shim_calc_median_absolute_deviation_sigma,
-    shim_calc_normalized_root_mean_square_error,
-    shim_calc_peak_to_peak,
-    shim_calc_percentile_rank,
-    shim_calc_population_coefficient_of_variation,
+    shim_calc_normalized_root_mean_square_error, shim_calc_peak_to_peak,
+    shim_calc_percentile_rank, shim_calc_population_coefficient_of_variation,
     shim_calc_population_kurtosis_excess,
     shim_calc_population_relative_standard_deviation,
-    shim_calc_population_standard_deviation,
-    shim_calc_population_variance,
-    shim_calc_quantile,
-    shim_calc_quartiles,
-    shim_calc_root_mean_square_error,
+    shim_calc_population_standard_deviation, shim_calc_population_variance,
+    shim_calc_quantile, shim_calc_quartiles, shim_calc_root_mean_square_error,
     shim_calc_sample_coefficient_of_variation,
     shim_calc_sample_kurtosis_excess,
     shim_calc_sample_relative_standard_deviation,
-    shim_calc_sample_standard_deviation,
-    shim_calc_sample_variance,
+    shim_calc_sample_standard_deviation, shim_calc_sample_variance,
     shim_calc_signal_to_noise_ratio,
-    shim_calc_signal_to_noise_ratio_as_decibels,
-    shim_calc_skewness_type1,
-    shim_calc_skewness_type2,
-    shim_calc_z_score,
-    shim_gaussian,
+    shim_calc_signal_to_noise_ratio_as_decibels, shim_calc_skewness_type1,
+    shim_calc_skewness_type2, shim_calc_z_score, shim_gaussian,
 };
 
 #[cxx::bridge(namespace = "mmscenegraph")]
@@ -492,7 +480,6 @@ pub mod ffi {
 
         #[cxx_name = "kCubicNUBS"]
         CubicNUBS = 3,
-
 
         #[cxx_name = "kUnknown"]
         Unknown = 255,

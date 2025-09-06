@@ -307,8 +307,10 @@ fn curve_smooth_gaussian100() -> Result<()> {
         &data_dir,
         "bounce_5_up_down_variance4.chan",
     )?;
-    let out_file_path =
-        construct_output_file_path(&output_dir, "curve_smooth_gaussian100.png")?;
+    let out_file_path = construct_output_file_path(
+        &output_dir,
+        "curve_smooth_gaussian100.png",
+    )?;
 
     let data = read_chan_file(&in_file_path.as_os_str())?;
     let x_values = chan_data_filter_only_x(&data);

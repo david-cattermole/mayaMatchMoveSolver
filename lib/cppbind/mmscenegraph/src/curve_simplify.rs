@@ -20,8 +20,8 @@
 
 use crate::cxxbridge::ffi::ControlPointDistribution as BindControlPointDistribution;
 use crate::cxxbridge::ffi::Interpolation as BindInterpolation;
-use crate::math::bind_to_core_interpolation_method;
 use crate::math::bind_to_core_control_point_distribution;
+use crate::math::bind_to_core_interpolation_method;
 use crate::shim_utilities::copy_vec_xy_to_x_y;
 
 use mmscenegraph_rust::constant::Real as CoreReal;

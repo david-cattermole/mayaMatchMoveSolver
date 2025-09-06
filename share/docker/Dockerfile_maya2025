@@ -137,12 +137,14 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
     && source ${HOME}/.cargo/env
 ENV PATH=/root/.cargo/bin:$PATH
 
+# Ninja Build system, for faster builds, with better logs.
+RUN dnf --enablerepo=powertools install --assumeyes ninja-build
+
 # Development tools for Maya 2025.
 RUN dnf install --assumeyes \
        git \
        python39 \
        cmake \
-       ninja-build \
        clang-tools-extra \
        gcc-toolset-11
 

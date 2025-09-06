@@ -25,7 +25,6 @@ criterion = { version = "0.5.1", default-features = false, features = ["html_rep
 enum_dispatch = "0.3.13"
 exr = "1.72.0"
 fastapprox = "0.3.1"
-finitediff = { version = "0.1.4", features = ["ndarray"] }
 half = { version = "2.4.1", default-features = false, features = ["std", "num-traits"] }
 log = "0.4.22"
 nalgebra = { version = "0.33.1", default-features = false, features = ["std", "matrixmultiply"] }

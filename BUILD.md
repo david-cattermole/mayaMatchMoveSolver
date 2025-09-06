@@ -25,6 +25,7 @@ dependency.
 - [Eigen](https://eigen.tuxfamily.org/)
 - [Ceres Solver](http://ceres-solver.org/)
   - [Google Log](https://github.com/google/glog)
+- [OpenMVG](https://github.com/openMVG/openMVG)
 - [Lens Distortion Plug-in Kit (LDPK)](https://www.3dequalizer.com)
 - [Python](https://www.python.org/)
   - [Sphinx](http://www.sphinx-doc.org/en/master/index.html)

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2024 David Cattermole.
+// Copyright (C) 2024, 2025 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -160,17 +160,17 @@ impl OptimisationProblem for N3CurveFitProblem {
             let data_x = <T as From<f64>>::from(self.reference_values[i].0);
             let data_y = <T as From<f64>>::from(self.reference_values[i].1);
 
-            // Linear interpolation between three points
+            // Linear interpolation between three points.
             let point_a_x = <T as From<f64>>::from(self.point_a_x);
             let point_b_x = <T as From<f64>>::from(self.point_b_x);
             let point_c_x = <T as From<f64>>::from(self.point_c_x);
 
             let curve_y = if data_x <= point_b_x {
-                // Interpolate between point A and point B
+                // Interpolate between point A and point B.
                 let t = (data_x - point_a_x) / (point_b_x - point_a_x);
                 point_a_y + t * (point_b_y - point_a_y)
             } else {
-                // Interpolate between point B and point C
+                // Interpolate between point B and point C.
                 let t = (data_x - point_b_x) / (point_c_x - point_b_x);
                 point_b_y + t * (point_c_y - point_b_y)
             };

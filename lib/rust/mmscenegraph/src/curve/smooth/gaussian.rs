@@ -20,7 +20,7 @@
 //! Gaussian smoothing.
 //!
 //! This has been ported from the Maya Python code;
-//! <project root>/python/mmSolver/utils/smooth.py
+//! &lt;project root&gt;/python/mmSolver/utils/smooth.py
 //!
 //! Additionally, this algorithm has been improved to work with both
 //! 1d and 2d data, where time values are not uniform.

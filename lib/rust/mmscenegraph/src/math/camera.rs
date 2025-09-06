@@ -177,7 +177,7 @@ pub fn compute_frustum_coordinates(
 /**
  * 'Film Fit' describes how fitting of the film gate and resolution gate is calculated.
  *
- * https://www.scratchapixel.com/lessons/3d-basic-rendering/3d-viewing-pinhole-camera/implementing-virtual-pinhole-camera
+ * <https://www.scratchapixel.com/lessons/3d-basic-rendering/3d-viewing-pinhole-camera/implementing-virtual-pinhole-camera>
  */
 #[inline]
 pub fn apply_film_fit_logic(

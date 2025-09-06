@@ -274,7 +274,7 @@ pub fn curve_fit_linear_regression_type1(
 ///
 /// For a brief understanding of the differences between Type/Model I
 /// and II, see this:
-/// https://www.mbari.org/introduction-to-model-i-and-model-ii-linear-regressions/
+/// <https://www.mbari.org/introduction-to-model-i-and-model-ii-linear-regressions/>
 pub fn fit_line_to_points_type2(
     x: &[Real],
     y: &[Real],

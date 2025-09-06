@@ -25,7 +25,7 @@ use num_traits::{Float, One, ToPrimitive, Zero};
 use std::cell::{Cell, RefCell};
 
 /// Trait for values that can be used in interpolation.
-/// This includes both f64 and Dual<f64>.
+/// This includes both f64 and `Dual<f64>`.
 pub trait InterpolationValue:
     Copy
     + std::ops::Add<Output = Self>
@@ -706,7 +706,7 @@ impl Interpolator {
 
 /// Standalone linear interpolation function that accepts Y coordinates as parameters.
 /// This is designed for curve fitting optimization where Y coordinates are the parameters
-/// being optimized and may be Dual<f64> numbers for automatic differentiation.
+/// being optimized and may be `Dual<f64>` numbers for automatic differentiation.
 pub fn linear_interpolate_with_control_points<T>(
     value_x: T,
     control_points_x: &[f64],
@@ -769,7 +769,7 @@ where
 
 /// Standalone NUBS interpolation function that accepts Y coordinates as parameters.
 /// This is designed for curve fitting optimization where Y coordinates are the parameters
-/// being optimized and may be Dual<f64> numbers for automatic differentiation.
+/// being optimized and may be `Dual<f64>` numbers for automatic differentiation.
 pub fn nubs_interpolate_with_control_points<T>(
     value_x: T,
     control_points_x: &[f64],

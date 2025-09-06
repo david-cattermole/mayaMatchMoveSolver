@@ -474,7 +474,7 @@ pub fn calc_sample_variance<T: UnsortedDataSliceOps>(
 /// - data: Slice of values
 ///
 /// Returns:
-/// - Option<StandardDeviation>: Contains mean and standard deviation
+/// - `Option<StandardDeviation>`: Contains mean and standard deviation
 ///
 /// Usage:
 /// - Measure spread in same units as data
@@ -654,7 +654,7 @@ pub fn calc_peak_to_peak<T: UnsortedDataSliceOps>(
 ///
 /// The method used in this function is the typical definition used in
 /// many older textbooks. Reference:
-/// https://www.rdocumentation.org/packages/e1071/versions/1.7-16/topics/skewness
+/// <https://www.rdocumentation.org/packages/e1071/versions/1.7-16/topics/skewness>
 ///
 /// R code:
 ///    library(e1071)
@@ -707,7 +707,7 @@ pub fn calc_skewness_type1<T: UnsortedDataSliceOps>(
 /// Calculates sample skewness, measuring asymmetry of distribution.
 ///
 /// The method used in this function is used in SAS and SPSS. Reference:
-/// https://www.rdocumentation.org/packages/e1071/versions/1.7-16/topics/skewness
+/// <https://www.rdocumentation.org/packages/e1071/versions/1.7-16/topics/skewness>
 ///
 /// R code:
 ///    data = c(2.0, 1.0, 0.0, 1.0, 2.0)
@@ -818,7 +818,7 @@ pub fn calc_population_kurtosis_excess<T: UnsortedDataSliceOps>(
 /// distribution.
 ///
 /// Returns:
-/// - Option<Real>: The excess kurtosis value, or None if:
+/// - `Option<Real>`: The excess kurtosis value, or None if:
 ///   - The standard deviation is 0
 ///   - The dataset has fewer than 4 points
 ///
@@ -878,8 +878,8 @@ pub fn calc_sample_kurtosis_excess<T: UnsortedDataSliceOps>(
 ///
 /// Mathematics:
 /// Points where derivative changes sign:
-/// - Maximum: x[i-1] < x[i] > x[i+1]
-/// - Minimum: x[i-1] > x[i] < x[i+1]
+/// - Maximum: x\[i-1\] < x\[i\] > x\[i+1\]
+/// - Minimum: x\[i-1\] > x\[i\] < x\[i+1\]
 ///
 /// Usage:
 /// - Find peaks and troughs
@@ -1038,9 +1038,9 @@ fn calc_median(sorted_data: &[Real]) -> Result<Real> {
 /// variability.
 ///
 /// Mathematics:
-/// MAD = median(|x[i] - median(X)|) where:
+/// MAD = median(|x\[i\] - median(X)|) where:
 /// - X is the dataset
-/// - x[i] are individual values
+/// - x\[i\] are individual values
 ///
 /// Usage:
 /// - Robust measure of variability
@@ -1771,7 +1771,7 @@ mod tests {
 /// Calculates the Mean Absolute Error (MAE) between two datasets.
 ///
 /// Mathematics:
-/// MAE = (1/n) * sum(|actual[i] - predicted[i]|)
+/// MAE = (1/n) * sum(|actual\[i\] - predicted\[i\]|)
 ///
 /// Parameters:
 /// - actual: The actual/noisy values.
@@ -1822,7 +1822,7 @@ pub fn calc_mean_absolute_error(
 /// Calculates the Root Mean Square Error (RMSE) between two datasets.
 ///
 /// Mathematics:
-/// RMSE = sqrt[(1/n) * sum((actual[i] - predicted[i])^2)]
+/// RMSE = sqrt\[(1/n) * sum((actual\[i\] - predicted\[i\])^2)\]
 ///
 /// Parameters:
 /// - actual: The actual/noisy values.
@@ -1913,8 +1913,8 @@ pub fn calc_normalized_root_mean_square_error(
 ///
 /// Mathematics:
 /// R^2 = 1 - (SS_res / SS_tot)
-/// where SS_res = sum((actual[i] - predicted[i])^2)
-/// and SS_tot = sum((actual[i] - mean(actual))^2)
+/// where SS_res = sum((actual\[i\] - predicted\[i\])^2)
+/// and SS_tot = sum((actual\[i\] - mean(actual))^2)
 ///
 /// Parameters:
 /// - actual: The actual/noisy values.

@@ -639,8 +639,9 @@ def generate(point_group, camera, points, fmt=None, **kwargs):
     :type points: list of str
 
     :param fmt: The format to generate, either
-                UV_TRACK_FORMAT_VERSION_1, UV_TRACK_FORMAT_VERSION_2
-                or UV_TRACK_FORMAT_VERSION_3.
+                UV_TRACK_FORMAT_VERSION_1, UV_TRACK_FORMAT_VERSION_2,
+                UV_TRACK_FORMAT_VERSION_3, UV_TRACK_FORMAT_VERSION_4
+                or UV_TRACK_FORMAT_VERSION_5.
     :type fmt: None or UV_TRACK_FORMAT_VERSION_*
 
     Supported 'kwargs':

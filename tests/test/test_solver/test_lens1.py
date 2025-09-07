@@ -77,7 +77,7 @@ class TestLens1(solverUtils.SolverTestCase):
             maya.cmds.connectAttr(src, dst)
 
         # save the scene
-        path = self.get_data_path('lens1_test_after.ma')
+        path = self.get_output_path('lens1_test_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -130,7 +130,7 @@ class TestLens1(solverUtils.SolverTestCase):
             maya.cmds.connectAttr(src, dst)
 
         # save the scene
-        path = self.get_data_path('lens1_test_layered_lenses_after.ma')
+        path = self.get_output_path('lens1_test_layered_lenses_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

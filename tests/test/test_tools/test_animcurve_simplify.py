@@ -160,7 +160,7 @@ class TestAnimCurveSimplify(test_tools_utils.ToolsTestCase):
 
     def _save_scene(self, name):
         name = 'animcurve_{}_after.ma'.format(name)
-        path = self.get_data_path(name)
+        path = self.get_output_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

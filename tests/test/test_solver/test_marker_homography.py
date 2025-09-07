@@ -143,7 +143,7 @@ class TestMarkerHomography(solverUtils.SolverTestCase):
 
         # save the output
         file_name = 'solver_marker_homography_five_point1_before.ma'
-        path = self.get_data_path(file_name)
+        path = self.get_output_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -222,7 +222,7 @@ class TestMarkerHomography(solverUtils.SolverTestCase):
 
         # save the output
         file_name = 'solver_marker_homography_eight_point1_before.ma'
-        path = self.get_data_path(file_name)
+        path = self.get_output_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

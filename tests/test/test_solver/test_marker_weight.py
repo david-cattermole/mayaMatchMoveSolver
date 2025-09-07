@@ -133,7 +133,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path(
+        path = self.get_output_path(
             'solver_marker_weight_staticframe_highweight_after.ma'
         )
         maya.cmds.file(rename=path)
@@ -196,7 +196,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_marker_weight_staticframe_lowweight_after.ma')
+        path = self.get_output_path('solver_marker_weight_staticframe_lowweight_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -263,7 +263,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path(
+        path = self.get_output_path(
             'solver_marker_weight_staticframe_ratioweight_after.ma'
         )
         maya.cmds.file(rename=path)
@@ -326,7 +326,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path(
+        path = self.get_output_path(
             'solver_marker_weight_staticframe_sameweight_after.ma'
         )
         maya.cmds.file(rename=path)
@@ -391,7 +391,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_marker_weight_staticframe_noweight_after.ma')
+        path = self.get_output_path('solver_marker_weight_staticframe_noweight_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

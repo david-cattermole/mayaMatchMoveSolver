@@ -126,7 +126,7 @@ class TestTriangulation(solverUtils.SolverTestCase):
             frames.append(f)
 
         # Save before we run.
-        path = self.get_data_path('solver_triangulation_before.ma')
+        path = self.get_output_path('solver_triangulation_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -156,7 +156,7 @@ class TestTriangulation(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
 
         # Save after the run.
-        path = self.get_data_path('solver_triangulation_after.ma')
+        path = self.get_output_path('solver_triangulation_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
         return

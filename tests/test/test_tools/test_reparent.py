@@ -65,7 +65,7 @@ class TestReparent(test_tools_utils.ToolsTestCase):
 
         # save the output
         name = 'reparent_no_keyframes_after.ma'
-        path = self.get_data_path(name)
+        path = self.get_output_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -114,7 +114,7 @@ class TestReparent(test_tools_utils.ToolsTestCase):
 
         # save the output
         name = 'reparent_to_world_no_keyframes_after.ma'
-        path = self.get_data_path(name)
+        path = self.get_output_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -168,7 +168,7 @@ class TestReparent(test_tools_utils.ToolsTestCase):
 
         # save the output
         name = 'reparent_with_keyframes_after.ma'
-        path = self.get_data_path(name)
+        path = self.get_output_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -228,7 +228,7 @@ class TestReparent(test_tools_utils.ToolsTestCase):
 
         # save the output
         name = 'reparent_to_world_with_keyframes_after.ma'
-        path = self.get_data_path(name)
+        path = self.get_output_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -271,7 +271,7 @@ class TestReparent(test_tools_utils.ToolsTestCase):
 
         # save the output
         name = 'reparent_unparent_sparse_with_keyframes_after.ma'
-        path = self.get_data_path(name)
+        path = self.get_output_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

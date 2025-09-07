@@ -83,7 +83,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         maya.cmds.setAttr(in_tfm + '.translateZ', pnt_z)
 
         # save the scene
-        path = self.get_data_path('reprojection_cmd_test_before.ma')
+        path = self.get_output_path('reprojection_cmd_test_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -150,7 +150,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
             self.assertApproxEqual(z, pnt_z), 'Z a=%r b=%r' % (z, pnt_z)
 
         # save the output
-        path = self.get_data_path('reprojection_cmd_test_after.ma')
+        path = self.get_output_path('reprojection_cmd_test_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
         return

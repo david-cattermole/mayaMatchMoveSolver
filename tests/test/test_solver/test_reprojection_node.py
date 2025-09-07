@@ -257,7 +257,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         self.print_node(data)
 
         # save the output
-        path = self.get_data_path('reprojection_node_test_after.ma')
+        path = self.get_output_path('reprojection_node_test_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
         return

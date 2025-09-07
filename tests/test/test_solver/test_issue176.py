@@ -111,7 +111,7 @@ class TestSolverIssue176(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_test_issue176_%s_after.ma' % solver_name)
+        path = self.get_output_path('solver_test_issue176_%s_after.ma' % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

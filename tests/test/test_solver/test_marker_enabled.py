@@ -103,7 +103,7 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_marker_enabled_staticframe_after.ma')
+        path = self.get_output_path('solver_marker_enabled_staticframe_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -226,7 +226,7 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_marker_enabled_multiframe_after.ma')
+        path = self.get_output_path('solver_marker_enabled_multiframe_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

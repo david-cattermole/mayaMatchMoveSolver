@@ -54,6 +54,7 @@ tests/**/*.tif
 tests/**/*.tiff
 tests/**/*.iff
 tests/**/*.png
+tests/output/
 
 external/build/*
 external/build_*maya*/*

@@ -119,7 +119,7 @@ class TestCameraPoseResection(solverUtils.SolverTestCase):
 
         # save the input
         file_name = 'solver_camera_pose_from_points_six_point_pose1_before.ma'
-        path = self.get_data_path(file_name)
+        path = self.get_output_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -133,7 +133,7 @@ class TestCameraPoseResection(solverUtils.SolverTestCase):
 
         # save the output
         file_name = 'solver_camera_pose_from_points_six_point_pose1_after.ma'
-        path = self.get_data_path(file_name)
+        path = self.get_output_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

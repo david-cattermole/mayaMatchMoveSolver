@@ -233,7 +233,7 @@ class TestSolveFilmFit(test_api_utils.APITestCase):
         file_name = 'test_solve_filmFit_{}_{}_filmFit{}_before.ma'.format(
             solver_name, scene_graph_name, film_fit_name
         )
-        path = self.get_data_path(file_name)
+        path = self.get_output_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -251,7 +251,7 @@ class TestSolveFilmFit(test_api_utils.APITestCase):
         file_name = 'test_solve_filmFit_{}_{}_filmFit{}_after.ma'.format(
             solver_name, scene_graph_name, film_fit_name
         )
-        path = self.get_data_path(file_name)
+        path = self.get_output_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

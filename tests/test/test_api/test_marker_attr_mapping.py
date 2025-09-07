@@ -170,7 +170,7 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         assert ret == expected
 
         # Save the output
-        path = self.get_data_path('find_marker_attr_mapping_after.ma')
+        path = self.get_output_path('find_marker_attr_mapping_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
         return
@@ -192,7 +192,7 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         print('pre-solve time:', e - s)
 
         # save the output, before.
-        path = self.get_data_path(
+        path = self.get_output_path(
             'test_marker_attr_mapping_correctness_solver_basic_before.ma'
         )
         maya.cmds.file(rename=path)
@@ -209,7 +209,7 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         mmapi.update_deviation_on_collection(col, solres_list)
 
         # save the output
-        path = self.get_data_path(
+        path = self.get_output_path(
             'test_marker_attr_mapping_correctness_solver_basic_after.ma'
         )
         maya.cmds.file(rename=path)
@@ -237,7 +237,7 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         print('pre-solve time:', e - s)
 
         # save the output, before.
-        path = self.get_data_path(
+        path = self.get_output_path(
             'test_marker_attr_mapping_correctness_solver_standard_before.ma'
         )
         maya.cmds.file(rename=path)
@@ -254,7 +254,7 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         mmapi.update_deviation_on_collection(col, solres_list)
 
         # save the output
-        path = self.get_data_path(
+        path = self.get_output_path(
             'test_marker_attr_mapping_correctness_solver_standard_after.ma'
         )
         maya.cmds.file(rename=path)

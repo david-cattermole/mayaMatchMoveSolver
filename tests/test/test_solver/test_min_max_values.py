@@ -88,7 +88,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_min_max_values_staticframe_after.ma')
+        path = self.get_output_path('solver_min_max_values_staticframe_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -149,7 +149,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path(
+        path = self.get_output_path(
             'solver_min_max_values_staticframe_lower_bound_only_after.ma'
         )
         maya.cmds.file(rename=path)
@@ -209,7 +209,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path(
+        path = self.get_output_path(
             'solver_min_max_values_staticframe_upper_bound_only_after.ma'
         )
         maya.cmds.file(rename=path)

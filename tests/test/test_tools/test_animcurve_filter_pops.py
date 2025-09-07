@@ -67,7 +67,7 @@ class TestAnimCurveFilterPops(test_tools_utils.ToolsTestCase):
 
         # save the output
         name = 'animcurve_filter_pops1_after.ma'
-        path = self.get_data_path(name)
+        path = self.get_output_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

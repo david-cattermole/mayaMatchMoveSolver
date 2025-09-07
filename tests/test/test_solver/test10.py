@@ -85,7 +85,7 @@ class TestSolver10(solverUtils.SolverTestCase):
         maya.cmds.setAttr(marker2_tfm + '.tz', -1.0)
 
         # save the output
-        path = self.get_data_path('solver_test10_before.ma')
+        path = self.get_output_path('solver_test10_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -128,7 +128,7 @@ class TestSolver10(solverUtils.SolverTestCase):
 
         # save the output
         file_name = 'solver_test10_{}_{}_after.ma'.format(solver_name, scene_graph_name)
-        path = self.get_data_path(file_name)
+        path = self.get_output_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

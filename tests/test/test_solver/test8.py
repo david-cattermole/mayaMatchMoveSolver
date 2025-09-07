@@ -143,7 +143,7 @@ class TestSolver8(solverUtils.SolverTestCase):
         }
 
         # save the output
-        path = self.get_data_path('solver_test8_%s_before.ma' % solver_name)
+        path = self.get_output_path('solver_test8_%s_before.ma' % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -164,7 +164,7 @@ class TestSolver8(solverUtils.SolverTestCase):
 
         # save the output
         file_name = 'solver_test8_{}_{}_after.ma'.format(solver_name, scene_graph_name)
-        path = self.get_data_path(file_name)
+        path = self.get_output_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

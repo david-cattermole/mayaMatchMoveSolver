@@ -68,7 +68,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
 
         # save the output
         name = 'controller_create_no_keyframes_after.ma'
-        path = self.get_data_path(name)
+        path = self.get_output_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -89,7 +89,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
 
         # save the output
         name = 'controller_create_no_keyframes_with_pivot_after.ma'
-        path = self.get_data_path(name)
+        path = self.get_output_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -111,7 +111,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         nodes = lib.remove(ctrls)
 
         # save the output
-        path = self.get_data_path('controller_remove_no_keyframes_after.ma')
+        path = self.get_output_path('controller_remove_no_keyframes_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -134,7 +134,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         nodes = lib.remove(ctrls)
 
         # save the output
-        path = self.get_data_path('controller_remove_no_keyframes_with_pivot_after.ma')
+        path = self.get_output_path('controller_remove_no_keyframes_with_pivot_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -157,7 +157,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
 
         # save the output
         name = 'controller_create_hierarchy_with_pivot_point_changed_after.ma'
-        path = self.get_data_path(name)
+        path = self.get_output_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -191,7 +191,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
 
         # save the output
         name = 'controller_remove_hierarchy_with_pivot_point_changed_after.ma'
-        path = self.get_data_path(name)
+        path = self.get_output_path(name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -227,7 +227,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl = ctrls[0]
 
         # save the output
-        path = self.get_data_path('controller_create_one_keyframe_after.ma')
+        path = self.get_output_path('controller_create_one_keyframe_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -249,7 +249,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         nodes = lib.remove(ctrls)
 
         # save the output
-        path = self.get_data_path('controller_remove_one_keyframe_after.ma')
+        path = self.get_output_path('controller_remove_one_keyframe_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -292,7 +292,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl = ctrls[0]
 
         # save the output
-        path = self.get_data_path('controller_create_three_keyframes_after.ma')
+        path = self.get_output_path('controller_create_three_keyframes_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -358,7 +358,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         maya.cmds.createNode('transform', parent=ctrl_b)
 
         # save the output
-        path = self.get_data_path('controller_create_hierarchy_after.ma')
+        path = self.get_output_path('controller_create_hierarchy_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -384,7 +384,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         lib.remove(ctrls)
 
         # save the output
-        path = self.get_data_path('controller_remove_hierarchy_after.ma')
+        path = self.get_output_path('controller_remove_hierarchy_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
         return
@@ -410,7 +410,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         maya.cmds.createNode('transform', parent=ctrl_b, name='childB')
 
         # save the output
-        path = self.get_data_path('controller_remove_riggedCharacter_before.ma')
+        path = self.get_output_path('controller_remove_riggedCharacter_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -429,7 +429,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         lib.remove(ctrls)
 
         # save the output
-        path = self.get_data_path('controller_remove_riggedCharacter_after.ma')
+        path = self.get_output_path('controller_remove_riggedCharacter_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -502,7 +502,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         maya.cmds.setAttr(plug, 0.0)
 
         # save the output
-        path = self.get_data_path(
+        path = self.get_output_path(
             'controller_remove_riggedCharacterArmModify_before.ma'
         )
         maya.cmds.file(rename=path)
@@ -535,7 +535,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         lib.remove(ctrls)
 
         # save the output
-        path = self.get_data_path('controller_remove_riggedCharacterArmModify_after.ma')
+        path = self.get_output_path('controller_remove_riggedCharacterArmModify_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -587,7 +587,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl_a, ctrl_b, ctrl_c = ctrls
 
         # save the output
-        path = self.get_data_path('controller_remove_hierarchyOfControls_before.ma')
+        path = self.get_output_path('controller_remove_hierarchyOfControls_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -610,7 +610,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         lib.remove([ctrl_a, ctrl_b, ctrl_c])
 
         # save the output
-        path = self.get_data_path('controller_remove_hierarchyOfControls_after.ma')
+        path = self.get_output_path('controller_remove_hierarchyOfControls_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
         return
@@ -630,7 +630,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         maya.cmds.setAttr(tfm_c + '.rz', 90.0)
 
         # save the output
-        path = self.get_data_path('controller_create_bookHierarchy_before.ma')
+        path = self.get_output_path('controller_create_bookHierarchy_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -640,7 +640,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrl_a, ctrl_d, ctrl_b, ctrl_c = ctrls
 
         # save the output
-        path = self.get_data_path('controller_create_bookHierarchy_after.ma')
+        path = self.get_output_path('controller_create_bookHierarchy_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

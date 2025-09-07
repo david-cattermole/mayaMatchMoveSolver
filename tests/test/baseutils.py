@@ -92,6 +92,11 @@ class TestBase(unittest.TestCase):
         path = os.path.abspath(path)
         return path
 
+    def get_output_root(self):
+        path = os.path.join(os.path.dirname(__file__), '..', 'output')
+        path = os.path.abspath(path)
+        return path
+
     def get_profile_root(self):
         path = os.path.join(os.path.dirname(__file__), '..', 'profile')
         path = os.path.abspath(path)
@@ -99,6 +104,12 @@ class TestBase(unittest.TestCase):
 
     def get_data_path(self, *args):
         root = self.get_data_root()
+        path = os.path.join(root, *args)
+        path = os.path.abspath(path)
+        return path
+
+    def get_output_path(self, *args):
+        root = self.get_output_root()
         path = os.path.join(root, *args)
         path = os.path.abspath(path)
         return path

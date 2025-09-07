@@ -84,7 +84,7 @@ class TestSolve(test_api_utils.APITestCase):
         col.add_attribute(attr_ty)
 
         # save the output
-        path = self.get_data_path('test_solve_init_before.ma')
+        path = self.get_output_path('test_solve_init_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -96,7 +96,7 @@ class TestSolve(test_api_utils.APITestCase):
         mmapi.update_deviation_on_collection(col, results)
 
         # save the output
-        path = self.get_data_path('test_solve_init_after.ma')
+        path = self.get_output_path('test_solve_init_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -168,7 +168,7 @@ class TestSolve(test_api_utils.APITestCase):
         col.add_attribute(attr_ty)
 
         # save the output
-        path = self.get_data_path('test_solve_init_solverstandard_before.ma')
+        path = self.get_output_path('test_solve_init_solverstandard_before.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -183,7 +183,7 @@ class TestSolve(test_api_utils.APITestCase):
         file_name = 'test_solve_init_solverstandard_{}_{}_after.ma'.format(
             solver_name, scene_graph_name
         )
-        path = self.get_data_path(file_name)
+        path = self.get_output_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

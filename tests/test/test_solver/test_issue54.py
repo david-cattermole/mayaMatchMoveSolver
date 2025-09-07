@@ -102,7 +102,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
 
         # save the output
         path = 'solver_test_issue54_initial_value_zero_%s_before.ma'
-        path = self.get_data_path(path % solver_name)
+        path = self.get_output_path(path % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -119,7 +119,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
 
         # save the output
         path = 'solver_test_issue54_initial_value_zero_%s_after.ma'
-        path = self.get_data_path(path % solver_name)
+        path = self.get_output_path(path % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -155,7 +155,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
 
         # save the output
         path = 'solver_test_issue54_initial_value_twenty_%s_before.ma'
-        path = self.get_data_path(path % solver_name)
+        path = self.get_output_path(path % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -172,7 +172,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
 
         # save the output
         path = 'solver_test_issue54_initial_value_twenty_%s_after.ma'
-        path = self.get_data_path(path % solver_name)
+        path = self.get_output_path(path % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -208,7 +208,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
 
         # save the output
         path = 'solver_test_issue54_initial_value_threeSixty_%s_before.ma'
-        path = self.get_data_path(path % solver_name)
+        path = self.get_output_path(path % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -225,7 +225,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
 
         # save the output
         path = 'solver_test_issue54_initial_value_threeSixty_%s_after.ma'
-        path = self.get_data_path(path % solver_name)
+        path = self.get_output_path(path % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

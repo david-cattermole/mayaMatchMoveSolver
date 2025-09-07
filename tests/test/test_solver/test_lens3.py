@@ -146,7 +146,7 @@ class TestLens3(solverUtils.SolverTestCase):
         print(f'Initial quartic distortion: {initial_quartic}')
 
         # save the output
-        path = self.get_data_path('lens3_%s_before.ma' % solver_name)
+        path = self.get_output_path('lens3_%s_before.ma' % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -210,7 +210,7 @@ class TestLens3(solverUtils.SolverTestCase):
         )
 
         # save the output
-        path = self.get_data_path('lens3_%s_after.ma' % solver_name)
+        path = self.get_output_path('lens3_%s_after.ma' % solver_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

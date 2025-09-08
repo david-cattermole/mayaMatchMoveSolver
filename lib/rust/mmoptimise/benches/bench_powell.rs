@@ -19,13 +19,12 @@
 //! challenges with singularities and slow convergence in certain
 //! regions.  It's particularly useful for testing solver robustness.
 
-use criterion::{
-    black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
-};
+use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 use mmoptimise_rust::solver::gauss_newton::GaussNewtonWorkspace;
 use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtWorkspace;
 use mmoptimise_rust::solver::powell_dogleg::PowellDogLegWorkspace;
 use mmoptimise_rust::solver::test_problems::PowellProblem;
+use std::hint::black_box;
 use std::time::Duration;
 
 mod common;
@@ -36,6 +35,7 @@ fn bench_powell_solver_comparison(c: &mut Criterion) {
     group.measurement_time(Duration::from_secs(12));
 
     let problem = PowellProblem;
+    let expected = powell_expected_solution();
     let starting_points = powell_starting_points();
 
     // Use default configurations for fair comparison
@@ -50,25 +50,22 @@ fn bench_powell_solver_comparison(c: &mut Criterion) {
     )
     .expect("Failed to create LM workspace");
 
-    let mut gn_workspace = GaussNewtonWorkspace::new(
-        &problem,
-        &starting_points[0].parameters,
-    )
-    .expect("Failed to create GN workspace");
+    let mut gn_workspace =
+        GaussNewtonWorkspace::new(&problem, &starting_points[0].parameters)
+            .expect("Failed to create GN workspace");
 
-    let mut pdl_workspace = PowellDogLegWorkspace::new(
-        &problem,
-        &starting_points[0].parameters,
-    )
-    .expect("Failed to create PDL workspace");
+    let mut pdl_workspace =
+        PowellDogLegWorkspace::new(&problem, &starting_points[0].parameters)
+            .expect("Failed to create PDL workspace");
 
     for start_point in &starting_points {
         let bench_id = BenchmarkId::new("LevenbergMarquardt", start_point.name);
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_lm_benchmark_with_workspace(
+                    run_lm_benchmark(
                         &problem,
+                        &expected,
                         lm_config,
                         start_point,
                         &mut lm_workspace,
@@ -82,8 +79,9 @@ fn bench_powell_solver_comparison(c: &mut Criterion) {
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_gn_benchmark_with_workspace(
+                    run_gn_benchmark(
                         &problem,
+                        &expected,
                         gn_config,
                         start_point,
                         &mut gn_workspace,
@@ -97,8 +95,9 @@ fn bench_powell_solver_comparison(c: &mut Criterion) {
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_pdl_benchmark_with_workspace(
+                    run_pdl_benchmark(
                         &problem,
+                        &expected,
                         pdl_config,
                         start_point,
                         &mut pdl_workspace,
@@ -116,6 +115,7 @@ fn bench_powell_config_comparison(c: &mut Criterion) {
     group.measurement_time(Duration::from_secs(10));
 
     let problem = PowellProblem;
+    let expected = powell_expected_solution();
     let starting_points = powell_starting_points();
     let lm_configs = levenberg_marquardt_configs();
     let gn_configs = gauss_newton_configs();
@@ -128,17 +128,13 @@ fn bench_powell_config_comparison(c: &mut Criterion) {
     )
     .expect("Failed to create LM workspace");
 
-    let mut gn_workspace = GaussNewtonWorkspace::new(
-        &problem,
-        &starting_points[0].parameters,
-    )
-    .expect("Failed to create GN workspace");
+    let mut gn_workspace =
+        GaussNewtonWorkspace::new(&problem, &starting_points[0].parameters)
+            .expect("Failed to create GN workspace");
 
-    let mut pdl_workspace = PowellDogLegWorkspace::new(
-        &problem,
-        &starting_points[0].parameters,
-    )
-    .expect("Failed to create PDL workspace");
+    let mut pdl_workspace =
+        PowellDogLegWorkspace::new(&problem, &starting_points[0].parameters)
+            .expect("Failed to create PDL workspace");
 
     // Benchmark Levenberg-Marquardt configurations
     for (config_name, config) in &lm_configs {

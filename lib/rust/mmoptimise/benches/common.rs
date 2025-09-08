@@ -102,6 +102,66 @@ pub struct StartingPoint {
     pub parameters: Vec<f64>,
 }
 
+/// Expected solution for validation in benchmarks.
+#[derive(Clone, Debug)]
+pub struct ExpectedSolution {
+    pub parameters: Vec<f64>,
+    pub parameter_tolerance: f64, // Epsilon for parameter comparison
+    pub maximum_cost_threshold: f64, // Max acceptable final cost.
+}
+
+/// Expected solution factory functions for each problem type.
+/// These define the known optimal solutions that benchmarks must validate against.
+pub fn rosenbrock_expected_solution() -> ExpectedSolution {
+    ExpectedSolution {
+        parameters: vec![1.0, 1.0], // Global minimum at (1, 1)
+        parameter_tolerance: 1e-6,
+        maximum_cost_threshold: 1e-10,
+    }
+}
+
+pub fn powell_expected_solution() -> ExpectedSolution {
+    ExpectedSolution {
+        parameters: vec![0.0, 0.0, 0.0, 0.0], // Global minimum at origin.
+        parameter_tolerance: 1e-1,
+        maximum_cost_threshold: 1e-7,
+    }
+}
+
+pub fn bukin_n6_expected_solution() -> ExpectedSolution {
+    ExpectedSolution {
+        parameters: vec![-10.0, 1.0], // Global minimum.
+        parameter_tolerance: 1e-4,
+        maximum_cost_threshold: 1e-8,
+    }
+}
+
+pub fn goldstein_price_expected_solution() -> ExpectedSolution {
+    ExpectedSolution {
+        parameters: vec![0.0, -1.0], // Global minimum.
+        parameter_tolerance: 1e-4,
+        maximum_cost_threshold: 3.01, // Function value is 3 at minimum.
+    }
+}
+
+pub fn extended_rosenbrock_expected_solution(n: usize) -> ExpectedSolution {
+    ExpectedSolution {
+        parameters: vec![1.0; n], // All parameters should be 1.0.
+        parameter_tolerance: 1e-6,
+        maximum_cost_threshold: 1e-10,
+    }
+}
+
+pub fn curve_fitting_expected_solution() -> ExpectedSolution {
+    // Based on CurveFittingProblem, the true parameters for the exponential model are:
+    // y = exp(m*x + c), where the synthetic data was generated with m=0.3, c=0.1.
+    ExpectedSolution {
+        parameters: vec![0.3, 0.1], // True parameters used to generate the data.
+        parameter_tolerance: 1e-2,
+        maximum_cost_threshold: 1.9, // Allow some error due to noise in data.
+    }
+}
+
 /// Starting point factory functions for different problem types.
 /// These are standardized across all solvers for fair comparison.
 pub fn rosenbrock_starting_points() -> Vec<StartingPoint> {
@@ -208,20 +268,69 @@ pub fn extended_rosenbrock_starting_points(n: usize) -> Vec<StartingPoint> {
     ]
 }
 
+/// Validates that a solver found the expected solution within
+/// tolerance.
+///
+/// This ensures benchmarks verify correctness, not just performance.
+pub fn validate_solution(
+    actual_params: &[f64],
+    actual_cost: f64,
+    expected: &ExpectedSolution,
+) -> Result<()> {
+    // Check that we have the correct number of parameters.
+    if actual_params.len() != expected.parameters.len() {
+        return Err(anyhow!(
+            "Parameter count mismatch: got {}, expected {}.",
+            actual_params.len(),
+            expected.parameters.len()
+        ));
+    }
+
+    // Check parameter accuracy.
+    for (i, (&actual, &expected_param)) in actual_params
+        .iter()
+        .zip(expected.parameters.iter())
+        .enumerate()
+    {
+        let error = (actual - expected_param).abs();
+        if error > expected.parameter_tolerance {
+            return Err(anyhow!(
+                "Parameter {} out of tolerance: got {:.6}, expected {:.6}, error {:.2e}, tolerance {:.2e}.",
+                i, actual, expected_param, error, expected.parameter_tolerance
+            ));
+        }
+    }
+
+    // Check cost threshold.
+    if actual_cost > expected.maximum_cost_threshold {
+        return Err(anyhow!(
+            "Cost too high: got {:.2e}, maximum cost threshold {:.2e}.",
+            actual_cost,
+            expected.maximum_cost_threshold
+        ));
+    }
+
+    Ok(())
+}
+
 /// Run a Levenberg-Marquardt benchmark.
 pub fn run_lm_benchmark<P: OptimisationProblem>(
     problem: &P,
+    expected: &ExpectedSolution,
     config: LevenbergMarquardtConfig,
     starting_point: &StartingPoint,
+    workspace: &mut LevenbergMarquardtWorkspace,
 ) -> Result<(std::time::Duration, bool, usize, usize, f64)> {
+    workspace.reuse_with(problem, &starting_point.parameters)?;
     let start = std::time::Instant::now();
-    let mut workspace =
-        LevenbergMarquardtWorkspace::new(problem, &starting_point.parameters)?;
     let solver = LevenbergMarquardtSolver::new(config);
-    let result = solver.solve_problem(problem, &mut workspace)?;
+    let result = solver.solve_problem(problem, workspace)?;
     let duration = start.elapsed();
     let success = result.status.is_success();
+
     if success {
+        validate_solution(&result.parameters, result.cost, expected)?;
+
         Ok((
             duration,
             success,
@@ -237,17 +346,21 @@ pub fn run_lm_benchmark<P: OptimisationProblem>(
 /// Run a Gauss-Newton benchmark.
 pub fn run_gn_benchmark<P: OptimisationProblem>(
     problem: &P,
+    expected: &ExpectedSolution,
     config: GaussNewtonConfig,
     starting_point: &StartingPoint,
+    workspace: &mut GaussNewtonWorkspace,
 ) -> Result<(std::time::Duration, bool, usize, usize, f64)> {
+    workspace.reuse_with(problem, &starting_point.parameters)?;
     let start = std::time::Instant::now();
-    let mut workspace =
-        GaussNewtonWorkspace::new(problem, &starting_point.parameters)?;
     let solver = GaussNewtonSolver::new(config);
-    let result = solver.solve_problem(problem, &mut workspace)?;
+    let result = solver.solve_problem(problem, workspace)?;
     let duration = start.elapsed();
     let success = result.status.is_success();
+
     if success {
+        validate_solution(&result.parameters, result.cost, expected)?;
+
         Ok((
             duration,
             success,
@@ -263,84 +376,7 @@ pub fn run_gn_benchmark<P: OptimisationProblem>(
 /// Run a Powell Dog-Leg benchmark.
 pub fn run_pdl_benchmark<P: OptimisationProblem>(
     problem: &P,
-    config: PowellDogLegConfig,
-    starting_point: &StartingPoint,
-) -> Result<(std::time::Duration, bool, usize, usize, f64)> {
-    let start = std::time::Instant::now();
-    let mut workspace =
-        PowellDogLegWorkspace::new(problem, &starting_point.parameters)?;
-    let solver = PowellDogLegSolver::new(config);
-    let result = solver.solve_problem(problem, &mut workspace)?;
-    let duration = start.elapsed();
-    let success = result.status.is_success();
-    if success {
-        Ok((
-            duration,
-            success,
-            result.iterations,
-            result.function_evaluations,
-            result.cost,
-        ))
-    } else {
-        Err(anyhow!("Solve failed!"))
-    }
-}
-
-/// Run a Levenberg-Marquardt benchmark with reused workspace.
-pub fn run_lm_benchmark_with_workspace<P: OptimisationProblem>(
-    problem: &P,
-    config: LevenbergMarquardtConfig,
-    starting_point: &StartingPoint,
-    workspace: &mut LevenbergMarquardtWorkspace,
-) -> Result<(std::time::Duration, bool, usize, usize, f64)> {
-    workspace.reuse_with(problem, &starting_point.parameters)?;
-    let start = std::time::Instant::now();
-    let solver = LevenbergMarquardtSolver::new(config);
-    let result = solver.solve_problem(problem, workspace)?;
-    let duration = start.elapsed();
-    let success = result.status.is_success();
-    if success {
-        Ok((
-            duration,
-            success,
-            result.iterations,
-            result.function_evaluations,
-            result.cost,
-        ))
-    } else {
-        Err(anyhow!("Solve failed!"))
-    }
-}
-
-/// Run a Gauss-Newton benchmark with reused workspace.
-pub fn run_gn_benchmark_with_workspace<P: OptimisationProblem>(
-    problem: &P,
-    config: GaussNewtonConfig,
-    starting_point: &StartingPoint,
-    workspace: &mut GaussNewtonWorkspace,
-) -> Result<(std::time::Duration, bool, usize, usize, f64)> {
-    workspace.reuse_with(problem, &starting_point.parameters)?;
-    let start = std::time::Instant::now();
-    let solver = GaussNewtonSolver::new(config);
-    let result = solver.solve_problem(problem, workspace)?;
-    let duration = start.elapsed();
-    let success = result.status.is_success();
-    if success {
-        Ok((
-            duration,
-            success,
-            result.iterations,
-            result.function_evaluations,
-            result.cost,
-        ))
-    } else {
-        Err(anyhow!("Solve failed!"))
-    }
-}
-
-/// Run a Powell Dog-Leg benchmark with reused workspace.
-pub fn run_pdl_benchmark_with_workspace<P: OptimisationProblem>(
-    problem: &P,
+    expected: &ExpectedSolution,
     config: PowellDogLegConfig,
     starting_point: &StartingPoint,
     workspace: &mut PowellDogLegWorkspace,
@@ -351,7 +387,10 @@ pub fn run_pdl_benchmark_with_workspace<P: OptimisationProblem>(
     let result = solver.solve_problem(problem, workspace)?;
     let duration = start.elapsed();
     let success = result.status.is_success();
+
     if success {
+        validate_solution(&result.parameters, result.cost, expected)?;
+
         Ok((
             duration,
             success,

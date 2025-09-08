@@ -23,13 +23,12 @@
 //! This benchmark provides direct solver comparisons using identical
 //! configurations and starting points.
 
-use criterion::{
-    black_box, criterion_group, criterion_main, BenchmarkId, Criterion,
-};
+use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 use mmoptimise_rust::solver::gauss_newton::GaussNewtonWorkspace;
 use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtWorkspace;
 use mmoptimise_rust::solver::powell_dogleg::PowellDogLegWorkspace;
 use mmoptimise_rust::solver::test_problems::RosenbrockProblem;
+use std::hint::black_box;
 use std::time::Duration;
 
 mod common;
@@ -40,6 +39,7 @@ fn bench_rosenbrock_solver_comparison(c: &mut Criterion) {
     group.measurement_time(Duration::from_secs(10));
 
     let problem = RosenbrockProblem::new();
+    let expected = rosenbrock_expected_solution();
     let starting_points = rosenbrock_starting_points();
 
     // Use default configurations for fair comparison
@@ -52,27 +52,24 @@ fn bench_rosenbrock_solver_comparison(c: &mut Criterion) {
         &problem,
         &starting_points[0].parameters,
     )
-    .expect("Failed to create LM workspace");
+    .expect("Failed to create LM workspace.");
 
-    let mut gn_workspace = GaussNewtonWorkspace::new(
-        &problem,
-        &starting_points[0].parameters,
-    )
-    .expect("Failed to create GN workspace");
+    let mut gn_workspace =
+        GaussNewtonWorkspace::new(&problem, &starting_points[0].parameters)
+            .expect("Failed to create GN workspace.");
 
-    let mut pdl_workspace = PowellDogLegWorkspace::new(
-        &problem,
-        &starting_points[0].parameters,
-    )
-    .expect("Failed to create PDL workspace");
+    let mut pdl_workspace =
+        PowellDogLegWorkspace::new(&problem, &starting_points[0].parameters)
+            .expect("Failed to create PDL workspace.");
 
     for start_point in &starting_points {
         let bench_id = BenchmarkId::new("LevenbergMarquardt", start_point.name);
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_lm_benchmark_with_workspace(
+                    run_lm_benchmark(
                         &problem,
+                        &expected,
                         lm_config,
                         start_point,
                         &mut lm_workspace,
@@ -86,8 +83,9 @@ fn bench_rosenbrock_solver_comparison(c: &mut Criterion) {
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_gn_benchmark_with_workspace(
+                    run_gn_benchmark(
                         &problem,
+                        &expected,
                         gn_config,
                         start_point,
                         &mut gn_workspace,
@@ -101,8 +99,9 @@ fn bench_rosenbrock_solver_comparison(c: &mut Criterion) {
         group.bench_with_input(bench_id, start_point, |b, start_point| {
             b.iter(|| {
                 black_box(
-                    run_pdl_benchmark_with_workspace(
+                    run_pdl_benchmark(
                         &problem,
+                        &expected,
                         pdl_config,
                         start_point,
                         &mut pdl_workspace,
@@ -115,110 +114,5 @@ fn bench_rosenbrock_solver_comparison(c: &mut Criterion) {
     group.finish();
 }
 
-fn bench_rosenbrock_config_comparison(c: &mut Criterion) {
-    let mut group = c.benchmark_group("rosenbrock_config_comparison");
-    group.measurement_time(Duration::from_secs(8));
-
-    let problem = RosenbrockProblem::new();
-    let starting_points = rosenbrock_starting_points();
-    let lm_configs = levenberg_marquardt_configs();
-    let gn_configs = gauss_newton_configs();
-    let pdl_configs = powell_dogleg_configs();
-
-    // Create workspaces for each solver
-    let mut lm_workspace = LevenbergMarquardtWorkspace::new(
-        &problem,
-        &starting_points[0].parameters,
-    )
-    .expect("Failed to create LM workspace");
-
-    let mut gn_workspace = GaussNewtonWorkspace::new(
-        &problem,
-        &starting_points[0].parameters,
-    )
-    .expect("Failed to create GN workspace");
-
-    let mut pdl_workspace = PowellDogLegWorkspace::new(
-        &problem,
-        &starting_points[0].parameters,
-    )
-    .expect("Failed to create PDL workspace");
-
-    // Benchmark Levenberg-Marquardt configurations
-    for (config_name, config) in &lm_configs {
-        for start_point in &starting_points {
-            let bench_id = BenchmarkId::new(
-                format!("LM_{}", config_name),
-                start_point.name,
-            );
-            group.bench_with_input(bench_id, start_point, |b, start_point| {
-                b.iter(|| {
-                    black_box(
-                        run_lm_benchmark_with_workspace(
-                            &problem,
-                            *config,
-                            start_point,
-                            &mut lm_workspace,
-                        )
-                        .unwrap(),
-                    )
-                });
-            });
-        }
-    }
-
-    // Benchmark Gauss-Newton configurations
-    for (config_name, config) in &gn_configs {
-        for start_point in &starting_points {
-            let bench_id = BenchmarkId::new(
-                format!("GN_{}", config_name),
-                start_point.name,
-            );
-            group.bench_with_input(bench_id, start_point, |b, start_point| {
-                b.iter(|| {
-                    black_box(
-                        run_gn_benchmark_with_workspace(
-                            &problem,
-                            *config,
-                            start_point,
-                            &mut gn_workspace,
-                        )
-                        .unwrap(),
-                    )
-                });
-            });
-        }
-    }
-
-    // Benchmark Powell Dog-Leg configurations
-    for (config_name, config) in &pdl_configs {
-        for start_point in &starting_points {
-            let bench_id = BenchmarkId::new(
-                format!("PDL_{}", config_name),
-                start_point.name,
-            );
-            group.bench_with_input(bench_id, start_point, |b, start_point| {
-                b.iter(|| {
-                    black_box(
-                        run_pdl_benchmark_with_workspace(
-                            &problem,
-                            *config,
-                            start_point,
-                            &mut pdl_workspace,
-                        )
-                        .unwrap(),
-                    )
-                });
-            });
-        }
-    }
-
-    group.finish();
-}
-
-criterion_group!(
-    benches,
-    bench_rosenbrock_solver_comparison,
-    bench_rosenbrock_config_comparison
-);
+criterion_group!(benches, bench_rosenbrock_solver_comparison);
 criterion_main!(benches);

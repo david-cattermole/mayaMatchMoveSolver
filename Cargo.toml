@@ -21,7 +21,7 @@ publish = false
 [workspace.dependencies]
 anyhow = "1.0.89"
 approx = "0.5.1"
-criterion = { version = "0.5.1", default-features = false, features = ["html_reports"] }
+criterion = { version = "0.7.0", default-features = false, features = ["html_reports"] }
 enum_dispatch = "0.3.13"
 exr = "1.72.0"
 fastapprox = "0.3.1"

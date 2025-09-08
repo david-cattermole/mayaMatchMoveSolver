@@ -36,7 +36,8 @@ use mmoptimise_rust::solver::test_problems::{
     GoldsteinPriceFunction, PowellProblem, RosenbrockProblem,
 };
 
-/// Configuration factory functions for each solver type
+/// Configuration factory functions for each solver type.
+/// These configs are designed to be comparable across all solvers.
 pub fn levenberg_marquardt_configs(
 ) -> Vec<(&'static str, LevenbergMarquardtConfig)> {
     vec![
@@ -47,24 +48,7 @@ pub fn levenberg_marquardt_configs(
                 function_tolerance: 1e-12,
                 parameter_tolerance: 1e-12,
                 gradient_tolerance: 1e-12,
-                max_iterations: 1000,
-                ..Default::default()
-            },
-        ),
-        (
-            "FastConvergence",
-            LevenbergMarquardtConfig {
-                function_tolerance: 1e-4,
-                parameter_tolerance: 1e-4,
-                gradient_tolerance: 1e-4,
-                max_iterations: 100,
-                ..Default::default()
-            },
-        ),
-        (
-            "SmallTrustRegion",
-            LevenbergMarquardtConfig {
-                initial_trust_factor: 0.1,
+                max_iterations: 500,
                 ..Default::default()
             },
         ),
@@ -84,23 +68,6 @@ pub fn gauss_newton_configs() -> Vec<(&'static str, GaussNewtonConfig)> {
                 ..Default::default()
             },
         ),
-        (
-            "FastConvergence",
-            GaussNewtonConfig {
-                function_tolerance: 1e-4,
-                parameter_tolerance: 1e-4,
-                gradient_tolerance: 1e-4,
-                max_iterations: 50,
-                ..Default::default()
-            },
-        ),
-        (
-            "NoScaling",
-            GaussNewtonConfig {
-                scaling_mode: ParameterScalingMode::None,
-                ..Default::default()
-            },
-        ),
     ]
 }
 
@@ -117,23 +84,14 @@ pub fn powell_dogleg_configs() -> Vec<(&'static str, PowellDogLegConfig)> {
                 ..Default::default()
             },
         ),
-        (
-            "FastConvergence",
-            PowellDogLegConfig {
-                function_tolerance: 1e-4,
-                parameter_tolerance: 1e-4,
-                gradient_tolerance: 1e-4,
-                max_iterations: 50,
-                ..Default::default()
-            },
-        ),
-        (
-            "SmallTrustRegion",
-            PowellDogLegConfig {
-                initial_trust_radius: 0.1,
-                ..Default::default()
-            },
-        ),
+    ]
+}
+
+/// Standard problem variants for consistent benchmarking across all solvers.
+pub fn rosenbrock_problem_variants() -> Vec<(&'static str, RosenbrockProblem)> {
+    vec![
+        ("Standard", RosenbrockProblem::new()),
+        ("Easy", RosenbrockProblem::with_parameters(1.0, 10.0)),
     ]
 }
 
@@ -144,23 +102,20 @@ pub struct StartingPoint {
     pub parameters: Vec<f64>,
 }
 
-/// Starting point factory functions for different problem types
+/// Starting point factory functions for different problem types.
+/// These are standardized across all solvers for fair comparison.
 pub fn rosenbrock_starting_points() -> Vec<StartingPoint> {
     vec![
-        StartingPoint {
-            name: "NearMinimum",
-            parameters: vec![0.9, 0.9],
-        },
         StartingPoint {
             name: "Origin",
             parameters: vec![0.0, 0.0],
         },
         StartingPoint {
-            name: "FarPoint",
+            name: "Standard",
             parameters: vec![-1.2, 1.0],
         },
         StartingPoint {
-            name: "ChallengingPoint",
+            name: "Challenging",
             parameters: vec![-2.0, 2.0],
         },
     ]
@@ -173,11 +128,11 @@ pub fn curve_fitting_starting_points() -> Vec<StartingPoint> {
             parameters: vec![0.0, 0.0],
         },
         StartingPoint {
-            name: "NearTrue",
+            name: "Near",
             parameters: vec![0.25, 0.08],
         },
         StartingPoint {
-            name: "FarFromTrue",
+            name: "Far",
             parameters: vec![1.0, -0.5],
         },
     ]
@@ -190,11 +145,11 @@ pub fn powell_starting_points() -> Vec<StartingPoint> {
             parameters: vec![0.0, 0.0, 0.0, 0.0],
         },
         StartingPoint {
-            name: "StandardStart",
+            name: "Standard",
             parameters: vec![3.0, -1.0, 0.0, 1.0],
         },
         StartingPoint {
-            name: "FarPoint",
+            name: "Far",
             parameters: vec![5.0, -5.0, 3.0, -3.0],
         },
     ]
@@ -203,15 +158,15 @@ pub fn powell_starting_points() -> Vec<StartingPoint> {
 pub fn bukin_n6_starting_points() -> Vec<StartingPoint> {
     vec![
         StartingPoint {
-            name: "ValidDomain1",
+            name: "Point1",
             parameters: vec![-8.0, 0.5],
         },
         StartingPoint {
-            name: "ValidDomain2",
+            name: "Point2",
             parameters: vec![-12.0, 2.0],
         },
         StartingPoint {
-            name: "EdgeCase",
+            name: "Edge",
             parameters: vec![-5.0, 0.0],
         },
     ]
@@ -220,7 +175,7 @@ pub fn bukin_n6_starting_points() -> Vec<StartingPoint> {
 pub fn goldstein_price_starting_points() -> Vec<StartingPoint> {
     vec![
         StartingPoint {
-            name: "NearMinimum",
+            name: "Near",
             parameters: vec![0.1, -0.9],
         },
         StartingPoint {
@@ -228,7 +183,7 @@ pub fn goldstein_price_starting_points() -> Vec<StartingPoint> {
             parameters: vec![0.0, 0.0],
         },
         StartingPoint {
-            name: "FarPoint",
+            name: "Far",
             parameters: vec![2.0, 2.0],
         },
     ]
@@ -247,7 +202,7 @@ pub fn extended_rosenbrock_starting_points(n: usize) -> Vec<StartingPoint> {
                 .collect(),
         },
         StartingPoint {
-            name: "Random",
+            name: "Pattern",
             parameters: (0..n).map(|i| (i as f64 * 0.3) % 2.0 - 1.0).collect(),
         },
     ]

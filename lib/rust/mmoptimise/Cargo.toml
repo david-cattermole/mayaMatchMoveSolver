@@ -23,77 +23,27 @@ approx = { workspace = true }
 criterion = { workspace = true }
 rayon = { workspace = true }
 
-# Levenberg-Marquardt benchmarks
+# Benchmarks comparing all three solvers.
 [[bench]]
-name = "bench_lm_rosenbrock"
+name = "bench_rosenbrock"
 harness = false
 
 [[bench]]
-name = "bench_lm_extended_rosenbrock"
+name = "bench_extended_rosenbrock"
 harness = false
 
 [[bench]]
-name = "bench_lm_powell"
+name = "bench_powell"
 harness = false
 
 [[bench]]
-name = "bench_lm_curve_fitting"
+name = "bench_curve_fitting"
 harness = false
 
 [[bench]]
-name = "bench_lm_bukin_n6"
+name = "bench_bukin_n6"
 harness = false
 
 [[bench]]
-name = "bench_lm_goldstein_price"
-harness = false
-
-# Powell Dog-Leg benchmarks
-[[bench]]
-name = "bench_pdl_rosenbrock"
-harness = false
-
-[[bench]]
-name = "bench_pdl_extended_rosenbrock"
-harness = false
-
-[[bench]]
-name = "bench_pdl_powell"
-harness = false
-
-[[bench]]
-name = "bench_pdl_curve_fitting"
-harness = false
-
-[[bench]]
-name = "bench_pdl_bukin_n6"
-harness = false
-
-[[bench]]
-name = "bench_pdl_goldstein_price"
-harness = false
-
-# Gauss-Newton benchmarks
-[[bench]]
-name = "bench_gn_rosenbrock"
-harness = false
-
-[[bench]]
-name = "bench_gn_extended_rosenbrock"
-harness = false
-
-[[bench]]
-name = "bench_gn_powell"
-harness = false
-
-[[bench]]
-name = "bench_gn_curve_fitting"
-harness = false
-
-[[bench]]
-name = "bench_gn_bukin_n6"
-harness = false
-
-[[bench]]
-name = "bench_gn_goldstein_price"
+name = "bench_goldstein_price"
 harness = false

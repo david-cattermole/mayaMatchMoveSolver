@@ -8,6 +8,7 @@ members = [
     "lib/mmsolverlibs",
     "lib/rust/mmcore",
     "lib/rust/mmimage",
+    "lib/rust/mmio",
     "lib/rust/mmoptimise",
     "lib/rust/mmscenegraph",
 ]
@@ -54,6 +55,7 @@ mmcore_cppbind = { path = "./lib/cppbind/mmcore" }
 mmcore_rust = { path = "./lib/rust/mmcore" }
 mmimage_cppbind = { path = "./lib/cppbind/mmimage" }
 mmimage_rust = { path = "./lib/rust/mmimage" }
+mmio_rust = { path = "./lib/rust/mmio" }
 mmlens_cppbind = { path = "./lib/cppbind/mmlens" }
 mmlens_rust = { path = "./lib/rust/mmlens" }
 mmoptimise_rust = { path = "./lib/rust/mmoptimise" }

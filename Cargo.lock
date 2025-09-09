@@ -789,6 +789,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "mmio_rust"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "approx",
+ "log",
+ "nalgebra",
+ "thiserror 2.0.3",
+]
+
+[[package]]
 name = "mmlens_cppbind"
 version = "0.1.0"
 dependencies = [

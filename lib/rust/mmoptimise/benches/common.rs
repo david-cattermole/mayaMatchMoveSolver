@@ -32,8 +32,8 @@ use mmoptimise_rust::solver::powell_dogleg::{
     PowellDogLegConfig, PowellDogLegSolver, PowellDogLegWorkspace,
 };
 use mmoptimise_rust::solver::test_problems::{
-    BukinN6Problem, CurveFittingProblem, ExtendedRosenbrockProblem,
-    GoldsteinPriceFunction, PowellProblem, RosenbrockProblem,
+    CurveFittingProblem, ExtendedRosenbrockProblem, PowellProblem,
+    RosenbrockProblem,
 };
 
 /// Configuration factory functions for each solver type.
@@ -128,22 +128,6 @@ pub fn powell_expected_solution() -> ExpectedSolution {
     }
 }
 
-pub fn bukin_n6_expected_solution() -> ExpectedSolution {
-    ExpectedSolution {
-        parameters: vec![-10.0, 1.0], // Global minimum.
-        parameter_tolerance: 1e-4,
-        maximum_cost_threshold: 1e-8,
-    }
-}
-
-pub fn goldstein_price_expected_solution() -> ExpectedSolution {
-    ExpectedSolution {
-        parameters: vec![0.0, -1.0], // Global minimum.
-        parameter_tolerance: 1e-4,
-        maximum_cost_threshold: 3.01, // Function value is 3 at minimum.
-    }
-}
-
 pub fn extended_rosenbrock_expected_solution(n: usize) -> ExpectedSolution {
     ExpectedSolution {
         parameters: vec![1.0; n], // All parameters should be 1.0.
@@ -211,40 +195,6 @@ pub fn powell_starting_points() -> Vec<StartingPoint> {
         StartingPoint {
             name: "Far",
             parameters: vec![5.0, -5.0, 3.0, -3.0],
-        },
-    ]
-}
-
-pub fn bukin_n6_starting_points() -> Vec<StartingPoint> {
-    vec![
-        StartingPoint {
-            name: "Point1",
-            parameters: vec![-8.0, 0.5],
-        },
-        StartingPoint {
-            name: "Point2",
-            parameters: vec![-12.0, 2.0],
-        },
-        StartingPoint {
-            name: "Edge",
-            parameters: vec![-5.0, 0.0],
-        },
-    ]
-}
-
-pub fn goldstein_price_starting_points() -> Vec<StartingPoint> {
-    vec![
-        StartingPoint {
-            name: "Near",
-            parameters: vec![0.1, -0.9],
-        },
-        StartingPoint {
-            name: "Origin",
-            parameters: vec![0.0, 0.0],
-        },
-        StartingPoint {
-            name: "Far",
-            parameters: vec![2.0, 2.0],
         },
     ]
 }

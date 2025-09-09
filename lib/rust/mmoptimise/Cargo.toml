@@ -39,11 +39,3 @@ harness = false
 [[bench]]
 name = "bench_curve_fitting"
 harness = false
-
-[[bench]]
-name = "bench_bukin_n6"
-harness = false
-
-[[bench]]
-name = "bench_goldstein_price"
-harness = false

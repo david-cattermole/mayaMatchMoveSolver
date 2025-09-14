@@ -18,15 +18,6 @@ The official YouTube channel is
 [mmSolver](https://www.youtube.com/channel/UCndLPvFXd9Os7m9sc2Bbbsw),
 it contains video tutorials for mmSolver on a range of topics.
 
-A copy of the documentation is also installed with *Maya MatchMove
-Solver*, you can find it by pressing the *help* button in the Solver
-UI, or in the module install directory, for example this path:
-
-(On Windows)
-```
-C:/Users/<user name>/My Documents/maya/2017/modules/mayaMatchMoveSolver-0.1.0-maya2018-win64/docs/html/index.html
-```
-
 ## Community
 
 Do you have a question about mmSolver?
@@ -57,6 +48,7 @@ changes.
 
 | Releases                                                                                | Description                                        |
 |-----------------------------------------------------------------------------------------|----------------------------------------------------|
+| [v0.6.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.6.1)   | Minor bug fix for Simplify Anim Curves tool.       |
 | [v0.6.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.6.0)   | Simplify Anim Curves tool and build system change. |
 | [v0.5.8](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.5.8)   | Bug fix for Solving Maya Rig Nodes.                |
 | [v0.5.7](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.5.7)   | Bug fix for Solver and Ray-cast tools.             |

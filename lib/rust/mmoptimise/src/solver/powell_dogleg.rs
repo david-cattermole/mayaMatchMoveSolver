@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2025 David Cattermole.
+// Copyright (C) 2025, 2026 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -216,7 +216,6 @@ impl PowellDogLegWorkspace {
 ///     max_iterations: 200,
 ///     scaling_mode: ParameterScalingMode::Auto,
 ///     initial_trust_radius: 10.0,
-///     verbose: false,
 ///     ..Default::default()
 /// };
 /// let solver = PowellDogLegSolver::new(config);
@@ -385,8 +384,6 @@ pub struct PowellDogLegConfig {
     pub max_function_evaluations: usize,
     /// Scaling mode for parameters.
     pub scaling_mode: ParameterScalingMode,
-    /// Enable verbose output.
-    pub verbose: bool,
     /// Machine epsilon multiplier for numerical tolerances.
     pub epsilon_factor: f64,
     /// Initial trust region radius.
@@ -419,7 +416,6 @@ impl Default for PowellDogLegConfig {
             max_iterations: 100,
             max_function_evaluations: 1000,
             scaling_mode: ParameterScalingMode::Auto,
-            verbose: false,
             epsilon_factor: 1.0,
             initial_trust_radius: 1.0,
             min_trust_radius: 1e-10,
@@ -810,11 +806,6 @@ impl PowellDogLegSolver {
 
         // Main iteration loop.
         for iteration in 0..self.config.max_iterations {
-            if self.config.verbose {
-                info!(
-                    "Powell Dog-Leg Iteration {}: cost = {:.6e}, trust_radius = {:.6e}",
-                    iteration, current_cost, trust_radius
-                );
             }
 
             // Check for absolute cost convergence.
@@ -1380,7 +1371,6 @@ mod tests {
             parameter_tolerance: 1e-6,
             gradient_tolerance: 1e-6,
             max_iterations: 200,
-            verbose: false,
             ..Default::default()
         };
 
@@ -1586,7 +1576,6 @@ mod tests {
             function_tolerance: 1e-6,
             parameter_tolerance: 1e-6,
             gradient_tolerance: 1e-6,
-            verbose: false,
             ..Default::default()
         };
         let solver = PowellDogLegSolver::new(config);
@@ -1639,7 +1628,6 @@ mod tests {
             parameter_tolerance: 1e-15,
             gradient_tolerance: 1e-15,
             max_iterations: 10, // Very few iterations.
-            verbose: false,
             ..Default::default()
         };
         let solver = PowellDogLegSolver::new(config);
@@ -1691,7 +1679,6 @@ mod tests {
             gradient_tolerance: 1e-9,
             max_iterations: 300, // More iterations since steps are limited.
             initial_trust_radius: 0.1, // Very small trust region radius.
-            verbose: false,
             ..Default::default()
         };
         let solver = PowellDogLegSolver::new(config);
@@ -1743,7 +1730,6 @@ mod tests {
             gradient_tolerance: 1e-9,
             initial_trust_radius: 100.0, // Large trust region radius.
             max_iterations: 100,
-            verbose: false,
             ..Default::default()
         };
         let solver_large = PowellDogLegSolver::new(config_large);
@@ -1760,7 +1746,6 @@ mod tests {
             gradient_tolerance: 1e-9,
             initial_trust_radius: 0.3, // Small trust region radius.
             max_iterations: 200,
-            verbose: false,
             ..Default::default()
         };
         let solver_small = PowellDogLegSolver::new(config_small);
@@ -1808,7 +1793,6 @@ mod tests {
             gradient_tolerance: 1e-9,
             initial_trust_radius: 1000.0, // Very large trust region radius.
             max_iterations: 100,
-            verbose: false,
             ..Default::default()
         };
         let solver_huge = PowellDogLegSolver::new(config_huge);
@@ -1840,7 +1824,6 @@ mod tests {
             parameter_tolerance: 1e-12,
             gradient_tolerance: 1e-12,
             max_iterations: 500,
-            verbose: false,
             ..Default::default()
         };
         let solver = PowellDogLegSolver::new(config);

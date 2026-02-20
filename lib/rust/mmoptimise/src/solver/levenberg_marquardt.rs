@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2025 David Cattermole.
+// Copyright (C) 2025, 2026 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -72,7 +72,6 @@ use nalgebra::{DMatrix, DVector};
 ///     initial_trust_factor: 100.0,     // Large trust region radius.
 ///     scaling_mode: ParameterScalingMode::Auto, // Automatic parameter scaling.
 ///     min_step_quality: 1e-4,          // Standard step acceptance.
-///     verbose: true,                   // Enable detailed logging.
 ///     epsilon_factor: 1.0,             // Standard numerical precision.
 /// };
 ///
@@ -87,7 +86,6 @@ use nalgebra::{DMatrix, DVector};
 ///     initial_trust_factor: 10.0,      // Smaller steps for stability.
 ///     scaling_mode: ParameterScalingMode::Auto,
 ///     min_step_quality: 1e-3,          // Accept lower quality steps.
-///     verbose: false,
 ///     epsilon_factor: 1.0,
 /// };
 ///
@@ -113,8 +111,6 @@ pub struct LevenbergMarquardtConfig {
     pub scaling_mode: ParameterScalingMode,
     /// Minimum acceptable step quality ratio.
     pub min_step_quality: f64,
-    /// Enable verbose output.
-    pub verbose: bool,
     /// Machine epsilon multiplier for numerical tolerances.
     pub epsilon_factor: f64,
     /// Absolute cost tolerance - convergence when cost is below this absolute
@@ -134,7 +130,6 @@ impl Default for LevenbergMarquardtConfig {
             initial_trust_factor: 100.0,
             scaling_mode: ParameterScalingMode::Auto,
             min_step_quality: 1e-4,
-            verbose: false,
             epsilon_factor: 1.0,
             absolute_cost_tolerance: 1e-6,
         }
@@ -329,7 +324,6 @@ impl LevenbergMarquardtWorkspace {
 ///     function_tolerance: 1e-8,
 ///     max_iterations: 500,
 ///     scaling_mode: ParameterScalingMode::Auto,
-///     verbose: false,
 ///     ..Default::default()
 /// };
 /// let solver = LevenbergMarquardtSolver::new(config);
@@ -428,7 +422,6 @@ impl LevenbergMarquardtWorkspace {
 ///
 /// // Enable verbose logging for iteration details
 /// let config = LevenbergMarquardtConfig {
-///     verbose: false,  // Set to true to see iteration details.
 ///     max_iterations: 10,  // Limit iterations for testing.
 ///     ..Default::default()
 /// };
@@ -743,8 +736,6 @@ impl LevenbergMarquardtSolver {
         for iteration_count in 0..self.config.max_iterations {
             iteration = iteration_count;
 
-            if self.config.verbose {
-                info!("Iteration {}: cost = {:.6e}", iteration, current_cost);
             }
 
             // Check for absolute cost convergence (only for very
@@ -1283,7 +1274,6 @@ mod tests {
             parameter_tolerance: 1e-8,
             gradient_tolerance: 1e-8,
             max_iterations: 500,
-            verbose: false,
             ..Default::default()
         };
         let solver = LevenbergMarquardtSolver::new(config);
@@ -1319,7 +1309,6 @@ mod tests {
             parameter_tolerance: 1e-6,
             gradient_tolerance: 1e-6,
             max_iterations: 500,
-            verbose: false,
             ..Default::default()
         };
 
@@ -1404,7 +1393,6 @@ mod tests {
             parameter_tolerance: 1e-15,
             gradient_tolerance: 1e-15,
             max_iterations: 10, // Very few iterations.
-            verbose: false,
             ..Default::default()
         };
         let solver = LevenbergMarquardtSolver::new(config);
@@ -1490,7 +1478,6 @@ mod tests {
             gradient_tolerance: 1e-9,
             max_iterations: 300, // More iterations since steps are limited.
             initial_trust_factor: 0.1, // Very small trust region radius.
-            verbose: true, // Enable verbose to see step limiting messages.
             ..Default::default()
         };
         let solver = LevenbergMarquardtSolver::new(config);
@@ -1546,7 +1533,6 @@ mod tests {
             gradient_tolerance: 1e-9,
             initial_trust_factor: 100.0, // Large trust region radius.
             max_iterations: 100,
-            verbose: false,
             ..Default::default()
         };
         let solver_large = LevenbergMarquardtSolver::new(config_large);
@@ -1564,7 +1550,6 @@ mod tests {
             gradient_tolerance: 1e-9,
             initial_trust_factor: 0.3, // Small trust region radius.
             max_iterations: 200,
-            verbose: false,
             ..Default::default()
         };
         let solver_small = LevenbergMarquardtSolver::new(config_small);
@@ -1618,7 +1603,6 @@ mod tests {
             gradient_tolerance: 1e-9,
             initial_trust_factor: 1000.0, // Very large trust region radius.
             max_iterations: 100,
-            verbose: false,
             ..Default::default()
         };
         let solver_huge = LevenbergMarquardtSolver::new(config_huge);
@@ -1694,7 +1678,6 @@ mod tests {
             parameter_tolerance: 1e-12,
             gradient_tolerance: 1e-12,
             max_iterations: 500,
-            verbose: false,
             ..Default::default()
         };
         let solver = LevenbergMarquardtSolver::new(config);
@@ -1798,7 +1781,6 @@ mod tests {
             parameter_tolerance: 1e-12,
             gradient_tolerance: 1e-12,
             max_iterations: 100,
-            verbose: false,
             ..Default::default()
         };
         let solver = LevenbergMarquardtSolver::new(config);

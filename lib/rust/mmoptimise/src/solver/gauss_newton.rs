@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2025 David Cattermole.
+// Copyright (C) 2025, 2026 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -244,8 +244,6 @@ pub struct GaussNewtonConfig {
     pub max_function_evaluations: usize,
     /// Scaling mode for parameters.
     pub scaling_mode: ParameterScalingMode,
-    /// Enable verbose output.
-    pub verbose: bool,
     /// Machine epsilon multiplier for numerical tolerances.
     pub epsilon_factor: f64,
     /// Regularization parameter for numerical stability (small
@@ -281,7 +279,6 @@ impl Default for GaussNewtonConfig {
             max_iterations: 100, // Fewer iterations than LM since no trust region.
             max_function_evaluations: 1000,
             scaling_mode: ParameterScalingMode::Auto,
-            verbose: false,
             epsilon_factor: 1.0,
             regularization: 1e-10, // Small regularization for numerical stability.
             // Threshold for applying regularization.
@@ -1006,7 +1003,6 @@ mod gauss_newton_tests {
 
         let config = GaussNewtonConfig {
             max_iterations: 200,
-            verbose: false,
             ..Default::default()
         };
         let solver = GaussNewtonSolver::new(config);
@@ -1178,7 +1174,6 @@ mod gauss_newton_tests {
             parameter_tolerance: 1e-15,
             gradient_tolerance: 1e-15,
             max_iterations: 10, // Very few iterations.
-            verbose: false,
             ..Default::default()
         };
         let solver = GaussNewtonSolver::new(config);
@@ -1226,7 +1221,6 @@ mod gauss_newton_tests {
             parameter_tolerance: 1e-6,
             gradient_tolerance: 1e-6,
             max_iterations: 200,
-            verbose: false,
             ..Default::default()
         };
 
@@ -1283,7 +1277,6 @@ mod gauss_newton_tests {
             parameter_tolerance: 1e-8,
             gradient_tolerance: 1e-8,
             max_iterations: 100,
-            verbose: false,
             ..Default::default()
         };
         let solver = GaussNewtonSolver::new(config);
@@ -1601,7 +1594,6 @@ mod gauss_newton_tests {
             function_tolerance: 1e-8,
             parameter_tolerance: 1e-8,
             gradient_tolerance: 1e-8,
-            verbose: false,
             ..Default::default()
         };
         let solver = GaussNewtonSolver::new(config);
@@ -1639,7 +1631,6 @@ mod gauss_newton_tests {
         let config = GaussNewtonConfig {
             max_function_evaluations: 10, // Very few function evaluations allowed
             max_iterations: 100,
-            verbose: false,
             ..Default::default()
         };
         let solver = GaussNewtonSolver::new(config);
@@ -1675,7 +1666,6 @@ mod gauss_newton_tests {
             max_iterations: 200,
             function_tolerance: 1e-10,
             parameter_tolerance: 1e-10,
-            verbose: false,
             ..Default::default()
         };
         let solver = GaussNewtonSolver::new(config);
@@ -1721,7 +1711,6 @@ mod gauss_newton_tests {
         let config = GaussNewtonConfig {
             regularization: 0.0, // Start with no regularization
             max_iterations: 100,
-            verbose: false,
             ..Default::default()
         };
         let solver = GaussNewtonSolver::new(config);
@@ -1770,7 +1759,6 @@ mod gauss_newton_tests {
             parameter_tolerance: f64::EPSILON,
             gradient_tolerance: f64::EPSILON,
             max_iterations: 500,
-            verbose: false,
             ..Default::default()
         };
         let solver = GaussNewtonSolver::new(config);
@@ -1814,7 +1802,6 @@ mod gauss_newton_tests {
             function_tolerance: 1e-15, // Looser function tolerance
             parameter_tolerance: 1e-15, // Looser parameter tolerance
             max_iterations: 200,
-            verbose: false,
             ..Default::default()
         };
         let solver = GaussNewtonSolver::new(config);
@@ -1856,7 +1843,6 @@ mod gauss_newton_tests {
             parameter_tolerance: 1e-8,
             gradient_tolerance: 1e-8,
             max_iterations: 100,
-            verbose: false,
             ..Default::default()
         };
         let solver = GaussNewtonSolver::new(config);
@@ -1895,7 +1881,6 @@ mod gauss_newton_tests {
             function_tolerance: 1e-8,
             parameter_tolerance: 1e-8,
             gradient_tolerance: 1e-8,
-            verbose: false,
             ..Default::default()
         };
         let solver = GaussNewtonSolver::new(config);

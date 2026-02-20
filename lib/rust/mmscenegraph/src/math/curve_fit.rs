@@ -405,7 +405,6 @@ pub fn nonlinear_line_n3_with_initial(
         gradient_tolerance: 1e-8,
         max_iterations: 1000,
         initial_trust_factor,
-        verbose: false,
         ..Default::default()
     };
 
@@ -539,7 +538,6 @@ pub fn nonlinear_line_n3(
         gradient_tolerance: 1e-8,
         max_iterations: 1000,
         initial_trust_factor,
-        verbose: false,
         ..Default::default()
     };
 
@@ -1037,7 +1035,6 @@ fn general_nonlinear_npoints(
         gradient_tolerance,
         max_iterations,
         initial_trust_factor,
-        verbose: false,
         ..Default::default()
     };
 

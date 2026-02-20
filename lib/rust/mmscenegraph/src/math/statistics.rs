@@ -25,6 +25,10 @@ use anyhow::Result;
 use std::cell::Cell;
 use thiserror::Error;
 
+// TODO: This file should not be in the mmscenegraph crate because
+// it's very reusuable and flexible. Other crates cannot use this
+// module because doing so would create a circular dependency.
+
 use crate::constant::Real;
 
 #[derive(Error, Debug)]

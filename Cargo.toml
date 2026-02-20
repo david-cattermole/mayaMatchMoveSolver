@@ -63,7 +63,7 @@ mmscenegraph_cppbind = { path = "./lib/cppbind/mmscenegraph" }
 mmscenegraph_rust = { path = "./lib/rust/mmscenegraph/" }
 
 [profile.release]
-opt-level = 3
+opt-level = 2
 rpath = false
 codegen-units = 1
 

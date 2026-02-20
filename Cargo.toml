@@ -75,3 +75,7 @@ lto = true
 # # https://github.com/rust-lang/cargo/issues/6313
 #
 # panic = "abort"
+
+[profile.test]
+debug = 2           # equivalent to rustc -C debuginfo=2
+opt-level = 1

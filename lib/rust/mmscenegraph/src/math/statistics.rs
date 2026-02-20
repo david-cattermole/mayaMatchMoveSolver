@@ -464,8 +464,8 @@ pub fn calc_sample_variance<T: UnsortedDataSliceOps>(
 /// around the mean.
 ///
 /// NOTE: You should calculate the population standard deviation when
-/// the dataset you re working with represents an entire population,
-/// i.e. every value that you re interested in.
+/// the dataset you're working with represents an entire population,
+/// i.e. every value that you're interested in.
 ///
 /// Mathematics:
 /// Square root of population variance
@@ -498,7 +498,7 @@ pub fn calc_population_standard_deviation<T: UnsortedDataSliceOps>(
 /// Calculates the sample standard deviation, measuring spread around the mean.
 ///
 /// NOTE: You should calculate the sample standard deviation when the
-/// dataset you re working with represents a a sample taken from a
+/// dataset you're working with represents a sample taken from a
 /// larger population of interest.
 ///
 /// Mathematics:

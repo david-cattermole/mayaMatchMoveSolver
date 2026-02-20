@@ -214,7 +214,7 @@ pub fn image_write_pixels_exr_f32x4(
 
     let pixel_data = ImagePixelDataF32x4::from_buffer(pixel_buffer);
     let generate_pixels =
-        |position: exr::math::Vec2<usize>| (pixel_data.get_pixel(position));
+        |position: exr::math::Vec2<usize>| pixel_data.get_pixel(position);
 
     let encoding = ImageExrEncoder::as_exr_encoding(encoder);
     let layer = exr::image::Layer::new(

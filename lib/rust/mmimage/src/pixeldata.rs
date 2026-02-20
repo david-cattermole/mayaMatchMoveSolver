@@ -27,7 +27,9 @@ pub struct ImagePixelDataF32x4<'a> {
 }
 
 impl ImagePixelDataF32x4<'_> {
-    pub fn from_buffer(buffer_ref: &ImagePixelBuffer) -> ImagePixelDataF32x4 {
+    pub fn from_buffer(
+        buffer_ref: &ImagePixelBuffer,
+    ) -> ImagePixelDataF32x4<'_> {
         ImagePixelDataF32x4 { buffer_ref }
     }
 }

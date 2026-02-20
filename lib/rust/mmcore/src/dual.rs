@@ -129,7 +129,6 @@
 //! - JAX Documentation on Automatic Differentiation.
 //!   <https://jax.readthedocs.io/en/latest/notebooks/autodiff_cookbook.html>
 //!
-
 use num_traits::{ToPrimitive, Zero};
 use std::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub,
@@ -751,33 +750,43 @@ impl num_traits::Float for Dual<f64> {
     fn is_nan(self) -> bool {
         self.real.is_nan() || self.dual.is_nan()
     }
+
     fn is_infinite(self) -> bool {
         self.real.is_infinite()
     }
+
     fn is_finite(self) -> bool {
         self.real.is_finite() && self.dual.is_finite()
     }
+
     fn is_normal(self) -> bool {
         self.real.is_normal() && self.dual.is_normal()
     }
+
     fn classify(self) -> std::num::FpCategory {
         self.real.classify()
     }
+
     fn floor(self) -> Self {
         Self::new(self.real.floor(), self.dual)
     }
+
     fn ceil(self) -> Self {
         Self::new(self.real.ceil(), self.dual)
     }
+
     fn round(self) -> Self {
         Self::new(self.real.round(), self.dual)
     }
+
     fn trunc(self) -> Self {
         Self::new(self.real.trunc(), self.dual)
     }
+
     fn fract(self) -> Self {
         Self::new(self.real.fract(), self.dual)
     }
+
     fn abs(self) -> Self {
         if self.real >= 0.0 {
             self
@@ -785,67 +794,86 @@ impl num_traits::Float for Dual<f64> {
             -self
         }
     }
+
     fn signum(self) -> Self {
         Self::new(self.real.signum(), self.dual)
     }
+
     fn is_sign_positive(self) -> bool {
         self.real.is_sign_positive()
     }
+
     fn is_sign_negative(self) -> bool {
         self.real.is_sign_negative()
     }
+
     fn mul_add(self, a: Self, b: Self) -> Self {
         self * a + b
     }
+
     fn recip(self) -> Self {
         Self::new(1.0 / self.real, -self.dual / (self.real * self.real))
     }
+
     fn powi(self, n: i32) -> Self {
         self.powf(Self::new(n as f64, 0.0))
     }
+
     fn powf(self, n: Self) -> Self {
         pow(self, n.real)
     }
+
     fn sqrt(self) -> Self {
         sqrt(self)
     }
+
     fn exp(self) -> Self {
         exp(self)
     }
+
     fn exp2(self) -> Self {
         Self::new(
             self.real.exp2(),
             self.dual * 2.0_f64.ln() * self.real.exp2(),
         )
     }
+
     fn ln(self) -> Self {
         ln(self)
     }
+
     fn log(self, base: Self) -> Self {
         ln(self) / ln(base)
     }
+
     fn log2(self) -> Self {
         ln(self) / Self::new(2.0_f64.ln(), 0.0)
     }
+
     fn log10(self) -> Self {
         ln(self) / Self::new(10.0_f64.ln(), 0.0)
     }
+
     fn cbrt(self) -> Self {
         let real_cbrt = self.real.cbrt();
         Self::new(real_cbrt, self.dual / (3.0 * real_cbrt * real_cbrt))
     }
+
     fn hypot(self, other: Self) -> Self {
         let res_real = self.real.hypot(other.real);
         let res_dual =
             (self.real * self.dual + other.real * other.dual) / res_real;
         Self::new(res_real, res_dual)
     }
+
     fn sin(self) -> Self {
         sin(self)
     }
+
     fn cos(self) -> Self {
         cos(self)
     }
+
     fn tan(self) -> Self {
         tan(self)
     }
@@ -926,60 +954,87 @@ impl num_traits::Float for Dual<f64> {
             / (self.real.powi(2) + other.real.powi(2));
         Self::new(real, dual)
     }
+
     fn sin_cos(self) -> (Self, Self) {
         (self.sin(), self.cos())
     }
+
     fn sinh(self) -> Self {
         let real = self.real.sinh();
         let dual = self.dual * self.real.cosh();
         Self::new(real, dual)
     }
+
     fn cosh(self) -> Self {
         let real = self.real.cosh();
         let dual = self.dual * self.real.sinh();
         Self::new(real, dual)
     }
+
     fn tanh(self) -> Self {
         let real = self.real.tanh();
         let dual = self.dual / self.real.cosh().powi(2);
         Self::new(real, dual)
     }
+
     fn asinh(self) -> Self {
         let real = self.real.asinh();
         let dual = self.dual / (self.real.powi(2) + 1.0).sqrt();
         Self::new(real, dual)
     }
+
     fn acosh(self) -> Self {
         let real = self.real.acosh();
         let dual = self.dual / (self.real.powi(2) - 1.0).sqrt();
         Self::new(real, dual)
     }
+
     fn atanh(self) -> Self {
         let real = self.real.atanh();
         let dual = self.dual / (1.0 - self.real.powi(2));
         Self::new(real, dual)
     }
+
     fn integer_decode(self) -> (u64, i16, i8) {
         self.real.integer_decode()
     }
+
     fn max(self, other: Self) -> Self {
         Self::new(self.real.max(other.real), self.dual.max(other.dual))
     }
+
     fn min(self, other: Self) -> Self {
         Self::new(self.real.min(other.real), self.dual.min(other.dual))
     }
+
     fn abs_sub(self, other: Self) -> Self {
         (self - other).abs()
     }
+
     fn exp_m1(self) -> Self {
         let real = self.real.exp_m1();
         let dual = self.dual * self.real.exp();
         Self::new(real, dual)
     }
+
     fn ln_1p(self) -> Self {
         let real = self.real.ln_1p();
         let dual = self.dual / (1.0 + self.real);
         Self::new(real, dual)
+    }
+
+    fn to_degrees(self) -> Self {
+        Self::new(
+            self.real.to_degrees(),
+            self.dual * 180.0 / std::f64::consts::PI,
+        )
+    }
+
+    fn to_radians(self) -> Self {
+        Self::new(
+            self.real.to_radians(),
+            self.dual * std::f64::consts::PI / 180.0,
+        )
     }
 }
 

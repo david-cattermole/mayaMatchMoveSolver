@@ -18,6 +18,10 @@
 // ====================================================================
 //
 
+// TODO: Rename this module from 'solver' to 'dense'.
+//
+// TODO: Rename the solver modules with 'dense_' prefix.
+
 pub mod common;
 pub mod gauss_newton;
 pub mod levenberg_marquardt;

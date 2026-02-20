@@ -18,5 +18,6 @@
 // ====================================================================
 //
 
-pub mod pathutils;
 pub mod dual;
+pub mod pathutils;
+pub mod rand_prng_pcg;

@@ -28,7 +28,7 @@ exr = "1.72.0"
 fastapprox = "0.3.1"
 half = { version = "2.4.1", default-features = false, features = ["std", "num-traits"] }
 log = "0.4.22"
-nalgebra = { version = "0.33.1", default-features = false, features = ["std", "matrixmultiply"] }
+nalgebra = { version = "0.33.2", default-features = false, features = ["std", "matrixmultiply"] }
 ndarray = "0.15.6"
 num = "0.4.3"
 num-traits = "0.2.19"

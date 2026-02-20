@@ -20,12 +20,21 @@ Contains constant values for the Save Marker File tool.
 
 The .uv format, resolution independent 2D tracking format.
 
-This file supports only the .uv version 4 format.
+This file supports .uv version 1 and version 4 formats.
 
 The UV coordinate (0.0, 0.0) is the lower-left.
 The UV coordinate (1.0, 1.0) is the upper-right.
 
-Format version 4::
+Format version 1 (ASCII)::
+
+    {number_of_points}
+    {point_name}
+    {number_of_frames}
+    {frame} {x} {y} {weight}
+    {frame} {x} {y} {weight}
+    ...
+
+Format version 4 (JSON)::
 
     {
         'version': int,
@@ -70,6 +79,14 @@ Format version 4::
 """
 
 EXT = '.uv'
+
+# UV Track format version constants.
+UV_TRACK_FORMAT_VERSION_1 = 1
+UV_TRACK_FORMAT_VERSION_4 = 4
+
+# Preferred UV Track format version
+# (changes the format version used for writing data).
+UV_TRACK_FORMAT_VERSION_PREFERRED = UV_TRACK_FORMAT_VERSION_4
 
 DEFAULT_DATA_VERSION_4 = {
     'version': 4,

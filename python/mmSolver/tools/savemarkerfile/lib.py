@@ -42,7 +42,7 @@ def _marker_object_to_point_data(mkr, frames):
     mkr_grp = mkr.get_marker_group()
     mkr_grp_node = mkr_grp.get_node()
 
-    # Per-frame data
+    # Per-frame data.
     frames_data = []
     for f in frames:
         enable = mkr.get_enable(time=f)
@@ -150,12 +150,114 @@ def _camera_to_camera_data(cam, frames):
     return camera_data
 
 
-def generate(mkr_list, frame_range):
+def generate(mkr_list, frame_range, fmt=None):
     """
     Convert all Markers to data that can be written out.
 
-    :returns: List of Markers
-    :rtype: [Marker]
+    :param mkr_list: List of Marker objects to convert.
+    :type mkr_list: [Marker]
+
+    :param frame_range: Frame range to generate data for.
+    :type frame_range: range
+
+    :param fmt: The format to generate, either const.UV_TRACK_FORMAT_VERSION_1
+                or const.UV_TRACK_FORMAT_VERSION_4. If None, uses preferred version.
+    :type fmt: None or int
+
+    :returns: String data (v1) or dictionary data (v4) that can be written out
+    :rtype: str or dict
+    """
+    if fmt is None:
+        fmt = const.UV_TRACK_FORMAT_VERSION_PREFERRED
+
+    if fmt == const.UV_TRACK_FORMAT_VERSION_1:
+        return _generate_v1(mkr_list, frame_range)
+    elif fmt == const.UV_TRACK_FORMAT_VERSION_4:
+        return _generate_v4(mkr_list, frame_range)
+    else:
+        raise ValueError("Unsupported format version: %r" % fmt)
+
+
+def _generate_v1(mkr_list, frame_range):
+    """
+    Generate the UV file format contents, using a basic ASCII format.
+
+    Each point will store:
+    - Point name
+    - X, Y position (in UV coordinates, per-frame)
+    - Point weight (per-frame)
+
+    :param mkr_list: List of Marker objects to convert.
+    :type mkr_list: [Marker]
+
+    :param frame_range: Frame range to generate data for.
+    :type frame_range: range
+
+    :returns: ASCII format string, with the UV Track data in it.
+    :rtype: str
+    """
+    frames = list(range(frame_range.start, frame_range.end + 1))
+    assert len(frames) > 0
+
+    if len(mkr_list) == 0:
+        return ''
+
+    data_str = ''
+    data_str += '{0:d}\n'.format(len(mkr_list))
+
+    for mkr in mkr_list:
+        mkr_node = mkr.get_node()
+        name = mkr_node.rpartition('|')[-1]
+
+        # Write per-frame position data.
+        num_valid_frame = 0
+        pos_list = []
+        weight_list = []
+
+        for f in frames:
+            enable = mkr.get_enable(time=f)
+            if not enable:
+                continue
+
+            attr_tx = mkr_node + '.translateX'
+            attr_ty = mkr_node + '.translateY'
+            # Lower-left is (0.0, 0.0), upper-right is (1.0, 1.0).
+            tx = 0.5 + maya.cmds.getAttr(attr_tx, time=f)
+            ty = 0.5 + maya.cmds.getAttr(attr_ty, time=f)
+            pos = (tx, ty)
+            weight = mkr.get_weight(time=f)
+
+            # Number of points with valid positions.
+            num_valid_frame += 1
+
+            pos_list.append((f, pos))
+            weight_list.append((f, weight))
+
+        # Add data.
+        data_str += name + '\n'
+        data_str += '{0:d}\n'.format(num_valid_frame)
+        for pos_data, weight_data in zip(pos_list, weight_list):
+            f = pos_data[0]
+            v = pos_data[1]
+            w = weight_data[1]
+            assert f == weight_data[0]
+            data_str += '%d %.15f %.15f %.8f\n' % (f, v[0], v[1], w)
+
+    return data_str
+
+
+def _generate_v4(mkr_list, frame_range):
+    """
+    Generate the UV file format contents, using JSON format (version 4).
+
+    :param mkr_list: List of Marker objects to convert.
+    :type mkr_list: [Marker]
+
+    :param frame_range: Frame range to generate data for.
+    :type frame_range: range
+
+    :returns: Dictionary data that can be written as JSON.
+    :rtype: dict
     """
     frames = list(range(frame_range.start, frame_range.end + 1))
     assert len(frames) > 0
@@ -177,14 +279,14 @@ def generate(mkr_list, frame_range):
 
     if len(points_data) == 0:
         LOG.error('No marker data to export.')
-        return []
+        return {}
 
     if len(cameras_map) > 1:
         cam_mkrs = []
         for k, v in cameras_map.items():
             cam_mkrs.append(v)
         LOG.error('Cannot export markers from multiple cameras: %r', cam_mkrs)
-        return []
+        return {}
 
     assert cam is not None
     camera_data = _camera_to_camera_data(cam, frames)
@@ -197,17 +299,42 @@ def generate(mkr_list, frame_range):
 
 
 def write_file(file_path, data):
+    """
+    Write data to file. Handles both string (v1) and dictionary (v4) data.
+
+    :param file_path: Path to write the file to.
+    :type file_path: str
+
+    :param data: Data to write. String for v1, dict for v4.
+    :type data: str or dict
+
+    :returns: True if file was written successfully.
+    :rtype: bool
+    """
     with open(file_path, 'w') as f:
-        json.dump(data, f)
+        if isinstance(data, dict):
+            json.dump(data, f)
+        else:
+            f.write(data)
     result = os.path.isfile(file_path)
     return result
 
 
 def write_temp_file(data):
     """
-    Write file.
+    Write file to temporary location. Handles both string (v1) and dictionary (v4) data.
+
+    :param data: Data to write. String for v1, dict for v4.
+    :type data: str or dict
+
+    :returns: Temporary file path or False if failed.
+    :rtype: str or bool
     """
-    data_str = json.dumps(data)
+    if isinstance(data, dict):
+        data_str = json.dumps(data)
+    else:
+        data_str = data
+
     assert isinstance(data_str, pycompat.TEXT_TYPE)
     file_ext = const.EXT
     f = tempfile.NamedTemporaryFile(mode='w', suffix=file_ext, delete=False)

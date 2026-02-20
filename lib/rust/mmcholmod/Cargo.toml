@@ -1,0 +1,28 @@
+[package]
+name = "mmcholmod_rust"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lib]
+name = "mmcholmod_rust"
+path = "./src/lib.rs"
+crate-type = ["lib"]
+
+[dependencies]
+anyhow = { workspace = true }
+log = { workspace = true }
+mmcore = { package = "mmcore_rust", path = "../mmcore" }
+nalgebra = { workspace = true }
+nalgebra-sparse = { workspace = true }
+num-traits = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+approx = { workspace = true }
+criterion = { workspace = true }
+rayon = { workspace = true }
+
+[build-dependencies]
+cc = "1.0"

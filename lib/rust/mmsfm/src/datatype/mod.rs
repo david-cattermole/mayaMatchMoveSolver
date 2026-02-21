@@ -130,3 +130,41 @@ pub use scene_unit::{
 pub use uv_point_correspondence::UvPointCorrespondence;
 pub use uv_value::{UvPoint2, UvValue, UvVector2};
 
+// Re-export all conversion functions at the datatype module level
+pub use conversions::{
+    // Bearing vector conversions
+    convert_bearing_vector_to_camera_coord,
+    convert_camera_coord_to_bearing_vector,
+    convert_camera_coord_to_homogeneous_vector,
+    // Camera coordinate conversions
+    convert_camera_coord_to_ndc_point,
+    convert_camera_coord_to_ndc_point_with_intrinsics,
+    // Coordinate system conversions (Maya <-> CV)
+    convert_cv_to_maya_point3,
+    convert_cv_to_maya_rotation,
+    convert_cv_to_maya_translation,
+    convert_homogeneous_vector_to_camera_coord,
+    convert_maya_to_cv_point3,
+    convert_ndc_to_camera_coord_point,
+    convert_ndc_to_camera_coord_point_with_intrinsics,
+    // Image coordinate conversions
+    convert_ndc_to_pixel_point,
+    convert_ndc_to_pixel_points,
+    convert_ndc_to_pixel_vector,
+    convert_ndc_to_uv_point,
+    convert_ndc_to_uv_points,
+    convert_ndc_to_uv_vector,
+    convert_pixel_to_ndc_point,
+    convert_pixel_to_ndc_points,
+    convert_pixel_to_ndc_vector,
+    convert_pixel_to_uv_point,
+    convert_pixel_to_uv_points,
+    convert_pixel_to_uv_vector,
+    convert_uv_to_ndc_point,
+    convert_uv_to_ndc_points,
+    convert_uv_to_ndc_vector,
+    convert_uv_to_pixel_point,
+    convert_uv_to_pixel_points,
+    convert_uv_to_pixel_vector,
+    uv_point_to_camera_coord_point,
+};

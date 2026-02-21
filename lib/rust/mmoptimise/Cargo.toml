@@ -18,6 +18,7 @@ mmcore = { package = "mmcore_rust", path = "../mmcore" }
 nalgebra = { workspace = true }
 nalgebra-sparse = { workspace = true }
 num-traits = { workspace = true }
+rayon = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
@@ -44,4 +45,8 @@ harness = false
 
 [[bench]]
 name = "bench_sparse_levenberg_marquardt"
+harness = false
+
+[[bench]]
+name = "bench_differential_evolution"
 harness = false

@@ -39,10 +39,12 @@
 //! - [`CameraFilmBack<T>`] - Physical camera sensor dimensions in millimeters
 //! - [`ImageSize<T>`] - Image pixel dimensions with pixel aspect ratio support
 
+pub mod bearing_vector_correspondence;
 pub mod camera_coord_value;
 pub mod camera_film_back;
 pub mod camera_frustum;
 pub mod camera_intrinsics;
+pub mod camera_to_scene_correspondence;
 pub mod common;
 pub mod conversions;
 pub mod image_size;
@@ -50,16 +52,21 @@ pub mod millimeter_unit;
 pub mod ndc_value;
 pub mod pixel_value;
 pub mod scene_unit;
+pub mod uv_point_correspondence;
 pub mod uv_value;
 
 // Re-export common traits
 pub use common::UnitValue;
+
+// Re-export all unit types and camera pose types.
+pub use bearing_vector_correspondence::BearingVectorCorrespondence;
 pub use camera_coord_value::{
     CameraCoordPoint2, CameraCoordValue, CameraCoordVector2,
 };
 pub use camera_film_back::CameraFilmBack;
 pub use camera_frustum::CameraFrustum;
 pub use camera_intrinsics::CameraIntrinsics;
+pub use camera_to_scene_correspondence::CameraToSceneCorrespondence;
 pub use image_size::ImageSize;
 pub use millimeter_unit::{
     MillimeterPoint2, MillimeterPoint3, MillimeterUnit, MillimeterVector2,

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2025 David Cattermole.
+// Copyright (C) 2025, 2026 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -18,4 +18,7 @@
 // ====================================================================
 //
 
+pub mod json_common;
+pub mod json_parser;
+pub mod json_writer;
 pub mod uvtrack_reader;

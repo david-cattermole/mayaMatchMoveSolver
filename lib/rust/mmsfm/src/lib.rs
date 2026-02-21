@@ -61,5 +61,6 @@ macro_rules! mm_debug_eprintln {
     };
 }
 
+pub mod camera_pose_from_bundles;
 pub mod camera_residual_error;
 pub mod datatype;

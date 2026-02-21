@@ -22,3 +22,17 @@
 //!
 //! This crate provides Structure from Motion (SfM) algorithms and utilities
 //! designed for integration with Autodesk Maya.
+
+#![allow(non_snake_case)]
+
+/// Debug print macro that expands to `if DEBUG { eprintln!(...) }`.
+///
+/// Requires a `const DEBUG: bool` in the calling scope. When `DEBUG`
+/// is `false`, the compiler optimizes the branch away entirely.
+macro_rules! mm_debug_eprintln {
+    ($($arg:tt)*) => {
+        if DEBUG {
+            eprintln!($($arg)*);
+        }
+    };
+}

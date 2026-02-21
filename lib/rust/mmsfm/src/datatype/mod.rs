@@ -24,3 +24,35 @@
 //! of different units while maintaining full runtime performance. Each unit type
 //! wraps a numeric value (f32 or f64) and provides safe conversion methods
 //! between compatible units.
+//!
+//! # Unit Types
+//!
+//! - [`MillimeterUnit<T>`] - Physical measurements in millimeters
+//! - [`PixelValue<T>`] - Pixel values
+//! - [`UvValue<T>`] - UV values (0.0-1.0 range)
+//! - [`NdcValue<T>`] - NDC values (-1.0-1.0 range)
+//! - [`CameraCoordValue<T>`] - Normalized camera coordinates (post-intrinsics)
+//! - [`SceneUnit<T>`] - Maya scene units
+
+pub mod camera_coord_value;
+pub mod common;
+pub mod conversions;
+pub mod millimeter_unit;
+pub mod ndc_value;
+pub mod pixel_value;
+pub mod scene_unit;
+pub mod uv_value;
+pub use camera_coord_value::{
+    CameraCoordPoint2, CameraCoordValue, CameraCoordVector2,
+};
+pub use millimeter_unit::{
+    MillimeterPoint2, MillimeterPoint3, MillimeterUnit, MillimeterVector2,
+    MillimeterVector3,
+};
+pub use ndc_value::{NdcPoint2, NdcValue, NdcVector2};
+pub use pixel_value::{PixelPoint2, PixelValue, PixelVector2};
+pub use scene_unit::{
+    ScenePoint2, ScenePoint3, SceneUnit, SceneVector2, SceneVector3,
+};
+pub use uv_value::{UvPoint2, UvValue, UvVector2};
+

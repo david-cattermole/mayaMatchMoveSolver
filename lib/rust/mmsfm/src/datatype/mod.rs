@@ -82,14 +82,18 @@
 //! - Improves code readability and self-documentation
 
 pub mod bearing_vector_correspondence;
+pub mod bundle_positions;
 pub mod camera_coord_value;
 pub mod camera_film_back;
 pub mod camera_frustum;
 pub mod camera_intrinsics;
+pub mod camera_pose;
+pub mod camera_poses;
 pub mod camera_to_scene_correspondence;
 pub mod common;
 pub mod conversions;
 pub mod image_size;
+pub mod marker_observations;
 pub mod millimeter_unit;
 pub mod ndc_value;
 pub mod pixel_value;
@@ -102,14 +106,18 @@ pub use common::UnitValue;
 
 // Re-export all unit types and camera pose types.
 pub use bearing_vector_correspondence::BearingVectorCorrespondence;
+pub use bundle_positions::BundlePositions;
 pub use camera_coord_value::{
     CameraCoordPoint2, CameraCoordValue, CameraCoordVector2,
 };
 pub use camera_film_back::CameraFilmBack;
 pub use camera_frustum::CameraFrustum;
 pub use camera_intrinsics::CameraIntrinsics;
+pub use camera_pose::{is_valid_pose, CameraPose};
+pub use camera_poses::CameraPoses;
 pub use camera_to_scene_correspondence::CameraToSceneCorrespondence;
 pub use image_size::ImageSize;
+pub use marker_observations::MarkerObservations;
 pub use millimeter_unit::{
     MillimeterPoint2, MillimeterPoint3, MillimeterUnit, MillimeterVector2,
     MillimeterVector3,
@@ -119,5 +127,6 @@ pub use pixel_value::{PixelPoint2, PixelValue, PixelVector2};
 pub use scene_unit::{
     ScenePoint2, ScenePoint3, SceneUnit, SceneVector2, SceneVector3,
 };
+pub use uv_point_correspondence::UvPointCorrespondence;
 pub use uv_value::{UvPoint2, UvValue, UvVector2};
 

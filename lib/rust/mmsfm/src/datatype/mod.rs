@@ -38,6 +38,48 @@
 //!
 //! - [`CameraFilmBack<T>`] - Physical camera sensor dimensions in millimeters
 //! - [`ImageSize<T>`] - Image pixel dimensions with pixel aspect ratio support
+//!
+//! # Examples
+//!
+//! ```rust
+//! use mmsfm_rust::datatype::*;
+//!
+//! // Create values with specific units
+//! let distance = MillimeterUnit::new(25.4);
+//! let pixel = PixelValue::new(100.0);
+//! let uv = UvValue::new(0.5);
+//! let ndc = NdcValue::new(0.0);
+//! let camera_coord = CameraCoordValue::new(-0.3);
+//!
+//! // Convert between units with conversion functions
+//! let mm_point = MillimeterUnit::point2(distance.value(), 0.0);
+//! let pixel_point = PixelValue::point2(pixel.value(), 540.0);
+//! let image_size = ImageSize::from_pixels(1920.0, 1080.0);
+//! let normalized_uv = conversions::convert_pixel_to_uv_point(pixel_point, &image_size);
+//!
+//! // Create 2D points with type safety
+//! let mm_point = MillimeterUnit::point2(10.0, 20.0);
+//! let img_point = PixelValue::point2(960.0, 540.0);
+//! let ndc_point = NdcValue::point2(0.0, 0.0);
+//! let camera_coord_point = CameraCoordValue::point2(-0.5, 0.3);
+//!
+//! // Create camera and image specifications
+//! let film_back = CameraFilmBack::from_millimeters(36.0, 24.0); // Full-frame 35mm
+//! let image_size = ImageSize::from_pixels(1920.0, 1080.0); // Full HD
+//! let anamorphic = ImageSize::from_pixels_with_aspect(1920.0, 1080.0, 2.0); // 2:1 anamorphic
+//!
+//! // Calculate aspect ratios
+//! let sensor_aspect = film_back.aspect_ratio(); // 1.5 (3:2 ratio)
+//! let image_aspect = image_size.aspect_ratio(); // ~1.778 (16:9 ratio)
+//! let anamorphic_aspect = anamorphic.aspect_ratio(); // ~3.556 (32:9 ratio)
+//! ```
+//!
+//! # Type Safety Benefits
+//!
+//! - Prevents mixing incompatible units (compile-time errors)
+//! - Enforces explicit conversions between unit types
+//! - Maintains runtime performance (zero overhead)
+//! - Improves code readability and self-documentation
 
 pub mod bearing_vector_correspondence;
 pub mod camera_coord_value;

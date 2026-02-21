@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2024, 2025 David Cattermole.
+// Copyright (C) 2024, 2025, 2026 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -130,6 +130,8 @@ impl N3CurveFitProblem {
 }
 
 impl OptimisationProblem for N3CurveFitProblem {
+    type Sparsity = mmoptimise::solver::common::EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -268,6 +270,8 @@ impl NPointsCurveFitProblem {
 }
 
 impl OptimisationProblem for NPointsCurveFitProblem {
+    type Sparsity = mmoptimise::solver::common::EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2025 David Cattermole.
+// Copyright (C) 2025, 2026 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -16,11 +16,8 @@
 //! Common utilities and problem definitions for mmoptimise
 //! benchmarks.
 
-use anyhow::anyhow;
-use anyhow::Result;
-use mmoptimise_rust::solver::common::{
-    OptimisationProblem, ParameterScalingMode,
-};
+use anyhow::{anyhow, Result};
+use mmoptimise_rust::solver::common::OptimisationProblem;
 use mmoptimise_rust::solver::gauss_newton::{
     GaussNewtonConfig, GaussNewtonSolver, GaussNewtonWorkspace,
 };
@@ -31,9 +28,18 @@ use mmoptimise_rust::solver::levenberg_marquardt::{
 use mmoptimise_rust::solver::powell_dogleg::{
     PowellDogLegConfig, PowellDogLegSolver, PowellDogLegWorkspace,
 };
-use mmoptimise_rust::solver::test_problems::{
-    CurveFittingProblem, ExtendedRosenbrockProblem, PowellProblem,
-    RosenbrockProblem,
+// Note: SparseLMSolver is NOT included in these benchmarks because it is
+// specifically designed for bundle adjustment problems with cameras and 3D
+// points. The test problems (Rosenbrock, Powell, etc.) are general
+// optimization problems without bundle adjustment structure, making them
+// incompatible with SparseLMWorkspace which requires at least one camera
+// and at least one point.
+//
+// For general sparse problems, use SparseLevenbergMarquardt instead.
+use mmoptimise_rust::solver::test_problems::RosenbrockProblem;
+use mmoptimise_rust::sparse::{
+    SparseLevenbergMarquardtConfig, SparseLevenbergMarquardtSolver,
+    SparseLevenbergMarquardtWorkspace, SparseOptimisationProblem,
 };
 
 /// Configuration factory functions for each solver type.
@@ -77,6 +83,23 @@ pub fn powell_dogleg_configs() -> Vec<(&'static str, PowellDogLegConfig)> {
         (
             "HighPrecision",
             PowellDogLegConfig {
+                function_tolerance: 1e-12,
+                parameter_tolerance: 1e-12,
+                gradient_tolerance: 1e-12,
+                max_iterations: 500,
+                ..Default::default()
+            },
+        ),
+    ]
+}
+
+pub fn sparse_levenberg_marquardt_configs(
+) -> Vec<(&'static str, SparseLevenbergMarquardtConfig)> {
+    vec![
+        ("Default", SparseLevenbergMarquardtConfig::default()),
+        (
+            "HighPrecision",
+            SparseLevenbergMarquardtConfig {
                 function_tolerance: 1e-12,
                 parameter_tolerance: 1e-12,
                 gradient_tolerance: 1e-12,
@@ -334,6 +357,36 @@ pub fn run_pdl_benchmark<P: OptimisationProblem>(
     workspace.reuse_with(problem, &starting_point.parameters)?;
     let start = std::time::Instant::now();
     let solver = PowellDogLegSolver::new(config);
+    let result = solver.solve_problem(problem, workspace)?;
+    let duration = start.elapsed();
+    let success = result.status.is_success();
+
+    if success {
+        validate_solution(&result.parameters, result.cost, expected)?;
+
+        Ok((
+            duration,
+            success,
+            result.iterations,
+            result.function_evaluations,
+            result.cost,
+        ))
+    } else {
+        Err(anyhow!("Solve failed!"))
+    }
+}
+
+/// Run a Sparse Levenberg-Marquardt benchmark.
+pub fn run_sparse_lm_benchmark<P: SparseOptimisationProblem>(
+    problem: &P,
+    expected: &ExpectedSolution,
+    config: SparseLevenbergMarquardtConfig,
+    starting_point: &StartingPoint,
+    workspace: &mut SparseLevenbergMarquardtWorkspace,
+) -> Result<(std::time::Duration, bool, usize, usize, f64)> {
+    workspace.reuse_with(problem, &starting_point.parameters)?;
+    let start = std::time::Instant::now();
+    let solver = SparseLevenbergMarquardtSolver::new(config);
     let result = solver.solve_problem(problem, workspace)?;
     let duration = start.elapsed();
     let success = result.status.is_success();

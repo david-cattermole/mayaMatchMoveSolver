@@ -6,6 +6,7 @@ members = [
     "lib/cppbind/mmlens",
     "lib/cppbind/mmscenegraph",
     "lib/mmsolverlibs",
+    "lib/rust/mmcholmod",
     "lib/rust/mmcore",
     "lib/rust/mmimage",
     "lib/rust/mmio",
@@ -29,6 +30,7 @@ fastapprox = "0.3.1"
 half = { version = "2.4.1", default-features = false, features = ["std", "num-traits"] }
 log = "0.4.22"
 nalgebra = { version = "0.33.2", default-features = false, features = ["std", "matrixmultiply"] }
+nalgebra-sparse = { version = "0.11.0", default-features = false }
 ndarray = "0.15.6"
 num = "0.4.3"
 num-traits = "0.2.19"
@@ -51,6 +53,7 @@ thiserror = "2.0.3"
 cxx = "=1.0.155"
 
 # Crates defined inside this project.
+mmcholmod_rust = { path = "./lib/rust/mmcholmod" }
 mmcore_cppbind = { path = "./lib/cppbind/mmcore" }
 mmcore_rust = { path = "./lib/rust/mmcore" }
 mmimage_cppbind = { path = "./lib/cppbind/mmimage" }

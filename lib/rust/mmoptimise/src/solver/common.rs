@@ -355,6 +355,53 @@ impl SolverStatus {
 /// assert_eq!(problem.residual_count(), 3);
 /// ```
 pub trait OptimisationProblem {
+    /// Sparsity pattern type for this problem (compile-time polymorphism).
+    ///
+    /// Uses associated types instead of trait objects for zero-cost abstraction.
+    /// The compiler will monomorphize code for each concrete sparsity pattern type,
+    /// resulting in no vtable overhead and fully inlined method calls.
+    type Sparsity: SparsityPattern;
+
+    /// Compute sparse Jacobian blocks (optional, for bundle adjustment).
+    ///
+    /// This method allows problems with known sparsity structure to provide
+    /// Jacobian information as sparse blocks rather than dense matrices.
+    ///
+    /// # Returns
+    ///
+    /// Number of function evaluations performed, or an error if not implemented
+    /// or if computation fails.
+    ///
+    /// # Default Implementation
+    ///
+    /// Returns an error indicating sparse Jacobian is not implemented.
+    /// Problems that don't have sparse structure can rely on this default.
+    fn sparse_jacobian_blocks<T>(
+        &self,
+        _parameters: &[T],
+        _blocks: &mut SparseJacobianBlocks<T>,
+    ) -> Result<usize>
+    where
+        T: Float + Copy,
+    {
+        Err(anyhow::anyhow!(
+            "Sparse Jacobian not implemented for this problem"
+        ))
+    }
+
+    /// Get the Jacobian sparsity pattern (optional).
+    ///
+    /// Returns the sparsity structure if the problem has one, allowing
+    /// solvers to pre-allocate data structures efficiently.
+    ///
+    /// # Returns
+    ///
+    /// `Some(&Self::Sparsity)` if the problem has sparse structure,
+    /// `None` otherwise (default).
+    fn jacobian_sparsity_pattern(&self) -> Option<&Self::Sparsity> {
+        None
+    }
+
     /// Compute residuals for both `f64` and `Dual<f64>` types.
     ///
     /// Must compute the residual vector for the given parameters.
@@ -391,4 +438,131 @@ pub trait OptimisationProblem {
 
     /// Number of residual equations (must be >= parameter_count).
     fn residual_count(&self) -> usize;
+}
+
+/// Sparse Jacobian blocks for bundle adjustment problems.
+///
+/// Stores Jacobian information as sparse blocks rather than dense matrices.
+/// Each observation contributes:
+/// - 2×6 camera parameter block (rotation + translation derivatives)
+/// - 2×3 point parameter block (3D point derivatives)
+///
+/// This representation is much more memory-efficient than dense Jacobians
+/// for problems with sparse observation patterns.
+#[derive(Debug, Clone)]
+pub struct SparseJacobianBlocks<T> {
+    /// For each observation: (residual_idx, camera_block_2x6, point_block_2x3)
+    ///
+    /// - `residual_idx`: Index of first residual (u residual, v is idx+1)
+    /// - Camera block: 2 rows (u, v) × 6 columns (rot_x, rot_y, rot_z, trans_x, trans_y, trans_z)
+    /// - Point block: 2 rows (u, v) × 3 columns (x, y, z)
+    pub blocks: Vec<(usize, [[T; 6]; 2], [[T; 3]; 2])>,
+}
+
+impl<T> SparseJacobianBlocks<T> {
+    /// Create a new empty sparse Jacobian blocks structure.
+    pub fn new() -> Self {
+        Self { blocks: Vec::new() }
+    }
+
+    /// Create with pre-allocated capacity for a given number of observations.
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            blocks: Vec::with_capacity(capacity),
+        }
+    }
+
+    /// Clear all blocks (retaining allocated memory).
+    pub fn clear(&mut self) {
+        self.blocks.clear();
+    }
+
+    /// Number of observations (blocks).
+    pub fn len(&self) -> usize {
+        self.blocks.len()
+    }
+
+    /// Check if empty.
+    pub fn is_empty(&self) -> bool {
+        self.blocks.is_empty()
+    }
+}
+
+impl<T> Default for SparseJacobianBlocks<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// Trait for querying sparsity structure in bundle adjustment problems.
+///
+/// Describes which observations connect which cameras to which 3D points.
+/// This pattern is computed once during problem setup and used throughout
+/// optimization.
+///
+/// Different problem types can implement this trait with optimal
+/// storage strategies:
+/// - General BA: Uses index ranges to encode lock status
+/// - Two-camera BA: Hardcoded logic (camera 0 locked, camera 1 unlocked)
+/// - Single-camera BA: Hardcoded logic (camera 0 unlocked, all points locked)
+pub trait SparsityPattern {
+    /// Get camera and point indices for an observation.
+    ///
+    /// # Parameters
+    /// - `observation_idx`: Index of the observation (produces 2 residuals: u and v)
+    ///
+    /// # Returns
+    /// Tuple of (camera_idx, point_idx) for this observation
+    fn observation_to_params(&self, observation_idx: usize) -> (usize, usize);
+
+    /// Total number of observations in the problem.
+    fn num_observations(&self) -> usize;
+
+    /// Check if camera is unlocked (optimizable).
+    ///
+    /// Locked cameras have fixed parameters and are not optimized.
+    fn is_camera_unlocked(&self, camera_idx: usize) -> bool;
+
+    /// Check if point is unlocked (optimizable).
+    ///
+    /// Locked points have fixed positions and are not optimized.
+    fn is_point_unlocked(&self, point_idx: usize) -> bool;
+
+    /// Total number of cameras in the problem.
+    fn num_cameras(&self) -> usize;
+
+    /// Total number of 3D points in the problem.
+    fn num_points(&self) -> usize;
+}
+
+/// Empty sparsity pattern for dense (non-sparse) problems.
+///
+/// Problems that don't use sparse Jacobians can use this minimal
+/// implementation that satisfies the trait requirements.
+pub struct EmptySparsityPattern;
+
+impl SparsityPattern for EmptySparsityPattern {
+    fn observation_to_params(&self, _obs_idx: usize) -> (usize, usize) {
+        (0, 0) // Not used
+    }
+
+    fn num_observations(&self) -> usize {
+        0 // Not used
+    }
+
+    fn is_camera_unlocked(&self, _camera_idx: usize) -> bool {
+        false // Not used
+    }
+
+    fn is_point_unlocked(&self, _point_idx: usize) -> bool {
+        false // Not used
+    }
+
+    fn num_cameras(&self) -> usize {
+        0 // Not used
+    }
+
+    fn num_points(&self) -> usize {
+        0 // Not used
+    }
 }

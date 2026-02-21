@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2025 David Cattermole.
+// Copyright (C) 2025, 2026 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -24,6 +24,7 @@ use mmoptimise_rust::solver::gauss_newton::GaussNewtonWorkspace;
 use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtWorkspace;
 use mmoptimise_rust::solver::powell_dogleg::PowellDogLegWorkspace;
 use mmoptimise_rust::solver::test_problems::PowellProblem;
+use mmoptimise_rust::sparse::sparse_levenberg_marquardt::SparseLevenbergMarquardtWorkspace;
 use std::hint::black_box;
 use std::time::Duration;
 
@@ -42,6 +43,7 @@ fn bench_powell_solver_comparison(c: &mut Criterion) {
     let lm_config = levenberg_marquardt_configs()[0].1;
     let gn_config = gauss_newton_configs()[0].1;
     let pdl_config = powell_dogleg_configs()[0].1;
+    let sparse_lm_config = sparse_levenberg_marquardt_configs()[0].1;
 
     // Create workspaces for each solver
     let mut lm_workspace = LevenbergMarquardtWorkspace::new(
@@ -57,6 +59,12 @@ fn bench_powell_solver_comparison(c: &mut Criterion) {
     let mut pdl_workspace =
         PowellDogLegWorkspace::new(&problem, &starting_points[0].parameters)
             .expect("Failed to create PDL workspace");
+
+    let mut sparse_lm_workspace = SparseLevenbergMarquardtWorkspace::new(
+        &problem,
+        &starting_points[0].parameters,
+    )
+    .expect("Failed to create Sparse LM workspace");
 
     for start_point in &starting_points {
         let bench_id = BenchmarkId::new("LevenbergMarquardt", start_point.name);
@@ -101,6 +109,23 @@ fn bench_powell_solver_comparison(c: &mut Criterion) {
                         pdl_config,
                         start_point,
                         &mut pdl_workspace,
+                    )
+                    .unwrap(),
+                )
+            });
+        });
+
+        let bench_id =
+            BenchmarkId::new("SparseLevenbergMarquardt", start_point.name);
+        group.bench_with_input(bench_id, start_point, |b, start_point| {
+            b.iter(|| {
+                black_box(
+                    run_sparse_lm_benchmark(
+                        &problem,
+                        &expected,
+                        sparse_lm_config,
+                        start_point,
+                        &mut sparse_lm_workspace,
                     )
                     .unwrap(),
                 )

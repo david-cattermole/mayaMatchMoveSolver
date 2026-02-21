@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2025 David Cattermole.
+// Copyright (C) 2025, 2026 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -22,7 +22,41 @@ use anyhow::Result;
 use num_traits::{Float, Zero};
 use std::ops::{Add, Div, Mul, Sub};
 
-use crate::solver::common::{OptimisationError, OptimisationProblem};
+use crate::solver::common::{
+    OptimisationError, OptimisationProblem, SparsityPattern,
+};
+
+/// Empty sparsity pattern for dense (non-sparse) problems.
+///
+/// Test problems don't use sparse Jacobians, so this is a minimal
+/// implementation that satisfies the trait requirements.
+pub struct EmptySparsityPattern;
+
+impl SparsityPattern for EmptySparsityPattern {
+    fn observation_to_params(&self, _obs_idx: usize) -> (usize, usize) {
+        (0, 0) // Not used
+    }
+
+    fn num_observations(&self) -> usize {
+        0 // Not used
+    }
+
+    fn is_camera_unlocked(&self, _camera_idx: usize) -> bool {
+        false // Not used
+    }
+
+    fn is_point_unlocked(&self, _point_idx: usize) -> bool {
+        false // Not used
+    }
+
+    fn num_cameras(&self) -> usize {
+        0 // Not used
+    }
+
+    fn num_points(&self) -> usize {
+        0 // Not used
+    }
+}
 
 /// The Rosenbrock function.
 ///
@@ -44,8 +78,8 @@ use crate::solver::common::{OptimisationError, OptimisationProblem};
 /// - r2 = √b * (y - x^2)
 /// - Minimizes ||r||^2 = r1^2 + r2^2 = original Rosenbrock function
 pub struct RosenbrockProblem {
-    a: f64,
-    b: f64,
+    pub a: f64,
+    pub b: f64,
 }
 
 impl RosenbrockProblem {
@@ -65,6 +99,8 @@ impl Default for RosenbrockProblem {
 }
 
 impl OptimisationProblem for RosenbrockProblem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -267,6 +303,8 @@ impl CurveFittingProblem {
 }
 
 impl OptimisationProblem for CurveFittingProblem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -334,6 +372,8 @@ impl OptimisationProblem for CurveFittingProblem {
 pub struct BukinN6Problem;
 
 impl OptimisationProblem for BukinN6Problem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -411,6 +451,8 @@ impl OptimisationProblem for BukinN6Problem {
 pub struct GoldsteinPriceFunction;
 
 impl OptimisationProblem for GoldsteinPriceFunction {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -509,6 +551,8 @@ impl OptimisationProblem for GoldsteinPriceFunction {
 pub struct NearSingularProblem;
 
 impl OptimisationProblem for NearSingularProblem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -571,6 +615,8 @@ impl OptimisationProblem for NearSingularProblem {
 pub struct ZeroJacobianProblem;
 
 impl OptimisationProblem for ZeroJacobianProblem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -636,6 +682,8 @@ impl OptimisationProblem for ZeroJacobianProblem {
 pub struct StagnationProblem;
 
 impl OptimisationProblem for StagnationProblem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -701,6 +749,8 @@ impl OptimisationProblem for StagnationProblem {
 pub struct OscillatingProblem;
 
 impl OptimisationProblem for OscillatingProblem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -765,6 +815,8 @@ impl OptimisationProblem for OscillatingProblem {
 pub struct DifficultLandscapeProblem;
 
 impl OptimisationProblem for DifficultLandscapeProblem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -830,6 +882,8 @@ impl OptimisationProblem for DifficultLandscapeProblem {
 pub struct Mock3DProblem;
 
 impl OptimisationProblem for Mock3DProblem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         _parameters: &[T],
@@ -887,6 +941,8 @@ impl OptimisationProblem for Mock3DProblem {
 pub struct UnderdeterminedProblem;
 
 impl OptimisationProblem for UnderdeterminedProblem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -942,6 +998,8 @@ impl OptimisationProblem for UnderdeterminedProblem {
 pub struct PowellProblem;
 
 impl OptimisationProblem for PowellProblem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],
@@ -1022,6 +1080,8 @@ impl ExtendedRosenbrockProblem {
 }
 
 impl OptimisationProblem for ExtendedRosenbrockProblem {
+    type Sparsity = EmptySparsityPattern;
+
     fn residuals<T>(
         &self,
         parameters: &[T],

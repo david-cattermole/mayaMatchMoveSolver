@@ -13,8 +13,10 @@ crate-type = ["lib"]
 [dependencies]
 anyhow = { workspace = true }
 log = { workspace = true }
+mmcholmod = { package = "mmcholmod_rust", path = "../mmcholmod" }
 mmcore = { package = "mmcore_rust", path = "../mmcore" }
 nalgebra = { workspace = true }
+nalgebra-sparse = { workspace = true }
 num-traits = { workspace = true }
 thiserror = { workspace = true }
 
@@ -38,4 +40,8 @@ harness = false
 
 [[bench]]
 name = "bench_curve_fitting"
+harness = false
+
+[[bench]]
+name = "bench_sparse_levenberg_marquardt"
 harness = false

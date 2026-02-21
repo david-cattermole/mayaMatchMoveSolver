@@ -45,16 +45,18 @@ pub struct CameraIntrinsics {
 impl CameraIntrinsics {
     /// Create camera intrinsics from physical parameters.
     ///
-    /// This method derives the normalized intrinsic parameters from physical measurements:
+    /// This method derives the normalized intrinsic parameters from
+    /// physical measurements:
     /// - The focal length in millimeters
     /// - The lens center position relative to the film back center
     /// - The film back (sensor) dimensions
     ///
-    /// All calculations are performed in millimeters, with normalization based on the
-    /// film back dimensions.
+    /// All calculations are performed in millimeters, with
+    /// normalization based on the film back dimensions.
     ///
     /// # Coordinate System
-    /// The lens center coordinates are relative to the film back center, where:
+    /// The lens center coordinates are relative to the film back
+    /// center, where:
     /// - (0, 0) = center of the film back
     /// - (-film_back_width * 0.5, 0) = left edge of film back
     /// - (+film_back_width * 0.5, 0) = right edge of film back
@@ -62,10 +64,10 @@ impl CameraIntrinsics {
     /// - (0, +film_back_height * 0.5) = top edge of film back
     ///
     /// # Arguments
-    /// * `focal_length_mm` - Focal length in millimeters
-    /// * `lens_center_x_mm` - Lens center X offset from film back center in millimeters
-    /// * `lens_center_y_mm` - Lens center Y offset from film back center in millimeters
-    /// * `film_back` - Physical sensor dimensions
+    /// * `focal_length_mm` - Focal length in millimeters.
+    /// * `lens_center_x_mm` - Lens center X offset from film back center in millimeters.
+    /// * `lens_center_y_mm` - Lens center Y offset from film back center in millimeters.
+    /// * `film_back` - Physical sensor dimensions.
     ///
     /// # Examples
     /// ```rust
@@ -90,7 +92,7 @@ impl CameraIntrinsics {
         lens_center_y_mm: MillimeterUnit<f64>,
         film_back: CameraFilmBack<f64>,
     ) -> Self {
-        // Normalize focal lengths by film back dimensions
+        // Normalize focal lengths by film back dimensions.
         let focal_length_x = focal_length_mm.value() / film_back.width.value();
         let focal_length_y = focal_length_mm.value() / film_back.height.value();
 
@@ -239,12 +241,12 @@ impl CameraIntrinsics {
     /// # Returns
     /// Diagonal field of view angle in radians
     pub fn diagonal_fov_radians(&self) -> f64 {
-        // Calculate diagonal sensor dimension
+        // Calculate diagonal sensor dimension.
         let diagonal_mm = (self.film_back.width.value().powi(2)
             + self.film_back.height.value().powi(2))
         .sqrt();
 
-        // Use horizontal focal length for diagonal calculation
+        // Use horizontal focal length for diagonal calculation.
         let focal_length_mm =
             self.focal_length_x * self.film_back.width.value();
         2.0 * (diagonal_mm / (2.0 * focal_length_mm)).atan()
@@ -253,7 +255,7 @@ impl CameraIntrinsics {
     /// Calculate the diagonal field of view in degrees.
     ///
     /// # Returns
-    /// Diagonal field of view angle in degrees
+    /// Diagonal field of view angle in degrees.
     pub fn diagonal_fov_degrees(&self) -> f64 {
         self.diagonal_fov_radians().to_degrees()
     }
@@ -261,7 +263,7 @@ impl CameraIntrinsics {
     /// Get the aspect ratio of the film back (width / height).
     ///
     /// # Returns
-    /// Aspect ratio as width divided by height
+    /// Aspect ratio as width divided by height.
     pub fn aspect_ratio(&self) -> f64 {
         self.film_back.aspect_ratio()
     }
@@ -299,7 +301,7 @@ mod tests {
 
     #[test]
     fn test_from_physical_parameters_centered_lens() {
-        // Full-frame 35mm sensor with 50mm lens, centered
+        // Full-frame 35mm sensor with 50mm lens, centered.
         let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
         let focal_length = MillimeterUnit::new(50.0);
         let lens_center_x = MillimeterUnit::new(0.0); // Centered
@@ -326,7 +328,7 @@ mod tests {
             epsilon = 1e-10
         );
 
-        // Principal point should be at NDC center (0.0, 0.0)
+        // Principal point should be at NDC center (0.0, 0.0).
         assert_relative_eq!(
             intrinsics.principal_point.x.value(),
             0.0,
@@ -341,7 +343,7 @@ mod tests {
 
     #[test]
     fn test_from_physical_parameters_offset_lens() {
-        // Full-frame 35mm sensor with lens offset to left edge
+        // Full-frame 35mm sensor with lens offset to left edge.
         let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
         let focal_length = MillimeterUnit::new(50.0);
         let lens_center_x = MillimeterUnit::new(-18.0); // Left edge of film back (-36/2)
@@ -368,14 +370,14 @@ mod tests {
             epsilon = 1e-10
         );
 
-        // Principal point X should be at left edge (-1.0 in NDC)
+        // Principal point X should be at left edge (-1.0 in NDC).
         assert_relative_eq!(
             intrinsics.principal_point.x.value(),
             -1.0,
             epsilon = 1e-10
         );
 
-        // Principal point Y should be at center (0.0 in NDC)
+        // Principal point Y should be at center (0.0 in NDC).
         assert_relative_eq!(
             intrinsics.principal_point.y.value(),
             0.0,
@@ -385,7 +387,7 @@ mod tests {
 
     #[test]
     fn test_from_physical_parameters_right_edge_lens() {
-        // Test lens center at right edge of film back
+        // Test lens center at right edge of film back.
         let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
         let focal_length = MillimeterUnit::new(50.0);
         let lens_center_x = MillimeterUnit::new(18.0); // Right edge (+36/2)
@@ -398,7 +400,7 @@ mod tests {
             film_back,
         );
 
-        // Principal point X should be at right edge (1.0 in NDC)
+        // Principal point X should be at right edge (1.0 in NDC).
         assert_relative_eq!(
             intrinsics.principal_point.x.value(),
             1.0,
@@ -413,7 +415,7 @@ mod tests {
 
     #[test]
     fn test_from_physical_parameters_corner_lens() {
-        // Test lens center at bottom-left corner
+        // Test lens center at bottom-left corner.
         let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
         let focal_length = MillimeterUnit::new(50.0);
         let lens_center_x = MillimeterUnit::new(-18.0); // Left edge
@@ -447,7 +449,7 @@ mod tests {
         let intrinsics =
             CameraIntrinsics::from_centered_lens(focal_length, film_back);
 
-        // Should be identical to centered physical parameters
+        // Should be identical to centered physical parameters.
         assert_relative_eq!(
             intrinsics.focal_length_x,
             50.0 / 36.0,
@@ -478,7 +480,7 @@ mod tests {
         let original_lens_center_x = MillimeterUnit::new(-5.0);
         let original_lens_center_y = MillimeterUnit::new(3.0);
 
-        // Convert to normalized
+        // Convert to normalized.
         let intrinsics = CameraIntrinsics::from_physical_parameters(
             original_focal_length,
             original_lens_center_x,
@@ -486,14 +488,14 @@ mod tests {
             film_back,
         );
 
-        // Convert back to physical
+        // Convert back to physical.
         let (
             recovered_focal_length,
             recovered_lens_center_x,
             recovered_lens_center_y,
         ) = intrinsics.to_physical_parameters();
 
-        // Should match original values
+        // Should match original values.
         assert_relative_eq!(
             recovered_focal_length.value(),
             original_focal_length.value(),
@@ -513,7 +515,7 @@ mod tests {
 
     #[test]
     fn test_aps_c_sensor() {
-        // Test with APS-C sensor
+        // Test with APS-C sensor.
         let film_back = CameraFilmBack::from_millimeters(22.3, 14.9);
         let focal_length = MillimeterUnit::new(35.0);
         let lens_center_x = MillimeterUnit::new(1.0); // Slightly off-center
@@ -526,21 +528,22 @@ mod tests {
             film_back,
         );
 
-        // Verify focal length X normalization
+        // Verify focal length X normalization.
         assert_relative_eq!(
             intrinsics.focal_length_x,
             35.0 / 22.3,
             epsilon = 1e-10
         );
 
-        // Verify focal length Y normalization
+        // Verify focal length Y normalization.
         assert_relative_eq!(
             intrinsics.focal_length_y,
             35.0 / 14.9,
             epsilon = 1e-10
         );
 
-        // Verify lens center offset calculation with NDC coordinates
+        // Verify lens center offset calculation with NDC coordinates.
+        //
         // Principal point in NDC = 2.0 * lens_center / film_back_dimension
         let expected_principal_x = 2.0 * 1.0 / 22.3;
         let expected_principal_y = 2.0 * -0.5 / 14.9;
@@ -559,12 +562,13 @@ mod tests {
 
     #[test]
     fn test_different_sensor_formats() {
-        // Test that the same physical parameters work with different sensor formats
+        // Test that the same physical parameters work with different
+        // sensor formats.
         let focal_length = MillimeterUnit::new(50.0);
         let lens_center_x = MillimeterUnit::new(2.0); // Slightly off-center
         let lens_center_y = MillimeterUnit::new(-1.0);
 
-        // Full-frame 35mm
+        // Full-frame 35mm.
         let film_back_ff = CameraFilmBack::from_millimeters(36.0, 24.0);
         let intrinsics_ff = CameraIntrinsics::from_physical_parameters(
             focal_length,
@@ -573,7 +577,7 @@ mod tests {
             film_back_ff,
         );
 
-        // APS-C
+        // APS-C.
         let film_back_aps_c = CameraFilmBack::from_millimeters(22.3, 14.9);
         let intrinsics_aps_c = CameraIntrinsics::from_physical_parameters(
             focal_length,
@@ -582,8 +586,8 @@ mod tests {
             film_back_aps_c,
         );
 
-        // Different sensors should produce different normalized intrinsics
-        // because the physical dimensions are different
+        // Different sensors should produce different normalized
+        // intrinsics because the physical dimensions are different.
         assert_ne!(
             intrinsics_ff.focal_length_x,
             intrinsics_aps_c.focal_length_x
@@ -601,7 +605,7 @@ mod tests {
             intrinsics_aps_c.principal_point.y.value()
         );
 
-        // Verify focal length X scaling
+        // Verify focal length X scaling.
         assert_relative_eq!(
             intrinsics_ff.focal_length_x,
             50.0 / 36.0,
@@ -613,7 +617,7 @@ mod tests {
             epsilon = 1e-10
         );
 
-        // Verify focal length Y scaling
+        // Verify focal length Y scaling.
         assert_relative_eq!(
             intrinsics_ff.focal_length_y,
             50.0 / 24.0,
@@ -628,7 +632,7 @@ mod tests {
 
     #[test]
     fn test_edge_case_values() {
-        // Test with very small focal length
+        // Test with very small focal length.
         let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
         let tiny_focal_length = MillimeterUnit::new(8.0); // Very wide angle
 
@@ -650,7 +654,7 @@ mod tests {
             epsilon = 1e-10
         );
 
-        // Test with very large focal length
+        // Test with very large focal length.
         let large_focal_length = MillimeterUnit::new(800.0); // Super telephoto
         let intrinsics_tele = CameraIntrinsics::from_physical_parameters(
             large_focal_length,
@@ -670,11 +674,11 @@ mod tests {
             epsilon = 1e-10
         );
 
-        // Test with extreme lens center positions
+        // Test with extreme lens center positions.
         let extreme_center = CameraIntrinsics::from_physical_parameters(
             MillimeterUnit::new(50.0),
-            MillimeterUnit::new(18.0), // Far right edge
-            MillimeterUnit::new(-12.0), // Bottom edge
+            MillimeterUnit::new(18.0), // Far right edge.
+            MillimeterUnit::new(-12.0), // Bottom edge.
             film_back,
         );
 
@@ -692,7 +696,7 @@ mod tests {
 
     #[test]
     fn test_fov_calculations() {
-        // Test with 50mm lens on full-frame 35mm sensor
+        // Test with 50mm lens on full-frame 35mm sensor.
         let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
         let focal_length = MillimeterUnit::new(50.0);
         let intrinsics =
@@ -732,7 +736,7 @@ mod tests {
             epsilon = 1e-8
         );
 
-        // Test diagonal FoV
+        // Test diagonal FoV.
         let diagonal_mm: f64 = (36.0_f64.powi(2) + 24.0_f64.powi(2)).sqrt();
         let expected_diagonal_fov_rad: f64 =
             2.0_f64 * (diagonal_mm / (2.0_f64 * 50.0_f64)).atan();
@@ -746,7 +750,7 @@ mod tests {
 
     #[test]
     fn test_fov_validation_sta_dataset() {
-        // Validate the FoV for STA test dataset
+        // Validate the FoV for STA test dataset.
         let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
         let focal_length = MillimeterUnit::new(41.6);
         let intrinsics =
@@ -754,7 +758,6 @@ mod tests {
 
         let horizontal_fov_deg = intrinsics.horizontal_fov_degrees();
 
-        // Should be approximately 46.8 degrees (not the 45° claimed in comments)
         assert_relative_eq!(horizontal_fov_deg, 46.8, epsilon = 0.1);
         println!(
             "STA dataset: {}mm focal length = {:.1}° horizontal FoV",
@@ -764,7 +767,7 @@ mod tests {
 
     #[test]
     fn test_fov_validation_operahouse_dataset() {
-        // Validate the FoV for Opera House test dataset
+        // Validate the FoV for Opera House test dataset.
         let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
         let focal_length = MillimeterUnit::new(91.0);
         let intrinsics =
@@ -772,7 +775,6 @@ mod tests {
 
         let horizontal_fov_deg = intrinsics.horizontal_fov_degrees();
 
-        // Should be approximately 22.4 degrees (close to the 22° claimed in comments)
         assert_relative_eq!(horizontal_fov_deg, 22.4, epsilon = 0.1);
         println!(
             "Opera House dataset: {}mm focal length = {:.1}° horizontal FoV",
@@ -782,7 +784,7 @@ mod tests {
 
     #[test]
     fn test_aspect_ratio_calculation() {
-        // Test aspect ratio calculation
+        // Test aspect ratio calculation.
         let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
         let focal_length = MillimeterUnit::new(50.0);
         let intrinsics =
@@ -790,7 +792,7 @@ mod tests {
 
         assert_relative_eq!(intrinsics.aspect_ratio(), 1.5, epsilon = 1e-10);
 
-        // Test with APS-C sensor
+        // Test with APS-C sensor.
         let film_back_aps_c = CameraFilmBack::from_millimeters(22.3, 14.9);
         let intrinsics_aps_c =
             CameraIntrinsics::from_centered_lens(focal_length, film_back_aps_c);
@@ -806,7 +808,7 @@ mod tests {
     fn test_common_lens_fov_values() {
         let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
 
-        // Test known lens focal lengths and their approximate FoV values
+        // Test known lens focal lengths and their approximate FoV values.
         let test_cases = [
             (14.0, 104.3), // Ultra wide angle.
             (24.0, 73.7),  // Wide angle.
@@ -829,7 +831,7 @@ mod tests {
                 epsilon = 0.2
             );
 
-            // Additional assertion for better error messages
+            // Additional assertion for better error messages.
             if (actual_fov_deg - expected_fov_deg).abs() > 0.2 {
                 panic!(
                     "{}mm lens should have ~{:.1}° FoV, got {:.1}°",

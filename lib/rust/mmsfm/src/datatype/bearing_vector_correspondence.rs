@@ -152,7 +152,7 @@ mod tests {
         assert_relative_eq!(corr.camera_b.norm(), 1.0, epsilon = 1e-10);
 
         // Calculate expected normalized values for camera_a: (-0.5, -0.5, 1.0)
-        let length_a = (0.5_f64 * 0.5 + 0.5 * 0.5 + 1.0 * 1.0).sqrt(); // sqrt(1.5) ≈ 1.224744871
+        let length_a = (0.5_f64 * 0.5 + 0.5 * 0.5 + 1.0 * 1.0).sqrt(); // sqrt(1.5) ~= 1.224744871
         let expected_a_x = -0.5 / length_a;
         let expected_a_y = -0.5 / length_a;
         let expected_a_z = 1.0 / length_a;
@@ -162,7 +162,7 @@ mod tests {
         assert_relative_eq!(corr.camera_a.z, expected_a_z, epsilon = 1e-10);
 
         // Calculate expected normalized values for camera_b: (-0.4, -0.6, 1.0)
-        let length_b = (0.4_f64 * 0.4 + 0.6 * 0.6 + 1.0 * 1.0).sqrt(); // sqrt(1.52) ≈ 1.233287108
+        let length_b = (0.4_f64 * 0.4 + 0.6 * 0.6 + 1.0 * 1.0).sqrt(); // sqrt(1.52) ~= 1.233287108
         let expected_b_x = -0.4 / length_b;
         let expected_b_y = -0.6 / length_b;
         let expected_b_z = 1.0 / length_b;

@@ -684,22 +684,22 @@ mod tests {
 
     #[test]
     fn test_maya_coordinate_system_y_rotation() {
-        // Test that Maya +90° Y rotation makes camera look towards -X axis
+        // Test that Maya +90deg Y rotation makes camera look towards -X axis
         //
         // Reference for mathematical correctness with Maya:
         // ./lib/rust/mmscenegraph/src/math/transform.rs
 
-        // Maya camera rotated +90° around Y axis should look towards -X axis
+        // Maya camera rotated +90deg around Y axis should look towards -X axis
         // This follows the right-hand coordinate system where:
         // - +Y is up
         // - Camera normally looks down -Z
-        // - +90° Y rotation turns camera to look down -X
+        // - +90deg Y rotation turns camera to look down -X
 
-        // Create rotation matrix for +90° Y rotation using Maya conventions
+        // Create rotation matrix for +90deg Y rotation using Maya conventions
         let ry_rad = 90.0 * std::f64::consts::PI / 180.0;
         let (sin_ry, cos_ry) = ry_rad.sin_cos();
 
-        // Maya object transform for +90° Y rotation
+        // Maya object transform for +90deg Y rotation
         let maya_object_rotation = Matrix3::new(
             cos_ry, 0.0, sin_ry, // [0, 0, 1]
             0.0, 1.0, 0.0, // [0, 1, 0]
@@ -711,18 +711,18 @@ mod tests {
         let center = Point3::new(0.0, 0.0, 0.0);
         let pose = CameraPose::new(camera_rotation, center);
 
-        // Point at -X should be in front of +90° Y-rotated camera
+        // Point at -X should be in front of +90deg Y-rotated camera
         let point_in_front = Point3::new(-5.0, 0.0, 0.0);
         assert!(
             pose.is_point_in_front(&point_in_front),
-            "Maya camera rotated +90° Y should look towards -X axis"
+            "Maya camera rotated +90deg Y should look towards -X axis"
         );
 
-        // Point at +X should be behind +90° Y-rotated camera
+        // Point at +X should be behind +90deg Y-rotated camera
         let point_behind = Point3::new(5.0, 0.0, 0.0);
         assert!(
             !pose.is_point_in_front(&point_behind),
-            "Point at +X should be behind +90° Y-rotated Maya camera"
+            "Point at +X should be behind +90deg Y-rotated Maya camera"
         );
     }
 
@@ -756,13 +756,13 @@ mod tests {
 
     #[test]
     fn test_apply_transform_to_vector_with_y_rotation() {
-        // Test vector transformation with +90° Y rotation
-        // Camera rotated +90° Y looks down -X axis in world space
+        // Test vector transformation with +90deg Y rotation
+        // Camera rotated +90deg Y looks down -X axis in world space
 
         let ry_rad = 90.0 * std::f64::consts::PI / 180.0;
         let (sin_ry, cos_ry) = ry_rad.sin_cos();
 
-        // Maya object transform for +90° Y rotation
+        // Maya object transform for +90deg Y rotation
         let maya_object_rotation = Matrix3::new(
             cos_ry, 0.0, sin_ry, 0.0, 1.0, 0.0, -sin_ry, 0.0, cos_ry,
         );
@@ -776,7 +776,7 @@ mod tests {
         let camera_forward = Vector3::new(0.0, 0.0, -1.0);
         let world_forward = pose.apply_transform_to_vector(&camera_forward);
 
-        // After +90° Y rotation, camera -Z points to world -X
+        // After +90deg Y rotation, camera -Z points to world -X
         assert_relative_eq!(
             world_forward,
             Vector3::new(-1.0, 0.0, 0.0),
@@ -787,7 +787,7 @@ mod tests {
         let camera_right = Vector3::new(1.0, 0.0, 0.0);
         let world_right = pose.apply_transform_to_vector(&camera_right);
 
-        // After +90° Y rotation, camera +X points to world -Z
+        // After +90deg Y rotation, camera +X points to world -Z
         assert_relative_eq!(
             world_right,
             Vector3::new(0.0, 0.0, -1.0),
@@ -825,10 +825,10 @@ mod tests {
         // Start with a world vector
         let world_vector = Vector3::new(1.0, 2.0, 3.0);
 
-        // Transform world → camera using rotation directly
+        // Transform world -> camera using rotation directly
         let camera_vector = pose.rotation() * world_vector;
 
-        // Transform camera → world using our method
+        // Transform camera -> world using our method
         let world_vector_reconstructed =
             pose.apply_transform_to_vector(&camera_vector);
 
@@ -869,13 +869,13 @@ mod tests {
 
     #[test]
     fn test_transform_vector_to_camera_with_y_rotation() {
-        // Test vector transformation with +90° Y rotation
-        // Camera rotated +90° Y looks down -X axis in world space
+        // Test vector transformation with +90deg Y rotation
+        // Camera rotated +90deg Y looks down -X axis in world space
 
         let ry_rad = 90.0 * std::f64::consts::PI / 180.0;
         let (sin_ry, cos_ry) = ry_rad.sin_cos();
 
-        // Maya object transform for +90° Y rotation
+        // Maya object transform for +90deg Y rotation
         let maya_object_rotation = Matrix3::new(
             cos_ry, 0.0, sin_ry, 0.0, 1.0, 0.0, -sin_ry, 0.0, cos_ry,
         );
@@ -885,7 +885,7 @@ mod tests {
         let center = Point3::origin();
         let pose = CameraPose::new(camera_rotation, center);
 
-        // World -X direction (where camera is looking after +90° Y rotation)
+        // World -X direction (where camera is looking after +90deg Y rotation)
         let world_forward = Vector3::new(-1.0, 0.0, 0.0);
         let camera_direction = pose.transform_vector_to_camera(&world_forward);
 
@@ -939,11 +939,11 @@ mod tests {
         // Start with a world vector
         let world_vector_original = Vector3::new(1.0, 2.0, 3.0);
 
-        // Transform world → camera
+        // Transform world -> camera
         let camera_vector =
             pose.transform_vector_to_camera(&world_vector_original);
 
-        // Transform camera → world
+        // Transform camera -> world
         let world_vector_reconstructed =
             pose.apply_transform_to_vector(&camera_vector);
 
@@ -957,7 +957,7 @@ mod tests {
 
     #[test]
     fn test_vector_transformation_roundtrip() {
-        // Test complete roundtrip: world → camera → world and camera → world → camera
+        // Test complete roundtrip: world -> camera -> world and camera -> world -> camera
 
         let ry_rad = 60.0 * std::f64::consts::PI / 180.0;
         let (sin_ry, cos_ry) = ry_rad.sin_cos();

@@ -18,6 +18,7 @@
 // ====================================================================
 //
 
+pub mod bundle_writer;
 pub mod json_common;
 pub mod json_parser;
 pub mod json_writer;

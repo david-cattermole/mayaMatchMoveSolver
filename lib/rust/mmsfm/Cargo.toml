@@ -1,0 +1,50 @@
+[package]
+name = "mmsfm_rust"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lib]
+name = "mmsfm_rust"
+path = "./src/lib.rs"
+crate-type = ["lib"]
+
+[features]
+default = ["visualization"]
+visualization = ["dep:plotters"]
+
+[dependencies]
+anyhow = { workspace = true }
+log = { workspace = true }
+mmcore = { package = "mmcore_rust", path = "../mmcore" }
+mmio = { package = "mmio_rust", path = "../mmio" }
+mmoptimise = { package = "mmoptimise_rust", path = "../mmoptimise" }
+nalgebra = { workspace = true }
+num-traits = { workspace = true }
+thiserror = { workspace = true }
+plotters = { workspace = true, optional = true }
+rayon = { workspace = true }
+
+[dev-dependencies]
+approx = { workspace = true }
+criterion = { workspace = true }
+rayon = { workspace = true }
+
+[lints.clippy]
+# Complexity checks.
+too_many_arguments = "warn"
+type_complexity = "warn"
+
+# Performance.
+unnecessary_wraps = "warn"
+redundant_clone = "warn"
+
+# Correctness.
+needless_borrow = "warn"
+useless_conversion = "warn"
+
+# Style.
+manual_memcpy = "warn"
+clone_on_copy = "warn"
+ptr_arg = "warn"

@@ -12,6 +12,7 @@ members = [
     "lib/rust/mmio",
     "lib/rust/mmoptimise",
     "lib/rust/mmscenegraph",
+    "lib/rust/mmsfm",
 ]
 
 [workspace.package]
@@ -64,6 +65,7 @@ mmlens_rust = { path = "./lib/rust/mmlens" }
 mmoptimise_rust = { path = "./lib/rust/mmoptimise" }
 mmscenegraph_cppbind = { path = "./lib/cppbind/mmscenegraph" }
 mmscenegraph_rust = { path = "./lib/rust/mmscenegraph/" }
+mmsfm_rust = { path = "./lib/rust/mmsfm" }
 
 [profile.release]
 opt-level = 2

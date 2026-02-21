@@ -22,6 +22,7 @@ mod caching_evaluator;
 mod differential_evolution;
 mod evaluator;
 mod least_squares_evaluator;
+mod uniform_grid_search;
 
 pub use caching_evaluator::CachingEvaluator;
 pub use differential_evolution::{
@@ -31,3 +32,6 @@ pub use differential_evolution::{
 };
 pub use evaluator::Evaluator;
 pub use least_squares_evaluator::LeastSquaresEvaluator;
+pub use uniform_grid_search::{
+    UniformGridSearch, UniformGridSearchConfig, UniformGridSearchError,
+};

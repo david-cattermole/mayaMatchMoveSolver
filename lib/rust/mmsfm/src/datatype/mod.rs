@@ -18,23 +18,9 @@
 // ====================================================================
 //
 
-//! # mmsfm - Structure from Motion for Maya
+//! Type-safe data types for different numeric types and coordinate systems.
 //!
-//! This crate provides Structure from Motion (SfM) algorithms and utilities
-//! designed for integration with Autodesk Maya.
-
-#![allow(non_snake_case)]
-
-/// Debug print macro that expands to `if DEBUG { eprintln!(...) }`.
-///
-/// Requires a `const DEBUG: bool` in the calling scope. When `DEBUG`
-/// is `false`, the compiler optimizes the branch away entirely.
-macro_rules! mm_debug_eprintln {
-    ($($arg:tt)*) => {
-        if DEBUG {
-            eprintln!($($arg)*);
-        }
-    };
-}
-
-pub mod datatype;
+//! This module provides zero-cost wrapper types that prevent accidental mixing
+//! of different units while maintaining full runtime performance. Each unit type
+//! wraps a numeric value (f32 or f64) and provides safe conversion methods
+//! between compatible units.

@@ -312,13 +312,14 @@ Add the new lens model header into `mmlens.h`.
 
 Lens Parameter I/O is used to read text files and parse them into
 
-The `lens_io.rs` file must be updated to support the new 'example'
-lens model. This will include finding and adding code to each `match`
+The `lens_io.rs` / `nuke_lens_common.rs` file must be updated to support the new
+'example' lens model. This will include finding and adding code to each `match`
 statement.
 
 Edit files:
 ```
 lib/cppbind/mmlens/src/lens_io.rs
+lib/rust/mmio/src/nuke_lens_common.rs
 ```
 
 ## mmSolver Core Solver

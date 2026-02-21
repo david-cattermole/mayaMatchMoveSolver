@@ -29,4 +29,7 @@ pub mod mmcamera_writer;
 pub mod mmresiduals_common;
 pub mod mmresiduals_writer;
 pub mod mmsettings_reader;
+pub mod nuke_lens_common;
+pub mod nuke_lens_reader;
+pub mod nuke_lens_writer;
 pub mod uvtrack_reader;

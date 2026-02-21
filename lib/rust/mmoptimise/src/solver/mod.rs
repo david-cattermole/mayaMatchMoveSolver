@@ -26,4 +26,5 @@ pub mod common;
 pub mod gauss_newton;
 pub mod levenberg_marquardt;
 pub mod powell_dogleg;
+pub mod reporting;
 pub mod test_problems;

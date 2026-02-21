@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2025 David Cattermole.
+// Copyright (C) 2025, 2026 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -160,6 +160,53 @@ pub enum ParameterScalingMode {
     Auto,
     /// User-provided scaling factors for fine-tuned control.
     Manual,
+}
+
+/// Runtime control for solver diagnostic output.
+///
+/// Controls diagnostic information printed during optimization.
+/// Only takes effect when reporting is compile-time enabled via ENABLE_REPORTING.
+///
+/// ## Output Modes
+///
+/// | Mode       | Iteration Table | Problem Summary | Timing Breakdown | Final Summary |
+/// |------------|----------------|-----------------|------------------|---------------|
+/// | Silent     | No             | No              | No               | No            |
+/// | Iterations | Yes            | No              | No               | No            |
+/// | Summary    | Yes            | Yes             | No               | Yes           |
+/// | Full       | Yes            | Yes             | Yes              | Yes           |
+///
+/// ## Examples
+///
+/// ```rust
+/// use mmoptimise_rust::solver::common::ReportingMode;
+/// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtConfig;
+///
+/// // Most common: iteration progress only
+/// let config = LevenbergMarquardtConfig {
+///     reporting_mode: ReportingMode::Iterations,
+///     ..Default::default()
+/// };
+///
+/// // Full diagnostics for debugging
+/// let debug_config = LevenbergMarquardtConfig {
+///     reporting_mode: ReportingMode::Full,
+///     ..Default::default()
+/// };
+/// ```
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ReportingMode {
+    /// No output - completely silent
+    Silent,
+
+    /// Iteration table only (default - shows convergence progress)
+    Iterations,
+
+    /// Problem summary + iterations + final summary
+    Summary,
+
+    /// Everything: summary, iterations, timing breakdown, final summary
+    Full,
 }
 
 impl SolverStatus {

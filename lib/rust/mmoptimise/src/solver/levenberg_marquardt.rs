@@ -20,9 +20,18 @@
 
 use crate::solver::common::*;
 use anyhow::Result;
-use log::{debug, info, warn};
 use mmcore::dual::Dual;
 use nalgebra::{DMatrix, DVector};
+
+use crate::solver::reporting::{
+    print_final_summary, print_iteration, print_iteration_header,
+    print_problem_summary, print_timing_breakdown, IterationMetrics,
+    ProblemSummary, SolverTimings,
+};
+use std::time::Instant;
+
+const ENABLE_REPORTING: bool = false;
+const DEBUG: bool = false;
 
 /// Configuration parameters for the Levenberg-Marquardt solver.
 ///
@@ -117,21 +126,24 @@ pub struct LevenbergMarquardtConfig {
     /// threshold. Used in conjunction with relative improvements to determine
     /// convergence.
     pub absolute_cost_tolerance: f64,
+    /// Reporting mode - controls diagnostic output level.
+    pub reporting_mode: ReportingMode,
 }
 
 impl Default for LevenbergMarquardtConfig {
     fn default() -> Self {
         Self {
-            function_tolerance: 1e-6,
-            parameter_tolerance: 1e-6,
-            gradient_tolerance: 1e-6,
+            function_tolerance: 1e-10, // Tighter tolerance for better convergence.
+            parameter_tolerance: 1e-10,
+            gradient_tolerance: 1e-10,
             max_iterations: 300,
             max_function_evaluations: 3000,
             initial_trust_factor: 100.0,
             scaling_mode: ParameterScalingMode::Auto,
             min_step_quality: 1e-4,
             epsilon_factor: 1.0,
-            absolute_cost_tolerance: 1e-6,
+            absolute_cost_tolerance: 1e-10, // Also tighten absolute tolerance.
+            reporting_mode: ReportingMode::Full,
         }
     }
 }
@@ -420,7 +432,6 @@ impl LevenbergMarquardtWorkspace {
 /// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtWorkspace;
 /// use mmoptimise_rust::solver::test_problems::RosenbrockProblem;
 ///
-/// // Enable verbose logging for iteration details
 /// let config = LevenbergMarquardtConfig {
 ///     max_iterations: 10,  // Limit iterations for testing.
 ///     ..Default::default()
@@ -507,10 +518,12 @@ impl LevenbergMarquardtSolver {
             for i in 0..m {
                 let jacobian_entry = dual_residuals[i].dual;
                 if !jacobian_entry.is_finite() {
-                    warn!(
-                        "Non-finite Jacobian entry at ({}, {}): {}",
-                        i, j, jacobian_entry
-                    );
+                    if DEBUG {
+                        eprintln!(
+                            "Non-finite Jacobian entry at ({}, {}): {}",
+                            i, j, jacobian_entry
+                        );
+                    }
                     workspace.jacobian[(i, j)] = 0.0;
                 } else {
                     workspace.jacobian[(i, j)] = jacobian_entry;
@@ -696,27 +709,78 @@ impl LevenbergMarquardtSolver {
         workspace: &mut LevenbergMarquardtWorkspace,
     ) -> Result<OptimisationResult> {
         let n = workspace.n;
-        let _m = workspace.m;
+        let m = workspace.m;
         let machine_epsilon = f64::EPSILON * self.config.epsilon_factor;
 
         // Initialize counters.
         let mut nfev = 0;
         let mut njev = 0;
-        let mut iteration;
+        let mut iteration = 0;
 
         // Initialize trust region parameters.
         let mut lambda = 0.0;
         let mut delta = 0.0;
         let mut best_cost = f64::INFINITY;
 
+        // Initialize timing infrastructure.
+        let mut timings = if ENABLE_REPORTING
+            && self.config.reporting_mode != ReportingMode::Silent
+        {
+            Some(SolverTimings::new())
+        } else {
+            None
+        };
+
         // Initial function evaluation.
+        let residual_start = if ENABLE_REPORTING
+            && self.config.reporting_mode != ReportingMode::Silent
+        {
+            Some(Instant::now())
+        } else {
+            None
+        };
+
         problem.residuals(
             workspace.parameters.as_slice(),
             workspace.residuals.as_mut_slice(),
         )?;
         nfev += 1;
+
+        if ENABLE_REPORTING
+            && self.config.reporting_mode != ReportingMode::Silent
+        {
+            if let (Some(ref mut t), Some(start)) =
+                (&mut timings, residual_start)
+            {
+                t.record_residual_time(start);
+            }
+        }
+
         let mut current_cost = self.compute_cost(&workspace.residuals);
-        let mut previous_cost = current_cost;
+
+        let initial_cost_for_summary = current_cost;
+        let mut previous_cost;
+
+        // Print problem summary and iteration header.
+        if ENABLE_REPORTING {
+            match self.config.reporting_mode {
+                ReportingMode::Silent => {}
+                ReportingMode::Iterations => {
+                    print_iteration_header();
+                }
+                ReportingMode::Summary | ReportingMode::Full => {
+                    print_problem_summary(&ProblemSummary {
+                        parameter_blocks: 1,
+                        parameters: n,
+                        residuals: m,
+                        solver_type: "TRUST_REGION (Levenberg-Marquardt)",
+                        linear_solver: "QR_DECOMPOSITION",
+                        threads: 1,
+                    });
+                    print_iteration_header();
+                }
+            }
+        }
 
         if !current_cost.is_finite() {
             return Err(OptimisationError::SolverError(
@@ -736,12 +800,47 @@ impl LevenbergMarquardtSolver {
         for iteration_count in 0..self.config.max_iterations {
             iteration = iteration_count;
 
+            // Start timing this iteration.
+            if ENABLE_REPORTING
+                && self.config.reporting_mode != ReportingMode::Silent
+            {
+                if let Some(ref mut t) = timings {
+                    t.start_iteration();
+                }
             }
+
+            // Track cost from previous iteration for cost_change calculation.
+            previous_cost = current_cost;
 
             // Check for absolute cost convergence (only for very
             // small costs).
             if current_cost < machine_epsilon {
-                debug!("Converged: cost near zero");
+                // Print final summary.
+                if ENABLE_REPORTING {
+                    if let Some(ref timings) = timings {
+                        match self.config.reporting_mode {
+                            ReportingMode::Silent
+                            | ReportingMode::Iterations => {}
+                            ReportingMode::Summary => {
+                                print_final_summary(
+                                    initial_cost_for_summary,
+                                    current_cost,
+                                    iteration,
+                                    "Converged: cost near zero",
+                                );
+                            }
+                            ReportingMode::Full => {
+                                print_timing_breakdown(timings);
+                                print_final_summary(
+                                    initial_cost_for_summary,
+                                    current_cost,
+                                    iteration,
+                                    "Converged: cost near zero",
+                                );
+                            }
+                        }
+                    }
+                }
                 return Ok(OptimisationResult {
                     status: SolverStatus::Success,
                     parameters: workspace.parameters.as_slice().to_vec(),
@@ -759,14 +858,35 @@ impl LevenbergMarquardtSolver {
             if iteration > 0 && previous_cost > current_cost {
                 let relative_improvement =
                     (previous_cost - current_cost) / previous_cost.max(1.0);
-                // Only check convergence if improvement is small AND
-                // cost is reasonably small.
                 if relative_improvement < self.config.function_tolerance
                     && current_cost < self.config.absolute_cost_tolerance
                 {
-                    debug!(
-                        "Converged: relative cost improvement below tolerance"
-                    );
+                    // Print final summary.
+                    if ENABLE_REPORTING {
+                        if let Some(ref timings) = timings {
+                            match self.config.reporting_mode {
+                                ReportingMode::Silent
+                                | ReportingMode::Iterations => {}
+                                ReportingMode::Summary => {
+                                    print_final_summary(
+                                        initial_cost_for_summary,
+                                        current_cost,
+                                        iteration,
+                                        "Converged: relative cost improvement below tolerance",
+                                    );
+                                }
+                                ReportingMode::Full => {
+                                    print_timing_breakdown(timings);
+                                    print_final_summary(
+                                        initial_cost_for_summary,
+                                        current_cost,
+                                        iteration,
+                                        "Converged: relative cost improvement below tolerance",
+                                    );
+                                }
+                            }
+                        }
+                    }
                     return Ok(OptimisationResult {
                         status: SolverStatus::ToleranceReached,
                         parameters: workspace.parameters.as_slice().to_vec(),
@@ -775,18 +895,55 @@ impl LevenbergMarquardtSolver {
                         iterations: iteration,
                         function_evaluations: nfev,
                         jacobian_evaluations: njev,
-                        message: "Converged: relative cost improvement below tolerance",
+                        message:
+                            "Converged: relative cost improvement below tolerance",
                     });
                 }
             }
 
             // Compute Jacobian.
+            let jacobian_start = if ENABLE_REPORTING
+                && self.config.reporting_mode != ReportingMode::Silent
+            {
+                Some(Instant::now())
+            } else {
+                None
+            };
+
             let jac_evals = self.compute_jacobian(problem, workspace)?;
             nfev += jac_evals;
             njev += 1;
 
+            if ENABLE_REPORTING
+                && self.config.reporting_mode != ReportingMode::Silent
+            {
+                if let (Some(ref mut t), Some(start)) =
+                    (&mut timings, jacobian_start)
+                {
+                    t.record_jacobian_time(start);
+                }
+            }
+
             // Perform QR decomposition.
+            let linear_solver_start = if ENABLE_REPORTING
+                && self.config.reporting_mode != ReportingMode::Silent
+            {
+                Some(Instant::now())
+            } else {
+                None
+            };
+
             self.qr_decomposition(workspace)?;
+
+            if ENABLE_REPORTING
+                && self.config.reporting_mode != ReportingMode::Silent
+            {
+                if let (Some(ref mut t), Some(start)) =
+                    (&mut timings, linear_solver_start)
+                {
+                    t.record_linear_solver_time(start);
+                }
+            }
 
             // Update scaling on first iteration or if requested.
             if iteration == 0
@@ -807,8 +964,6 @@ impl LevenbergMarquardtSolver {
 
                 delta = self.config.initial_trust_factor * scaled_x_norm;
                 if delta < machine_epsilon {
-                    // If scaled parameters have zero norm, use the
-                    // factor itself.
                     delta = self.config.initial_trust_factor;
                 }
             }
@@ -816,7 +971,32 @@ impl LevenbergMarquardtSolver {
             // Compute gradient norm for convergence check.
             let gradient_norm = workspace.qtf.norm() / current_cost.max(1.0);
             if gradient_norm < self.config.gradient_tolerance {
-                debug!("Converged: gradient norm below tolerance");
+                // Print final summary.
+                if ENABLE_REPORTING {
+                    if let Some(ref timings) = timings {
+                        match self.config.reporting_mode {
+                            ReportingMode::Silent
+                            | ReportingMode::Iterations => {}
+                            ReportingMode::Summary => {
+                                print_final_summary(
+                                    initial_cost_for_summary,
+                                    current_cost,
+                                    iteration,
+                                    "Converged: gradient norm below tolerance",
+                                );
+                            }
+                            ReportingMode::Full => {
+                                print_timing_breakdown(timings);
+                                print_final_summary(
+                                    initial_cost_for_summary,
+                                    current_cost,
+                                    iteration,
+                                    "Converged: gradient norm below tolerance",
+                                );
+                            }
+                        }
+                    }
+                }
                 return Ok(OptimisationResult {
                     status: SolverStatus::SmallGradient,
                     parameters: workspace.parameters.as_slice().to_vec(),
@@ -850,31 +1030,42 @@ impl LevenbergMarquardtSolver {
                     .sum::<f64>()
                     .sqrt();
 
-                // On the first iteration, adjust the initial step
-                // bound to prevent an overly optimistic trust region.
                 if iteration == 0 {
                     delta = delta.min(scaled_step_norm);
                 }
 
                 // Compute trial point.
-                for i in 0..n {
-                    workspace.trial_parameters[i] =
-                        workspace.parameters[i] + workspace.step[i];
-                }
+                workspace.trial_parameters.copy_from(&workspace.parameters);
+                workspace.trial_parameters += &workspace.step;
 
                 // Evaluate at trial point.
+                let residual_start = if ENABLE_REPORTING
+                    && self.config.reporting_mode != ReportingMode::Silent
+                {
+                    Some(Instant::now())
+                } else {
+                    None
+                };
+
                 problem.residuals(
                     workspace.trial_parameters.as_slice(),
                     workspace.trial_residuals.as_mut_slice(),
                 )?;
                 nfev += 1;
 
-                let trial_cost = self.compute_cost(&workspace.trial_residuals);
+                if ENABLE_REPORTING
+                    && self.config.reporting_mode != ReportingMode::Silent
+                {
+                    if let (Some(ref mut t), Some(start)) =
+                        (&mut timings, residual_start)
+                    {
+                        t.record_residual_time(start);
+                    }
+                }
 
-                // Compute actual reduction.
+                let trial_cost = self.compute_cost(&workspace.trial_residuals);
                 let actual_reduction = current_cost - trial_cost;
 
-                // Compute step quality ratio (rho).
                 let ratio = if predicted_reduction.abs() > machine_epsilon {
                     actual_reduction / predicted_reduction
                 } else if predicted_reduction == 0.0 && actual_reduction == 0.0
@@ -886,7 +1077,6 @@ impl LevenbergMarquardtSolver {
 
                 // Update trust region based on step quality.
                 if ratio < 0.25 {
-                    // Poor step: reduce trust region.
                     let mut temp = 0.5;
                     if actual_reduction < 0.0 {
                         temp = 0.5 * predicted_reduction
@@ -896,22 +1086,19 @@ impl LevenbergMarquardtSolver {
                     delta *= temp;
                     lambda /= temp;
                 } else if lambda == 0.0 || ratio > 0.75 {
-                    // Good step: possibly expand trust region.
-                    //
-                    // Use the scaled step norm for consistency.
                     delta = (2.0 * scaled_step_norm).max(delta);
                     lambda *= 0.5;
                 }
 
                 // Accept or reject step criteria.
-                if ratio > self.config.min_step_quality {
-                    // Accept step.
+                if ratio > self.config.min_step_quality
+                    && trial_cost.is_finite()
+                {
+                    step_accepted = true;
                     workspace.parameters.copy_from(&workspace.trial_parameters);
                     workspace.residuals.copy_from(&workspace.trial_residuals);
                     current_cost = trial_cost;
-                    step_accepted = true;
 
-                    // Update best solution.
                     if current_cost < best_cost {
                         best_cost = current_cost;
                         workspace
@@ -922,14 +1109,37 @@ impl LevenbergMarquardtSolver {
                             .copy_from(&workspace.residuals);
                     }
 
-                    // Check for convergence.
                     let step_norm = workspace.step.norm();
                     let param_norm = workspace.parameters.norm().max(1.0);
 
-                    // Parameter change convergence.
                     if step_norm < self.config.parameter_tolerance * param_norm
                     {
-                        debug!("Converged: step size below tolerance");
+                        // Print final summary.
+                        if ENABLE_REPORTING {
+                            if let Some(ref timings) = timings {
+                                match self.config.reporting_mode {
+                                    ReportingMode::Silent
+                                    | ReportingMode::Iterations => {}
+                                    ReportingMode::Summary => {
+                                        print_final_summary(
+                                            initial_cost_for_summary,
+                                            current_cost,
+                                            iteration,
+                                            "Converged: step size below tolerance",
+                                        );
+                                    }
+                                    ReportingMode::Full => {
+                                        print_timing_breakdown(timings);
+                                        print_final_summary(
+                                            initial_cost_for_summary,
+                                            current_cost,
+                                            iteration,
+                                            "Converged: step size below tolerance",
+                                        );
+                                    }
+                                }
+                            }
+                        }
                         return Ok(OptimisationResult {
                             status: SolverStatus::SmallStepSize,
                             parameters: workspace
@@ -945,15 +1155,38 @@ impl LevenbergMarquardtSolver {
                         });
                     }
 
-                    // Cost reduction convergence (only check if cost
-                    // is small enough).
                     if current_cost < self.config.absolute_cost_tolerance
                         && actual_reduction
                             < self.config.function_tolerance * current_cost
                         && predicted_reduction
                             < self.config.function_tolerance * current_cost
                     {
-                        debug!("Converged: small cost reduction");
+                        // Print final summary.
+                        if ENABLE_REPORTING {
+                            if let Some(ref timings) = timings {
+                                match self.config.reporting_mode {
+                                    ReportingMode::Silent
+                                    | ReportingMode::Iterations => {}
+                                    ReportingMode::Summary => {
+                                        print_final_summary(
+                                            initial_cost_for_summary,
+                                            current_cost,
+                                            iteration,
+                                            "Converged: small cost reduction",
+                                        );
+                                    }
+                                    ReportingMode::Full => {
+                                        print_timing_breakdown(timings);
+                                        print_final_summary(
+                                            initial_cost_for_summary,
+                                            current_cost,
+                                            iteration,
+                                            "Converged: small cost reduction",
+                                        );
+                                    }
+                                }
+                            }
+                        }
                         return Ok(OptimisationResult {
                             status: SolverStatus::SmallCostReduction,
                             parameters: workspace
@@ -968,17 +1201,68 @@ impl LevenbergMarquardtSolver {
                             message: "Converged: small cost reduction",
                         });
                     }
+
+                    // Print iteration info (only on accepted steps).
+                    if ENABLE_REPORTING
+                        && self.config.reporting_mode != ReportingMode::Silent
+                    {
+                        if let Some(ref mut t) = timings {
+                            t.finish_iteration();
+
+                            let step_norm = workspace.step.norm();
+                            let cost_change = previous_cost - current_cost;
+
+                            print_iteration(
+                                &IterationMetrics {
+                                    iteration,
+                                    cost: current_cost,
+                                    cost_change,
+                                    gradient_norm,
+                                    step_norm,
+                                    tr_ratio: ratio,
+                                    tr_radius: delta,
+                                    ls_iter: 0,
+                                    iter_time_seconds: t.iteration_elapsed(),
+                                    total_time_seconds: t.total_time_seconds,
+                                },
+                                true, // has_trust_region = true
+                            );
+                        }
+                    }
                 } else {
-                    // Reject step, increase lambda for more damping.
                     lambda = lambda.max(machine_epsilon) * 2.0;
                     if lambda > 1e12 {
-                        // Lambda too large, likely at a difficult point.
                         break;
                     }
                 }
 
-                // Check function evaluation limit.
                 if nfev >= self.config.max_function_evaluations {
+                    // Print final summary.
+                    if ENABLE_REPORTING {
+                        if let Some(ref timings) = timings {
+                            match self.config.reporting_mode {
+                                ReportingMode::Silent
+                                | ReportingMode::Iterations => {}
+                                ReportingMode::Summary => {
+                                    print_final_summary(
+                                        initial_cost_for_summary,
+                                        best_cost,
+                                        iteration,
+                                        "Function evaluation limit exceeded",
+                                    );
+                                }
+                                ReportingMode::Full => {
+                                    print_timing_breakdown(timings);
+                                    print_final_summary(
+                                        initial_cost_for_summary,
+                                        best_cost,
+                                        iteration,
+                                        "Function evaluation limit exceeded",
+                                    );
+                                }
+                            }
+                        }
+                    }
                     return Ok(OptimisationResult {
                         status: SolverStatus::FunctionCallsExceeded,
                         parameters: workspace
@@ -996,11 +1280,34 @@ impl LevenbergMarquardtSolver {
             }
 
             if !step_accepted {
-                // Failed to make progress.
-                warn!("Failed to make progress at iteration {}", iteration);
-                // Try to continue with reduced expectations.
                 delta *= 0.5;
                 if delta < machine_epsilon {
+                    // Print final summary.
+                    if ENABLE_REPORTING {
+                        if let Some(ref timings) = timings {
+                            match self.config.reporting_mode {
+                                ReportingMode::Silent
+                                | ReportingMode::Iterations => {}
+                                ReportingMode::Summary => {
+                                    print_final_summary(
+                                        initial_cost_for_summary,
+                                        best_cost,
+                                        iteration,
+                                        "Trust region became too small",
+                                    );
+                                }
+                                ReportingMode::Full => {
+                                    print_timing_breakdown(timings);
+                                    print_final_summary(
+                                        initial_cost_for_summary,
+                                        best_cost,
+                                        iteration,
+                                        "Trust region became too small",
+                                    );
+                                }
+                            }
+                        }
+                    }
                     return Ok(OptimisationResult {
                         status: SolverStatus::SmallStepSize,
                         parameters: workspace
@@ -1016,12 +1323,34 @@ impl LevenbergMarquardtSolver {
                     });
                 }
             }
-
-            // Update previous cost for next iteration.
-            previous_cost = current_cost;
         }
 
-        // Maximum iterations reached.
+        // Print final summary.
+        if ENABLE_REPORTING {
+            if let Some(ref timings) = timings {
+                match self.config.reporting_mode {
+                    ReportingMode::Silent | ReportingMode::Iterations => {}
+                    ReportingMode::Summary => {
+                        print_final_summary(
+                            initial_cost_for_summary,
+                            best_cost,
+                            iteration,
+                            "Maximum iterations reached",
+                        );
+                    }
+                    ReportingMode::Full => {
+                        print_timing_breakdown(timings);
+                        print_final_summary(
+                            initial_cost_for_summary,
+                            best_cost,
+                            iteration,
+                            "Maximum iterations reached",
+                        );
+                    }
+                }
+            }
+        }
+
         Ok(OptimisationResult {
             status: SolverStatus::MaxIterationsReached,
             parameters: workspace.best_parameters.as_slice().to_vec(),
@@ -1071,13 +1400,17 @@ mod tests {
         Mock3DProblem, RosenbrockProblem,
     };
     use approx::assert_relative_eq;
-    use num_traits::{Float, Zero};
-    use std::ops::{Add, Div, Mul, Sub};
+
+    fn test_config() -> LevenbergMarquardtConfig {
+        LevenbergMarquardtConfig {
+            ..Default::default()
+        }
+    }
 
     #[test]
     fn test_rosenbrock_from_origin() {
         let problem = RosenbrockProblem::new();
-        let solver = LevenbergMarquardtSolver::with_defaults();
+        let solver = LevenbergMarquardtSolver::new(test_config());
 
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
@@ -1238,7 +1571,7 @@ mod tests {
     #[test]
     fn test_solver_rosenbrock_from_origin() {
         let problem = RosenbrockProblem::new();
-        let solver = LevenbergMarquardtSolver::with_defaults();
+        let solver = LevenbergMarquardtSolver::new(test_config());
 
         // Start from origin - moderately difficult.
         let initial_parameters = vec![0.0, 0.0];
@@ -1360,7 +1693,7 @@ mod tests {
     fn test_solver_modified_rosenbrock() {
         // Test with different a and b values.
         let problem = RosenbrockProblem::with_parameters(2.0, 50.0);
-        let solver = LevenbergMarquardtSolver::with_defaults();
+        let solver = LevenbergMarquardtSolver::new(test_config());
 
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
@@ -1434,7 +1767,7 @@ mod tests {
     #[test]
     fn test_solver_near_minimum_start() {
         let problem = RosenbrockProblem::new();
-        let solver = LevenbergMarquardtSolver::with_defaults();
+        let solver = LevenbergMarquardtSolver::new(test_config());
 
         // Start very close to minimum.
         let initial_parameters = vec![0.999, 0.999];
@@ -1721,7 +2054,7 @@ mod tests {
     #[test]
     fn test_goldstein_price() {
         let problem = GoldsteinPriceFunction;
-        let solver = LevenbergMarquardtSolver::with_defaults();
+        let solver = LevenbergMarquardtSolver::new(test_config());
 
         // Test from multiple starting points as this function has multiple local minima
         let starting_points = vec![
@@ -1875,7 +2208,7 @@ mod tests {
         }
 
         // Test that reused workspace works with solver.
-        let solver = LevenbergMarquardtSolver::with_defaults();
+        let solver = LevenbergMarquardtSolver::new(test_config());
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         assert!(result.status.is_success());
@@ -1996,7 +2329,7 @@ mod tests {
             vec![-0.5, 2.5],
         ];
 
-        let solver = LevenbergMarquardtSolver::with_defaults();
+        let solver = LevenbergMarquardtSolver::new(test_config());
 
         for (i, start_point) in starting_points.iter().enumerate() {
             workspace.reuse_with(&problem, start_point).unwrap();

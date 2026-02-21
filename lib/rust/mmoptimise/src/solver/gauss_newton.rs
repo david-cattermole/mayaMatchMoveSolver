@@ -20,10 +20,18 @@
 
 use crate::solver::common::*;
 use anyhow::Result;
-use log::{debug, info, warn};
 use mmcore::dual::Dual;
 use nalgebra::{DMatrix, DVector};
 use num_traits::Float;
+
+use crate::solver::reporting::{
+    print_final_summary, print_iteration, print_iteration_header,
+    print_problem_summary, print_timing_breakdown, IterationMetrics,
+    ProblemSummary, SolverTimings,
+};
+use std::time::Instant;
+
+const DEBUG: bool = false;
 
 /// Workspace for the Gauss-Newton solver.
 ///
@@ -413,10 +421,12 @@ impl GaussNewtonSolver {
             for i in 0..m {
                 let jacobian_entry = dual_residuals[i].dual;
                 if !jacobian_entry.is_finite() {
-                    warn!(
-                        "Non-finite Jacobian entry at ({}, {}): {}",
-                        i, j, jacobian_entry
-                    );
+                    if DEBUG {
+                        eprintln!(
+                            "Non-finite Jacobian entry at ({}, {}): {}",
+                            i, j, jacobian_entry
+                        );
+                    }
                     workspace.jacobian[(i, j)] = 0.0;
                 } else {
                     workspace.jacobian[(i, j)] = jacobian_entry;
@@ -471,10 +481,12 @@ impl GaussNewtonSolver {
             r_diag.iter().fold(f64::INFINITY, |a, &b| a.min(b.abs()));
 
         if min_diag < machine_epsilon * max_diag {
-            warn!(
-                "Near-singular normal matrix, condition number > {:.2e}",
-                max_diag / min_diag
-            );
+            if DEBUG {
+                eprintln!(
+                    "Near-singular normal matrix, condition number > {:.2e}",
+                    max_diag / min_diag
+                );
+            }
             return Ok(false);
         }
 
@@ -484,7 +496,9 @@ impl GaussNewtonSolver {
                 workspace.step = solution;
             }
             None => {
-                warn!("QR decomposition failed to solve system");
+                if DEBUG {
+                    eprintln!("QR decomposition failed to solve system.");
+                }
                 return Ok(false);
             }
         }
@@ -529,14 +543,34 @@ impl GaussNewtonSolver {
         let mut nfev = 0;
         let mut njev = 0;
 
+        // Initialize timing infrastructure.
+        let mut timings = if DEBUG {
+            Some(SolverTimings::new())
+        } else {
+            None
+        };
+
         // Initial function evaluation.
+        let residual_start = if DEBUG { Some(Instant::now()) } else { None };
+
         problem.residuals(
             workspace.parameters.as_slice(),
             workspace.residuals.as_mut_slice(),
         )?;
         nfev += 1;
+
+        if DEBUG {
+            if let (Some(ref mut t), Some(start)) =
+                (&mut timings, residual_start)
+            {
+                t.record_residual_time(start);
+            }
+        }
+
         let mut current_cost = self.compute_cost(&workspace.residuals);
-        let mut previous_cost = current_cost;
+
+        let initial_cost_for_summary = current_cost;
+        let mut previous_cost;
 
         if !current_cost.is_finite() {
             return Err(OptimisationError::SolverError(
@@ -550,18 +584,45 @@ impl GaussNewtonSolver {
         workspace.best_parameters.copy_from(&workspace.parameters);
         workspace.best_residuals.copy_from(&workspace.residuals);
 
+        // Print problem summary and iteration header.
+        if DEBUG {
+            print_problem_summary(&ProblemSummary {
+                parameter_blocks: 1,
+                parameters: n,
+                residuals: workspace.m,
+                solver_type: "LINE_SEARCH (Gauss-Newton)",
+                linear_solver: "QR_DECOMPOSITION",
+                threads: 1,
+            });
+            print_iteration_header();
+        }
+
         // Main iteration loop.
         for iteration in 0..self.config.max_iterations {
-            if self.config.verbose {
-                info!(
-                    "Gauss-Newton Iteration {}: cost = {:.6e}",
-                    iteration, current_cost
-                );
+            // Start timing this iteration.
+            if DEBUG {
+                if let Some(ref mut t) = timings {
+                    t.start_iteration();
+                }
             }
+
+            // Track cost from previous iteration for cost_change calculation.
+            previous_cost = current_cost;
 
             // Check for absolute cost convergence.
             if current_cost < machine_epsilon.sqrt() {
-                debug!("Converged: cost near zero");
+                // Print final summary.
+                if DEBUG {
+                    if let Some(ref timings) = timings {
+                        print_timing_breakdown(timings);
+                        print_final_summary(
+                            initial_cost_for_summary,
+                            current_cost,
+                            iteration,
+                            "Converged: cost near machine precision",
+                        );
+                    }
+                }
                 return Ok(OptimisationResult {
                     status: SolverStatus::Success,
                     parameters: workspace.parameters.as_slice().to_vec(),
@@ -579,9 +640,18 @@ impl GaussNewtonSolver {
                 let relative_improvement =
                     (previous_cost - current_cost) / previous_cost.max(1.0);
                 if relative_improvement < self.config.function_tolerance {
-                    debug!(
-                        "Converged: relative cost improvement below tolerance"
-                    );
+                    // Print final summary.
+                    if DEBUG {
+                        if let Some(ref timings) = timings {
+                            print_timing_breakdown(timings);
+                            print_final_summary(
+                                initial_cost_for_summary,
+                                current_cost,
+                                iteration,
+                                "Converged: relative cost improvement below tolerance",
+                            );
+                        }
+                    }
                     return Ok(OptimisationResult {
                         status: SolverStatus::ToleranceReached,
                         parameters: workspace.parameters.as_slice().to_vec(),
@@ -596,9 +666,20 @@ impl GaussNewtonSolver {
             }
 
             // Compute Jacobian.
+            let jacobian_start =
+                if DEBUG { Some(Instant::now()) } else { None };
+
             let jac_evals = self.compute_jacobian(problem, workspace)?;
             nfev += jac_evals;
             njev += 1;
+
+            if DEBUG {
+                if let (Some(ref mut t), Some(start)) =
+                    (&mut timings, jacobian_start)
+                {
+                    t.record_jacobian_time(start);
+                }
+            }
 
             // Compute gradient for convergence check.
             workspace.gradient =
@@ -615,7 +696,18 @@ impl GaussNewtonSolver {
             let gradient_norm =
                 workspace.gradient.norm() / current_cost.max(1.0);
             if gradient_norm < self.config.gradient_tolerance {
-                debug!("Converged: gradient norm below tolerance");
+                // Print final summary.
+                if DEBUG {
+                    if let Some(ref timings) = timings {
+                        print_timing_breakdown(timings);
+                        print_final_summary(
+                            initial_cost_for_summary,
+                            current_cost,
+                            iteration,
+                            "Converged: gradient norm below tolerance",
+                        );
+                    }
+                }
                 return Ok(OptimisationResult {
                     status: SolverStatus::SmallGradient,
                     parameters: workspace.parameters.as_slice().to_vec(),
@@ -628,11 +720,33 @@ impl GaussNewtonSolver {
                 });
             }
 
-            // Solve for step using Gauss-Newton normal equations.
+            // Solve for step using Gauss-Newton normal equations (QR decomposition).
+            let linear_solver_start =
+                if DEBUG { Some(Instant::now()) } else { None };
+
             let step_computed = self.solve_normal_equations(workspace)?;
 
+            if DEBUG {
+                if let (Some(ref mut t), Some(start)) =
+                    (&mut timings, linear_solver_start)
+                {
+                    t.record_linear_solver_time(start);
+                }
+            }
+
             if !step_computed {
-                warn!("Failed to compute step at iteration {}", iteration);
+                // Print final summary.
+                if DEBUG {
+                    if let Some(ref timings) = timings {
+                        print_timing_breakdown(timings);
+                        print_final_summary(
+                            initial_cost_for_summary,
+                            best_cost,
+                            iteration,
+                            "Failed: singular normal matrix detected",
+                        );
+                    }
+                }
                 // Return best solution found so far.
                 return Ok(OptimisationResult {
                     status: SolverStatus::SmallStepSize,
@@ -648,10 +762,12 @@ impl GaussNewtonSolver {
 
             // Validate computed step for NaN/Inf values.
             if let Err(e) = self.validate_parameters(&workspace.step) {
-                warn!(
-                    "Invalid step computed at iteration {}: {}",
-                    iteration, e
-                );
+                if DEBUG {
+                    eprintln!(
+                        "Invalid step computed at iteration {}: {}",
+                        iteration, e
+                    );
+                }
                 return Ok(OptimisationResult {
                     status: SolverStatus::SmallStepSize,
                     parameters: workspace.best_parameters.as_slice().to_vec(),
@@ -675,7 +791,7 @@ impl GaussNewtonSolver {
             let directional_derivative =
                 workspace.gradient.dot(&workspace.step);
 
-            for _ls_iter in 0..max_line_search {
+            for ls_iter in 0..max_line_search {
                 // Compute trial point.
                 for i in 0..n {
                     workspace.trial_parameters[i] =
@@ -683,11 +799,22 @@ impl GaussNewtonSolver {
                 }
 
                 // Evaluate at trial point.
+                let residual_start =
+                    if DEBUG { Some(Instant::now()) } else { None };
+
                 problem.residuals(
                     workspace.trial_parameters.as_slice(),
                     workspace.trial_residuals.as_mut_slice(),
                 )?;
                 nfev += 1;
+
+                if DEBUG {
+                    if let (Some(ref mut t), Some(start)) =
+                        (&mut timings, residual_start)
+                    {
+                        t.record_residual_time(start);
+                    }
+                }
 
                 let trial_cost = self.compute_cost(&workspace.trial_residuals);
 
@@ -696,10 +823,9 @@ impl GaussNewtonSolver {
                     current_cost + c1 * alpha * directional_derivative;
                 if trial_cost <= armijo_threshold && trial_cost < current_cost {
                     // Validate trial parameters before accepting.
-                    if let Err(e) =
+                    if let Err(_e) =
                         self.validate_parameters(&workspace.trial_parameters)
                     {
-                        warn!("Trial parameters are invalid: {}", e);
                         alpha *= 0.5;
                         if alpha < self.config.min_step_size {
                             break;
@@ -710,7 +836,6 @@ impl GaussNewtonSolver {
                     // Accept step.
                     workspace.parameters.copy_from(&workspace.trial_parameters);
                     workspace.residuals.copy_from(&workspace.trial_residuals);
-                    previous_cost = current_cost;
                     current_cost = trial_cost;
                     line_search_success = true;
 
@@ -724,6 +849,33 @@ impl GaussNewtonSolver {
                             .best_residuals
                             .copy_from(&workspace.residuals);
                     }
+
+                    // Print iteration info (only on accepted steps).
+                    if DEBUG {
+                        if let Some(ref mut t) = timings {
+                            t.finish_iteration();
+
+                            let step_norm = workspace.step.norm();
+                            let cost_change = previous_cost - current_cost;
+
+                            print_iteration(
+                                &IterationMetrics {
+                                    iteration,
+                                    cost: current_cost,
+                                    cost_change,
+                                    gradient_norm,
+                                    step_norm,
+                                    tr_ratio: 0.0,
+                                    tr_radius: 0.0,
+                                    ls_iter: ls_iter + 1, // +1 because it's 0-indexed
+                                    iter_time_seconds: t.iteration_elapsed(),
+                                    total_time_seconds: t.total_time_seconds,
+                                },
+                                false, // has_trust_region = false (line search)
+                            );
+                        }
+                    }
+
                     break;
                 }
 
@@ -742,6 +894,18 @@ impl GaussNewtonSolver {
 
                 // Check function evaluation limit.
                 if nfev >= self.config.max_function_evaluations {
+                    // Print final summary.
+                    if DEBUG {
+                        if let Some(ref timings) = timings {
+                            print_timing_breakdown(timings);
+                            print_final_summary(
+                                initial_cost_for_summary,
+                                best_cost,
+                                iteration,
+                                "Terminated: function evaluation limit exceeded",
+                            );
+                        }
+                    }
                     return Ok(OptimisationResult {
                         status: SolverStatus::FunctionCallsExceeded,
                         parameters: workspace
@@ -761,7 +925,9 @@ impl GaussNewtonSolver {
 
             if !line_search_success {
                 // Line search failed - try adaptive regularization.
-                debug!("Line search failed at iteration {}", iteration);
+                if DEBUG {
+                    eprintln!("Line search failed at iteration {}", iteration);
+                }
 
                 // Try increasing regularization and recomputing step.
                 let original_regularization = self.config.regularization;
@@ -808,7 +974,7 @@ impl GaussNewtonSolver {
                         workspace
                             .residuals
                             .copy_from(&workspace.trial_residuals);
-                        previous_cost = current_cost;
+                        let _previous_cost = current_cost;
                         current_cost = trial_cost;
 
                         if current_cost < best_cost {
@@ -821,7 +987,9 @@ impl GaussNewtonSolver {
                                 .copy_from(&workspace.residuals);
                         }
 
-                        debug!("Adaptive regularization recovery successful at iteration {}", iteration);
+                        if DEBUG {
+                            eprintln!("Adaptive regularization recovery successful at iteration {}", iteration);
+                        }
                         continue; // Continue with the main loop.
                     }
                 }
@@ -845,7 +1013,9 @@ impl GaussNewtonSolver {
             let param_norm = workspace.parameters.norm().max(1.0);
 
             if step_norm < self.config.parameter_tolerance * param_norm {
-                debug!("Converged: step size below tolerance");
+                if DEBUG {
+                    eprintln!("Converged: step size below tolerance");
+                }
                 return Ok(OptimisationResult {
                     status: SolverStatus::SmallStepSize,
                     parameters: workspace.parameters.as_slice().to_vec(),
@@ -864,7 +1034,9 @@ impl GaussNewtonSolver {
                 if actual_reduction
                     < self.config.function_tolerance * current_cost
                 {
-                    debug!("Converged: small cost reduction");
+                    if DEBUG {
+                        eprintln!("Converged: small cost reduction");
+                    }
                     return Ok(OptimisationResult {
                         status: SolverStatus::SmallCostReduction,
                         parameters: workspace.parameters.as_slice().to_vec(),
@@ -880,6 +1052,19 @@ impl GaussNewtonSolver {
         }
 
         // Maximum iterations reached.
+        // Print final summary.
+        if DEBUG {
+            if let Some(ref timings) = timings {
+                print_timing_breakdown(timings);
+                print_final_summary(
+                    initial_cost_for_summary,
+                    best_cost,
+                    self.config.max_iterations,
+                    "Terminated: maximum iterations reached",
+                );
+            }
+        }
+
         Ok(OptimisationResult {
             status: SolverStatus::MaxIterationsReached,
             parameters: workspace.best_parameters.as_slice().to_vec(),
@@ -931,13 +1116,17 @@ mod gauss_newton_tests {
         ZeroJacobianProblem,
     };
     use approx::assert_relative_eq;
-    use num_traits::{Float, Zero};
-    use std::ops::{Add, Div, Mul, Sub};
+
+    fn test_config() -> GaussNewtonConfig {
+        GaussNewtonConfig {
+            ..Default::default()
+        }
+    }
 
     #[test]
     fn test_gauss_newton_rosenbrock() {
         let problem = RosenbrockProblem::new();
-        let solver = GaussNewtonSolver::with_defaults();
+        let solver = GaussNewtonSolver::new(test_config());
 
         // Start closer to minimum since Gauss-Newton is less robust.
         let initial_parameters = vec![0.8, 0.8];
@@ -1087,7 +1276,7 @@ mod gauss_newton_tests {
         assert_eq!(workspace.parameters[1], 0.9);
 
         // Test that reused workspace works with Gauss-Newton solver.
-        let solver = GaussNewtonSolver::with_defaults();
+        let solver = GaussNewtonSolver::new(test_config());
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         assert!(result.status.is_success());
@@ -1317,7 +1506,7 @@ mod gauss_newton_tests {
     #[test]
     fn test_gauss_newton_nan_parameters() {
         let problem = RosenbrockProblem::new();
-        let solver = GaussNewtonSolver::with_defaults();
+        let solver = GaussNewtonSolver::new(test_config());
 
         // Test with NaN initial parameters
         let initial_parameters = vec![f64::NAN, 0.0];
@@ -1358,7 +1547,7 @@ mod gauss_newton_tests {
     #[test]
     fn test_gauss_newton_infinite_parameters() {
         let problem = RosenbrockProblem::new();
-        let solver = GaussNewtonSolver::with_defaults();
+        let solver = GaussNewtonSolver::new(test_config());
 
         // Test with infinite initial parameters
         let initial_parameters = vec![f64::INFINITY, 0.0];
@@ -1400,7 +1589,7 @@ mod gauss_newton_tests {
         // NearSingularProblem is a problem with a nearly singular
         // Jacobian.
         let problem = NearSingularProblem;
-        let solver = GaussNewtonSolver::with_defaults();
+        let solver = GaussNewtonSolver::new(test_config());
 
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
@@ -1426,7 +1615,7 @@ mod gauss_newton_tests {
         // ZeroJacobianProblem is a problem where one parameter
         // doesn't affect the residuals.
         let problem = ZeroJacobianProblem;
-        let solver = GaussNewtonSolver::with_defaults();
+        let solver = GaussNewtonSolver::new(test_config());
 
         let initial_parameters = vec![0.0, 5.0]; // Second parameter is irrelevant
         let mut workspace =
@@ -1491,7 +1680,7 @@ mod gauss_newton_tests {
     #[test]
     fn test_gauss_newton_invalid_scaling_factors() {
         let problem = RosenbrockProblem::new();
-        let solver = GaussNewtonSolver::with_defaults();
+        let solver = GaussNewtonSolver::new(test_config());
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
             GaussNewtonWorkspace::new(&problem, &initial_parameters).unwrap();

@@ -20,10 +20,18 @@
 
 use crate::solver::common::*;
 use anyhow::Result;
-use log::{debug, info, warn};
 use mmcore::dual::Dual;
 use nalgebra::{DMatrix, DVector};
 use num_traits::Float;
+
+use crate::solver::reporting::{
+    print_final_summary, print_iteration, print_iteration_header,
+    print_problem_summary, print_timing_breakdown, IterationMetrics,
+    ProblemSummary, SolverTimings,
+};
+use std::time::Instant;
+
+const DEBUG: bool = false;
 
 #[derive(Debug)]
 pub struct PowellDogLegWorkspace {
@@ -49,6 +57,12 @@ pub struct PowellDogLegWorkspace {
 
     // Step computation workspace.
     scaling: DVector<f64>, // Parameter scaling factors.
+
+    // Workspace reuse optimization.
+    jacobian_valid: bool, // Track if Jacobian is current.
+
+    // Adaptive regularization.
+    mu: f64, // Current regularization level.
 }
 
 impl PowellDogLegWorkspace {
@@ -116,6 +130,8 @@ impl PowellDogLegWorkspace {
         self.dogleg_step.fill(0.0);
         self.normal_matrix.fill(0.0);
         self.scaling.fill(1.0);
+        self.jacobian_valid = false;
+        self.mu = 1e-8; // Reset to default minimum
 
         Ok(())
     }
@@ -160,6 +176,8 @@ impl PowellDogLegWorkspace {
             dogleg_step: DVector::zeros(n),
             normal_matrix: DMatrix::zeros(n, n),
             scaling: DVector::from_element(n, 1.0),
+            jacobian_valid: false,
+            mu: 1e-8, // Start at default minimum
         })
     }
 }
@@ -405,6 +423,14 @@ pub struct PowellDogLegConfig {
     /// Absolute cost tolerance - convergence when cost is below this absolute threshold.
     /// Used in conjunction with relative improvements to determine convergence.
     pub absolute_cost_tolerance: f64,
+    /// Minimum adaptive regularization parameter (mu).
+    pub min_mu: f64,
+    /// Maximum adaptive regularization parameter (mu).
+    pub max_mu: f64,
+    /// Factor to increase mu when Gauss-Newton solve fails.
+    pub mu_increase_factor: f64,
+    /// Factor to decrease mu on successful steps.
+    pub mu_decrease_factor: f64,
 }
 
 impl Default for PowellDogLegConfig {
@@ -426,6 +452,10 @@ impl Default for PowellDogLegConfig {
             cauchy_regularization: 1e-10,
             gn_regularization: 1e-10,
             absolute_cost_tolerance: 1e-6,
+            min_mu: 1e-8,
+            max_mu: 1.0,
+            mu_increase_factor: 10.0,
+            mu_decrease_factor: 2.0,
         }
     }
 }
@@ -476,10 +506,12 @@ impl PowellDogLegSolver {
             for i in 0..m {
                 let jacobian_entry = dual_residuals[i].dual;
                 if !jacobian_entry.is_finite() {
-                    warn!(
-                        "Non-finite Jacobian entry at ({}, {}): {}",
-                        i, j, jacobian_entry
-                    );
+                    if DEBUG {
+                        eprintln!(
+                            "Non-finite Jacobian entry at ({}, {}): {}",
+                            i, j, jacobian_entry
+                        );
+                    }
                     workspace.jacobian[(i, j)] = 0.0;
                 } else {
                     workspace.jacobian[(i, j)] = jacobian_entry;
@@ -540,33 +572,46 @@ impl PowellDogLegSolver {
         Ok(())
     }
 
-    /// Compute the Gauss-Newton step.
+    /// Compute the Gauss-Newton step with adaptive regularization.
     ///
-    /// Solves (J^T J + regularization * I) p = -J^T r
+    /// Solves (J^T J + mu * D^2) p = -J^T r
+    /// where mu is adaptively increased on failure.
     fn compute_gauss_newton_step(
         &self,
         workspace: &mut PowellDogLegWorkspace,
     ) -> Result<bool> {
         let n = workspace.n;
-
-        // Compute normal matrix: J^T J.
-        workspace.normal_matrix =
-            workspace.jacobian.transpose() * &workspace.jacobian;
-
-        // Add regularization to diagonal.
-        for i in 0..n {
-            let scale = workspace.scaling[i];
-            workspace.normal_matrix[(i, i)] +=
-                self.config.gn_regularization * scale * scale;
-        }
-
-        // Compute right-hand side: -J^T r
         let neg_gradient = -&workspace.gradient;
+        let mut current_mu = workspace.mu;
 
-        // Try Cholesky decomposition first.
-        if let Some(chol) = workspace.normal_matrix.clone().cholesky() {
-            workspace.gauss_newton_step = chol.solve(&neg_gradient);
-            return Ok(true);
+        // Try up to 5 attempts with increasing mu (adaptive regularization).
+        for _attempt in 0..5 {
+            // Compute normal matrix: J^T J.
+            workspace.normal_matrix =
+                workspace.jacobian.transpose() * &workspace.jacobian;
+
+            // Add adaptive regularization to diagonal: mu * scale^2.
+            for i in 0..n {
+                let scale = workspace.scaling[i];
+                workspace.normal_matrix[(i, i)] += current_mu * scale * scale;
+            }
+
+            // Try Cholesky decomposition.
+            if let Some(chol) = workspace.normal_matrix.clone().cholesky() {
+                workspace.gauss_newton_step = chol.solve(&neg_gradient);
+
+                // Verify solution is finite.
+                if workspace.gauss_newton_step.iter().all(|&x| x.is_finite()) {
+                    workspace.mu = current_mu; // Success - update workspace mu.
+                    return Ok(true);
+                }
+            }
+
+            // Failed - increase mu and retry.
+            current_mu *= self.config.mu_increase_factor;
+            if current_mu > self.config.max_mu {
+                break;
+            }
         }
 
         // Fall back to QR decomposition.
@@ -599,9 +644,11 @@ impl PowellDogLegSolver {
         }
 
         if min_diag < machine_epsilon * max_diag {
-            warn!(
-                "Near-singular normal matrix detected, applying diagonal regularization"
-            );
+            if DEBUG {
+                eprintln!(
+                    "Near-singular normal matrix detected, applying diagonal regularization"
+                );
+            }
         }
 
         // Solve R * step = Q^T * (-gradient)
@@ -781,14 +828,37 @@ impl PowellDogLegSolver {
         let mut trust_radius = self.config.initial_trust_radius;
         let mut best_cost = f64::INFINITY;
 
+        // Initialize adaptive regularization.
+        workspace.mu = self.config.min_mu;
+
+        // Initialize timing infrastructure.
+        let mut timings = if DEBUG {
+            Some(SolverTimings::new())
+        } else {
+            None
+        };
+
         // Initial function evaluation.
+        let residual_start = if DEBUG { Some(Instant::now()) } else { None };
+
         problem.residuals(
             workspace.parameters.as_slice(),
             workspace.residuals.as_mut_slice(),
         )?;
         nfev += 1;
+
+        if DEBUG {
+            if let (Some(ref mut t), Some(start)) =
+                (&mut timings, residual_start)
+            {
+                t.record_residual_time(start);
+            }
+        }
+
         let mut current_cost = self.compute_cost(&workspace.residuals);
-        let mut previous_cost = current_cost;
+
+        let initial_cost_for_summary = current_cost;
+        let mut previous_cost;
 
         if !current_cost.is_finite() {
             return Err(OptimisationError::SolverError(
@@ -804,13 +874,45 @@ impl PowellDogLegSolver {
             workspace.best_residuals.copy_from(&workspace.residuals);
         }
 
+        // Print problem summary and iteration header.
+        if DEBUG {
+            print_problem_summary(&ProblemSummary {
+                parameter_blocks: 1,
+                parameters: n,
+                residuals: workspace.m,
+                solver_type: "TRUST_REGION (Powell Dog-Leg)",
+                linear_solver: "QR_DECOMPOSITION",
+                threads: 1,
+            });
+            print_iteration_header();
+        }
+
         // Main iteration loop.
         for iteration in 0..self.config.max_iterations {
+            // Start timing this iteration.
+            if DEBUG {
+                if let Some(ref mut t) = timings {
+                    t.start_iteration();
+                }
             }
+
+            // Track cost from previous iteration for cost_change calculation.
+            previous_cost = current_cost;
 
             // Check for absolute cost convergence.
             if current_cost < machine_epsilon {
-                debug!("Converged: cost near zero");
+                if DEBUG {
+                    if let Some(ref mut t) = timings {
+                        t.finish_iteration();
+                        print_timing_breakdown(t);
+                        print_final_summary(
+                            initial_cost_for_summary,
+                            current_cost,
+                            iteration,
+                            "Converged: cost near zero",
+                        );
+                    }
+                }
                 return Ok(OptimisationResult {
                     status: SolverStatus::Success,
                     parameters: workspace.parameters.as_slice().to_vec(),
@@ -830,9 +932,18 @@ impl PowellDogLegSolver {
                 if relative_improvement < self.config.function_tolerance
                     && current_cost < self.config.absolute_cost_tolerance
                 {
-                    debug!(
-                        "Converged: relative cost improvement below tolerance"
-                    );
+                    if DEBUG {
+                        if let Some(ref mut t) = timings {
+                            t.finish_iteration();
+                            print_timing_breakdown(t);
+                            print_final_summary(
+                                initial_cost_for_summary,
+                                current_cost,
+                                iteration,
+                                "Converged: relative cost improvement below tolerance",
+                            );
+                        }
+                    }
                     return Ok(OptimisationResult {
                         status: SolverStatus::ToleranceReached,
                         parameters: workspace.parameters.as_slice().to_vec(),
@@ -846,10 +957,24 @@ impl PowellDogLegSolver {
                 }
             }
 
-            // Compute Jacobian.
-            let jac_evals = self.compute_jacobian(problem, workspace)?;
-            nfev += jac_evals;
-            njev += 1;
+            // Compute Jacobian only if needed (workspace reuse optimization).
+            if !workspace.jacobian_valid {
+                let jacobian_start =
+                    if DEBUG { Some(Instant::now()) } else { None };
+
+                let jac_evals = self.compute_jacobian(problem, workspace)?;
+                nfev += jac_evals;
+                njev += 1;
+                workspace.jacobian_valid = true;
+
+                if DEBUG {
+                    if let (Some(ref mut t), Some(start)) =
+                        (&mut timings, jacobian_start)
+                    {
+                        t.record_jacobian_time(start);
+                    }
+                }
+            }
 
             // Compute gradient:
             // g = J^T * r
@@ -867,7 +992,18 @@ impl PowellDogLegSolver {
             let gradient_norm =
                 workspace.gradient.norm() / current_cost.max(1.0);
             if gradient_norm < self.config.gradient_tolerance {
-                debug!("Converged: gradient norm below tolerance");
+                if DEBUG {
+                    if let Some(ref mut t) = timings {
+                        t.finish_iteration();
+                        print_timing_breakdown(t);
+                        print_final_summary(
+                            initial_cost_for_summary,
+                            current_cost,
+                            iteration,
+                            "Converged: gradient norm below tolerance",
+                        );
+                    }
+                }
                 return Ok(OptimisationResult {
                     status: SolverStatus::SmallGradient,
                     parameters: workspace.parameters.as_slice().to_vec(),
@@ -887,7 +1023,18 @@ impl PowellDogLegSolver {
             for _trust_iter in 0..max_trust_iterations {
                 // Check trust region bounds.
                 if trust_radius < self.config.min_trust_radius {
-                    debug!("Trust region became too small");
+                    if DEBUG {
+                        if let Some(ref mut t) = timings {
+                            t.finish_iteration();
+                            print_timing_breakdown(t);
+                            print_final_summary(
+                                initial_cost_for_summary,
+                                best_cost,
+                                iteration,
+                                "Trust region became too small",
+                            );
+                        }
+                    }
                     return Ok(OptimisationResult {
                         status: SolverStatus::SmallStepSize,
                         parameters: workspace
@@ -904,7 +1051,18 @@ impl PowellDogLegSolver {
                 }
 
                 // Compute Gauss-Newton step first.
+                let linear_solver_start =
+                    if DEBUG { Some(Instant::now()) } else { None };
+
                 let gn_success = self.compute_gauss_newton_step(workspace)?;
+
+                if DEBUG {
+                    if let (Some(ref mut t), Some(start)) =
+                        (&mut timings, linear_solver_start)
+                    {
+                        t.record_linear_solver_time(start);
+                    }
+                }
 
                 if !gn_success {
                     // If Gauss-Newton fails, compute and use Cauchy
@@ -943,11 +1101,22 @@ impl PowellDogLegSolver {
                 }
 
                 // Evaluate at trial point.
+                let residual_start =
+                    if DEBUG { Some(Instant::now()) } else { None };
+
                 problem.residuals(
                     workspace.trial_parameters.as_slice(),
                     workspace.trial_residuals.as_mut_slice(),
                 )?;
                 nfev += 1;
+
+                if DEBUG {
+                    if let (Some(ref mut t), Some(start)) =
+                        (&mut timings, residual_start)
+                    {
+                        t.record_residual_time(start);
+                    }
+                }
 
                 let trial_cost = self.compute_cost(&workspace.trial_residuals);
 
@@ -976,11 +1145,17 @@ impl PowellDogLegSolver {
                     // Poor step: shrink trust region.
                     trust_radius *= self.config.trust_shrink_factor;
                 } else if ratio > 0.75 {
-                    // Good step: expand trust region.
+                    // Good step: expand trust region to at least 3x
+                    // the actual step taken.
                     //
-                    // Standard algorithm: expand whenever ratio > 0.75
-                    trust_radius = (trust_radius
-                        * self.config.trust_expand_factor)
+                    // This allows trust region to catch up when far
+                    // from optimum.
+                    let step_norm = workspace.dogleg_step.norm();
+                    let expanded =
+                        trust_radius * self.config.trust_expand_factor;
+                    let step_based = 3.0 * step_norm;
+                    trust_radius = expanded
+                        .max(step_based)
                         .min(self.config.max_trust_radius);
                 }
 
@@ -993,6 +1168,9 @@ impl PowellDogLegSolver {
                     current_cost = trial_cost;
                     step_accepted = true;
 
+                    // Invalidate Jacobian - need fresh one next iteration.
+                    workspace.jacobian_valid = false;
+
                     // Update best solution.
                     if current_cost < best_cost {
                         best_cost = current_cost;
@@ -1002,6 +1180,35 @@ impl PowellDogLegSolver {
                         workspace
                             .best_residuals
                             .copy_from(&workspace.residuals);
+
+                        // Decrease mu on successful step.
+                        workspace.mu = (workspace.mu
+                            / self.config.mu_decrease_factor)
+                            .max(self.config.min_mu);
+                    }
+
+                    // Print iteration output.
+                    if DEBUG {
+                        if let Some(ref mut t) = timings {
+                            t.finish_iteration();
+                            let step_norm = workspace.dogleg_step.norm();
+                            let cost_change = previous_cost - current_cost;
+                            print_iteration(
+                                &IterationMetrics {
+                                    iteration,
+                                    cost: current_cost,
+                                    cost_change,
+                                    gradient_norm,
+                                    step_norm,
+                                    tr_ratio: ratio,
+                                    tr_radius: trust_radius,
+                                    ls_iter: 0,
+                                    iter_time_seconds: t.iteration_elapsed(),
+                                    total_time_seconds: t.total_time_seconds,
+                                },
+                                true,
+                            );
+                        }
                     }
 
                     break;
@@ -1009,6 +1216,18 @@ impl PowellDogLegSolver {
 
                 // Check function evaluation limit.
                 if nfev >= self.config.max_function_evaluations {
+                    if DEBUG {
+                        if let Some(ref mut t) = timings {
+                            t.finish_iteration();
+                            print_timing_breakdown(t);
+                            print_final_summary(
+                                initial_cost_for_summary,
+                                best_cost,
+                                iteration,
+                                "Function evaluation limit exceeded",
+                            );
+                        }
+                    }
                     return Ok(OptimisationResult {
                         status: SolverStatus::FunctionCallsExceeded,
                         parameters: workspace
@@ -1026,10 +1245,18 @@ impl PowellDogLegSolver {
             }
 
             if !step_accepted {
-                warn!(
-                    "Failed to find acceptable step at iteration {}",
-                    iteration
-                );
+                if DEBUG {
+                    if let Some(ref mut t) = timings {
+                        t.finish_iteration();
+                        print_timing_breakdown(t);
+                        print_final_summary(
+                            initial_cost_for_summary,
+                            best_cost,
+                            iteration,
+                            "Failed to find acceptable step",
+                        );
+                    }
+                }
                 return Ok(OptimisationResult {
                     status: SolverStatus::SmallStepSize,
                     parameters: workspace.best_parameters.as_slice().to_vec(),
@@ -1047,7 +1274,18 @@ impl PowellDogLegSolver {
             let param_norm = workspace.parameters.norm().max(1.0);
 
             if step_norm < self.config.parameter_tolerance * param_norm {
-                debug!("Converged: step size below tolerance");
+                if DEBUG {
+                    if let Some(ref mut t) = timings {
+                        t.finish_iteration();
+                        print_timing_breakdown(t);
+                        print_final_summary(
+                            initial_cost_for_summary,
+                            current_cost,
+                            iteration + 1,
+                            "Converged: step size below tolerance",
+                        );
+                    }
+                }
                 return Ok(OptimisationResult {
                     status: SolverStatus::SmallStepSize,
                     parameters: workspace.parameters.as_slice().to_vec(),
@@ -1066,7 +1304,18 @@ impl PowellDogLegSolver {
                 if actual_reduction
                     < self.config.function_tolerance * current_cost
                 {
-                    debug!("Converged: small cost reduction");
+                    if DEBUG {
+                        if let Some(ref mut t) = timings {
+                            t.finish_iteration();
+                            print_timing_breakdown(t);
+                            print_final_summary(
+                                initial_cost_for_summary,
+                                current_cost,
+                                iteration + 1,
+                                "Converged: small cost reduction",
+                            );
+                        }
+                    }
                     return Ok(OptimisationResult {
                         status: SolverStatus::SmallCostReduction,
                         parameters: workspace.parameters.as_slice().to_vec(),
@@ -1082,6 +1331,18 @@ impl PowellDogLegSolver {
         }
 
         // Maximum iterations reached.
+        if DEBUG {
+            if let Some(ref t) = timings {
+                print_timing_breakdown(t);
+                print_final_summary(
+                    initial_cost_for_summary,
+                    best_cost,
+                    self.config.max_iterations,
+                    "Maximum iterations reached",
+                );
+            }
+        }
+
         Ok(OptimisationResult {
             status: SolverStatus::MaxIterationsReached,
             parameters: workspace.best_parameters.as_slice().to_vec(),
@@ -1131,13 +1392,17 @@ mod tests {
         Mock3DProblem, RosenbrockProblem,
     };
     use approx::assert_relative_eq;
-    use num_traits::{Float, Zero};
-    use std::ops::{Add, Div, Mul, Sub};
+
+    fn test_config() -> PowellDogLegConfig {
+        PowellDogLegConfig {
+            ..Default::default()
+        }
+    }
 
     #[test]
     fn test_powell_dogleg_rosenbrock_from_origin() {
         let problem = RosenbrockProblem::new();
-        let solver = PowellDogLegSolver::with_defaults();
+        let solver = PowellDogLegSolver::new(test_config());
 
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
@@ -1351,7 +1616,7 @@ mod tests {
         assert_eq!(workspace.trial_parameters[1], -0.5);
 
         // Test that reused workspace works with solver.
-        let solver = PowellDogLegSolver::with_defaults();
+        let solver = PowellDogLegSolver::new(test_config());
         let result = solver.solve_problem(&problem, &mut workspace).unwrap();
 
         assert!(result.status.is_success());
@@ -1508,7 +1773,7 @@ mod tests {
     fn test_powell_dogleg_modified_rosenbrock() {
         // Test with different a and b values.
         let problem = RosenbrockProblem::with_parameters(2.0, 50.0);
-        let solver = PowellDogLegSolver::with_defaults();
+        let solver = PowellDogLegSolver::new(test_config());
 
         let initial_parameters = vec![0.0, 0.0];
         let mut workspace =
@@ -1533,7 +1798,7 @@ mod tests {
     #[test]
     fn test_powell_dogleg_near_minimum_start() {
         let problem = RosenbrockProblem::new();
-        let solver = PowellDogLegSolver::with_defaults();
+        let solver = PowellDogLegSolver::new(test_config());
 
         // Start very close to minimum.
         let initial_parameters = vec![0.999, 0.999];
@@ -1965,7 +2230,7 @@ mod tests {
             vec![-0.5, 2.5],
         ];
 
-        let solver = PowellDogLegSolver::with_defaults();
+        let solver = PowellDogLegSolver::new(test_config());
 
         for (i, start_point) in starting_points.iter().enumerate() {
             // Reuse workspace

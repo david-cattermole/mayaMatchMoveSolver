@@ -67,3 +67,5 @@ pub mod camera_essential_matrix;
 pub mod camera_pose_from_bundles;
 pub mod camera_residual_error;
 pub mod datatype;
+#[cfg(feature = "visualization")]
+pub mod visualization;

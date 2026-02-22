@@ -63,6 +63,7 @@ macro_rules! mm_debug_eprintln {
 
 pub mod bundle_adjust;
 pub mod bundle_triangulation;
+pub mod camera_essential_matrix;
 pub mod camera_pose_from_bundles;
 pub mod camera_residual_error;
 pub mod datatype;

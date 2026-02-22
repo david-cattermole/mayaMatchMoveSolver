@@ -251,7 +251,7 @@ impl OutputFileNaming {
 
         let mut parts = Vec::new();
 
-            if let Some(condition) = &self.data_condition {
+        if let Some(condition) = &self.data_condition {
             parts.push(condition.as_str().to_string());
         }
 

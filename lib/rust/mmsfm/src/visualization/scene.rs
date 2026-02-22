@@ -919,8 +919,10 @@ fn render_trajectory_frame_with_history(
         ));
     }
 
-    let camera_pose_refs: Vec<&CameraPose> =
-        all_camera_poses.iter().map(|frame_pose| &frame_pose.pose).collect();
+    let camera_pose_refs: Vec<&CameraPose> = all_camera_poses
+        .iter()
+        .map(|frame_pose| &frame_pose.pose)
+        .collect();
     let scene_center = calculate_scene_center(&camera_pose_refs, points_3d);
 
     let mut chart = ChartBuilder::on(&area)

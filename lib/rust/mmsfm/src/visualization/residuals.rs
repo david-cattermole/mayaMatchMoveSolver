@@ -173,7 +173,11 @@ pub fn visualize_multi_frame_residuals_per_marker(
 
     let frame_min = *frame_numbers.first().unwrap();
     let frame_max = *frame_numbers.last().unwrap();
-    let y_min = if stats.min > 0.0 { 0.0 } else { stats.min * 0.95 };
+    let y_min = if stats.min > 0.0 {
+        0.0
+    } else {
+        stats.min * 0.95
+    };
     let y_max = stats.max * 1.05;
 
     let mut chart = ChartBuilder::on(&area)

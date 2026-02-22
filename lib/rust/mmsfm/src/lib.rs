@@ -69,5 +69,6 @@ pub mod camera_pose_maths;
 pub mod camera_relative_pose;
 pub mod camera_residual_error;
 pub mod datatype;
+pub mod sfm_camera;
 #[cfg(feature = "visualization")]
 pub mod visualization;

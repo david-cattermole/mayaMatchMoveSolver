@@ -94,9 +94,9 @@ impl TriangulationMethod {
 /// Camera setup configuration for synthetic test scenes.
 pub struct CameraConfiguration {
     pub camera_b_position: Point3<f64>,
-    pub camera_b_rotation_x_degrees: f64, // tilt
-    pub camera_b_rotation_y_degrees: f64, // pan
-    pub camera_b_rotation_z_degrees: f64, // roll
+    pub camera_b_tilt_degrees: f64,
+    pub camera_b_pan_degrees: f64,
+    pub camera_b_roll_degrees: f64,
     pub film_back_width_mm: f64,
     pub film_back_height_mm: f64,
     pub focal_length_mm: f64,
@@ -106,29 +106,29 @@ impl CameraConfiguration {
     pub fn new_pan(position: Point3<f64>, pan_degrees: f64) -> Self {
         Self {
             camera_b_position: position,
-            camera_b_rotation_x_degrees: 0.0,
-            camera_b_rotation_y_degrees: pan_degrees,
-            camera_b_rotation_z_degrees: 0.0,
-            film_back_width_mm: 36.0, // Standard 35mm film width
-            film_back_height_mm: 24.0, // Standard 35mm film height
-            focal_length_mm: 50.0,    // Standard 50mm focal length
+            camera_b_tilt_degrees: 0.0,
+            camera_b_pan_degrees: pan_degrees,
+            camera_b_roll_degrees: 0.0,
+            film_back_width_mm: 36.0,
+            film_back_height_mm: 24.0,
+            focal_length_mm: 50.0,
         }
     }
 
     pub fn new_tilt(position: Point3<f64>, tilt_degrees: f64) -> Self {
         Self {
             camera_b_position: position,
-            camera_b_rotation_x_degrees: tilt_degrees * PI / 180.0,
-            camera_b_rotation_y_degrees: 0.0,
-            camera_b_rotation_z_degrees: 0.0,
-            film_back_width_mm: 36.0, // Standard 35mm film width
-            film_back_height_mm: 24.0, // Standard 35mm film height
-            focal_length_mm: 50.0,    // Standard 50mm focal length
+            camera_b_tilt_degrees: tilt_degrees,
+            camera_b_pan_degrees: 0.0,
+            camera_b_roll_degrees: 0.0,
+            film_back_width_mm: 36.0,
+            film_back_height_mm: 24.0,
+            focal_length_mm: 50.0,
         }
     }
 }
 
-/// Triangulate multiple points using line-line intersection method.
+/// Triangulate multiple points using line-line intersection.
 pub fn triangulate_multiple_points_line_line(
     ndc_points_a: &[NdcPoint2<f64>],
     ndc_points_b: &[NdcPoint2<f64>],
@@ -161,7 +161,6 @@ pub fn triangulate_multiple_points_line_line(
     let result = triangulator.triangulate_points(&triangulate_data);
     assert_eq!(result.inner.points.len(), result.inner.valid.len());
 
-    // Check triangulation results and collect valid points.
     let mut triangulated_points = Vec::new();
     for i in 0..num_points {
         if result.inner.valid[i] {
@@ -176,7 +175,7 @@ pub fn triangulate_multiple_points_line_line(
     Ok(triangulated_points)
 }
 
-/// Triangulates multiple points using the Optimal Angular method.
+/// Triangulate multiple points using the Optimal Angular method.
 pub fn triangulate_multiple_points_optimal_angular(
     ndc_points_a: &[NdcPoint2<f64>],
     ndc_points_b: &[NdcPoint2<f64>],
@@ -233,7 +232,6 @@ pub fn triangulate_multiple_points_optimal_angular(
     let result = triangulator.triangulate_points(&triangulate_data);
     let triangulation_results = result.as_ref();
 
-    // Check triangulation results and collect valid points.
     let mut triangulated_points = Vec::new();
     for i in 0..num_points {
         if triangulation_results.valid[i] {
@@ -280,7 +278,9 @@ pub fn run_triangulation_method(
     }
 }
 
-/// Validates that triangulated points are in front of cameras. Use strict_validation=false for challenging configurations.
+/// Validates that triangulated points are in front of cameras.
+///
+/// Set `strict_validation=false` for camera configurations where some points may end up behind a camera.
 pub fn validate_and_print_method_results(
     method: &TriangulationMethod,
     triangulated_points: &[Point3<f64>],
@@ -379,14 +379,14 @@ pub fn create_synthetic_camera_setup_with_config(
 ) -> Result<(CameraPose, CameraPose, CameraIntrinsics, CameraIntrinsics)> {
     let camera_pose_a = CameraPose::default();
 
-    let tx = config.camera_b_position.x;
-    let ty = config.camera_b_position.y;
-    let tz = config.camera_b_position.z;
-    let rx = config.camera_b_rotation_x_degrees;
-    let ry = config.camera_b_rotation_y_degrees;
-    let rz = config.camera_b_rotation_z_degrees;
-    let camera_pose_b: CameraPose =
-        create_camera_pose_from_maya_transform(tx, ty, tz, rx, ry, rz);
+    let camera_pose_b: CameraPose = create_camera_pose_from_maya_transform(
+        config.camera_b_position.x,
+        config.camera_b_position.y,
+        config.camera_b_position.z,
+        config.camera_b_tilt_degrees,
+        config.camera_b_pan_degrees,
+        config.camera_b_roll_degrees,
+    );
 
     let film_back = CameraFilmBack::from_millimeters(
         config.film_back_width_mm,
@@ -406,7 +406,7 @@ pub fn create_synthetic_camera_setup_with_config(
     ))
 }
 
-/// Validates that all triangulated points are at a reasonable distance (>0.1) from both cameras.
+/// Checks that all triangulated points are at a reasonable distance from both cameras.
 pub fn validate_geometric_consistency(
     camera_pose_a: &CameraPose,
     camera_pose_b: &CameraPose,
@@ -449,7 +449,7 @@ pub fn validate_geometric_consistency(
     Ok(())
 }
 
-/// Generate reprojection residual analysis and visualization
+/// Computes reprojection residuals, asserts they are within threshold, and saves a visualization.
 pub fn generate_residual_analysis(
     points_3d: &[Point3<f64>],
     uv_coords_a: &[UvPoint2<f64>],
@@ -579,7 +579,6 @@ pub fn generate_visualization_outputs(
         );
     }
 
-    // Synthetic frame numbers for camera labels.
     let frame_pair = crate::common::data_utils::FramePair {
         frame_a: 1,
         frame_b: 2,
@@ -736,7 +735,6 @@ pub fn run_triangulate_all_methods(
             strict_validation,
         )?;
 
-        // Create method-specific naming by cloning base and adding method name
         let method_naming =
             base_naming.clone_with_triangulation_method(method.short_name());
 
@@ -865,17 +863,13 @@ pub fn run_triangulation_test_from_file(
     }
 
     let pose_a = CameraPose::default();
-
-    let (tx, ty, tz) = (
+    let pose_b = create_camera_pose_from_maya_transform(
         pose_b_translation.x,
         pose_b_translation.y,
         pose_b_translation.z,
-    );
-    let (rx, ry, rz) =
-        (pose_b_rotation.x, pose_b_rotation.y, pose_b_rotation.z);
-    let pose_b = create_camera_pose_from_maya_transform(
-        tx, ty, tz, // translate
-        rx, ry, rz, // rotate (degrees)
+        pose_b_rotation.x,
+        pose_b_rotation.y,
+        pose_b_rotation.z,
     );
 
     if DEBUG {
@@ -931,7 +925,7 @@ pub fn create_synthetic_3d_points_grid(
     points
 }
 
-/// Projects a 3D world point to NDC coordinates for the given camera. Returns None if the point is behind the camera.
+/// Projects a 3D world point to NDC coordinates. Returns `None` if the point is behind the camera.
 pub fn forward_project_point_to_ndc(
     point_3d: &Point3<f64>,
     camera_pose: &CameraPose,
@@ -941,14 +935,13 @@ pub fn forward_project_point_to_ndc(
         return None;
     }
 
-    // Transform point to camera space using extrinsic matrix
+    // Transform the point from world space to camera space.
     let extrinsic = camera_pose.as_extrinsic_matrix();
     let point_homogeneous =
         nalgebra::Vector4::new(point_3d.x, point_3d.y, point_3d.z, 1.0);
     let point_camera = extrinsic * point_homogeneous;
 
-    // Project to normalized camera coordinates
-    // Maya convention: camera looks down -Z, so divide by -Z
+    // Divide by -Z (Maya convention: camera looks down -Z).
     let x_norm = point_camera.x / -point_camera.z;
     let y_norm = point_camera.y / -point_camera.z;
 
@@ -957,8 +950,7 @@ pub fn forward_project_point_to_ndc(
     let principal_x = camera_intrinsics.principal_point.x.value();
     let principal_y = camera_intrinsics.principal_point.y.value();
 
-    // Convert to NDC using the formula:
-    // ndc = camera_coord * (2.0 * focal_length) + principal_point
+    // ndc = camera_coord * (2 * focal_length) + principal_point
     let ndc_x = x_norm * (2.0 * focal_x) + principal_x;
     let ndc_y = y_norm * (2.0 * focal_y) + principal_y;
 
@@ -994,7 +986,6 @@ pub fn forward_project_points_to_nview(
             ) {
                 ndc_points.push(ndc_point);
             } else {
-                // All points must be visible in all cameras.
                 anyhow::bail!(
                     "Point {:?} is behind camera {} - all points must be visible in all cameras",
                     point_3d,

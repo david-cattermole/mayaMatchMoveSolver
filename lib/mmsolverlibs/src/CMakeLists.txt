@@ -57,18 +57,6 @@ set(lib_source_files
   ${mmcore_source_dir}/mmhash.cpp
   ${mmcore_source_dir}/mmmath.cpp
 
-  ${mmlens_source_dir}/_cxxbridge.cpp
-  ${mmlens_source_dir}/distortion_layers.cpp
-  ${mmlens_source_dir}/distortion_process.cpp
-  ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.cpp
-  ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.cpp
-  ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_6_rotate_squeeze_xy.cpp
-  ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_6_rotate_squeeze_xy_rescaled.cpp
-  ${mmlens_source_dir}/lens_model_3de_classic.cpp
-  ${mmlens_source_dir}/lens_model_3de_radial_decentered_deg_4_cylindric.cpp
-  ${mmlens_source_dir}/lens_model_passthrough.cpp
-  ${mmlens_source_dir}/lib.cpp
-
   ${mmimage_source_dir}/_cxxbridge.cpp
   ${mmimage_source_dir}/imagemetadata.cpp
   ${mmimage_source_dir}/imagepixelbuffer.cpp
@@ -116,10 +104,6 @@ target_link_libraries(${cpp_lib_name}
   PUBLIC "${rust_linktime_file}"
 )
 
-# We must force this target ('cpp_lib_name') to wait for
-# ldpk to be installed so we have the 'ldpk_INCLUDE_DIR' variable.
-add_dependencies(${cpp_lib_name} ldpk::ldpk)
-
 # Add dependencies.
 target_link_libraries(${cpp_lib_name}
   PUBLIC cminpack::cminpack  # for small/medium optimization problems.
@@ -142,6 +126,5 @@ target_include_directories(${cpp_lib_name}
   PUBLIC $<BUILD_INTERFACE:${mmimage_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmscenegraph_include_dir}>
   PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  PRIVATE $<BUILD_INTERFACE:${ldpk_INCLUDE_DIR}>
   PUBLIC $<INSTALL_INTERFACE:include/>
   )

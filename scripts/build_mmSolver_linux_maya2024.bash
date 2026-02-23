@@ -65,6 +65,7 @@ set -ev
 
 # These scripts assume 'RUST_CARGO_EXE' has been set to the Rust
 # 'cargo' executable.
+source "${CWD}/scripts/internal/build_vcpkg_packages_linux.bash"
 source "${CWD}/scripts/internal/build_openColorIO_linux.bash"
 source "${CWD}/scripts/internal/build_mmSolver_linux.bash"
 

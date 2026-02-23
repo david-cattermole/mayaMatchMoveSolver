@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (C) 2019, 2022, 2024 David Cattermole.
+# Copyright (C) 2019, 2022, 2024, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -106,8 +106,23 @@ echo "Build mmSolver docs directory base: ${BUILD_DOCS_DIR_BASE}"
 # Where to find the mmsolverlibs Rust libraries and headers.
 MMSOLVERLIBS_ROOT="${PROJECT_ROOT}/lib"
 MMSOLVERLIBS_RUST_ROOT="${MMSOLVERLIBS_ROOT}/mmsolverlibs"
+MMCAMERASOLVE_RUST_ROOT="${MMSOLVERLIBS_ROOT}/rust/mmcamerasolve-bin"
 MMSOLVERLIBS_LIB_DIR="${BUILD_MMSOLVER_RUST_DIR}/${BUILD_TYPE_DIR}"
 MMSOLVERLIBS_RUST_DIR="${BUILD_MMSOLVER_RUST_DIR}/${BUILD_TYPE_DIR}"
+
+# vcpkg installed packages path.
+VCPKG_TRIPLET="${VCPKG_TRIPLET:-x64-linux-dynamic}"
+VCPKG_INSTALLED_DIR="${BUILD_VCPKG_INSTALL_DIR}/${VCPKG_TRIPLET}"
+
+# Set environment variables for Rust crates that need vcpkg-installed
+# libraries (e.g. mmcholmod).
+export CHOLMOD_INCLUDE_DIR="${VCPKG_INSTALLED_DIR}/include"
+export CHOLMOD_LIB_DIR="${VCPKG_INSTALLED_DIR}/lib"
+
+# Set rpath for the Rust binary so it can find shared libraries in the
+# installed module's lib directory ($ORIGIN/../lib is relative to the
+# binary location at runtime).
+export RUSTFLAGS="${RUSTFLAGS:+$RUSTFLAGS }-C link-arg=-Wl,-rpath,\$ORIGIN/../lib"
 
 # Paths for dependencies.
 EXTERNAL_BUILD_DIR="${BUILD_OCIO_CMAKE_DIR}/ext/dist"
@@ -158,9 +173,10 @@ echo "Building mmsolverlibs Rust libraries... (${MMSOLVERLIBS_ROOT})"
 cd ${MMSOLVERLIBS_RUST_ROOT}
 ${RUST_CARGO_EXE} build --release --target-dir ${BUILD_MMSOLVER_RUST_DIR}
 
-# A local copy of LDPK to reduce the amount of downloads to the
-# 3DEqualizer website (LDPK doesn't have a git repo to clone from).
-LDPK_URL="${PROJECT_ROOT}/external/archives/ldpk-2.12.0.tar"
+# Build mmcamerasolve Rust binary.
+echo "Building mmcamerasolve Rust binary... (${PROJECT_ROOT})"
+cd ${MMCAMERASOLVE_RUST_ROOT}
+${RUST_CARGO_EXE} build --release --package mmcamerasolve-bin --target-dir ${BUILD_MMSOLVER_RUST_DIR}
 
 # Optionally use "UNIX Makefiles" as the build system generator.
 CMAKE_GENERATOR="Ninja"
@@ -204,7 +220,6 @@ ${CMAKE_EXE} -G ${CMAKE_GENERATOR}\
     -DMMSOLVER_DOWNLOAD_DEPENDENCIES=ON \
     -DBUILD_DOCS_DIR_BASE=${BUILD_DOCS_DIR_BASE} \
     -Dmmsolverlibs_rust_DIR=${MMSOLVERLIBS_RUST_DIR} \
-    -Dldpk_URL=${LDPK_URL} \
     -DOpenColorIO_DIR=${OCIO_CMAKE_CONFIG_DIR} \
     -DOCIO_INSTALL_EXT_PACKAGES=NONE \
     -DopenMVG_USE_AVX=0 \
@@ -223,6 +238,8 @@ ${CMAKE_EXE} -G ${CMAKE_GENERATOR}\
     -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR} \
     -DZLIB_STATIC_LIBRARY=ON \
     -Dminizip-ng_DIR=${minizip_DIR} \
+    -DCMAKE_PREFIX_PATH=${VCPKG_INSTALLED_DIR} \
+    -DCHOLMOD_LIB_DIR=${VCPKG_INSTALLED_DIR}/lib \
     ${PROJECT_ROOT}
 
 ${CMAKE_EXE} --build . --parallel

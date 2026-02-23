@@ -69,8 +69,6 @@ add_subdirectory(thirdparty)
 # mmsolverlibs.
 include(FindAndBuildMmsolverDependencies)
 
-# Finds and builds external (third-party) LDPK dependencies.
-include(FindAndBuildLdpkPackages)
 add_subdirectory(mmsolverlibs/src)
 
 option(MMSOLVERLIBS_BUILD_TESTS "Do you want to build the test files for mmsolverlibs?" OFF)

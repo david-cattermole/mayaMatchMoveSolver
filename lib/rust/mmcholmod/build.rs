@@ -22,7 +22,6 @@ fn main() {
     // Environment variables can override default paths:
     //   CHOLMOD_INCLUDE_DIR - path to directory containing suitesparse/cholmod.h
     //   CHOLMOD_LIB_DIR     - path to directory containing library files
-    //   CHOLMOD_STATIC      - set to "1" to link statically (default: dynamic)
 
     let mut inc_dirs: Vec<String> = Vec::new();
     let mut lib_dirs: Vec<String> = Vec::new();
@@ -54,14 +53,7 @@ fn main() {
         .includes(&inc_dirs)
         .compile("c_code_cholmod");
 
-    // Link SuiteSparse libraries.
-    let use_static = std::env::var("CHOLMOD_STATIC")
-        .map(|v| v == "1")
-        .unwrap_or(false);
-    println!("cargo:rerun-if-env-changed=CHOLMOD_STATIC");
-
-    let link_type = if use_static { "static" } else { "dylib" };
-
+    // Link SuiteSparse libraries dynamically (required by the LGPL).
     let libs = vec![
         "cholmod",
         "amd",
@@ -75,18 +67,6 @@ fn main() {
         println!("cargo:rustc-link-search=native={}", d);
     }
     for l in &libs {
-        println!("cargo:rustc-link-lib={}={}", link_type, l);
-    }
-
-    // When linking statically, CHOLMOD needs BLAS/LAPACK.
-    if use_static {
-        if let Ok(blas_lib_dir) = std::env::var("OPENBLAS_LIB_DIR") {
-            println!("cargo:rerun-if-env-changed=OPENBLAS_LIB_DIR");
-            println!("cargo:rustc-link-search=native={}", blas_lib_dir);
-        }
-        println!("cargo:rustc-link-lib=static=openblas");
-        // Math library needed by OpenBLAS on Linux.
-        #[cfg(target_os = "linux")]
-        println!("cargo:rustc-link-lib=dylib=m");
+        println!("cargo:rustc-link-lib=dylib={}", l);
     }
 }

@@ -61,6 +61,9 @@ SET CXX_STANDARD=11
 :: Setup Compiler environment. Change for your install path as needed.
 CALL "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
+CALL scripts\internal\build_vcpkg_packages_windows64.bat
+if errorlevel 1 goto failed_to_build_vcpkg
+
 CALL scripts\internal\build_opencolorio_windows64.bat
 if errorlevel 1 goto failed_to_build_opencolorio
 
@@ -71,6 +74,10 @@ if errorlevel 1 goto failed_to_build_mmsolver
 
 :: Successful return.
 exit /b 0
+
+:failed_to_build_vcpkg
+echo Failed to install vcpkg packages (OpenBLAS/SuiteSparse).
+exit /b 1
 
 :failed_to_build_opencolorio
 echo Failed to build OpenColorIO dependency.

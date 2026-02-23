@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL
 ::
-:: Copyright (C) 2019, 2024 David Cattermole.
+:: Copyright (C) 2019, 2024, 2025 David Cattermole.
 ::
 :: This file is part of mmSolver.
 ::
@@ -101,10 +101,20 @@ CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat
 :: Where to find the mmsolverlibs Rust libraries and headers.
 SET MMSOLVERLIBS_ROOT=%PROJECT_ROOT%\lib
 SET MMSOLVERLIBS_RUST_ROOT=%MMSOLVERLIBS_ROOT%\mmsolverlibs
+SET MMCAMERASOLVE_RUST_ROOT=%MMSOLVERLIBS_ROOT%\rust\mmcamerasolve-bin
 SET MMSOLVERLIBS_LIB_DIR=%BUILD_MMSOLVER_RUST_DIR%\%BUILD_TYPE_DIR%
 SET MMSOLVERLIBS_RUST_DIR=%BUILD_MMSOLVER_RUST_DIR%\%BUILD_TYPE_DIR%
 
 SET MMSOLVERLIBS_BUILD_TESTS=0
+
+:: vcpkg installed packages path.
+SET VCPKG_INSTALLED_DIR=%BUILD_VCPKG_INSTALL_DIR%\x64-windows
+
+:: Set environment variables for Rust crates that need vcpkg-installed
+:: libraries (e.g. mmcholmod). CHOLMOD is licensed under the LGPL and
+:: must be linked dynamically.
+SET CHOLMOD_INCLUDE_DIR=%VCPKG_INSTALLED_DIR%\include
+SET CHOLMOD_LIB_DIR=%VCPKG_INSTALLED_DIR%\lib
 
 :: Paths for dependencies.
 SET EXTERNAL_OCIO_BUILD_DIR=%BUILD_OCIO_CMAKE_DIR%\ext\dist
@@ -159,6 +169,12 @@ CHDIR "%MMSOLVERLIBS_RUST_ROOT%"
 %RUST_CARGO_EXE% build %RELEASE_FLAG% --target-dir "%BUILD_MMSOLVER_RUST_DIR%"
 if errorlevel 1 goto failed_to_build_rust
 
+:: Build mmcamerasolve Rust binary.
+ECHO Building mmcamerasolve Rust binary... (%PROJECT_ROOT%)
+CHDIR "%MMCAMERASOLVE_RUST_ROOT%"
+%RUST_CARGO_EXE% build %RELEASE_FLAG% --package mmcamerasolve-bin --target-dir "%BUILD_MMSOLVER_RUST_DIR%"
+if errorlevel 1 goto failed_to_build_rust
+
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
 :: errors, so we disable it.
@@ -166,13 +182,6 @@ SET IGNORE_INCLUDE_DIRECTORIES=""
 IF EXIST "C:\MinGW" (
     SET IGNORE_INCLUDE_DIRECTORIES="C:\MinGW\bin;C:\MinGW\include"
 )
-
-:: A local copy of LDPK to reduce the amount of downloads to the
-:: 3DEqualizer website (LDPK doesn't have a git repo to clone from).
-SET LDPK_URL="%PROJECT_ROOT%\external\archives\ldpk-2.12.0.tar"
-:: Convert back-slashes to forward-slashes.
-:: https://stackoverflow.com/questions/23542453/change-backslash-to-forward-slash-in-windows-batch-file
-SET "LDPK_URL=%LDPK_URL:\=/%"
 
 :: Get the git branch name, commit long and short hashes.
 ::
@@ -249,7 +258,6 @@ CHDIR "%BUILD_DIR%"
     -DMMSOLVERLIBS_BUILD_TESTS=%MMSOLVERLIBS_BUILD_TESTS% ^
     -DMMSOLVER_DOWNLOAD_DEPENDENCIES=ON ^
     -Dmmsolverlibs_rust_DIR=%MMSOLVERLIBS_RUST_DIR% ^
-    -Dldpk_URL=%LDPK_URL% ^
     -DOpenColorIO_DIR=%OCIO_CMAKE_CONFIG_DIR% ^
     -DOCIO_INSTALL_EXT_PACKAGES=NONE ^
     -DopenMVG_USE_AVX=0 ^
@@ -268,6 +276,9 @@ CHDIR "%BUILD_DIR%"
     -Dyaml-cpp_DIR=%yaml_DIR% ^
     -Dyaml-cpp_LIBRARY=%yaml_LIBRARY% ^
     -Dyaml-cpp_INCLUDE_DIR=%yaml_INCLUDE_DIR% ^
+    -DCMAKE_PREFIX_PATH=%VCPKG_INSTALLED_DIR% ^
+    -DCHOLMOD_LIB_DIR=%VCPKG_INSTALLED_DIR%\lib ^
+    -DCHOLMOD_BIN_DIR=%VCPKG_INSTALLED_DIR%\bin ^
     %PROJECT_ROOT%
 if errorlevel 1 goto failed_to_generate
 

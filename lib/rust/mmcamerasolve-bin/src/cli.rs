@@ -142,6 +142,7 @@ pub struct CliArgs {
 
     /// Optional path to a Nuke .nk lens distortion file.
     pub nuke_lens_file: Option<String>,
+
 }
 
 impl Default for CliArgs {

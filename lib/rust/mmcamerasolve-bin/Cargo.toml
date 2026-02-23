@@ -11,10 +11,12 @@ path = "src/main.rs"
 
 [features]
 default = []
+logging = []
 visualization = ["mmsfm/visualization"]
 
 [dependencies]
 anyhow = { workspace = true }
+mmlogger = { workspace = true }
 mmio = { package = "mmio_rust", path = "../mmio" }
 mmlens = { package = "mmlens_cppbind", path = "../../cppbind/mmlens" }
 mmsfm = { package = "mmsfm_rust", path = "../mmsfm", default-features = false }

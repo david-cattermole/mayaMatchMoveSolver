@@ -33,7 +33,7 @@ fi
 # Build release version for faster execution.
 echo "Building mmcamerasolve-bin (release mode)..."
 # cargo build --release -p mmcamerasolve-bin
-cargo build --release -p mmcamerasolve-bin --features visualization
+cargo build --release -p mmcamerasolve-bin --features visualization,logging
 echo ""
 
 MM_CAMERA_SOLVE="${PROJECT_ROOT}/target/release/mmcamerasolve"

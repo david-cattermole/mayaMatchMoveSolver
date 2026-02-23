@@ -854,6 +854,7 @@ dependencies = [
  "anyhow",
  "mmio_rust",
  "mmlens_cppbind",
+ "mmlogger",
  "mmsfm_rust",
  "nalgebra 0.33.2",
  "rayon",
@@ -940,6 +941,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "mmlogger"
+version = "0.1.0"
+
+[[package]]
 name = "mmoptimise_rust"
 version = "0.1.0"
 dependencies = [
@@ -996,6 +1001,7 @@ dependencies = [
  "log",
  "mmcore_rust",
  "mmio_rust",
+ "mmlogger",
  "mmoptimise_rust",
  "nalgebra 0.33.2",
  "num-traits",

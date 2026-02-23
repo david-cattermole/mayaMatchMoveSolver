@@ -176,7 +176,7 @@ ${RUST_CARGO_EXE} build --release --target-dir ${BUILD_MMSOLVER_RUST_DIR}
 # Build mmcamerasolve Rust binary.
 echo "Building mmcamerasolve Rust binary... (${PROJECT_ROOT})"
 cd ${MMCAMERASOLVE_RUST_ROOT}
-${RUST_CARGO_EXE} build --release --package mmcamerasolve-bin --target-dir ${BUILD_MMSOLVER_RUST_DIR}
+${RUST_CARGO_EXE} build --release --package mmcamerasolve-bin --features logging --target-dir ${BUILD_MMSOLVER_RUST_DIR}
 
 # Optionally use "UNIX Makefiles" as the build system generator.
 CMAKE_GENERATOR="Ninja"

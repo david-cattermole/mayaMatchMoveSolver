@@ -37,6 +37,7 @@ use std::time::Instant;
 use cli::{
     parse_args, print_help, print_version, CliArgs, ParseResult, SolverType,
 };
+use mmlogger::Logger;
 use mmio::bundle_writer::{write_bundle_file, BundlePoint};
 use mmio::kuper_writer::{
     extract_zxy_euler_angles, maya_pose_to_kuper, write_kuper_file,
@@ -115,7 +116,26 @@ fn run() -> Result<()> {
         }
     };
 
-    run_camera_solve(&args)
+    #[cfg(feature = "logging")]
+    {
+        std::fs::create_dir_all(&args.output_dir)
+            .with_context(|| format!("Failed to create output directory: {}", args.output_dir))?;
+        let log_filename = match &args.prefix {
+            Some(prefix) => format!("{}_solve.log", prefix),
+            None => "solve.log".to_string(),
+        };
+        let log_path = format!("{}/{}", args.output_dir, log_filename);
+        let file = std::fs::File::create(&log_path)
+            .with_context(|| format!("Failed to create log file: {}", log_path))?;
+        let mut log = mmlogger::TeeLogger::new(file, std::io::stderr());
+        run_camera_solve(&args, &mut log)
+    }
+
+    #[cfg(not(feature = "logging"))]
+    {
+        let mut log = mmlogger::NoOpLogger;
+        run_camera_solve(&args, &mut log)
+    }
 }
 
 fn setup_thread_pool(threads: Option<usize>) -> Result<()> {
@@ -233,7 +253,7 @@ impl IntermediateResultWriter for FileIntermediateResultWriter {
     }
 }
 
-fn run_camera_solve(args: &CliArgs) -> Result<()> {
+fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
     let total_start = Instant::now();
 
     // Load solver settings file if provided.
@@ -242,6 +262,7 @@ fn run_camera_solve(args: &CliArgs) -> Result<()> {
             if !args.quiet {
                 println!("Loading solver settings from: {}", settings_path);
             }
+            logger.log("INFO", &format!("Loading solver settings from: {}", settings_path));
             let s = parse_mmsettings_file(settings_path)
                 .map_err(|e| anyhow::anyhow!("{}", e))?;
             Some(s)
@@ -283,6 +304,8 @@ fn run_camera_solve(args: &CliArgs) -> Result<()> {
 
     let (file_info, mut markers) = parse_file(&args.uv_file)
         .with_context(|| format!("Failed to load UV file: {}", args.uv_file))?;
+
+    logger.log("INFO", &format!("Loaded {} markers from: {}", markers.len(), args.uv_file));
 
     if !args.quiet {
         println!("  Loaded {} markers", markers.len());
@@ -534,6 +557,7 @@ fn run_camera_solve(args: &CliArgs) -> Result<()> {
         println!();
         println!("Running camera solve...");
     }
+    logger.log("INFO", "Running camera solve...");
 
     // Create intermediate result writer if enabled.
     let intermediate_writer: Option<Arc<dyn IntermediateResultWriter>> = if args
@@ -601,6 +625,14 @@ fn run_camera_solve(args: &CliArgs) -> Result<()> {
         }
         None => camera_intrinsics,
     };
+
+    logger.log("INFO", &format!(
+        "Solve completed in {:.2}s: {} cameras, {} bundles, mean_err={:.4}px",
+        solve_duration.as_secs_f64(),
+        camera_poses.len(),
+        bundle_positions.len(),
+        quality_metrics.mean_reprojection_error,
+    ));
 
     if !args.quiet {
         println!();
@@ -897,6 +929,8 @@ fn run_camera_solve(args: &CliArgs) -> Result<()> {
         println!();
         println!("Done!");
     }
+
+    logger.log("INFO", &format!("Total time: {:.2}s", total_time_secs));
 
     Ok(())
 }

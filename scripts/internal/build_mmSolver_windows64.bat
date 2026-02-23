@@ -172,7 +172,7 @@ if errorlevel 1 goto failed_to_build_rust
 :: Build mmcamerasolve Rust binary.
 ECHO Building mmcamerasolve Rust binary... (%PROJECT_ROOT%)
 CHDIR "%MMCAMERASOLVE_RUST_ROOT%"
-%RUST_CARGO_EXE% build %RELEASE_FLAG% --package mmcamerasolve-bin --target-dir "%BUILD_MMSOLVER_RUST_DIR%"
+%RUST_CARGO_EXE% build %RELEASE_FLAG% --package mmcamerasolve-bin --features logging --target-dir "%BUILD_MMSOLVER_RUST_DIR%"
 if errorlevel 1 goto failed_to_build_rust
 
 :: MinGW is a common install for developers on Windows and

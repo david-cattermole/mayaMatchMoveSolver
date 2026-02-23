@@ -17,7 +17,7 @@
 // along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 // ====================================================================
 //
-//! Custom CLI argument parsing (no external dependencies).
+//! CLI argument parsing without external dependencies.
 
 use crate::parser;
 
@@ -55,15 +55,15 @@ const ARG_PREFIX: &str = "--prefix";
 const ARG_INTERMEDIATE_OUTPUT: &str = "--with-intermediate-output";
 const ARG_NUKE_LENS: &str = "--nuke-lens";
 
-/// Solver type for focal length adjustment
+/// Solver type for focal length adjustment.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum SolverType {
-    /// Use provided focal length as-is (no adjustment)
+    /// Use provided focal length as-is.
     #[default]
     None,
-    /// Small refinement around provided focal length (±10%)
+    /// Small refinement around the provided focal length (±20%).
     Refine,
-    /// Large search range for unknown focal length (10-200mm)
+    /// Large search range for an unknown focal length (10-200mm).
     Unknown,
 }
 
@@ -86,63 +86,30 @@ impl std::str::FromStr for SolverType {
 /// Parsed command-line arguments.
 #[derive(Debug)]
 pub struct CliArgs {
-    /// Path to UV markers file (.uv).
     pub uv_file: String,
-
-    /// Optional path to an `.mmcamera` file for camera defaults.
     pub mmcamera_file: Option<String>,
-
-    /// Optional path to an `.mmsettings` file for solver settings.
     pub solver_settings_file: Option<String>,
-
-    /// Focal length in millimeters.
     pub focal_length_mm: f64,
-
-    /// Lens center X offset in millimeters.
     pub lens_center_x_mm: f64,
-
-    /// Lens center Y offset in millimeters.
     pub lens_center_y_mm: f64,
-
-    /// Image width in pixels.
     pub image_width: u32,
-
-    /// Image height in pixels.
     pub image_height: u32,
-
-    /// Film back width in millimeters.
     pub film_back_width_mm: f64,
-
-    /// Film back height in millimeters.
     pub film_back_height_mm: f64,
-
     /// Start frame (None = use UV file default).
     pub start_frame: Option<u32>,
-
     /// End frame (None = use UV file default).
     pub end_frame: Option<u32>,
-
-    /// Solver type for focal length adjustment.
     pub solver: SolverType,
-
-    /// Thread count (None = auto).
+    /// Thread count (None = auto-detect).
     pub threads: Option<usize>,
-
-    /// Output directory for visualizations.
     pub output_dir: String,
-
-    /// Optional prefix for output filenames.
     pub prefix: Option<String>,
-
-    /// Quiet mode - suppress progress output.
+    /// Suppress progress output.
     pub quiet: bool,
-
     /// Write intermediate results during solve.
     pub intermediate_output: bool,
-
-    /// Optional path to a Nuke .nk lens distortion file.
     pub nuke_lens_file: Option<String>,
-
 }
 
 impl Default for CliArgs {
@@ -171,7 +138,6 @@ impl Default for CliArgs {
     }
 }
 
-/// Print help message.
 pub fn print_help() {
     println!(
         "mmSolver Camera Solver - Structure from Motion camera solver.
@@ -226,7 +192,6 @@ HELP:
     );
 }
 
-/// Print version information.
 pub fn print_version() {
     println!("mmsfm {}", env!("CARGO_PKG_VERSION"));
 }
@@ -240,19 +205,13 @@ macro_rules! try_parse {
     };
 }
 
-/// Result of argument parsing.
 pub enum ParseResult {
-    /// Successfully parsed arguments.
     Args(CliArgs),
-    /// User requested help.
     Help,
-    /// User requested version.
     Version,
-    /// Parse error with message.
     Error(String),
 }
 
-/// Parse command-line arguments.
 pub fn parse_args() -> ParseResult {
     let args: Vec<String> = std::env::args().collect();
 
@@ -452,7 +411,7 @@ pub fn parse_args() -> ParseResult {
     ParseResult::Args(cli)
 }
 
-/// Tracks which CLI fields were explicitly provided by the user.
+/// Tracks which CLI fields were explicitly set, so mmcamera defaults don't override them.
 #[derive(Debug, Default)]
 struct ExplicitFlags {
     focal_length: bool,
@@ -466,8 +425,7 @@ struct ExplicitFlags {
     end_frame: bool,
 }
 
-/// Read an `.mmcamera` file and apply its values as defaults for any
-/// fields that were not explicitly set on the command line.
+/// Apply defaults from an .mmcamera file for any fields not explicitly set on the command line.
 fn apply_mmcamera_defaults(
     cli: &mut CliArgs,
     mmcamera_path: &str,

@@ -18,7 +18,7 @@
 // ====================================================================
 //
 
-//! Lens undistortion of marker positions.
+//! Lens undistortion of marker UV positions.
 
 use anyhow::Result;
 
@@ -38,7 +38,6 @@ use mmlens::cxxbridge::ffi::{
     Parameters3deClassic, Parameters3deRadialStdDeg4,
 };
 
-/// Apply lens undistortion to marker positions.
 pub fn undistort_markers_with_lens(
     markers: &mut MarkersData,
     nuke_lens: &NukeLensData,
@@ -88,13 +87,11 @@ pub fn undistort_markers_with_lens(
 
         let mut out_data: Vec<f64> = vec![0.0; src_len * 2];
 
-        // Apply undistortion for each layer.
         for layer_idx in 0..nuke_lens.layer_count {
             let model_type =
                 nuke_lens.layer_lens_model_types[layer_idx as usize];
 
-            // Get lens parameters. Try frame-specific first, then
-            // static.
+            // Try frame-specific lens parameters first, then fall back to static.
             let frame_num = if !fd.frames.is_empty() {
                 fd.frames[0] as u16
             } else {

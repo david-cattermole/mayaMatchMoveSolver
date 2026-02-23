@@ -81,7 +81,6 @@ use mmsfm::visualization::{
     VisualizationType,
 };
 
-/// Whether visualization support is compiled in.
 #[cfg(feature = "visualization")]
 const ENABLE_VISUALIZATIONS: bool = true;
 #[cfg(not(feature = "visualization"))]
@@ -159,8 +158,7 @@ fn setup_thread_pool(threads: Option<usize>) -> Result<()> {
     Ok(())
 }
 
-/// Writes intermediate solver results to disk so users can inspect
-/// progress during long-running solves.
+/// Writes intermediate solver results to disk during a solve.
 struct FileIntermediateResultWriter {
     output_dir: String,
     prefix: Option<String>,
@@ -219,8 +217,6 @@ impl IntermediateResultWriter for FileIntermediateResultWriter {
             MillimeterUnit::new(self.focal_length_mm),
             self.film_back,
         );
-        // Build a minimal CliArgs-like struct is not practical here,
-        // so we call write_mmcamera_output_raw directly.
         if let Err(e) = write_mmcamera_output_raw(
             &mmcamera_path,
             &camera_poses,
@@ -342,16 +338,9 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         markers.frame_data.iter().any(|fd| fd.has_distorted());
 
     if nuke_lens_data.is_some() {
-        // Lens file provided - apply undistortion.
-        //
-        // For UV Track format v3+ files with explicit pos_dist data,
-        // the distorted positions are in u_coords_dist/v_coords_dist.
-        //
-        // For UV Track format v1/v2 files (and v3+ without pos_dist),
-        // the positions in u_coords/v_coords are raw tracker output
-        // (distorted).
-        //
-        // We undistort them in-place.
+        // Lens file provided - apply undistortion in-place.
+        // For v3+ files with explicit distorted data, the source is u_coords_dist/v_coords_dist.
+        // For v1/v2 files (or v3+ without distorted data), the source is u_coords/v_coords.
         if !args.quiet {
             println!("  Applying lens undistortion to marker positions...");
         }
@@ -364,12 +353,8 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
             println!("  Undistortion applied successfully.");
         }
     } else if has_explicit_distorted {
-        // No lens file but file has distorted data.
         if file_info.marker_undistorted {
-            // File has both distorted and undistorted data.
-            //
-            // Use the stored undistorted positions (already in
-            // u_coords/v_coords).
+            // File has both distorted and undistorted data; use the stored undistorted positions.
             if !args.quiet {
                 println!(
                     "  UV file contains both distorted and undistorted data; \
@@ -385,7 +370,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         }
     }
 
-    // Construct camera parameters.
     let film_back = CameraFilmBack::from_millimeters(
         args.film_back_width_mm,
         args.film_back_height_mm,
@@ -548,7 +532,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         }
     };
 
-    // Output structures.
     let mut camera_poses = CameraPoses::new();
     let mut bundle_positions = BundlePositions::new();
     let mut quality_metrics = SolveQualityMetrics::default();
@@ -586,7 +569,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         None
     };
 
-    // Run the solve.
     let solve_start = Instant::now();
     camera_solve(
         frame_range,
@@ -603,9 +585,7 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
     )?;
     let solve_duration = solve_start.elapsed();
 
-    // If global adjustment produced an optimized focal length, rebuild
-    // camera_intrinsics so that all downstream code (visualizations,
-    // residual computation, Kuper output) uses the solved value.
+    // Use the solved focal length for all downstream output.
     #[cfg_attr(not(feature = "visualization"), allow(unused_variables))]
     let camera_intrinsics = match quality_metrics.optimized_focal_length_mm {
         Some(solved_fl) => {
@@ -651,7 +631,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         );
     }
 
-    // Generate visualizations (only when enabled at compile time).
     #[cfg(feature = "visualization")]
     let viz_duration = {
         if !args.quiet {
@@ -676,7 +655,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
     #[cfg(not(feature = "visualization"))]
     let viz_duration = std::time::Duration::ZERO;
 
-    // Write Kuper file.
     let io_start = Instant::now();
     let kuper_filename = match &args.prefix {
         Some(prefix) => format!("{}_camera.kuper", prefix),
@@ -689,7 +667,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         println!("Writing Kuper file to: {}", kuper_path);
     }
 
-    // Create output directory if it doesn't exist.
     std::fs::create_dir_all(&args.output_dir).with_context(|| {
         format!("Failed to create output directory: {}", args.output_dir)
     })?;
@@ -706,7 +683,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         println!("  Wrote {} frames", camera_poses.len());
     }
 
-    // Write bundle positions file.
     let bundle_filename = match &args.prefix {
         Some(prefix) => format!("{}_bundles.mmbundles", prefix),
         None => "bundles.mmbundles".to_string(),
@@ -724,7 +700,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         println!("  Wrote {} bundles", bundle_positions.len());
     }
 
-    // Write mmcamera file.
     let mmcamera_filename = match &args.prefix {
         Some(prefix) => format!("{}_camera.mmcamera", prefix),
         None => "camera.mmcamera".to_string(),
@@ -749,7 +724,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         println!("  Wrote {} frames", camera_poses.len());
     }
 
-    // Compute and write residuals file.
     let residuals_filename = match &args.prefix {
         Some(prefix) => format!("{}_residuals.mmresiduals", prefix),
         None => "residuals.mmresiduals".to_string(),
@@ -765,7 +739,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
             &image_size,
         )?;
 
-    // Build sorted frame list and per-frame data.
     let mut sorted_frames: Vec<u32> =
         per_frame_residuals.keys().copied().collect();
     sorted_frames.sort();
@@ -811,7 +784,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         );
     }
 
-    // Write nuke lens file if one was loaded.
     if let Some(ref lens_data) = nuke_lens_data {
         let lens_filename = match &args.prefix {
             Some(prefix) => format!("{}_lens.nk", prefix),
@@ -835,7 +807,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
 
     let io_duration = io_start.elapsed();
 
-    // Calculate total duration.
     let total_duration = total_start.elapsed();
     let total_time_secs = total_duration.as_secs_f64();
     let total_time_mins = total_time_secs / 60.0;
@@ -844,11 +815,9 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         println!();
         println!("=== Timing Summary ===");
 
-        // If global adjustment was performed, show detailed breakdown
         if quality_metrics.global_optimization_time_secs.is_some() {
             println!("Solver stages:");
 
-            // Show coarse search time (EVO only)
             if let Some(coarse_time) = quality_metrics.coarse_search_time_secs {
                 let percentage = (coarse_time / total_time_secs) * 100.0;
                 println!(
@@ -857,7 +826,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
                 );
             }
 
-            // Show refined search time (EVO only, if it happened)
             if let Some(refined_time) = quality_metrics.refined_search_time_secs
             {
                 let percentage = (refined_time / total_time_secs) * 100.0;
@@ -867,7 +835,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
                 );
             }
 
-            // Show total global optimization time
             if let Some(global_time) =
                 quality_metrics.global_optimization_time_secs
             {
@@ -878,7 +845,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
                 );
             }
 
-            // Show final solve time
             if let Some(final_time) = quality_metrics.final_solve_time_secs {
                 let percentage = (final_time / total_time_secs) * 100.0;
                 println!(
@@ -887,7 +853,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
                 );
             }
 
-            // Total solver time
             let total_solve_time =
                 quality_metrics.global_optimization_time_secs.unwrap_or(0.0)
                     + quality_metrics.final_solve_time_secs.unwrap_or(0.0);
@@ -897,7 +862,6 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
                 total_solve_time, percentage
             );
         } else {
-            // No global adjustment - just show solve time
             let solve_time = solve_duration.as_secs_f64();
             let percentage = (solve_time / total_time_secs) * 100.0;
             println!(
@@ -951,7 +915,6 @@ fn generate_visualizations(
         format!("Failed to create output directory: {}", output_dir)
     })?;
 
-    // Convert camera poses to the format expected by visualization.
     let camera_poses_with_frames: Vec<CameraPoseWithFrame> = camera_poses
         .iter()
         .map(|(&frame, pose)| CameraPoseWithFrame {
@@ -961,27 +924,22 @@ fn generate_visualizations(
         })
         .collect();
 
-    // Determine prefix string for titles.
     let prefix_str = prefix.as_deref().unwrap_or("");
 
-    // Collect bundle positions into a vector.
     let bundles: Vec<Point3<f64>> =
         bundle_positions.values().cloned().collect();
 
-    // Create title for the 3D scene plot.
     let title = if prefix_str.is_empty() {
         "Camera Solve Result".to_string()
     } else {
         format!("{} - Camera Solve Result", prefix_str)
     };
 
-    // Build frame_marker_data: maps frame number to list of (marker_index, observed_uv).
-    // Used by both 3D scene views (epipolar lines) and 2D reprojection plots.
+    // Maps frame number to list of (marker_index, observed_uv).
     let frame_marker_data = build_frame_marker_data(markers);
 
     let dataset_name = prefix.as_deref().unwrap_or("solve");
 
-    // Generate per-frame 3D scene visualizations.
     let scene_frame_naming = OutputFileNaming::new(
         output_dir,
         TestType::CameraSolve,
@@ -1006,7 +964,6 @@ fn generate_visualizations(
         None,
     )?;
 
-    // Generate 2D reprojection visualizations (one per frame).
     let reproj_naming = OutputFileNaming::new(
         output_dir,
         TestType::CameraSolve,
@@ -1020,10 +977,8 @@ fn generate_visualizations(
         format!("{} - Marker Reprojections", prefix_str)
     };
 
-    // Use HD resolution for output images.
     let output_image_size = ImageSize::from_pixels(1920.0, 1080.0);
 
-    // Convert data into sequential format for visualization.
     let sorted_frames: Vec<u32> = {
         let mut frames: Vec<u32> = camera_poses.keys().copied().collect();
         frames.sort();
@@ -1058,7 +1013,6 @@ fn generate_visualizations(
         &reproj_naming,
     )?;
 
-    // Compute per-frame, per-marker residuals.
     let (per_frame_residuals, residual_stats) =
         compute_per_frame_per_marker_residuals(
             markers,
@@ -1068,7 +1022,6 @@ fn generate_visualizations(
             image_size,
         )?;
 
-    // Generate residual error timeline visualization.
     let residual_naming = OutputFileNaming::new(
         output_dir,
         TestType::CameraSolve,
@@ -1103,9 +1056,7 @@ fn generate_visualizations(
 }
 
 #[cfg(feature = "visualization")]
-/// Build per-frame marker data from MarkersData.
-///
-/// Returns a map of frame number to list of (marker_index, observed_uv).
+/// Build a map from frame number to list of (marker_index, uv_position).
 fn build_frame_marker_data(
     markers: &MarkersData,
 ) -> std::collections::HashMap<u32, Vec<(MarkerIndex, UvPoint2<f64>)>> {
@@ -1114,18 +1065,13 @@ fn build_frame_marker_data(
         Vec<(MarkerIndex, UvPoint2<f64>)>,
     > = std::collections::HashMap::new();
 
-    // Iterate over all markers.
     for (marker_index, frame_data) in markers.frame_data.iter().enumerate() {
-        // Iterate over all frame data for this marker.
         for i in 0..frame_data.frames.len() {
             let frame = frame_data.frames[i];
-            let u = frame_data.u_coords[i];
-            let v = frame_data.v_coords[i];
-
-            // Create UvPoint2 from u, v coordinates.
-            let uv_point = UvPoint2::new(UvValue::new(u), UvValue::new(v));
-
-            // Add to frame_marker_data.
+            let uv_point = UvPoint2::new(
+                UvValue::new(frame_data.u_coords[i]),
+                UvValue::new(frame_data.v_coords[i]),
+            );
             frame_marker_data
                 .entry(frame)
                 .or_insert_with(Vec::new)
@@ -1136,16 +1082,13 @@ fn build_frame_marker_data(
     frame_marker_data
 }
 
-/// Write camera poses to a Kuper ASCII file.
 fn write_kuper_output(
     kuper_path: &str,
     camera_poses: &CameraPoses,
     focal_length_mm: f64,
 ) -> Result<()> {
-    // Get sorted frame list for consistent output ordering.
     let frame_list = camera_poses.generate_sorted_frame_list();
 
-    // Convert camera poses to Kuper frame data.
     let kuper_frames: Vec<KuperFrameData> = frame_list
         .iter()
         .map(|&frame| {
@@ -1159,16 +1102,11 @@ fn write_kuper_output(
         })
         .collect();
 
-    // Write the Kuper file.
     write_kuper_file(kuper_path, &kuper_frames)
         .with_context(|| format!("Failed to write Kuper file: {}", kuper_path))
 }
 
-/// Write triangulated bundle positions to an ASCII file.
-///
-/// Bundles are written in marker-index order.  The marker name is
-/// looked up from `markers.names`; if the index is out of range the
-/// name falls back to the string representation of the index.
+/// Write bundle positions to a file, named by marker index.
 fn write_bundle_output(
     bundle_path: &str,
     markers: &MarkersData,
@@ -1191,7 +1129,6 @@ fn write_bundle_output(
     })
 }
 
-/// Write camera poses to an `.mmcamera` JSON file.
 fn write_mmcamera_output(
     mmcamera_path: &str,
     args: &CliArgs,
@@ -1212,8 +1149,7 @@ fn write_mmcamera_output(
     )
 }
 
-/// Write camera poses to an `.mmcamera` JSON file without needing
-/// full CLI args.
+/// Write camera poses to an .mmcamera file without needing full CLI args.
 fn write_mmcamera_output_raw(
     mmcamera_path: &str,
     camera_poses: &CameraPoses,

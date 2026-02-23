@@ -1,0 +1,22 @@
+[package]
+name = "mmcamerasolve-bin"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "mmcamerasolve"
+path = "src/main.rs"
+
+[features]
+default = []
+visualization = ["mmsfm/visualization"]
+
+[dependencies]
+anyhow = { workspace = true }
+mmio = { package = "mmio_rust", path = "../mmio" }
+mmlens = { package = "mmlens_cppbind", path = "../../cppbind/mmlens" }
+mmsfm = { package = "mmsfm_rust", path = "../mmsfm", default-features = false }
+nalgebra = { workspace = true }
+rayon = { workspace = true }

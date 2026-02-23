@@ -6,6 +6,7 @@ members = [
     "lib/cppbind/mmlens",
     "lib/cppbind/mmscenegraph",
     "lib/mmsolverlibs",
+    "lib/rust/mmcamerasolve-bin",
     "lib/rust/mmcholmod",
     "lib/rust/mmcore",
     "lib/rust/mmimage",

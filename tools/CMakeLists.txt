@@ -18,3 +18,4 @@
 #
 
 add_subdirectory(lensdistortion)
+add_subdirectory(mmcamerasolve)

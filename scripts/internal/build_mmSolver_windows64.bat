@@ -146,8 +146,6 @@ IF %ERRORLEVEL% EQU 1 (
    :: './Cargo.toml'
    :: './scripts/internal/build_mmSolver_windows64.bat'
    :: './scripts/internal/build_mmSolver_linux.bash'
-   :: './scripts/internal/build_mmSolverLibs_windows64.bat'
-   :: './scripts/internal/build_mmSolverLibs_linux.bash'
    %RUST_CARGO_EXE% install cxxbridge-cmd --version 1.0.155
 )
 SET MMSOLVERLIBS_CXXBRIDGE_EXE="%USERPROFILE%\.cargo\bin\cxxbridge.exe"

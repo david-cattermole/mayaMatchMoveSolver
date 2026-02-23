@@ -46,7 +46,7 @@ use nalgebra::Point3;
 fn triangulation_a_test() -> Result<()> {
     let config = CameraConfiguration::new_pan(
         Point3::new(10.0, 0.0, 0.0), // 10 units to the right.
-        30.0,                         // 30 degrees left pan.
+        30.0,                        // 30 degrees left pan.
     );
     let (pose_a, pose_b, intrinsics_a, intrinsics_b) =
         create_synthetic_camera_setup_with_config(&config)?;

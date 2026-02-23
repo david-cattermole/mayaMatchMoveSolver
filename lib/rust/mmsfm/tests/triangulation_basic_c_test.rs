@@ -46,7 +46,7 @@ use nalgebra::Point3;
 fn triangulation_c_test() -> Result<()> {
     let config = CameraConfiguration::new_tilt(
         Point3::new(0.0, 5.0, 0.0), // 5 units up.
-        -10.0,                       // 10 degrees down tilt.
+        -10.0,                      // 10 degrees down tilt.
     );
     let (pose_a, pose_b, intrinsics_a, intrinsics_b) =
         create_synthetic_camera_setup_with_config(&config)?;

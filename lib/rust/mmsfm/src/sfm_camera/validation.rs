@@ -34,7 +34,7 @@ use crate::datatype::{
 #[allow(dead_code)]
 const DEBUG: bool = false;
 
-/// Systems with fewer bundles than this are considered underdetermined.
+/// Systems with fewer bundles than this are considered under-determined.
 ///
 /// Bundle adjustment requires at least 6 bundles to constrain the camera
 /// parameters (3 for translation, 3 for rotation).

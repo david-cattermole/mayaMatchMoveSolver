@@ -114,8 +114,12 @@ impl Evaluator for CameraSolveFocalLengthEvaluator {
         let mut quality_metrics = SolveQualityMetrics::default();
 
         // Run camera solve with this focal length.
+        // Use NoOpLogger since evaluations run in parallel threads
+        // and we only care about the final solve result.
+        let mut noop_logger = mmlogger::NoOpLogger;
         let print_summary = false;
         let result = match camera_solve_inner(
+            &mut noop_logger,
             self.frame_range,
             &self.markers,
             &intrinsics,

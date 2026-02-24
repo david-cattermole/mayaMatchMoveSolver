@@ -17,6 +17,7 @@ visualization = ["dep:plotters"]
 [dependencies]
 anyhow = { workspace = true }
 log = { workspace = true }
+mmlogger = { path = "../mmlogger" }
 mmcore = { package = "mmcore_rust", path = "../mmcore" }
 mmio = { package = "mmio_rust", path = "../mmio" }
 mmoptimise = { package = "mmoptimise_rust", path = "../mmoptimise" }

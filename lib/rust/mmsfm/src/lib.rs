@@ -49,17 +49,10 @@
 
 #![allow(non_snake_case)]
 
-/// Debug print macro that expands to `if DEBUG { eprintln!(...) }`.
-///
-/// Requires a `const DEBUG: bool` in the calling scope. When `DEBUG`
-/// is `false`, the compiler optimizes the branch away entirely.
-macro_rules! mm_debug_eprintln {
-    ($($arg:tt)*) => {
-        if DEBUG {
-            eprintln!($($arg)*);
-        }
-    };
-}
+// Import all log macros from mmlogger so sub-modules can use them
+// without explicit path prefixes.
+#[macro_use]
+extern crate mmlogger;
 
 pub mod bundle_adjust;
 pub mod bundle_triangulation;

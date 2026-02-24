@@ -37,7 +37,6 @@ use std::time::Instant;
 use cli::{
     parse_args, print_help, print_version, CliArgs, ParseResult, SolverType,
 };
-use mmlogger::Logger;
 use mmio::bundle_writer::{write_bundle_file, BundlePoint};
 use mmio::kuper_writer::{
     extract_zxy_euler_angles, maya_pose_to_kuper, write_kuper_file,
@@ -57,6 +56,11 @@ use mmio::mmsettings_reader::{
 use mmio::nuke_lens_reader::{read_nuke_lens_file, NukeLensData};
 use mmio::nuke_lens_writer::write_nuke_lens_file;
 use mmio::uvtrack_reader::{parse_file, FrameRange, MarkersData};
+#[cfg(feature = "logging")]
+use mmlogger::LevelFilter;
+#[cfg(feature = "logging")]
+use mmlogger::LogFormat;
+use mmlogger::Logger;
 use mmsfm::datatype::common::UnitValue;
 use mmsfm::datatype::{
     BundlePositions, CameraFilmBack, CameraIntrinsics, CameraPoses, ImageSize,
@@ -117,17 +121,40 @@ fn run() -> Result<()> {
 
     #[cfg(feature = "logging")]
     {
-        std::fs::create_dir_all(&args.output_dir)
-            .with_context(|| format!("Failed to create output directory: {}", args.output_dir))?;
+        std::fs::create_dir_all(&args.output_dir).with_context(|| {
+            format!("Failed to create output directory: {}", args.output_dir)
+        })?;
         let log_filename = match &args.prefix {
             Some(prefix) => format!("{}_solve.log", prefix),
             None => "solve.log".to_string(),
         };
         let log_path = format!("{}/{}", args.output_dir, log_filename);
-        let file = std::fs::File::create(&log_path)
-            .with_context(|| format!("Failed to create log file: {}", log_path))?;
-        let mut log = mmlogger::TeeLogger::new(file, std::io::stderr());
-        run_camera_solve(&args, &mut log)
+        let file = std::fs::File::create(&log_path).with_context(|| {
+            format!("Failed to create log file: {}", log_path)
+        })?;
+        if args.quiet {
+            let mut log = mmlogger::DualStreamLogger::new(
+                std::io::stdout(),
+                LogFormat::Plain,
+                LevelFilter::WARN,
+                file,
+                LogFormat::Timestamp,
+                LevelFilter::ALL,
+            );
+
+            run_camera_solve(&args, &mut log)
+        } else {
+            let mut log = mmlogger::DualStreamLogger::new(
+                std::io::stdout(),
+                LogFormat::Plain,
+                LevelFilter::ALL,
+                file,
+                LogFormat::Timestamp,
+                LevelFilter::ALL,
+            );
+
+            run_camera_solve(&args, &mut log)
+        }
     }
 
     #[cfg(not(feature = "logging"))]
@@ -253,34 +280,31 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
     let total_start = Instant::now();
 
     // Load solver settings file if provided.
-    let settings: Option<MmSettingsData> =
-        if let Some(ref settings_path) = args.solver_settings_file {
-            if !args.quiet {
-                println!("Loading solver settings from: {}", settings_path);
-            }
-            logger.log("INFO", &format!("Loading solver settings from: {}", settings_path));
-            let s = parse_mmsettings_file(settings_path)
-                .map_err(|e| anyhow::anyhow!("{}", e))?;
-            Some(s)
-        } else {
-            None
-        };
+    let settings: Option<MmSettingsData> = if let Some(ref settings_path) =
+        args.solver_settings_file
+    {
+        logger
+            .info(&format!("Loading solver settings from: {}", settings_path));
+        let s = parse_mmsettings_file(settings_path)
+            .map_err(|e| anyhow::anyhow!("{}", e))?;
+        Some(s)
+    } else {
+        None
+    };
 
     // Load Nuke lens distortion file if provided.
-    let nuke_lens_data: Option<Arc<NukeLensData>> =
-        if let Some(ref lens_path) = args.nuke_lens_file {
-            if !args.quiet {
-                println!("Loading Nuke lens file from: {}", lens_path);
-            }
-            let data = read_nuke_lens_file(lens_path)
-                .map_err(|e| anyhow::anyhow!("{}", e))?;
-            if !args.quiet {
-                println!("  Loaded {} lens layer(s)", data.layer_count);
-            }
-            Some(Arc::new(data))
-        } else {
-            None
-        };
+    let nuke_lens_data: Option<Arc<NukeLensData>> = if let Some(ref lens_path) =
+        args.nuke_lens_file
+    {
+        logger.info(&format!("Loading Nuke lens file from: {}", lens_path));
+        let data = read_nuke_lens_file(lens_path)
+            .map_err(|e| anyhow::anyhow!("{}", e))?;
+
+        logger.info(&format!("  Loaded {} lens layer(s)", data.layer_count));
+        Some(Arc::new(data))
+    } else {
+        None
+    };
 
     // Thread count: CLI flag > settings file > auto.
     let thread_count = args.threads.or_else(|| {
@@ -291,26 +315,21 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
     });
     setup_thread_pool(thread_count)?;
 
-    if !args.quiet {
-        if let Some(ref mmcamera_path) = args.mmcamera_file {
-            println!("Using mmcamera defaults from: {}", mmcamera_path);
-        }
-        println!("Loading UV markers from: {}", args.uv_file);
+    if let Some(ref mmcamera_path) = args.mmcamera_file {
+        logger
+            .info(&format!("Using mmcamera defaults from: {}", mmcamera_path));
     }
+    logger.info(&format!("Loading UV markers from: {}", args.uv_file));
 
     let (file_info, mut markers) = parse_file(&args.uv_file)
         .with_context(|| format!("Failed to load UV file: {}", args.uv_file))?;
 
-    logger.log("INFO", &format!("Loaded {} markers from: {}", markers.len(), args.uv_file));
-
-    if !args.quiet {
-        println!("  Loaded {} markers", markers.len());
-        println!("  Format version: {:?}", file_info.version);
-        println!(
-            "  Frame range: {} - {}",
-            markers.frame_range.start_frame, markers.frame_range.end_frame
-        );
-    }
+    logger.info(&format!("Loaded {} markers:", markers.len()));
+    logger.info(&format!("  Format version: {:?}", file_info.version));
+    logger.info(&format!(
+        "  Frame range: {} - {}",
+        markers.frame_range.start_frame, markers.frame_range.end_frame
+    ));
 
     // Determine frame range: CLI > settings file > UV file.
     let settings_start = settings.as_ref().and_then(|s| s.start_frame);
@@ -326,12 +345,10 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
             .unwrap_or(markers.frame_range.end_frame),
     };
 
-    if !args.quiet {
-        println!(
-            "  Using frame range: {} - {}",
-            frame_range.start_frame, frame_range.end_frame
-        );
-    }
+    logger.info(&format!(
+        "  Using frame range: {} - {}",
+        frame_range.start_frame, frame_range.end_frame
+    ));
 
     // Check for distorted/undistorted marker data.
     let has_explicit_distorted =
@@ -341,32 +358,20 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         // Lens file provided - apply undistortion in-place.
         // For v3+ files with explicit distorted data, the source is u_coords_dist/v_coords_dist.
         // For v1/v2 files (or v3+ without distorted data), the source is u_coords/v_coords.
-        if !args.quiet {
-            println!("  Applying lens undistortion to marker positions...");
-        }
+        logger.info("  Applying lens undistortion to marker positions...");
+
         undistort_markers_with_lens(
             &mut markers,
             nuke_lens_data.as_ref().unwrap(),
             has_explicit_distorted,
         )?;
-        if !args.quiet {
-            println!("  Undistortion applied successfully.");
-        }
+        logger.info("  Undistortion applied successfully.");
     } else if has_explicit_distorted {
         if file_info.marker_undistorted {
             // File has both distorted and undistorted data; use the stored undistorted positions.
-            if !args.quiet {
-                println!(
-                    "  UV file contains both distorted and undistorted data; \
-                     using stored undistorted positions."
-                );
-            }
+            logger.info( "  UV file contains both distorted and undistorted data; using stored undistorted positions.");
         } else {
-            eprintln!(
-                "  Warning: UV file contains only distorted marker positions but \
-                 no lens file was provided. \
-                 Solving will use distorted positions which may reduce accuracy."
-            );
+            logger.warn( "  UV file contains only distorted marker positions but no lens file was provided. Solving will use distorted positions which may reduce accuracy.");
         }
     }
 
@@ -387,22 +392,20 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         args.image_height as f64,
     );
 
-    if !args.quiet {
-        println!("Camera parameters:");
-        println!("  Focal length: {} mm", args.focal_length_mm);
-        println!(
-            "  Lens center: ({}, {}) mm",
-            args.lens_center_x_mm, args.lens_center_y_mm
-        );
-        println!(
-            "  Image size: {}x{} pixels",
-            args.image_width, args.image_height
-        );
-        println!(
-            "  Film back: {}x{} mm",
-            args.film_back_width_mm, args.film_back_height_mm
-        );
-    }
+    logger.info("Camera parameters:");
+    logger.info(&format!("  Focal length: {} mm", args.focal_length_mm));
+    logger.info(&format!(
+        "  Lens center: ({}, {}) mm",
+        args.lens_center_x_mm, args.lens_center_y_mm
+    ));
+    logger.info(&format!(
+        "  Image size: {}x{} pixels",
+        args.image_width, args.image_height
+    ));
+    logger.info(&format!(
+        "  Film back: {}x{} mm",
+        args.film_back_width_mm, args.film_back_height_mm
+    ));
 
     let mut config = CameraSolveConfig::default();
     if let Some(ref s) = settings {
@@ -472,12 +475,11 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
                 let num_samples = settings_fl_sample_count
                     .unwrap_or(defaults::UNIFORM_GRID_DEFAULT_SAMPLES as u32)
                     as usize;
-                if !args.quiet {
-                    println!(
-                        "Solver: uniform grid ({:.1}-{:.1} mm, {} samples)",
-                        min_fl, max_fl, num_samples
-                    );
-                }
+
+                logger.info(&format!(
+                    "Solver: uniform grid ({:.1}-{:.1} mm, {} samples)",
+                    min_fl, max_fl, num_samples
+                ));
                 Some(GlobalAdjustmentConfig::UniformGridSearch {
                     focal_length_bounds: (min_fl, max_fl),
                     num_samples,
@@ -493,12 +495,11 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
                 ));
                 let generations = settings_generations
                     .unwrap_or(defaults::REFINE_EVO_GENERATIONS);
-                if !args.quiet {
-                    println!(
-                        "Solver: refine mode (EVO SmallRefinement, {:.1}-{:.1} mm)",
-                        min_fl, max_fl
-                    );
-                }
+
+                logger.info(&format!(
+                    "Solver: refine mode (EVO SmallRefinement, {:.1}-{:.1} mm)",
+                    min_fl, max_fl
+                ));
                 Some(GlobalAdjustmentConfig::DifferentialEvolution {
                     mode:
                         mmsfm::sfm_camera::GlobalAdjustmentMode::SmallRefinement,
@@ -516,12 +517,11 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
             ));
             let generations = settings_generations
                 .unwrap_or(defaults::UNKNOWN_EVO_GENERATIONS);
-            if !args.quiet {
-                println!(
-                    "Solver: unknown mode (EVO LargeRefinement, {:.1}-{:.1} mm)",
-                    min_fl, max_fl
-                );
-            }
+
+            logger.info(&format!(
+                "Solver: unknown mode (EVO LargeRefinement, {:.1}-{:.1} mm)",
+                min_fl, max_fl
+            ));
             Some(GlobalAdjustmentConfig::DifferentialEvolution {
                 mode: mmsfm::sfm_camera::GlobalAdjustmentMode::LargeRefinement,
                 focal_length_bounds: (min_fl, max_fl),
@@ -536,11 +536,7 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
     let mut bundle_positions = BundlePositions::new();
     let mut quality_metrics = SolveQualityMetrics::default();
 
-    if !args.quiet {
-        println!();
-        println!("Running camera solve...");
-    }
-    logger.log("INFO", "Running camera solve...");
+    logger.info("Running camera solve...");
 
     // Create intermediate result writer if enabled.
     let intermediate_writer: Option<Arc<dyn IntermediateResultWriter>> = if args
@@ -571,6 +567,7 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
 
     let solve_start = Instant::now();
     camera_solve(
+        logger,
         frame_range,
         &markers,
         &camera_intrinsics,
@@ -589,13 +586,10 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
     #[cfg_attr(not(feature = "visualization"), allow(unused_variables))]
     let camera_intrinsics = match quality_metrics.optimized_focal_length_mm {
         Some(solved_fl) => {
-            if !args.quiet {
-                println!();
-                println!(
-                    "  Solved focal length: {:.4} mm (input: {} mm)",
-                    solved_fl, args.focal_length_mm
-                );
-            }
+            logger.info(&format!(
+                "  Solved focal length: {:.4} mm (input: {} mm)",
+                solved_fl, args.focal_length_mm
+            ));
             CameraIntrinsics::from_physical_parameters(
                 MillimeterUnit::new(solved_fl),
                 MillimeterUnit::new(args.lens_center_x_mm),
@@ -606,7 +600,7 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         None => camera_intrinsics,
     };
 
-    logger.log("INFO", &format!(
+    logger.info(&format!(
         "Solve completed in {:.2}s: {} cameras, {} bundles, mean_err={:.4}px",
         solve_duration.as_secs_f64(),
         camera_poses.len(),
@@ -614,31 +608,23 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         quality_metrics.mean_reprojection_error,
     ));
 
-    if !args.quiet {
-        println!();
-        println!("Solve completed!");
-        println!("  Cameras solved: {}", camera_poses.len());
-        println!("  Bundles triangulated: {}", bundle_positions.len());
-        println!();
-        println!("Quality metrics:");
-        println!(
-            "  Mean reprojection error: {:.4} pixels",
-            quality_metrics.mean_reprojection_error
-        );
-        println!(
-            "  Median reprojection error: {:.4} pixels",
-            quality_metrics.median_reprojection_error
-        );
-    }
+    logger.info("Solve completed!");
+    logger.info(&format!("  Cameras solved: {}", camera_poses.len()));
+    logger.info(&format!(
+        "  Bundles triangulated: {}",
+        bundle_positions.len()
+    ));
+    logger.info(&format!(
+        "  Mean reprojection error: {:.4} pixels",
+        quality_metrics.mean_reprojection_error
+    ));
+    logger.info(&format!(
+        "  Median reprojection error: {:.4} pixels",
+        quality_metrics.median_reprojection_error
+    ));
 
     #[cfg(feature = "visualization")]
     let viz_duration = {
-        if !args.quiet {
-            println!();
-            println!("Generating visualizations to: {}", args.output_dir);
-            println!("  Output prefix: {:?}", &args.prefix);
-        }
-
         let viz_start = Instant::now();
         generate_visualizations(
             &args.output_dir,
@@ -662,10 +648,7 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
     };
     let kuper_path = format!("{}/{}", args.output_dir, kuper_filename);
 
-    if !args.quiet {
-        println!();
-        println!("Writing Kuper file to: {}", kuper_path);
-    }
+    logger.info(&format!("Writing Kuper file to: {}", kuper_path));
 
     std::fs::create_dir_all(&args.output_dir).with_context(|| {
         format!("Failed to create output directory: {}", args.output_dir)
@@ -679,9 +662,7 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         focal_length_mm_val.value(),
     )?;
 
-    if !args.quiet {
-        println!("  Wrote {} frames", camera_poses.len());
-    }
+    logger.info(&format!("  Wrote {} frames", camera_poses.len()));
 
     let bundle_filename = match &args.prefix {
         Some(prefix) => format!("{}_bundles.mmbundles", prefix),
@@ -689,16 +670,11 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
     };
     let bundle_path = format!("{}/{}", args.output_dir, bundle_filename);
 
-    if !args.quiet {
-        println!();
-        println!("Writing bundle file to: {}", bundle_path);
-    }
+    logger.info(&format!("Writing bundle file to: {}", bundle_path));
 
     write_bundle_output(&bundle_path, &markers, &bundle_positions)?;
 
-    if !args.quiet {
-        println!("  Wrote {} bundles", bundle_positions.len());
-    }
+    logger.info(&format!("  Wrote {} bundles", bundle_positions.len()));
 
     let mmcamera_filename = match &args.prefix {
         Some(prefix) => format!("{}_camera.mmcamera", prefix),
@@ -706,10 +682,7 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
     };
     let mmcamera_path = format!("{}/{}", args.output_dir, mmcamera_filename);
 
-    if !args.quiet {
-        println!();
-        println!("Writing mmcamera file to: {}", mmcamera_path);
-    }
+    logger.info(&format!("Writing mmcamera file to: {}", mmcamera_path));
 
     write_mmcamera_output(
         &mmcamera_path,
@@ -720,9 +693,7 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         &frame_range,
     )?;
 
-    if !args.quiet {
-        println!("  Wrote {} frames", camera_poses.len());
-    }
+    logger.info(&format!("  Wrote {} frames (mmcamera)", camera_poses.len()));
 
     let residuals_filename = match &args.prefix {
         Some(prefix) => format!("{}_residuals.mmresiduals", prefix),
@@ -775,14 +746,11 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         format!("Failed to write mmresiduals file: {}", residuals_path)
     })?;
 
-    if !args.quiet {
-        println!();
-        println!("Writing residuals file to: {}", residuals_path);
-        println!(
-            "  Mean: {:.4} px, Median: {:.4} px, Count: {}",
-            residual_stats.mean, residual_stats.median, residual_stats.count
-        );
-    }
+    logger.info(&format!("Writing residuals file to: {}", residuals_path));
+    logger.info(&format!(
+        "  Mean: {:.4} px, Median: {:.4} px, Count: {}",
+        residual_stats.mean, residual_stats.median, residual_stats.count
+    ));
 
     if let Some(ref lens_data) = nuke_lens_data {
         let lens_filename = match &args.prefix {
@@ -791,18 +759,14 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
         };
         let lens_path = format!("{}/{}", args.output_dir, lens_filename);
 
-        if !args.quiet {
-            println!();
-            println!("Writing Nuke lens file to: {}", lens_path);
-        }
+        logger.info(&format!("Writing Nuke lens file to: {}", lens_path));
 
         write_nuke_lens_file(&lens_path, lens_data).with_context(|| {
             format!("Failed to write Nuke lens file: {}", lens_path)
         })?;
 
-        if !args.quiet {
-            println!("  Wrote {} lens layer(s)", lens_data.layer_count);
-        }
+        logger
+            .info(&format!("  Wrote {} lens layer(s)", lens_data.layer_count));
     }
 
     let io_duration = io_start.elapsed();
@@ -811,90 +775,75 @@ fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
     let total_time_secs = total_duration.as_secs_f64();
     let total_time_mins = total_time_secs / 60.0;
 
-    if !args.quiet {
-        println!();
-        println!("=== Timing Summary ===");
-
-        if quality_metrics.global_optimization_time_secs.is_some() {
-            println!("Solver stages:");
-
-            if let Some(coarse_time) = quality_metrics.coarse_search_time_secs {
-                let percentage = (coarse_time / total_time_secs) * 100.0;
-                println!(
-                    "  Coarse search:        {:>6.2}s  {:>5.1}%",
-                    coarse_time, percentage
-                );
-            }
-
-            if let Some(refined_time) = quality_metrics.refined_search_time_secs
-            {
-                let percentage = (refined_time / total_time_secs) * 100.0;
-                println!(
-                    "  Refined search:       {:>6.2}s  {:>5.1}%",
-                    refined_time, percentage
-                );
-            }
-
-            if let Some(global_time) =
-                quality_metrics.global_optimization_time_secs
-            {
-                let percentage = (global_time / total_time_secs) * 100.0;
-                println!(
-                    "  Global optimization:  {:>6.2}s  {:>5.1}%",
-                    global_time, percentage
-                );
-            }
-
-            if let Some(final_time) = quality_metrics.final_solve_time_secs {
-                let percentage = (final_time / total_time_secs) * 100.0;
-                println!(
-                    "  Final solve:          {:>6.2}s  {:>5.1}%",
-                    final_time, percentage
-                );
-            }
-
-            let total_solve_time =
-                quality_metrics.global_optimization_time_secs.unwrap_or(0.0)
-                    + quality_metrics.final_solve_time_secs.unwrap_or(0.0);
-            let percentage = (total_solve_time / total_time_secs) * 100.0;
-            println!(
-                "  Total solver time:    {:>6.2}s  {:>5.1}%",
-                total_solve_time, percentage
-            );
-        } else {
-            let solve_time = solve_duration.as_secs_f64();
-            let percentage = (solve_time / total_time_secs) * 100.0;
-            println!(
-                "  Camera solve:         {:>6.2}s  {:>5.1}%",
-                solve_time, percentage
-            );
+    logger.info("=== Timing Summary ===");
+    if quality_metrics.global_optimization_time_secs.is_some() {
+        logger.info("Solver stages:");
+        if let Some(coarse_time) = quality_metrics.coarse_search_time_secs {
+            let percentage = (coarse_time / total_time_secs) * 100.0;
+            logger.info(&format!(
+                "  Coarse search:        {:>6.2}s  {:>5.1}%",
+                coarse_time, percentage
+            ));
         }
-
-        if ENABLE_VISUALIZATIONS && viz_duration > std::time::Duration::ZERO {
-            let viz_time = viz_duration.as_secs_f64();
-            let percentage = (viz_time / total_time_secs) * 100.0;
-            println!(
-                "  Visualizations:       {:>6.2}s  {:>5.1}%",
-                viz_time, percentage
-            );
+        if let Some(refined_time) = quality_metrics.refined_search_time_secs {
+            let percentage = (refined_time / total_time_secs) * 100.0;
+            logger.info(&format!(
+                "  Refined search:       {:>6.2}s  {:>5.1}%",
+                refined_time, percentage
+            ));
         }
-
-        let io_time = io_duration.as_secs_f64();
-        let percentage = (io_time / total_time_secs) * 100.0;
-        println!(
-            "  File I/O:             {:>6.2}s  {:>5.1}%",
-            io_time, percentage
-        );
-        println!();
-        println!(
-            "  Total time:            {:.2}s ({:.2} minutes)",
-            total_time_secs, total_time_mins
-        );
-        println!();
-        println!("Done!");
+        if let Some(global_time) = quality_metrics.global_optimization_time_secs
+        {
+            let percentage = (global_time / total_time_secs) * 100.0;
+            logger.info(&format!(
+                "  Global optimization:  {:>6.2}s  {:>5.1}%",
+                global_time, percentage
+            ));
+        }
+        if let Some(final_time) = quality_metrics.final_solve_time_secs {
+            let percentage = (final_time / total_time_secs) * 100.0;
+            logger.info(&format!(
+                "  Final solve:          {:>6.2}s  {:>5.1}%",
+                final_time, percentage
+            ));
+        }
+        let total_solve_time =
+            quality_metrics.global_optimization_time_secs.unwrap_or(0.0)
+                + quality_metrics.final_solve_time_secs.unwrap_or(0.0);
+        let percentage = (total_solve_time / total_time_secs) * 100.0;
+        logger.info(&format!(
+            "  Total solver time:    {:>6.2}s  {:>5.1}%",
+            total_solve_time, percentage
+        ));
+    } else {
+        let solve_time = solve_duration.as_secs_f64();
+        let percentage = (solve_time / total_time_secs) * 100.0;
+        logger.info(&format!(
+            "  Camera solve:         {:>6.2}s  {:>5.1}%",
+            solve_time, percentage
+        ));
     }
+    if ENABLE_VISUALIZATIONS && viz_duration > std::time::Duration::ZERO {
+        let viz_time = viz_duration.as_secs_f64();
+        let percentage = (viz_time / total_time_secs) * 100.0;
+        logger.info(&format!(
+            "  Visualizations:       {:>6.2}s  {:>5.1}%",
+            viz_time, percentage
+        ));
+    }
+    let io_time = io_duration.as_secs_f64();
+    let percentage = (io_time / total_time_secs) * 100.0;
+    logger.info(&format!(
+        "  File I/O:             {:>6.2}s  {:>5.1}%",
+        io_time, percentage
+    ));
+    logger.info(&format!(
+        "  Total time:            {:.2}s ({:.2} minutes)",
+        total_time_secs, total_time_mins
+    ));
+    logger.info("Done!");
 
-    logger.log("INFO", &format!("Total time: {:.2}s", total_time_secs));
+    logger.info(&format!("Total time: {:.2}s", total_time_secs));
 
     Ok(())
 }

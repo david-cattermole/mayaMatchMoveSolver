@@ -23,6 +23,7 @@
 use std::time::Instant;
 
 use mmio::uvtrack_reader::FrameNumber;
+use mmlogger::Logger;
 
 /// Format a list of frame numbers as ranges
 ///
@@ -69,28 +70,52 @@ pub(crate) fn format_frame_list(frames: &[FrameNumber]) -> String {
 }
 
 /// Print a free-text progress line (no numeric columns).
-pub(super) fn progress_text(phase: u8, solve_start: Instant, text: &str) {
+pub(super) fn progress_text<L: Logger>(
+    logger: &mut L,
+    phase: u8,
+    solve_start: Instant,
+    text: &str,
+) {
     let time_str = format!("{:.1}s", solve_start.elapsed().as_secs_f64());
-    eprintln!("[Phase {}] {:>5} | {}", phase, time_str, text);
+    mm_info_log!(logger, "[Phase {}] {:>5} | {}", phase, time_str, text);
 }
 
 /// Print the numeric-column header and its separator row.
 #[allow(dead_code)]
-pub(super) fn progress_table_header(phase: u8, solve_start: Instant) {
+pub(super) fn progress_table_header<L: Logger>(
+    logger: &mut L,
+    phase: u8,
+    solve_start: Instant,
+) {
     let time_str = format!("{:.1}s", solve_start.elapsed().as_secs_f64());
-    eprintln!(
+    mm_info_log!(
+        logger,
         "[Phase {}] {:>5} | {:>7} | {:>9} | {:>6} | {:>7} | {}",
-        phase, time_str, "Mean px", "Median px", "Frames", "Bundles", "Stage"
+        phase,
+        time_str,
+        "Mean px",
+        "Median px",
+        "Frames",
+        "Bundles",
+        "Stage"
     );
-    eprintln!(
+    mm_info_log!(
+        logger,
         "[Phase {}] {:>5} | {:>7} | {:>9} | {:>6} | {:>7} | {}",
-        phase, "-----", "-------", "---------", "------", "-------", "-----"
+        phase,
+        "-----",
+        "-------",
+        "---------",
+        "------",
+        "-------",
+        "-----"
     );
 }
 
 /// Print one row of the progress table.
 #[allow(dead_code)]
-pub(super) fn progress_row(
+pub(super) fn progress_row<L: Logger>(
+    logger: &mut L,
     phase: u8,
     solve_start: Instant,
     mean: f64,
@@ -100,8 +125,15 @@ pub(super) fn progress_row(
     stage: &str,
 ) {
     let time_str = format!("{:.1}s", solve_start.elapsed().as_secs_f64());
-    eprintln!(
+    mm_info_log!(
+        logger,
         "[Phase {}] {:>5} | {:>7.3} | {:>9.3} | {:>6} | {:>7} | {}",
-        phase, time_str, mean, median, frames, bundles, stage
+        phase,
+        time_str,
+        mean,
+        median,
+        frames,
+        bundles,
+        stage
     );
 }

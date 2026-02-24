@@ -23,6 +23,7 @@
 use std::sync::Arc;
 
 use anyhow::Result;
+use mmlogger::Logger;
 
 use mmio::uvtrack_reader::{FrameRange, MarkersData};
 
@@ -46,7 +47,8 @@ const DEBUG: bool = false;
 /// When `global_adjustment_config` is `Some`, first optimizes focal
 /// length using Differential Evolution or Uniform Grid search, then
 /// runs the final solve with the best focal length found.
-pub fn camera_solve(
+pub fn camera_solve<L: Logger>(
+    logger: &mut L,
     scene_frame_range: FrameRange,
     markers: &MarkersData,
     camera_intrinsics: &CameraIntrinsics,
@@ -66,6 +68,7 @@ pub fn camera_solve(
             let solve_quality = SolveQuality::Final;
             let print_summary = true;
             let result = camera_solve_inner(
+                logger,
                 scene_frame_range,
                 markers,
                 camera_intrinsics,
@@ -85,6 +88,7 @@ pub fn camera_solve(
         Some(global_config) => {
             // Global adjustment solver.
             run_camera_solve_with_global_adjustment(
+                logger,
                 scene_frame_range,
                 markers,
                 camera_intrinsics,

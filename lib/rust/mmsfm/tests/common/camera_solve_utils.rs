@@ -414,7 +414,9 @@ pub fn run_camera_solve_dataset_test(
     let mut bundle_positions = BundlePositions::new();
     let mut metrics = SolveQualityMetrics::default();
 
+    let mut noop_logger = mmlogger::NoOpLogger;
     camera_solve(
+        &mut noop_logger,
         frame_range,
         markers,
         &initial_intrinsics,

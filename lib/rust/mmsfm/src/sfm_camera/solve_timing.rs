@@ -63,7 +63,7 @@ pub struct TimingData {
 
 /// Print comprehensive timing breakdown for the solve.
 #[allow(dead_code)]
-pub fn print_timing_breakdown<L: Logger>(logger: &mut L, timing: &TimingData) {
+pub fn print_timing_breakdown<L: Logger>(logger: &L, timing: &TimingData) {
     logger.log("TIMING", "");
     logger.log("TIMING", "=== Timing Breakdown ===");
     logger.log(

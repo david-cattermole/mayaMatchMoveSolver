@@ -29,6 +29,7 @@ use crate::datatype::{
 };
 
 use mmio::uvtrack_reader::{FrameRange, MarkersData};
+use mmlogger::Logger;
 use mmoptimise::global::Evaluator;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
@@ -43,7 +44,7 @@ pub const MINIMUM_ACCEPTED_BUNDLE_COUNT: usize = 6;
 /// Implements `Evaluator` so it can be used with Differential Evolution
 /// or Uniform Grid Search. Each call runs an independent solve with fresh
 /// output buffers, making it safe to call from multiple threads.
-pub struct CameraSolveFocalLengthEvaluator {
+pub struct CameraSolveFocalLengthEvaluator<L: Logger> {
     frame_range: FrameRange,
     markers: Arc<MarkersData>,
     film_back: CameraFilmBack<f64>,
@@ -54,9 +55,11 @@ pub struct CameraSolveFocalLengthEvaluator {
     eval_counter: Arc<AtomicUsize>,
     /// Shared with the optimizer so log messages can show the current generation.
     current_generation: Arc<AtomicUsize>,
+    /// Logger for debug output during evaluations.
+    logger: L,
 }
 
-impl CameraSolveFocalLengthEvaluator {
+impl<L: Logger> CameraSolveFocalLengthEvaluator<L> {
     /// Create a new focal length evaluator.
     pub fn new(
         frame_range: FrameRange,
@@ -66,6 +69,7 @@ impl CameraSolveFocalLengthEvaluator {
         config: Arc<CameraSolveConfig>,
         solve_quality: SolveQuality,
         current_generation: Arc<AtomicUsize>,
+        logger: L,
     ) -> Self {
         Self {
             frame_range,
@@ -76,11 +80,12 @@ impl CameraSolveFocalLengthEvaluator {
             solve_quality,
             eval_counter: Arc::new(AtomicUsize::new(0)),
             current_generation,
+            logger,
         }
     }
 }
 
-impl Evaluator for CameraSolveFocalLengthEvaluator {
+impl<L: Logger> Evaluator for CameraSolveFocalLengthEvaluator<L> {
     /// Run the camera solve for the given focal length and return the
     /// mean reprojection error, or `f64::MAX` if the solve failed.
     fn evaluate(&self, x: &[f64]) -> f64 {
@@ -91,7 +96,8 @@ impl Evaluator for CameraSolveFocalLengthEvaluator {
         let eval_num = self.eval_counter.fetch_add(1, Ordering::SeqCst) + 1;
         let gen = self.current_generation.load(Ordering::SeqCst);
 
-        mm_debug_eprintln!(
+        mm_debug_log!(
+            self.logger,
             "[EVO Eval #{} Gen {}] [{:?}] focal_length={:.8}mm - Running...",
             eval_num,
             gen,
@@ -116,10 +122,10 @@ impl Evaluator for CameraSolveFocalLengthEvaluator {
         // Run camera solve with this focal length.
         // Use NoOpLogger since evaluations run in parallel threads
         // and we only care about the final solve result.
-        let mut noop_logger = mmlogger::NoOpLogger;
+        let noop_logger = mmlogger::NoOpLogger;
         let print_summary = false;
         let result = match camera_solve_inner(
-            &mut noop_logger,
+            &noop_logger,
             self.frame_range,
             &self.markers,
             &intrinsics,
@@ -139,7 +145,8 @@ impl Evaluator for CameraSolveFocalLengthEvaluator {
                 let num_frames = self.frame_range.frame_count();
 
                 if num_bundles >= MINIMUM_ACCEPTED_BUNDLE_COUNT {
-                    mm_debug_eprintln!(
+                    mm_debug_log!(
+                        self.logger,
                         "[EVO Eval #{} Gen {}] [{:?}] focal_length={:.8}mm ACCEPTED mean={:.6}px, median={:.6}px, bundles={}, frames_solved={}/{}, time={:.3}s",
                         eval_num, gen, thread_id, focal_length_mm,
                         quality_metrics.mean_reprojection_error,
@@ -152,7 +159,8 @@ impl Evaluator for CameraSolveFocalLengthEvaluator {
 
                     quality_metrics.mean_reprojection_error
                 } else {
-                    mm_debug_eprintln!(
+                    mm_debug_log!(
+                        self.logger,
                         "[EVO Eval #{} Gen {}] [{:?}] focal_length={:.8}mm REJECTED mean={:.6}px, median={:.6}px, bundles={}, frames_solved={}/{}, time={:.3}s",
                         eval_num, gen, thread_id, focal_length_mm,
                         quality_metrics.mean_reprojection_error,
@@ -167,7 +175,8 @@ impl Evaluator for CameraSolveFocalLengthEvaluator {
             }
             Err(e) => {
                 let elapsed = start_time.elapsed();
-                mm_debug_eprintln!(
+                mm_debug_log!(
+                    self.logger,
                     "[EVO Eval #{} Gen {}] [{:?}] focal_length={:.8}mm FAILED (time={:.3}s) error: {}",
                     eval_num, gen, thread_id, focal_length_mm, elapsed.as_secs_f64(), e
                 );
@@ -201,6 +210,7 @@ mod tests {
             config,
             SolveQuality::Draft,
             current_generation,
+            mmlogger::NoOpLogger,
         );
 
         // If we get here without panic, creation succeeded

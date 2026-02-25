@@ -56,7 +56,7 @@
 //! // Run optimization
 //! let mut solver = DifferentialEvolution::new(config)?;
 //! let mut best_params = vec![0.0; 5];
-//! let best_cost = solver.run(&MyEvaluator, &mut best_params)?;
+//! let best_cost = solver.run(&MyEvaluator, &mut best_params, &mmlogger::NoOpLogger)?;
 //! ```
 //!
 //! # When to Use DE vs Gradient-Based Solvers
@@ -86,7 +86,7 @@
 //! );
 //! let mut de_solver = DifferentialEvolution::new(de_config)?;
 //! let mut global_params = vec![0.0; 5];
-//! de_solver.run(&evaluator, &mut global_params)?;
+//! de_solver.run(&evaluator, &mut global_params, &mmlogger::NoOpLogger)?;
 //!
 //! // Step 2: Local refinement with LM (using global_params as initial guess)
 //! let mut lm_solver = LevenbergMarquardtSolver::new(lm_config);
@@ -173,6 +173,7 @@
 //! ```
 
 use anyhow::Result;
+use mmlogger::mm_info_log;
 use rayon::prelude::*;
 use thiserror::Error;
 
@@ -701,10 +702,11 @@ impl DifferentialEvolution {
     /// # Panics
     ///
     /// Panics if `best_out.len()` != `num_dimensions`.
-    pub fn run<E: Evaluator + Sync>(
+    pub fn run<E: Evaluator + Sync, L: mmlogger::Logger>(
         &mut self,
         evaluator: &E,
         best_out: &mut [f64],
+        logger: &L,
     ) -> Result<f64, DifferentialEvolutionError> {
         assert_eq!(
             best_out.len(),
@@ -916,7 +918,8 @@ impl DifferentialEvolution {
             };
 
             if PRINT_SOLVER_DETAILS {
-                println!(
+                mm_info_log!(
+                    logger,
                     "[EVO] Gen {}/{}: cost={:.9} (Δ={:+.9}, {:+.6}%), diversity={:.9}, params={}, time={:.2}s",
                     gen + 1,
                     cfg.generations,
@@ -964,12 +967,14 @@ impl DifferentialEvolution {
                 // Stop immediately when criteria met.
                 if diversity_low && (cost_stagnant || params_stagnant) {
                     if PRINT_SOLVER_DETAILS {
-                        println!(
+                        mm_info_log!(
+                            logger,
                             "[EVO] Early stopping at generation {}/{}: convergence detected",
                             gen + 1,
                             cfg.generations
                         );
-                        println!(
+                        mm_info_log!(
+                            logger,
                             "[EVO]   diversity={:.9}, cost_change={:.9}, param_change={:.9}",
                             current_diversity,
                             (best_cost - prev_best_cost).abs(),
@@ -1053,7 +1058,7 @@ mod tests {
         };
         let mut best = vec![0.0; num_dimensions];
 
-        let cost = solver.run(&eval, &mut best).unwrap();
+        let cost = solver.run(&eval, &mut best, &mmlogger::NoOpLogger).unwrap();
 
         assert_relative_eq!(cost, 0.0, epsilon = 1e-6);
         assert_relative_eq!(best[0], 0.0, epsilon = 5e-4);
@@ -1091,7 +1096,7 @@ mod tests {
         };
         let mut best = vec![0.0; num_dimensions];
 
-        let cost = solver.run(&eval, &mut best).unwrap();
+        let cost = solver.run(&eval, &mut best, &mmlogger::NoOpLogger).unwrap();
 
         assert_relative_eq!(cost, 0.0, epsilon = 1e-10);
         assert_relative_eq!(best[0], 1.0, epsilon = 1e-6);
@@ -1122,7 +1127,9 @@ mod tests {
         let mut solver = DifferentialEvolution::new(cfg).unwrap();
         let mut best = vec![0.0; 2];
 
-        let cost = solver.run(&evaluator, &mut best).unwrap();
+        let cost = solver
+            .run(&evaluator, &mut best, &mmlogger::NoOpLogger)
+            .unwrap();
 
         // Global minimum: (1, 1) with f=0
         assert_relative_eq!(cost, 0.0, epsilon = 1e-10);
@@ -1152,7 +1159,9 @@ mod tests {
         let mut solver = DifferentialEvolution::new(cfg).unwrap();
         let mut best = vec![0.0; 2];
 
-        let cost = solver.run(&evaluator, &mut best).unwrap();
+        let cost = solver
+            .run(&evaluator, &mut best, &mmlogger::NoOpLogger)
+            .unwrap();
 
         // Global minimum: (0, -1) with f=3
         //
@@ -1184,7 +1193,9 @@ mod tests {
         let mut solver = DifferentialEvolution::new(cfg).unwrap();
         let mut best = vec![0.0; 4];
 
-        let cost = solver.run(&evaluator, &mut best).unwrap();
+        let cost = solver
+            .run(&evaluator, &mut best, &mmlogger::NoOpLogger)
+            .unwrap();
 
         // Global minimum: (0, 0, 0, 0) with f=0
         assert_relative_eq!(cost, 0.0, epsilon = 1e-8);
@@ -1217,7 +1228,9 @@ mod tests {
 
         let mut solver = DifferentialEvolution::new(cfg).unwrap();
         let mut best = vec![0.0; 2];
-        let cost = solver.run(&evaluator, &mut best).unwrap();
+        let cost = solver
+            .run(&evaluator, &mut best, &mmlogger::NoOpLogger)
+            .unwrap();
 
         // Global minimum: (-10, 1) with f=0
         //
@@ -1290,7 +1303,9 @@ mod tests {
 
         let mut solver_rand = DifferentialEvolution::new(cfg_rand).unwrap();
         let mut best_rand = vec![0.0; 2];
-        let cost_rand = solver_rand.run(&evaluator, &mut best_rand).unwrap();
+        let cost_rand = solver_rand
+            .run(&evaluator, &mut best_rand, &mmlogger::NoOpLogger)
+            .unwrap();
 
         // Rand1Bin converges to global minimum
         assert_relative_eq!(cost_rand, 0.0, epsilon = 1e-8);
@@ -1314,7 +1329,9 @@ mod tests {
 
         let mut solver_best = DifferentialEvolution::new(cfg_best).unwrap();
         let mut best_best = vec![0.0; 2];
-        let cost_best = solver_best.run(&evaluator, &mut best_best).unwrap();
+        let cost_best = solver_best
+            .run(&evaluator, &mut best_best, &mmlogger::NoOpLogger)
+            .unwrap();
 
         // Best1Bin also converges to global minimum
         assert_relative_eq!(cost_best, 0.0, epsilon = 1e-7);
@@ -1349,7 +1366,8 @@ mod tests {
         };
         let mut best = vec![0.0; num_dimensions];
 
-        let _cost = solver.run(&eval, &mut best).unwrap();
+        let _cost =
+            solver.run(&eval, &mut best, &mmlogger::NoOpLogger).unwrap();
 
         // The main test: verify early stopping occurred (didn't run all 1000 generations)
         // This confirms the tolerance mechanism is working
@@ -1396,7 +1414,8 @@ mod tests {
         };
         let mut best = vec![0.0; num_dimensions];
 
-        let _cost = solver.run(&eval, &mut best).unwrap();
+        let _cost =
+            solver.run(&eval, &mut best, &mmlogger::NoOpLogger).unwrap();
 
         // Verify all generations ran (no early stopping)
         let final_gen = solver
@@ -1436,7 +1455,8 @@ mod tests {
         };
         let mut best = vec![0.0; num_dimensions];
 
-        let _cost = solver.run(&eval, &mut best).unwrap();
+        let _cost =
+            solver.run(&eval, &mut best, &mmlogger::NoOpLogger).unwrap();
 
         // Verify early stopping occurred
         let final_gen = solver

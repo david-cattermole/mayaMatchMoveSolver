@@ -91,7 +91,11 @@ fn bench_de_rosenbrock(c: &mut Criterion) {
                 let mut solver =
                     DifferentialEvolution::new(cfg.clone()).unwrap();
                 let mut best = vec![0.0; cfg.num_dimensions];
-                black_box(solver.run(&evaluator, &mut best).unwrap())
+                black_box(
+                    solver
+                        .run(&evaluator, &mut best, &mmlogger::NoOpLogger)
+                        .unwrap(),
+                )
             });
         });
     }
@@ -126,7 +130,11 @@ fn bench_de_goldstein_price(c: &mut Criterion) {
                 let mut solver =
                     DifferentialEvolution::new(cfg.clone()).unwrap();
                 let mut best = vec![0.0; cfg.num_dimensions];
-                black_box(solver.run(&evaluator, &mut best).unwrap())
+                black_box(
+                    solver
+                        .run(&evaluator, &mut best, &mmlogger::NoOpLogger)
+                        .unwrap(),
+                )
             });
         });
     }
@@ -161,7 +169,11 @@ fn bench_de_powell(c: &mut Criterion) {
                 let mut solver =
                     DifferentialEvolution::new(cfg.clone()).unwrap();
                 let mut best = vec![0.0; cfg.num_dimensions];
-                black_box(solver.run(&evaluator, &mut best).unwrap())
+                black_box(
+                    solver
+                        .run(&evaluator, &mut best, &mmlogger::NoOpLogger)
+                        .unwrap(),
+                )
             });
         });
     }
@@ -196,7 +208,11 @@ fn bench_de_bukin_n6(c: &mut Criterion) {
                 let mut solver =
                     DifferentialEvolution::new(cfg.clone()).unwrap();
                 let mut best = vec![0.0; cfg.num_dimensions];
-                black_box(solver.run(&evaluator, &mut best).unwrap())
+                black_box(
+                    solver
+                        .run(&evaluator, &mut best, &mmlogger::NoOpLogger)
+                        .unwrap(),
+                )
             });
         });
     }
@@ -236,7 +252,11 @@ fn bench_de_strategy_comparison(c: &mut Criterion) {
                 let mut solver =
                     DifferentialEvolution::new(cfg.clone()).unwrap();
                 let mut best = vec![0.0; cfg.num_dimensions];
-                black_box(solver.run(&evaluator, &mut best).unwrap())
+                black_box(
+                    solver
+                        .run(&evaluator, &mut best, &mmlogger::NoOpLogger)
+                        .unwrap(),
+                )
             });
         });
     }

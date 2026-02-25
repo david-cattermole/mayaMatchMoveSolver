@@ -15,6 +15,7 @@ anyhow = { workspace = true }
 log = { workspace = true }
 mmcholmod = { package = "mmcholmod_rust", path = "../mmcholmod" }
 mmcore = { package = "mmcore_rust", path = "../mmcore" }
+mmlogger = { package = "mmlogger", path = "../mmlogger" }
 nalgebra = { workspace = true }
 nalgebra-sparse = { workspace = true }
 num-traits = { workspace = true }

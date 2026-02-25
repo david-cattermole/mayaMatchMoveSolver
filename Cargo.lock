@@ -954,6 +954,7 @@ dependencies = [
  "log",
  "mmcholmod_rust",
  "mmcore_rust",
+ "mmlogger",
  "nalgebra 0.33.2",
  "nalgebra-sparse",
  "num-traits",

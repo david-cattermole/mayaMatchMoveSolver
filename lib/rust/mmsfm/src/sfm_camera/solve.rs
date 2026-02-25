@@ -47,8 +47,8 @@ const DEBUG: bool = false;
 /// When `global_adjustment_config` is `Some`, first optimizes focal
 /// length using Differential Evolution or Uniform Grid search, then
 /// runs the final solve with the best focal length found.
-pub fn camera_solve<L: Logger>(
-    logger: &mut L,
+pub fn camera_solve<L: Logger + Clone + Send + Sync>(
+    logger: &L,
     scene_frame_range: FrameRange,
     markers: &MarkersData,
     camera_intrinsics: &CameraIntrinsics,

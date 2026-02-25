@@ -133,7 +133,7 @@ fn run() -> Result<()> {
             format!("Failed to create log file: {}", log_path)
         })?;
         if args.quiet {
-            let mut log = mmlogger::DualStreamLogger::new(
+            let (log, handle) = mmlogger::channel_logger(
                 std::io::stdout(),
                 LogFormat::Plain,
                 LevelFilter::WARN,
@@ -142,9 +142,12 @@ fn run() -> Result<()> {
                 LevelFilter::ALL,
             );
 
-            run_camera_solve(&args, &mut log)
+            let result = run_camera_solve(&args, &log);
+            drop(log);
+            handle.shutdown();
+            result
         } else {
-            let mut log = mmlogger::DualStreamLogger::new(
+            let (log, handle) = mmlogger::channel_logger(
                 std::io::stdout(),
                 LogFormat::Plain,
                 LevelFilter::ALL,
@@ -153,14 +156,17 @@ fn run() -> Result<()> {
                 LevelFilter::ALL,
             );
 
-            run_camera_solve(&args, &mut log)
+            let result = run_camera_solve(&args, &log);
+            drop(log);
+            handle.shutdown();
+            result
         }
     }
 
     #[cfg(not(feature = "logging"))]
     {
-        let mut log = mmlogger::NoOpLogger;
-        run_camera_solve(&args, &mut log)
+        let log = mmlogger::NoOpLogger;
+        run_camera_solve(&args, &log)
     }
 }
 
@@ -276,7 +282,10 @@ impl IntermediateResultWriter for FileIntermediateResultWriter {
     }
 }
 
-fn run_camera_solve<L: Logger>(args: &CliArgs, logger: &mut L) -> Result<()> {
+fn run_camera_solve<L: Logger + Clone + Send + Sync>(
+    args: &CliArgs,
+    logger: &L,
+) -> Result<()> {
     let total_start = Instant::now();
 
     // Load solver settings file if provided.

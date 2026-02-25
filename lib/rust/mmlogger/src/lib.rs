@@ -25,6 +25,8 @@
 //! completely eliminated by the compiler.
 
 use std::io::Write;
+use std::sync::mpsc;
+use std::thread;
 use std::time::SystemTime;
 
 // ====================================================================
@@ -188,23 +190,23 @@ pub trait Logger {
     // and I think the `log` method is simply too flexible and adds
     // the cost of a string rather than a well defined enum that we
     // can exhaustively match and ensure all cases are covered.
-    fn log(&mut self, level: &str, msg: &str);
+    fn log(&self, level: &str, msg: &str);
 
-    fn info(&mut self, msg: &str) {
+    fn info(&self, msg: &str) {
         self.log("INFO", msg);
     }
 
     // TODO: Add "progress" method between info and warn.
 
-    fn warn(&mut self, msg: &str) {
+    fn warn(&self, msg: &str) {
         self.log("WARN", msg);
     }
 
-    fn error(&mut self, msg: &str) {
+    fn error(&self, msg: &str) {
         self.log("ERROR", msg);
     }
 
-    fn debug(&mut self, msg: &str) {
+    fn debug(&self, msg: &str) {
         self.log("DEBUG", msg);
     }
 }
@@ -250,10 +252,9 @@ impl<W1: Write, W2: Write> DualStreamLogger<W1, W2> {
             levels2,
         }
     }
-}
 
-impl<W1: Write, W2: Write> Logger for DualStreamLogger<W1, W2> {
-    fn log(&mut self, level: &str, msg: &str) {
+    /// Write a log message directly (used by the channel writer thread).
+    pub fn write_log(&mut self, level: &str, msg: &str) {
         if self.levels1.allows(level) {
             write_formatted(&mut self.writer1, &self.format1, level, msg);
         }
@@ -268,11 +269,105 @@ impl<W1: Write, W2: Write> Logger for DualStreamLogger<W1, W2> {
 // ====================================================================
 
 /// No-op logger with zero runtime cost.
+#[derive(Clone)]
 pub struct NoOpLogger;
 
 impl Logger for NoOpLogger {
     #[inline(always)]
-    fn log(&mut self, _level: &str, _msg: &str) {}
+    fn log(&self, _level: &str, _msg: &str) {}
+}
+
+// ====================================================================
+// ChannelLogger
+// ====================================================================
+
+/// A log message sent through the channel.
+struct LogMessage {
+    level: String,
+    msg: String,
+}
+
+/// Thread-safe logger that sends messages through an MPSC channel.
+///
+/// Cloning a `ChannelLogger` clones the sender, allowing multiple
+/// threads to log concurrently without blocking.
+#[derive(Clone)]
+pub struct ChannelLogger {
+    sender: mpsc::Sender<LogMessage>,
+}
+
+impl Logger for ChannelLogger {
+    fn log(&self, level: &str, msg: &str) {
+        let _ = self.sender.send(LogMessage {
+            level: level.to_owned(),
+            msg: msg.to_owned(),
+        });
+    }
+}
+
+/// Handle for the log writer thread.
+///
+/// Call [`LogHandle::shutdown`] to flush remaining messages and join
+/// the writer thread. If dropped without calling `shutdown`, the
+/// writer thread will exit once all senders are dropped.
+pub struct LogHandle {
+    join_handle: Option<thread::JoinHandle<()>>,
+}
+
+impl LogHandle {
+    /// Wait for the writer thread to finish.
+    ///
+    /// All `ChannelLogger` clones must be dropped before calling this,
+    /// otherwise it will block forever (the writer thread exits only
+    /// when the channel closes, which requires all senders to be dropped).
+    pub fn shutdown(mut self) {
+        if let Some(handle) = self.join_handle.take() {
+            let _ = handle.join();
+        }
+    }
+}
+
+impl Drop for LogHandle {
+    fn drop(&mut self) {
+        if let Some(handle) = self.join_handle.take() {
+            let _ = handle.join();
+        }
+    }
+}
+
+/// Create a channel-based logger with a dedicated writer thread.
+///
+/// Returns a `ChannelLogger` (cloneable, `Send + Sync`) and a
+/// `LogHandle` that owns the writer thread.
+pub fn channel_logger<W1, W2>(
+    writer1: W1,
+    format1: LogFormat,
+    levels1: LevelFilter,
+    writer2: W2,
+    format2: LogFormat,
+    levels2: LevelFilter,
+) -> (ChannelLogger, LogHandle)
+where
+    W1: Write + Send + 'static,
+    W2: Write + Send + 'static,
+{
+    let (sender, receiver) = mpsc::channel::<LogMessage>();
+
+    let join_handle = thread::spawn(move || {
+        let mut backend = DualStreamLogger::new(
+            writer1, format1, levels1, writer2, format2, levels2,
+        );
+        while let Ok(msg) = receiver.recv() {
+            backend.write_log(&msg.level, &msg.msg);
+        }
+    });
+
+    let logger = ChannelLogger { sender };
+    let handle = LogHandle {
+        join_handle: Some(join_handle),
+    };
+
+    (logger, handle)
 }
 
 // ====================================================================
@@ -294,7 +389,7 @@ macro_rules! mm_debug_eprintln {
 
 /// Debug log macro that routes through a logger instead of eprintln.
 ///
-/// Requires a `const DEBUG: bool` in the calling scope and a mutable
+/// Requires a `const DEBUG: bool` in the calling scope and a
 /// logger as the first argument. When `DEBUG` is `false`, the compiler
 /// optimizes the entire call away.
 #[macro_export]

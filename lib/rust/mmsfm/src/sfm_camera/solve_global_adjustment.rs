@@ -71,7 +71,9 @@ impl<E: Evaluator> TrackingEvaluator<E> {
 }
 
 // Specialized implementation for TrackingEvaluator wrapping CachingEvaluator
-impl TrackingEvaluator<CachingEvaluator<CameraSolveFocalLengthEvaluator>> {
+impl<L: Logger + Sync>
+    TrackingEvaluator<CachingEvaluator<CameraSolveFocalLengthEvaluator<L>>>
+{
     fn cache_stats(&self) -> (usize, usize) {
         self.inner.cache_stats()
     }
@@ -188,8 +190,10 @@ fn calculate_refined_bounds(
 /// Searches for the best focal length using either Differential
 /// Evolution or Uniform Grid search, then runs a final solve with
 /// that focal length.
-pub(super) fn run_camera_solve_with_global_adjustment<L: Logger>(
-    logger: &mut L,
+pub(super) fn run_camera_solve_with_global_adjustment<
+    L: Logger + Clone + Send + Sync,
+>(
+    logger: &L,
     scene_frame_range: FrameRange,
     markers: &MarkersData,
     camera_intrinsics: &CameraIntrinsics,
@@ -329,6 +333,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<L: Logger>(
                     Arc::new(config.clone()),
                     solve_quality,
                     de_solver.current_generation.clone(),
+                    logger.clone(),
                 );
 
                 // Wrap with caching to avoid redundant evaluations when
@@ -345,8 +350,11 @@ pub(super) fn run_camera_solve_with_global_adjustment<L: Logger>(
                 // Note: Initial focal length is used as starting point
                 // for DE, but not pre-evaluated to avoid blocking
                 // parallel execution.
-                best_cost = de_solver
-                    .run(&tracking_evaluator, &mut best_focal_length)?;
+                best_cost = de_solver.run(
+                    &tracking_evaluator,
+                    &mut best_focal_length,
+                    logger,
+                )?;
 
                 // Log cache statistics.
                 let (cache_hits, cache_misses) =
@@ -523,6 +531,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<L: Logger>(
                             Arc::new(config.clone()),
                             solve_quality,
                             refined_de_solver.current_generation.clone(),
+                            logger.clone(),
                         );
 
                     let refined_cached =
@@ -537,8 +546,11 @@ pub(super) fn run_camera_solve_with_global_adjustment<L: Logger>(
 
                     // Run refined optimization starting from coarse best result
                     let mut refined_best = best_focal_length.clone();
-                    let refined_cost = refined_de_solver
-                        .run(&refined_cached, &mut refined_best)?;
+                    let refined_cost = refined_de_solver.run(
+                        &refined_cached,
+                        &mut refined_best,
+                        logger,
+                    )?;
 
                     best_focal_length = refined_best;
                     best_cost = refined_cost;
@@ -606,13 +618,17 @@ pub(super) fn run_camera_solve_with_global_adjustment<L: Logger>(
                     Arc::new(config.clone()),
                     solve_quality,
                     refined_de_solver.current_generation.clone(),
+                    logger.clone(),
                 );
 
                 let refined_cached = CachingEvaluator::new(refined_evaluator);
 
                 // Run refined optimization
-                best_cost = refined_de_solver
-                    .run(&refined_cached, &mut best_focal_length)?;
+                best_cost = refined_de_solver.run(
+                    &refined_cached,
+                    &mut best_focal_length,
+                    logger,
+                )?;
 
                 let refined_elapsed = refined_de_start.elapsed();
                 refined_search_time_secs = Some(refined_elapsed.as_secs_f64());
@@ -765,6 +781,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<L: Logger>(
                 Arc::new(config.clone()),
                 solve_quality,
                 Arc::new(AtomicUsize::new(0)),
+                logger.clone(),
             );
 
             // Wrap with caching to avoid redundant evaluations.
@@ -780,8 +797,11 @@ pub(super) fn run_camera_solve_with_global_adjustment<L: Logger>(
             let grid_start_time = std::time::Instant::now();
 
             let mut best_focal_length = vec![initial_focal_length_mm];
-            let best_cost =
-                grid_solver.run(&cached_evaluator, &mut best_focal_length)?;
+            let best_cost = grid_solver.run(
+                &cached_evaluator,
+                &mut best_focal_length,
+                logger,
+            )?;
             let grid_elapsed = grid_start_time.elapsed();
 
             if PRINT_SOLVER_DETAILS {

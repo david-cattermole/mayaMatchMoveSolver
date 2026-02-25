@@ -71,7 +71,7 @@ pub(crate) fn format_frame_list(frames: &[FrameNumber]) -> String {
 
 /// Print a free-text progress line (no numeric columns).
 pub(super) fn progress_text<L: Logger>(
-    logger: &mut L,
+    logger: &L,
     phase: u8,
     solve_start: Instant,
     text: &str,
@@ -83,7 +83,7 @@ pub(super) fn progress_text<L: Logger>(
 /// Print the numeric-column header and its separator row.
 #[allow(dead_code)]
 pub(super) fn progress_table_header<L: Logger>(
-    logger: &mut L,
+    logger: &L,
     phase: u8,
     solve_start: Instant,
 ) {
@@ -115,7 +115,7 @@ pub(super) fn progress_table_header<L: Logger>(
 /// Print one row of the progress table.
 #[allow(dead_code)]
 pub(super) fn progress_row<L: Logger>(
-    logger: &mut L,
+    logger: &L,
     phase: u8,
     solve_start: Instant,
     mean: f64,

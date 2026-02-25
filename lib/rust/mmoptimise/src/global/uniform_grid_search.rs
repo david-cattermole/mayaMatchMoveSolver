@@ -66,7 +66,7 @@
 //! // Run optimization
 //! let solver = UniformGridSearch::new(config)?;
 //! let mut best_params = vec![0.0];
-//! let best_cost = solver.run(&MyEvaluator, &mut best_params)?;
+//! let best_cost = solver.run(&MyEvaluator, &mut best_params, &mmlogger::NoOpLogger)?;
 //! ```
 //!
 //! # 1D Example: Focal Length Optimization
@@ -81,7 +81,7 @@
 //!
 //! let solver = UniformGridSearch::new(config)?;
 //! let mut best_focal_length = vec![0.0];
-//! let best_cost = solver.run(&evaluator, &mut best_focal_length)?;
+//! let best_cost = solver.run(&evaluator, &mut best_focal_length, &mmlogger::NoOpLogger)?;
 //!
 //! // Samples: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 //! // Total evaluations: 11
@@ -99,7 +99,7 @@
 //!
 //! let solver = UniformGridSearch::new(config)?;
 //! let mut best_params = vec![0.0, 0.0];
-//! let best_cost = solver.run(&evaluator, &mut best_params)?;
+//! let best_cost = solver.run(&evaluator, &mut best_params, &mmlogger::NoOpLogger)?;
 //! ```
 //!
 //! # Combinatorial Explosion Warning
@@ -113,6 +113,7 @@
 //! For high-dimensional problems, use Differential Evolution instead.
 
 use anyhow::Result;
+use mmlogger::mm_info_log;
 use rayon::prelude::*;
 use thiserror::Error;
 
@@ -343,13 +344,14 @@ impl UniformGridSearch {
     ///
     /// ```ignore
     /// let mut best_params = vec![0.0; config.num_dimensions];
-    /// let best_cost = solver.run(&evaluator, &mut best_params)?;
+    /// let best_cost = solver.run(&evaluator, &mut best_params, &mmlogger::NoOpLogger)?;
     /// println!("Best: {:?} (cost: {})", best_params, best_cost);
     /// ```
-    pub fn run<E: Evaluator + Sync>(
+    pub fn run<E: Evaluator + Sync, L: mmlogger::Logger>(
         &self,
         evaluator: &E,
         best_out: &mut [f64],
+        logger: &L,
     ) -> Result<f64, UniformGridSearchError> {
         assert_eq!(
             best_out.len(),
@@ -383,9 +385,11 @@ impl UniformGridSearch {
         let grid_points = generate_grid_points(&samples_per_dim);
         let total_points = grid_points.len();
 
-        println!(
+        mm_info_log!(
+            logger,
             "[Grid Search] Evaluating {} grid points across {} dimension(s)...",
-            total_points, self.cfg.num_dimensions
+            total_points,
+            self.cfg.num_dimensions
         );
 
         // Step 3: Evaluate all grid points in parallel
@@ -408,7 +412,8 @@ impl UniformGridSearch {
         // Copy best solution to output buffer
         best_out.copy_from_slice(&grid_points[*best_idx]);
 
-        println!(
+        mm_info_log!(
+            logger,
             "[Grid Search] Best cost: {:.6}, params: {:?}, time: {:.2}s",
             best_cost,
             best_out,
@@ -490,7 +495,7 @@ mod tests {
         let eval = Quadratic { target: vec![0.0] };
         let mut best = vec![0.0];
 
-        let cost = solver.run(&eval, &mut best).unwrap();
+        let cost = solver.run(&eval, &mut best, &mmlogger::NoOpLogger).unwrap();
 
         assert_eq!(cost, 0.0);
         assert_eq!(best[0], 0.0);
@@ -508,7 +513,7 @@ mod tests {
         let eval = Quadratic { target: vec![2.0] };
         let mut best = vec![0.0];
 
-        let cost = solver.run(&eval, &mut best).unwrap();
+        let cost = solver.run(&eval, &mut best, &mmlogger::NoOpLogger).unwrap();
 
         assert_eq!(cost, 0.0);
         assert_eq!(best[0], 2.0);
@@ -528,7 +533,7 @@ mod tests {
         };
         let mut best = vec![0.0, 0.0];
 
-        let cost = solver.run(&eval, &mut best).unwrap();
+        let cost = solver.run(&eval, &mut best, &mmlogger::NoOpLogger).unwrap();
 
         assert_eq!(cost, 0.0);
         assert_eq!(best[0], 1.0);
@@ -547,7 +552,7 @@ mod tests {
         let eval = Quadratic { target: vec![15.0] };
         let mut best = vec![0.0];
 
-        let cost = solver.run(&eval, &mut best).unwrap();
+        let cost = solver.run(&eval, &mut best, &mmlogger::NoOpLogger).unwrap();
 
         assert_eq!(best[0], 15.0); // midpoint of [10, 20]
         assert_eq!(cost, 0.0);

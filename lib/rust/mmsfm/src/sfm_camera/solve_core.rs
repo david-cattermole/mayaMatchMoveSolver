@@ -111,7 +111,7 @@ impl IncrementalLoopResult {
 /// prefers skeleton frames; when `true`, attempts all remaining frames.
 #[allow(clippy::too_many_arguments)]
 fn run_incremental_loop<L: Logger>(
-    logger: &mut L,
+    logger: &L,
     scene_frame_range: &FrameRange,
     markers: &MarkersData,
     marker_indices: &mut Vec<usize>,
@@ -481,7 +481,7 @@ fn run_incremental_loop<L: Logger>(
 /// 3. Incrementally add remaining cameras and run bundle adjustment.
 /// 4. Final bundle adjustment and origin-frame transform.
 pub(crate) fn camera_solve_inner<L: Logger>(
-    logger: &mut L,
+    logger: &L,
     scene_frame_range: FrameRange,
     markers: &MarkersData,
     camera_intrinsics: &CameraIntrinsics,

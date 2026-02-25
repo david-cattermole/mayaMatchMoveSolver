@@ -64,223 +64,151 @@ pub struct TimingData {
 /// Print comprehensive timing breakdown for the solve.
 #[allow(dead_code)]
 pub fn print_timing_breakdown<L: Logger>(logger: &L, timing: &TimingData) {
-    logger.log("TIMING", "");
-    logger.log("TIMING", "=== Timing Breakdown ===");
-    logger.log(
-        "TIMING",
-        &format!(
-            "Total solve time: {:.3}s ({:.1}ms)",
-            timing.solve_total_duration.as_secs_f64(),
-            timing.solve_total_duration.as_secs_f64() * 1000.0
-        ),
-    );
-    logger.log("TIMING", "");
-    logger.log(
-        "TIMING",
-        &format!(
-            "Phase 1 - Frame Analysis & Selection: {:.1}ms ({:.1}%)",
-            timing.phase1_duration.as_secs_f64() * 1000.0,
-            (timing.phase1_duration.as_secs_f64()
-                / timing.solve_total_duration.as_secs_f64())
-                * 100.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  Frame analysis: {:.1}ms",
-            timing.phase1_duration.as_secs_f64() * 1000.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  Best frame pair selection: {:.1}ms",
-            timing.frame_pair_duration.as_secs_f64() * 1000.0
-        ),
-    );
-    logger.log("TIMING", "");
-    logger.log(
-        "TIMING",
-        &format!(
-            "Phase 2 - Initial Reconstruction: {:.1}ms ({:.1}%)",
-            timing.phase2_duration.as_secs_f64() * 1000.0,
-            (timing.phase2_duration.as_secs_f64()
-                / timing.solve_total_duration.as_secs_f64())
-                * 100.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  Relative pose computation: {:.1}ms",
-            timing.relative_pose_duration.as_secs_f64() * 1000.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  Fixed depth triangulation: {:.1}ms",
-            timing.fixed_depth_phase2_duration.as_secs_f64() * 1000.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  Initial bundle adjustment: {:.1}ms",
-            timing.initial_ba_duration.as_secs_f64() * 1000.0
-        ),
-    );
-    logger.log("TIMING", "");
-    logger.log(
-        "TIMING",
-        &format!(
-            "Phase 3 - Multi-Round Camera Addition: {:.1}ms ({:.1}%)",
-            timing.phase3_duration.as_secs_f64() * 1000.0,
-            (timing.phase3_duration.as_secs_f64()
-                / timing.solve_total_duration.as_secs_f64())
-                * 100.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  Total camera PnP time: {:.1}ms ({:.1}% of Phase 3)",
-            timing.total_camera_pnp_duration.as_secs_f64() * 1000.0,
-            (timing.total_camera_pnp_duration.as_secs_f64()
-                / timing.phase3_duration.as_secs_f64())
-                * 100.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  Total bundle adjustment time: {:.1}ms ({:.1}% of Phase 3)",
-            timing.total_phase3_ba_duration.as_secs_f64() * 1000.0,
-            (timing.total_phase3_ba_duration.as_secs_f64()
-                / timing.phase3_duration.as_secs_f64())
-                * 100.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  Total marker expansion: {:.1}ms",
-            timing.total_phase3_marker_expansion_duration.as_secs_f64()
-                * 1000.0
-        ),
-    );
-    logger.log("TIMING", "");
+    logger.info("");
+    logger.info("=== Timing Breakdown ===");
+    logger.info(&format!(
+        "Total solve time: {:.3}s ({:.1}ms)",
+        timing.solve_total_duration.as_secs_f64(),
+        timing.solve_total_duration.as_secs_f64() * 1000.0
+    ));
+    logger.info("");
+    logger.info(&format!(
+        "Phase 1 - Frame Analysis & Selection: {:.1}ms ({:.1}%)",
+        timing.phase1_duration.as_secs_f64() * 1000.0,
+        (timing.phase1_duration.as_secs_f64()
+            / timing.solve_total_duration.as_secs_f64())
+            * 100.0
+    ));
+    logger.info(&format!(
+        "  Frame analysis: {:.1}ms",
+        timing.phase1_duration.as_secs_f64() * 1000.0
+    ));
+    logger.info(&format!(
+        "  Best frame pair selection: {:.1}ms",
+        timing.frame_pair_duration.as_secs_f64() * 1000.0
+    ));
+    logger.info("");
+    logger.info(&format!(
+        "Phase 2 - Initial Reconstruction: {:.1}ms ({:.1}%)",
+        timing.phase2_duration.as_secs_f64() * 1000.0,
+        (timing.phase2_duration.as_secs_f64()
+            / timing.solve_total_duration.as_secs_f64())
+            * 100.0
+    ));
+    logger.info(&format!(
+        "  Relative pose computation: {:.1}ms",
+        timing.relative_pose_duration.as_secs_f64() * 1000.0
+    ));
+    logger.info(&format!(
+        "  Fixed depth triangulation: {:.1}ms",
+        timing.fixed_depth_phase2_duration.as_secs_f64() * 1000.0
+    ));
+    logger.info(&format!(
+        "  Initial bundle adjustment: {:.1}ms",
+        timing.initial_ba_duration.as_secs_f64() * 1000.0
+    ));
+    logger.info("");
+    logger.info(&format!(
+        "Phase 3 - Multi-Round Camera Addition: {:.1}ms ({:.1}%)",
+        timing.phase3_duration.as_secs_f64() * 1000.0,
+        (timing.phase3_duration.as_secs_f64()
+            / timing.solve_total_duration.as_secs_f64())
+            * 100.0
+    ));
+    logger.info(&format!(
+        "  Total camera PnP time: {:.1}ms ({:.1}% of Phase 3)",
+        timing.total_camera_pnp_duration.as_secs_f64() * 1000.0,
+        (timing.total_camera_pnp_duration.as_secs_f64()
+            / timing.phase3_duration.as_secs_f64())
+            * 100.0
+    ));
+    logger.info(&format!(
+        "  Total bundle adjustment time: {:.1}ms ({:.1}% of Phase 3)",
+        timing.total_phase3_ba_duration.as_secs_f64() * 1000.0,
+        (timing.total_phase3_ba_duration.as_secs_f64()
+            / timing.phase3_duration.as_secs_f64())
+            * 100.0
+    ));
+    logger.info(&format!(
+        "  Total marker expansion: {:.1}ms",
+        timing.total_phase3_marker_expansion_duration.as_secs_f64() * 1000.0
+    ));
+    logger.info("");
 
     // Print per-round timing breakdowns.
-    logger.log("TIMING", "  Phase 3 Per-Round Breakdown:");
+    logger.info("  Phase 3 Per-Round Breakdown:");
     for round_timing in &timing.round_timings {
         let num_cameras = round_timing.total_cameras;
         let round_total_ms = round_timing.round_duration.as_secs_f64() * 1000.0;
 
-        logger.log("TIMING", "");
-        logger.log(
-            "TIMING",
-            &format!(
-                "    Round {}: {} cameras ({} added)",
-                round_timing.round_number,
-                num_cameras,
-                round_timing.cameras_added
-            ),
-        );
+        logger.info("");
+        logger.info(&format!(
+            "    Round {}: {} cameras ({} added)",
+            round_timing.round_number, num_cameras, round_timing.cameras_added
+        ));
 
         let pnp_ms = round_timing.camera_pnp_duration.as_secs_f64() * 1000.0;
         let pnp_per_frame = pnp_ms / num_cameras as f64;
         let pnp_pct = (pnp_ms / round_total_ms) * 100.0;
-        logger.log(
-            "TIMING",
-            &format!(
-                "      Camera PnP: {:.1}ms ({:.2}ms/frame, {:.1}%)",
-                pnp_ms, pnp_per_frame, pnp_pct
-            ),
-        );
+        logger.info(&format!(
+            "      Camera PnP: {:.1}ms ({:.2}ms/frame, {:.1}%)",
+            pnp_ms, pnp_per_frame, pnp_pct
+        ));
 
         let ba_ms = round_timing.ba_duration.as_secs_f64() * 1000.0;
         let ba_per_frame = ba_ms / num_cameras as f64;
         let ba_pct = (ba_ms / round_total_ms) * 100.0;
-        logger.log(
-            "TIMING",
-            &format!(
-                "      Bundle adjustment: {:.1}ms ({:.2}ms/frame, {:.1}%)",
-                ba_ms, ba_per_frame, ba_pct
-            ),
-        );
+        logger.info(&format!(
+            "      Bundle adjustment: {:.1}ms ({:.2}ms/frame, {:.1}%)",
+            ba_ms, ba_per_frame, ba_pct
+        ));
 
         let me_ms =
             round_timing.marker_expansion_duration.as_secs_f64() * 1000.0;
         let me_per_frame = me_ms / num_cameras as f64;
         let me_pct = (me_ms / round_total_ms) * 100.0;
-        logger.log(
-            "TIMING",
-            &format!(
-                "      Marker expansion: {:.1}ms ({:.2}ms/frame, {:.1}%)",
-                me_ms, me_per_frame, me_pct
-            ),
-        );
+        logger.info(&format!(
+            "      Marker expansion: {:.1}ms ({:.2}ms/frame, {:.1}%)",
+            me_ms, me_per_frame, me_pct
+        ));
 
         let total_per_frame = round_total_ms / num_cameras as f64;
-        logger.log(
-            "TIMING",
-            &format!(
-                "      Round total: {:.1}ms ({:.2}ms/frame)",
-                round_total_ms, total_per_frame
-            ),
-        );
+        logger.info(&format!(
+            "      Round total: {:.1}ms ({:.2}ms/frame)",
+            round_total_ms, total_per_frame
+        ));
     }
-    logger.log("TIMING", "");
-    logger.log(
-        "TIMING",
-        &format!(
-            "Phase 4 - Final General BA: {:.1}ms ({:.1}%)",
-            timing.phase4_duration.as_secs_f64() * 1000.0,
-            (timing.phase4_duration.as_secs_f64()
-                / timing.solve_total_duration.as_secs_f64())
-                * 100.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  Fixed depth pre-triangulation: {:.1}ms",
-            timing.phase4_pre_fixed_depth_duration.as_secs_f64() * 1000.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  General bundle adjustment: {:.1}ms",
-            timing.phase4_ba_duration.as_secs_f64() * 1000.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  Fixed depth post-triangulation: {:.1}ms",
-            timing.phase4_post_fixed_depth_duration.as_secs_f64() * 1000.0
-        ),
-    );
-    logger.log("TIMING", "");
-    logger.log(
-        "TIMING",
-        &format!(
-            "Phase 5 - Final Summary & Transform: {:.1}ms ({:.1}%)",
-            timing.phase5_duration.as_secs_f64() * 1000.0,
-            (timing.phase5_duration.as_secs_f64()
-                / timing.solve_total_duration.as_secs_f64())
-                * 100.0
-        ),
-    );
-    logger.log(
-        "TIMING",
-        &format!(
-            "  Origin frame transformation: {:.1}ms",
-            timing.origin_transform_duration.as_secs_f64() * 1000.0
-        ),
-    );
-    logger.log("TIMING", "========================");
+    logger.info("");
+    logger.info(&format!(
+        "Phase 4 - Final General BA: {:.1}ms ({:.1}%)",
+        timing.phase4_duration.as_secs_f64() * 1000.0,
+        (timing.phase4_duration.as_secs_f64()
+            / timing.solve_total_duration.as_secs_f64())
+            * 100.0
+    ));
+    logger.info(&format!(
+        "  Fixed depth pre-triangulation: {:.1}ms",
+        timing.phase4_pre_fixed_depth_duration.as_secs_f64() * 1000.0
+    ));
+    logger.info(&format!(
+        "  General bundle adjustment: {:.1}ms",
+        timing.phase4_ba_duration.as_secs_f64() * 1000.0
+    ));
+    logger.info(&format!(
+        "  Fixed depth post-triangulation: {:.1}ms",
+        timing.phase4_post_fixed_depth_duration.as_secs_f64() * 1000.0
+    ));
+    logger.info("");
+    logger.info(&format!(
+        "Phase 5 - Final Summary & Transform: {:.1}ms ({:.1}%)",
+        timing.phase5_duration.as_secs_f64() * 1000.0,
+        (timing.phase5_duration.as_secs_f64()
+            / timing.solve_total_duration.as_secs_f64())
+            * 100.0
+    ));
+    logger.info(&format!(
+        "  Origin frame transformation: {:.1}ms",
+        timing.origin_transform_duration.as_secs_f64() * 1000.0
+    ));
+    logger.info("========================");
 }

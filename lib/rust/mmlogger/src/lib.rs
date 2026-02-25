@@ -33,6 +33,27 @@ use std::time::SystemTime;
 // Log level filter
 // ====================================================================
 
+/// Log severity level, ordered from least to most severe.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum LogLevel {
+    Debug = 0,
+    Info = 1,
+    // TODO: Add Progress between Info and Warn.
+    Warn = 2,
+    Error = 3,
+}
+
+impl LogLevel {
+    fn as_str(self) -> &'static str {
+        match self {
+            LogLevel::Debug => "DEBUG",
+            LogLevel::Info => "INFO",
+            LogLevel::Warn => "WARN",
+            LogLevel::Error => "ERROR",
+        }
+    }
+}
+
 /// Bitmask of allowed log levels for a stream.
 ///
 /// Combine levels with `|`:
@@ -52,13 +73,12 @@ impl LevelFilter {
     pub const ERROR: LevelFilter = LevelFilter(0b1000);
     pub const ALL: LevelFilter = LevelFilter(0b1111);
 
-    pub fn allows(self, level: &str) -> bool {
+    pub fn allows(self, level: LogLevel) -> bool {
         let bit: u8 = match level {
-            "DEBUG" => 0b0001,
-            "INFO" => 0b0010,
-            "WARN" => 0b0100,
-            "ERROR" => 0b1000,
-            _ => 0,
+            LogLevel::Debug => 0b0001,
+            LogLevel::Info => 0b0010,
+            LogLevel::Warn => 0b0100,
+            LogLevel::Error => 0b1000,
         };
         self.0 & bit != 0
     }
@@ -147,15 +167,15 @@ fn format_unix_timestamp(secs: u64, buf: &mut [u8; 19]) {
 fn write_formatted<W: Write>(
     writer: &mut W,
     format: &LogFormat,
-    level: &str,
+    level: LogLevel,
     msg: &str,
 ) {
     match format {
         LogFormat::Plain => match level {
-            "WARN" => {
+            LogLevel::Warn => {
                 let _ = writeln!(writer, "Warning: {}", msg);
             }
-            "ERROR" => {
+            LogLevel::Error => {
                 let _ = writeln!(writer, "Error: {}", msg);
             }
             _ => {
@@ -163,7 +183,7 @@ fn write_formatted<W: Write>(
             }
         },
         LogFormat::LevelPrefix => {
-            let _ = writeln!(writer, "[{}] {}", level, msg);
+            let _ = writeln!(writer, "[{}] {}", level.as_str(), msg);
         }
         LogFormat::Timestamp => {
             let secs = SystemTime::now()
@@ -173,7 +193,7 @@ fn write_formatted<W: Write>(
             let mut buf = [0u8; 19];
             format_unix_timestamp(secs, &mut buf);
             let ts = std::str::from_utf8(&buf).unwrap_or("0000-00-00 00:00:00");
-            let _ = writeln!(writer, "[{}] [{}] {}", ts, level, msg);
+            let _ = writeln!(writer, "[{}] [{}] {}", ts, level.as_str(), msg);
         }
     }
 }
@@ -184,31 +204,11 @@ fn write_formatted<W: Write>(
 
 /// Trait for structured logging with zero-cost when disabled.
 pub trait Logger {
-    // TODO: Get rid of this general method and force people to either
-    // create a new level, or reuse an existing one. We need to have a
-    // trade-off between flexibility and performance and simplicity,
-    // and I think the `log` method is simply too flexible and adds
-    // the cost of a string rather than a well defined enum that we
-    // can exhaustively match and ensure all cases are covered.
-    fn log(&self, level: &str, msg: &str);
-
-    fn info(&self, msg: &str) {
-        self.log("INFO", msg);
-    }
-
+    fn debug(&self, msg: &str);
+    fn info(&self, msg: &str);
     // TODO: Add "progress" method between info and warn.
-
-    fn warn(&self, msg: &str) {
-        self.log("WARN", msg);
-    }
-
-    fn error(&self, msg: &str) {
-        self.log("ERROR", msg);
-    }
-
-    fn debug(&self, msg: &str) {
-        self.log("DEBUG", msg);
-    }
+    fn warn(&self, msg: &str);
+    fn error(&self, msg: &str);
 }
 
 // ====================================================================
@@ -254,7 +254,7 @@ impl<W1: Write, W2: Write> DualStreamLogger<W1, W2> {
     }
 
     /// Write a log message directly (used by the channel writer thread).
-    pub fn write_log(&mut self, level: &str, msg: &str) {
+    pub fn write_log(&mut self, level: LogLevel, msg: &str) {
         if self.levels1.allows(level) {
             write_formatted(&mut self.writer1, &self.format1, level, msg);
         }
@@ -274,7 +274,13 @@ pub struct NoOpLogger;
 
 impl Logger for NoOpLogger {
     #[inline(always)]
-    fn log(&self, _level: &str, _msg: &str) {}
+    fn debug(&self, _msg: &str) {}
+    #[inline(always)]
+    fn info(&self, _msg: &str) {}
+    #[inline(always)]
+    fn warn(&self, _msg: &str) {}
+    #[inline(always)]
+    fn error(&self, _msg: &str) {}
 }
 
 // ====================================================================
@@ -283,7 +289,7 @@ impl Logger for NoOpLogger {
 
 /// A log message sent through the channel.
 struct LogMessage {
-    level: String,
+    level: LogLevel,
     msg: String,
 }
 
@@ -297,9 +303,30 @@ pub struct ChannelLogger {
 }
 
 impl Logger for ChannelLogger {
-    fn log(&self, level: &str, msg: &str) {
+    fn debug(&self, msg: &str) {
         let _ = self.sender.send(LogMessage {
-            level: level.to_owned(),
+            level: LogLevel::Debug,
+            msg: msg.to_owned(),
+        });
+    }
+
+    fn info(&self, msg: &str) {
+        let _ = self.sender.send(LogMessage {
+            level: LogLevel::Info,
+            msg: msg.to_owned(),
+        });
+    }
+
+    fn warn(&self, msg: &str) {
+        let _ = self.sender.send(LogMessage {
+            level: LogLevel::Warn,
+            msg: msg.to_owned(),
+        });
+    }
+
+    fn error(&self, msg: &str) {
+        let _ = self.sender.send(LogMessage {
+            level: LogLevel::Error,
             msg: msg.to_owned(),
         });
     }
@@ -358,7 +385,7 @@ where
             writer1, format1, levels1, writer2, format2, levels2,
         );
         while let Ok(msg) = receiver.recv() {
-            backend.write_log(&msg.level, &msg.msg);
+            backend.write_log(msg.level, &msg.msg);
         }
     });
 

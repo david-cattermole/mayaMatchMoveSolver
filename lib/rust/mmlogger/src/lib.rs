@@ -38,9 +38,9 @@ use std::time::SystemTime;
 pub enum LogLevel {
     Debug = 0,
     Info = 1,
-    // TODO: Add Progress between Info and Warn.
-    Warn = 2,
-    Error = 3,
+    Progress = 2,
+    Warn = 3,
+    Error = 4,
 }
 
 impl LogLevel {
@@ -48,6 +48,7 @@ impl LogLevel {
         match self {
             LogLevel::Debug => "DEBUG",
             LogLevel::Info => "INFO",
+            LogLevel::Progress => "PROGRESS",
             LogLevel::Warn => "WARN",
             LogLevel::Error => "ERROR",
         }
@@ -65,20 +66,21 @@ impl LogLevel {
 pub struct LevelFilter(u8);
 
 impl LevelFilter {
-    pub const NONE: LevelFilter = LevelFilter(0b0000);
-    pub const DEBUG: LevelFilter = LevelFilter(0b0001);
-    pub const INFO: LevelFilter = LevelFilter(0b0010);
-    // TODO: Add "PROGRESS" level between INFO and WARN.
-    pub const WARN: LevelFilter = LevelFilter(0b0100);
-    pub const ERROR: LevelFilter = LevelFilter(0b1000);
-    pub const ALL: LevelFilter = LevelFilter(0b1111);
+    pub const NONE: LevelFilter = LevelFilter(0b00000);
+    pub const DEBUG: LevelFilter = LevelFilter(0b00001);
+    pub const INFO: LevelFilter = LevelFilter(0b00010);
+    pub const PROGRESS: LevelFilter = LevelFilter(0b00100);
+    pub const WARN: LevelFilter = LevelFilter(0b01000);
+    pub const ERROR: LevelFilter = LevelFilter(0b10000);
+    pub const ALL: LevelFilter = LevelFilter(0b11111);
 
     pub fn allows(self, level: LogLevel) -> bool {
         let bit: u8 = match level {
-            LogLevel::Debug => 0b0001,
-            LogLevel::Info => 0b0010,
-            LogLevel::Warn => 0b0100,
-            LogLevel::Error => 0b1000,
+            LogLevel::Debug => 0b00001,
+            LogLevel::Info => 0b00010,
+            LogLevel::Progress => 0b00100,
+            LogLevel::Warn => 0b01000,
+            LogLevel::Error => 0b10000,
         };
         self.0 & bit != 0
     }
@@ -230,6 +232,7 @@ fn write_formatted<W: Write>(
                 let _ = writeln!(writer, "Error: {}", msg);
             }
             _ => {
+                // Debug, Info, and Progress use plain text with no prefix.
                 let _ = writeln!(writer, "{}", msg);
             }
         },
@@ -293,22 +296,7 @@ fn write_formatted<W: Write>(
 
 /// Trait for structured logging with zero-cost when disabled.
 pub trait Logger {
-    fn debug(&self, msg: &str);
-    fn info(&self, msg: &str);
-    // TODO: Add "progress" method between info and warn.
-    fn warn(&self, msg: &str);
-    fn error(&self, msg: &str);
-
-    /// Log with source location metadata. The default implementation
-    /// ignores the location and delegates to the level-specific method.
-    fn log(&self, level: LogLevel, msg: &str, _file: &'static str, _line: u32) {
-        match level {
-            LogLevel::Debug => self.debug(msg),
-            LogLevel::Info => self.info(msg),
-            LogLevel::Warn => self.warn(msg),
-            LogLevel::Error => self.error(msg),
-        }
-    }
+    fn log(&self, level: LogLevel, msg: &str, file: &'static str, line: u32);
 }
 
 // ====================================================================
@@ -379,13 +367,7 @@ pub struct NoOpLogger;
 
 impl Logger for NoOpLogger {
     #[inline(always)]
-    fn debug(&self, _msg: &str) {}
-    #[inline(always)]
-    fn info(&self, _msg: &str) {}
-    #[inline(always)]
-    fn warn(&self, _msg: &str) {}
-    #[inline(always)]
-    fn error(&self, _msg: &str) {}
+    fn log(&self, _level: LogLevel, _msg: &str, _file: &'static str, _line: u32) {}
 }
 
 // ====================================================================
@@ -440,22 +422,6 @@ impl ChannelLogger {
 }
 
 impl Logger for ChannelLogger {
-    fn debug(&self, msg: &str) {
-        self.send_log(LogLevel::Debug, msg, "", 0);
-    }
-
-    fn info(&self, msg: &str) {
-        self.send_log(LogLevel::Info, msg, "", 0);
-    }
-
-    fn warn(&self, msg: &str) {
-        self.send_log(LogLevel::Warn, msg, "", 0);
-    }
-
-    fn error(&self, msg: &str) {
-        self.send_log(LogLevel::Error, msg, "", 0);
-    }
-
     fn log(
         &self,
         level: LogLevel,
@@ -591,6 +557,21 @@ macro_rules! mm_info_log {
     ($logger:expr, $fmt:literal, $($arg:tt)*) => {
         $logger.log(
             $crate::LogLevel::Info,
+            &format!($fmt, $($arg)*),
+            file!(), line!());
+    };
+}
+
+/// Progress log macro — captures source location for `Full` format.
+#[macro_export]
+macro_rules! mm_progress_log {
+    ($logger:expr, $msg:literal) => {
+        $logger.log(
+            $crate::LogLevel::Progress, $msg, file!(), line!());
+    };
+    ($logger:expr, $fmt:literal, $($arg:tt)*) => {
+        $logger.log(
+            $crate::LogLevel::Progress,
             &format!($fmt, $($arg)*),
             file!(), line!());
     };

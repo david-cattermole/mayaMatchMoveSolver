@@ -61,7 +61,7 @@ use mmlogger::LevelFilter;
 #[cfg(feature = "logging")]
 use mmlogger::LogFormat;
 use mmlogger::Logger;
-use mmlogger::{mm_info_log, mm_warn_log};
+use mmlogger::{mm_info_log, mm_progress_log, mm_warn_log};
 use mmsfm::datatype::common::UnitValue;
 use mmsfm::datatype::{
     BundlePositions, CameraFilmBack, CameraIntrinsics, CameraPoses, ImageSize,
@@ -697,7 +697,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     };
     let kuper_path = format!("{}/{}", args.output_dir, kuper_filename);
 
-    mm_info_log!(logger, "Writing Kuper file to: {}", kuper_path);
+    mm_progress_log!(logger, "Writing Kuper file to: {}", kuper_path);
 
     std::fs::create_dir_all(&args.output_dir).with_context(|| {
         format!("Failed to create output directory: {}", args.output_dir)
@@ -719,7 +719,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     };
     let bundle_path = format!("{}/{}", args.output_dir, bundle_filename);
 
-    mm_info_log!(logger, "Writing bundle file to: {}", bundle_path);
+    mm_progress_log!(logger, "Writing bundle file to: {}", bundle_path);
 
     write_bundle_output(&bundle_path, &markers, &bundle_positions)?;
 
@@ -731,7 +731,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     };
     let mmcamera_path = format!("{}/{}", args.output_dir, mmcamera_filename);
 
-    mm_info_log!(logger, "Writing mmcamera file to: {}", mmcamera_path);
+    mm_progress_log!(logger, "Writing mmcamera file to: {}", mmcamera_path);
 
     write_mmcamera_output(
         &mmcamera_path,
@@ -795,7 +795,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
         format!("Failed to write mmresiduals file: {}", residuals_path)
     })?;
 
-    mm_info_log!(logger, "Writing residuals file to: {}", residuals_path);
+    mm_progress_log!(logger, "Writing residuals file to: {}", residuals_path);
     mm_info_log!(
         logger,
         "  Mean: {:.4} px, Median: {:.4} px, Count: {}",
@@ -811,7 +811,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
         };
         let lens_path = format!("{}/{}", args.output_dir, lens_filename);
 
-        mm_info_log!(logger, "Writing Nuke lens file to: {}", lens_path);
+        mm_progress_log!(logger, "Writing Nuke lens file to: {}", lens_path);
 
         write_nuke_lens_file(&lens_path, lens_data).with_context(|| {
             format!("Failed to write Nuke lens file: {}", lens_path)
@@ -910,9 +910,10 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
         total_time_secs,
         total_time_mins
     );
-    mm_info_log!(logger, "Done!");
 
     mm_info_log!(logger, "Total time: {:.2}s", total_time_secs);
+
+    mm_progress_log!(logger, "Done!");
 
     Ok(())
 }

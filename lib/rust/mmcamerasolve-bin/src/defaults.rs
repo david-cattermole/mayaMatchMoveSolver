@@ -67,8 +67,8 @@ pub const UNIFORM_GRID_FL_MAX_MM: f64 = 120.0;
 
 // --- Differential Evolution parameters ---
 
-pub const REFINE_EVO_GENERATIONS: usize = 200;
-pub const UNKNOWN_EVO_GENERATIONS: usize = 500;
-pub const REFINE_EVO_SEED: u64 = 42;
-pub const UNKNOWN_EVO_SEED: u64 = 12345;
+pub const REFINE_DE_GENERATIONS: usize = 200;
+pub const UNKNOWN_DE_GENERATIONS: usize = 500;
+pub const REFINE_DE_SEED: u64 = 42;
+pub const UNKNOWN_DE_SEED: u64 = 12345;
 pub const UNIFORM_GRID_DEFAULT_SAMPLES: usize = 21;

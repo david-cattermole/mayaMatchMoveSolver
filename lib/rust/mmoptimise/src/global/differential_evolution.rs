@@ -920,7 +920,7 @@ impl DifferentialEvolution {
             if PRINT_SOLVER_DETAILS {
                 mm_info_log!(
                     logger,
-                    "[EVO] Gen {}/{}: cost={:.9} (Δ={:+.9}, {:+.6}%), diversity={:.9}, params={}, time={:.2}s",
+                    "[DE] Gen {}/{}: cost={:.9} (Δ={:+.9}, {:+.6}%), diversity={:.9}, params={}, time={:.2}s",
                     gen + 1,
                     cfg.generations,
                     best_cost,
@@ -969,13 +969,13 @@ impl DifferentialEvolution {
                     if PRINT_SOLVER_DETAILS {
                         mm_info_log!(
                             logger,
-                            "[EVO] Early stopping at generation {}/{}: convergence detected",
+                            "[DE] Early stopping at generation {}/{}: convergence detected",
                             gen + 1,
                             cfg.generations
                         );
                         mm_info_log!(
                             logger,
-                            "[EVO]   diversity={:.9}, cost_change={:.9}, param_change={:.9}",
+                            "[DE]   diversity={:.9}, cost_change={:.9}, param_change={:.9}",
                             current_diversity,
                             (best_cost - prev_best_cost).abs(),
                             {

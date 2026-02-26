@@ -517,7 +517,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
                         .min(defaults::MAX_FOCAL_LENGTH_MM),
                 ));
                 let generations = settings_generations
-                    .unwrap_or(defaults::REFINE_EVO_GENERATIONS);
+                    .unwrap_or(defaults::REFINE_DE_GENERATIONS);
 
                 mm_info_log!(
                     logger,
@@ -530,7 +530,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
                         mmsfm::sfm_camera::GlobalAdjustmentMode::SmallRefinement,
                     focal_length_bounds: (min_fl, max_fl),
                     generations,
-                    seed: defaults::REFINE_EVO_SEED,
+                    seed: defaults::REFINE_DE_SEED,
                     enable_coarse_search,
                 })
             }
@@ -541,7 +541,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
                 defaults::UNKNOWN_FL_MAX_MM,
             ));
             let generations = settings_generations
-                .unwrap_or(defaults::UNKNOWN_EVO_GENERATIONS);
+                .unwrap_or(defaults::UNKNOWN_DE_GENERATIONS);
 
             mm_info_log!(
                 logger,
@@ -553,7 +553,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
                 mode: mmsfm::sfm_camera::GlobalAdjustmentMode::LargeRefinement,
                 focal_length_bounds: (min_fl, max_fl),
                 generations,
-                seed: defaults::UNKNOWN_EVO_SEED,
+                seed: defaults::UNKNOWN_DE_SEED,
                 enable_coarse_search,
             })
         }

@@ -26,6 +26,7 @@ use std::time::{Duration, Instant};
 
 use anyhow::{bail, Result};
 use mmlogger::Logger;
+use mmlogger::{mm_debug_log, mm_info_log};
 
 use mmio::uvtrack_reader::{FrameNumber, FrameRange, MarkersData};
 
@@ -152,15 +153,14 @@ fn run_incremental_loop<L: Logger>(
     if DEBUG {
         match &skeleton_frame_numbers {
             Some(skeleton) => {
-                logger.debug(&format!(
+                mm_debug_log!(
+                    logger,
                     "  Skeleton frame count: {}",
                     skeleton.len()
-                ));
+                );
             }
             None => {
-                logger.debug(
-                    "  Skeleton: None (Connected Dominating Set computation failed or returned empty)"
-                );
+                mm_debug_log!(logger, "  Skeleton: None (Connected Dominating Set computation failed or returned empty)");
             }
         }
     }
@@ -179,17 +179,22 @@ fn run_incremental_loop<L: Logger>(
         round_number += 1;
         let round_start = Instant::now();
         if DEBUG {
-            logger.debug(&format!(
+            mm_debug_log!(
+                logger,
                 "\n=== Round {} ({}) ===",
-                round_number, pass_label
-            ));
+                round_number,
+                pass_label
+            );
             let mut solved_sorted_frames: Vec<FrameNumber> =
                 solved_frames.iter().copied().collect();
             solved_sorted_frames.sort_unstable();
             let formatted_solved_frames =
                 format_frame_list(&solved_sorted_frames);
-            logger
-                .debug(&format!("  solved_frames={}", formatted_solved_frames));
+            mm_debug_log!(
+                logger,
+                "  solved_frames={}",
+                formatted_solved_frames
+            );
         }
 
         // Select frames to attempt this round.
@@ -204,10 +209,11 @@ fn run_incremental_loop<L: Logger>(
 
         if DEBUG {
             let formatted_unsolved_frames = format_frame_list(&unsolved_frames);
-            logger.debug(&format!(
+            mm_debug_log!(
+                logger,
                 "  unsolved_frames={}",
                 formatted_unsolved_frames
-            ));
+            );
         }
         if unsolved_frames.is_empty() {
             mm_debug_log!(logger, "  No more frames to attempt - stopping.");
@@ -907,10 +913,10 @@ pub(crate) fn camera_solve_inner<L: Logger>(
         camera_intrinsics,
     );
     if DEBUG && fixed_depth_count > 0 {
-        logger.debug(&format!(
+        mm_debug_log!(logger,
             "  Placed {} bundles at fixed depth before Phase 4 general bundle adjustment.",
             fixed_depth_count
-        ));
+        );
     }
     let phase4_pre_fixed_depth_duration =
         phase4_pre_fixed_depth_start.elapsed();
@@ -971,10 +977,10 @@ pub(crate) fn camera_solve_inner<L: Logger>(
         camera_intrinsics,
     );
     if DEBUG && fixed_depth_count > 0 {
-        logger.debug(&format!(
+        mm_debug_log!(logger,
             "  Placed {} bundles at fixed depth after Phase 4 general bundle adjustment.",
             fixed_depth_count
-        ));
+        );
     }
     let phase4_post_fixed_depth_duration =
         phase4_post_fixed_depth_start.elapsed();

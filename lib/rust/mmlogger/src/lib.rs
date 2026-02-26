@@ -106,6 +106,9 @@ pub enum LogFormat {
     LevelPrefix,
     /// Timestamped: `YYYY-MM-DD HH:MM:SS [LEVEL] Message here`
     Timestamp,
+    /// Full debug format:
+    /// `YYYY-MM-DD HH:MM:SS [LEVEL] [#thread_id] [file_path:line_number] Message here`
+    Full,
 }
 
 // ====================================================================
@@ -164,11 +167,59 @@ fn format_unix_timestamp(secs: u64, buf: &mut [u8; 19]) {
     write2(buf, 17, ss);
 }
 
+/// Optional source location and timing metadata for a log message.
+pub struct LogMetadata {
+    /// Unix timestamp in seconds (captured at log call site).
+    pub timestamp_secs: u64,
+    /// OS thread ID of the calling thread.
+    pub thread_id: u64,
+    /// Source file name (from `file!()`).
+    pub file_path: &'static str,
+    /// Source line number (from `line!()`).
+    pub line_number: u32,
+}
+
+impl LogMetadata {
+    /// Capture metadata at the current call site. Thread ID and
+    /// timestamp are recorded immediately.
+    ///
+    /// `file_path` and `line_number` must be provided by the caller (via
+    /// `file!()` / `line!()` macros).
+    pub fn capture(file_path: &'static str, line_number: u32) -> Self {
+        let timestamp_secs = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs();
+        let thread_id = thread_id_u64();
+        Self {
+            timestamp_secs,
+            thread_id,
+            file_path,
+            line_number,
+        }
+    }
+}
+
+/// Get a numeric thread ID. Uses the platform thread ID where
+/// available, falling back to hashing `ThreadId`.
+fn thread_id_u64() -> u64 {
+    // std::thread::current().id().as_u64() is nightly-only, so we
+    // use the Debug representation which prints "ThreadId(N)".
+    let id = thread::current().id();
+    let s = format!("{:?}", id);
+    // Parse the number from "ThreadId(N)".
+    s.trim_start_matches("ThreadId(")
+        .trim_end_matches(')')
+        .parse::<u64>()
+        .unwrap_or(0)
+}
+
 fn write_formatted<W: Write>(
     writer: &mut W,
     format: &LogFormat,
     level: LogLevel,
     msg: &str,
+    meta: Option<&LogMetadata>,
 ) {
     match format {
         LogFormat::Plain => match level {
@@ -186,14 +237,52 @@ fn write_formatted<W: Write>(
             let _ = writeln!(writer, "[{}] {}", level.as_str(), msg);
         }
         LogFormat::Timestamp => {
-            let secs = SystemTime::now()
-                .duration_since(SystemTime::UNIX_EPOCH)
-                .unwrap_or_default()
-                .as_secs();
+            let secs = match meta {
+                Some(m) => m.timestamp_secs,
+                None => SystemTime::now()
+                    .duration_since(SystemTime::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_secs(),
+            };
             let mut buf = [0u8; 19];
             format_unix_timestamp(secs, &mut buf);
             let ts = std::str::from_utf8(&buf).unwrap_or("0000-00-00 00:00:00");
             let _ = writeln!(writer, "[{}] [{}] {}", ts, level.as_str(), msg);
+        }
+        LogFormat::Full => {
+            let secs = match meta {
+                Some(m) => m.timestamp_secs,
+                None => SystemTime::now()
+                    .duration_since(SystemTime::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_secs(),
+            };
+            let mut buf = [0u8; 19];
+            format_unix_timestamp(secs, &mut buf);
+            let ts = std::str::from_utf8(&buf).unwrap_or("0000-00-00 00:00:00");
+            match meta {
+                Some(m) => {
+                    let _ = writeln!(
+                        writer,
+                        "[{}] [{}] [#{}] [{}:{}] {}",
+                        ts,
+                        level.as_str(),
+                        m.thread_id,
+                        m.file_path,
+                        m.line_number,
+                        msg
+                    );
+                }
+                None => {
+                    let _ = writeln!(
+                        writer,
+                        "[{}] [{}] {}",
+                        ts,
+                        level.as_str(),
+                        msg
+                    );
+                }
+            }
         }
     }
 }
@@ -209,6 +298,17 @@ pub trait Logger {
     // TODO: Add "progress" method between info and warn.
     fn warn(&self, msg: &str);
     fn error(&self, msg: &str);
+
+    /// Log with source location metadata. The default implementation
+    /// ignores the location and delegates to the level-specific method.
+    fn log(&self, level: LogLevel, msg: &str, _file: &'static str, _line: u32) {
+        match level {
+            LogLevel::Debug => self.debug(msg),
+            LogLevel::Info => self.info(msg),
+            LogLevel::Warn => self.warn(msg),
+            LogLevel::Error => self.error(msg),
+        }
+    }
 }
 
 // ====================================================================
@@ -254,12 +354,17 @@ impl<W1: Write, W2: Write> DualStreamLogger<W1, W2> {
     }
 
     /// Write a log message directly (used by the channel writer thread).
-    pub fn write_log(&mut self, level: LogLevel, msg: &str) {
+    pub fn write_log(
+        &mut self,
+        level: LogLevel,
+        msg: &str,
+        meta: Option<&LogMetadata>,
+    ) {
         if self.levels1.allows(level) {
-            write_formatted(&mut self.writer1, &self.format1, level, msg);
+            write_formatted(&mut self.writer1, &self.format1, level, msg, meta);
         }
         if self.levels2.allows(level) {
-            write_formatted(&mut self.writer2, &self.format2, level, msg);
+            write_formatted(&mut self.writer2, &self.format2, level, msg, meta);
         }
     }
 }
@@ -291,6 +396,10 @@ impl Logger for NoOpLogger {
 struct LogMessage {
     level: LogLevel,
     msg: String,
+    timestamp_secs: u64,
+    thread_id: u64,
+    file_path: &'static str,
+    line_number: u32,
 }
 
 /// Thread-safe logger that sends messages through an MPSC channel.
@@ -302,33 +411,59 @@ pub struct ChannelLogger {
     sender: mpsc::Sender<LogMessage>,
 }
 
+impl ChannelLogger {
+    /// Send a log message with full source location metadata.
+    ///
+    /// Prefer using the `mm_*_log!` macros which call this
+    /// automatically with correct `file!()` and `line!()` values.
+    fn send_log(
+        &self,
+        level: LogLevel,
+        msg: &str,
+        file_path: &'static str,
+        line_number: u32,
+    ) {
+        let timestamp_secs = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs();
+        let thread_id = thread_id_u64();
+        let _ = self.sender.send(LogMessage {
+            level,
+            msg: msg.to_owned(),
+            timestamp_secs,
+            thread_id,
+            file_path,
+            line_number,
+        });
+    }
+}
+
 impl Logger for ChannelLogger {
     fn debug(&self, msg: &str) {
-        let _ = self.sender.send(LogMessage {
-            level: LogLevel::Debug,
-            msg: msg.to_owned(),
-        });
+        self.send_log(LogLevel::Debug, msg, "", 0);
     }
 
     fn info(&self, msg: &str) {
-        let _ = self.sender.send(LogMessage {
-            level: LogLevel::Info,
-            msg: msg.to_owned(),
-        });
+        self.send_log(LogLevel::Info, msg, "", 0);
     }
 
     fn warn(&self, msg: &str) {
-        let _ = self.sender.send(LogMessage {
-            level: LogLevel::Warn,
-            msg: msg.to_owned(),
-        });
+        self.send_log(LogLevel::Warn, msg, "", 0);
     }
 
     fn error(&self, msg: &str) {
-        let _ = self.sender.send(LogMessage {
-            level: LogLevel::Error,
-            msg: msg.to_owned(),
-        });
+        self.send_log(LogLevel::Error, msg, "", 0);
+    }
+
+    fn log(
+        &self,
+        level: LogLevel,
+        msg: &str,
+        file_path: &'static str,
+        line_number: u32,
+    ) {
+        self.send_log(level, msg, file_path, line_number);
     }
 }
 
@@ -385,7 +520,13 @@ where
             writer1, format1, levels1, writer2, format2, levels2,
         );
         while let Ok(msg) = receiver.recv() {
-            backend.write_log(msg.level, &msg.msg);
+            let meta = LogMetadata {
+                timestamp_secs: msg.timestamp_secs,
+                thread_id: msg.thread_id,
+                file_path: msg.file_path,
+                line_number: msg.line_number,
+            };
+            backend.write_log(msg.level, &msg.msg, Some(&meta));
         }
     });
 
@@ -419,49 +560,68 @@ macro_rules! mm_debug_eprintln {
 /// Requires a `const DEBUG: bool` in the calling scope and a
 /// logger as the first argument. When `DEBUG` is `false`, the compiler
 /// optimizes the entire call away.
+///
+/// If the logger has a `log` method (e.g.
+/// `ChannelLogger`), source file and line are captured automatically.
 #[macro_export]
 macro_rules! mm_debug_log {
     ($logger:expr, $msg:literal) => {
         if DEBUG {
-            $logger.debug($msg);
+            $logger.log(
+                $crate::LogLevel::Debug, $msg, file!(), line!());
         }
     };
     ($logger:expr, $fmt:literal, $($arg:tt)*) => {
         if DEBUG {
-            $logger.debug(&format!($fmt, $($arg)*));
+            $logger.log(
+                $crate::LogLevel::Debug,
+                &format!($fmt, $($arg)*),
+                file!(), line!());
         }
     };
 }
 
-/// Info log macro — avoids the `&format!(...)` boilerplate.
+/// Info log macro — captures source location for `Full` format.
 #[macro_export]
 macro_rules! mm_info_log {
     ($logger:expr, $msg:literal) => {
-        $logger.info($msg);
+        $logger.log(
+            $crate::LogLevel::Info, $msg, file!(), line!());
     };
     ($logger:expr, $fmt:literal, $($arg:tt)*) => {
-        $logger.info(&format!($fmt, $($arg)*));
+        $logger.log(
+            $crate::LogLevel::Info,
+            &format!($fmt, $($arg)*),
+            file!(), line!());
     };
 }
 
-/// Warn log macro — avoids the `&format!(...)` boilerplate.
+/// Warn log macro — captures source location for `Full` format.
 #[macro_export]
 macro_rules! mm_warn_log {
     ($logger:expr, $msg:literal) => {
-        $logger.warn($msg);
+        $logger.log(
+            $crate::LogLevel::Warn, $msg, file!(), line!());
     };
     ($logger:expr, $fmt:literal, $($arg:tt)*) => {
-        $logger.warn(&format!($fmt, $($arg)*));
+        $logger.log(
+            $crate::LogLevel::Warn,
+            &format!($fmt, $($arg)*),
+            file!(), line!());
     };
 }
 
-/// Error log macro — avoids the `&format!(...)` boilerplate.
+/// Error log macro — captures source location for `Full` format.
 #[macro_export]
 macro_rules! mm_error_log {
     ($logger:expr, $msg:literal) => {
-        $logger.error($msg);
+        $logger.log(
+            $crate::LogLevel::Error, $msg, file!(), line!());
     };
     ($logger:expr, $fmt:literal, $($arg:tt)*) => {
-        $logger.error(&format!($fmt, $($arg)*));
+        $logger.log(
+            $crate::LogLevel::Error,
+            &format!($fmt, $($arg)*),
+            file!(), line!());
     };
 }

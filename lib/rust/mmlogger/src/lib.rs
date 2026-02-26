@@ -202,19 +202,7 @@ impl LogMetadata {
     }
 }
 
-/// Get a numeric thread ID. Uses the platform thread ID where
-/// available, falling back to hashing `ThreadId`.
-fn thread_id_u64() -> u64 {
-    // std::thread::current().id().as_u64() is nightly-only, so we
-    // use the Debug representation which prints "ThreadId(N)".
-    let id = thread::current().id();
-    let s = format!("{:?}", id);
-    // Parse the number from "ThreadId(N)".
-    s.trim_start_matches("ThreadId(")
-        .trim_end_matches(')')
-        .parse::<u64>()
-        .unwrap_or(0)
-}
+use mmcore::threadutils::thread_id_u64;
 
 fn write_formatted<W: Write>(
     writer: &mut W,

@@ -92,13 +92,13 @@ impl<L: Logger> Evaluator for CameraSolveFocalLengthEvaluator<L> {
         use std::time::Instant;
 
         let focal_length_mm = x[0];
-        let thread_id = std::thread::current().id();
+        let thread_id = mmcore::threadutils::thread_id_u64();
         let eval_num = self.eval_counter.fetch_add(1, Ordering::SeqCst) + 1;
         let gen = self.current_generation.load(Ordering::SeqCst);
 
         mm_debug_log!(
             self.logger,
-            "[DE Eval #{} Gen {}] [{:?}] focal_length={:.8}mm - Running...",
+            "[DE Eval #{} Gen {}] [#{}] focal_length={:.8}mm - Running...",
             eval_num,
             gen,
             thread_id,
@@ -147,7 +147,7 @@ impl<L: Logger> Evaluator for CameraSolveFocalLengthEvaluator<L> {
                 if num_bundles >= MINIMUM_ACCEPTED_BUNDLE_COUNT {
                     mm_debug_log!(
                         self.logger,
-                        "[DE Eval #{} Gen {}] [{:?}] focal_length={:.8}mm ACCEPTED mean={:.6}px, median={:.6}px, bundles={}, frames_solved={}/{}, time={:.3}s",
+                        "[DE Eval #{} Gen {}] [#{}] focal_length={:.8}mm ACCEPTED mean={:.6}px, median={:.6}px, bundles={}, frames_solved={}/{}, time={:.3}s",
                         eval_num, gen, thread_id, focal_length_mm,
                         quality_metrics.mean_reprojection_error,
                         quality_metrics.median_reprojection_error,
@@ -161,7 +161,7 @@ impl<L: Logger> Evaluator for CameraSolveFocalLengthEvaluator<L> {
                 } else {
                     mm_debug_log!(
                         self.logger,
-                        "[DE Eval #{} Gen {}] [{:?}] focal_length={:.8}mm REJECTED mean={:.6}px, median={:.6}px, bundles={}, frames_solved={}/{}, time={:.3}s",
+                        "[DE Eval #{} Gen {}] [#{}] focal_length={:.8}mm REJECTED mean={:.6}px, median={:.6}px, bundles={}, frames_solved={}/{}, time={:.3}s",
                         eval_num, gen, thread_id, focal_length_mm,
                         quality_metrics.mean_reprojection_error,
                         quality_metrics.median_reprojection_error,
@@ -177,7 +177,7 @@ impl<L: Logger> Evaluator for CameraSolveFocalLengthEvaluator<L> {
                 let elapsed = start_time.elapsed();
                 mm_debug_log!(
                     self.logger,
-                    "[DE Eval #{} Gen {}] [{:?}] focal_length={:.8}mm FAILED (time={:.3}s) error: {}",
+                    "[DE Eval #{} Gen {}] [#{}] focal_length={:.8}mm FAILED (time={:.3}s) error: {}",
                     eval_num, gen, thread_id, focal_length_mm, elapsed.as_secs_f64(), e
                 );
                 f64::MAX // Invalid focal length - guide DE away.

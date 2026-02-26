@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2024 David Cattermole.
+// Copyright (C) 2026 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -18,7 +18,15 @@
 // ====================================================================
 //
 
-pub mod dual;
-pub mod pathutils;
-pub mod rand_prng_pcg;
-pub mod threadutils;
+/// Get the current thread's numeric ID.
+///
+/// `std::thread::current().id().as_u64()` is nightly-only, so we
+/// parse the number from the `Debug` representation `ThreadId(N)`.
+pub fn thread_id_u64() -> u64 {
+    let id = std::thread::current().id();
+    let s = format!("{:?}", id);
+    s.trim_start_matches("ThreadId(")
+        .trim_end_matches(')')
+        .parse::<u64>()
+        .unwrap_or(0)
+}

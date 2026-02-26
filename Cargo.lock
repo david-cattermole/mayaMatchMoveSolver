@@ -943,6 +943,9 @@ dependencies = [
 [[package]]
 name = "mmlogger"
 version = "0.1.0"
+dependencies = [
+ "mmcore_rust",
+]
 
 [[package]]
 name = "mmoptimise_rust"

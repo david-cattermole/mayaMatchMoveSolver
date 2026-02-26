@@ -71,7 +71,8 @@ if [ -f "${UV_FILE}" ]; then
         --image-width 3600 \
         --image-height 2400 \
         --prefix cube_a \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"
@@ -91,7 +92,8 @@ if [ -f "${UV_FILE}" ]; then
         --image-width 3600 \
         --image-height 2400 \
         --prefix cube_b \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"
@@ -108,7 +110,8 @@ if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ]; then
     ${MM_CAMERA_SOLVE} "${UV_FILE}" \
         --mmcamera "${MMCAMERA_FILE}" \
         --prefix stA_mmcamera \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} or ${MMCAMERA_FILE} not found"
@@ -127,7 +130,8 @@ if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ] && [ -f "${NUKE_LENS_FILE}" 
         --mmcamera "${MMCAMERA_FILE}" \
         --nuke-lens "${NUKE_LENS_FILE}" \
         --prefix stA_nuke_lens \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: required files not found"
@@ -146,7 +150,8 @@ if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ] && [ -f "${NUKE_LENS_FILE}" 
         --mmcamera "${MMCAMERA_FILE}" \
         --nuke-lens "${NUKE_LENS_FILE}" \
         --prefix stA_undistort \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: required files not found"
@@ -163,7 +168,8 @@ if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ]; then
     ${MM_CAMERA_SOLVE} "${UV_FILE}" \
         --mmcamera "${MMCAMERA_FILE}" \
         --prefix stA_no_lens \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: required files not found"
@@ -185,7 +191,8 @@ if [ -f "${UV_FILE}" ] && [ -f "${SETTINGS_FILE}" ]; then
         --image-height 2400 \
         --solver-settings "${SETTINGS_FILE}" \
         --prefix stA_settings \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} or ${SETTINGS_FILE} not found"
@@ -208,7 +215,8 @@ if [ -f "${UV_FILE}" ] && [ -f "${SETTINGS_FILE2}" ]; then
         --prefix stA \
         --solver refine \
         --solver-settings "${SETTINGS_FILE2}" \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} or ${SETTINGS_FILE2} not found"
@@ -229,7 +237,8 @@ if [ -f "${UV_FILE}" ]; then
         --image-height 2025 \
         --solver refine \
         --prefix blasterwalk \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"
@@ -250,7 +259,8 @@ if [ -f "${UV_FILE}" ]; then
         --image-height 1080 \
         --solver refine \
         --prefix hcw_painting \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"
@@ -271,7 +281,8 @@ if [ -f "${UV_FILE}" ]; then
         --image-height 2304 \
         --solver refine \
         --prefix operahouse \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"
@@ -294,7 +305,8 @@ if [ -f "${UV_FILE}" ]; then
         --start-frame 2000 \
         --end-frame 2706 \
         --with-intermediate-output \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"
@@ -307,7 +319,6 @@ echo "Test 15: Quiet mode"
 echo "----------------------------------------------"
 UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/test_cube_a_markers_v1_fmt.uv"
 if [ -f "${UV_FILE}" ]; then
-    echo "Running with --quiet flag..."
     ${MM_CAMERA_SOLVE} "${UV_FILE}" \
         --focal-length 35 \
         --film-back-width 36 \
@@ -316,8 +327,7 @@ if [ -f "${UV_FILE}" ]; then
         --image-height 2400 \
         --solver refine \
         --prefix quiet_test \
-        --output-dir "${OUTPUT_BASE}" \
-        --quiet
+        --output-dir "${OUTPUT_BASE}"
     echo "Quiet mode completed (no output expected above)"
     echo "Output: ${OUTPUT_BASE}"
 else
@@ -341,7 +351,8 @@ if [ -f "${UV_FILE}" ]; then
         --end-frame 10 \
         --solver refine \
         --prefix frame_range \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --log-level info
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"

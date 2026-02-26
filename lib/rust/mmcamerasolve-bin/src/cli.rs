@@ -38,7 +38,7 @@ const ARG_HELP_SHORT: &str = "-h";
 const ARG_HELP_LONG: &str = "--help";
 const ARG_VERSION_SHORT: &str = "-v";
 const ARG_VERSION_LONG: &str = "--version";
-const ARG_QUIET: &str = "--quiet";
+const ARG_LOG_LEVEL: &str = "--log-level";
 const ARG_FOCAL_LENGTH: &str = "--focal-length";
 const ARG_LENS_CENTER_X: &str = "--lens-center-x";
 const ARG_LENS_CENTER_Y: &str = "--lens-center-y";
@@ -83,6 +83,37 @@ impl std::str::FromStr for SolverType {
     }
 }
 
+/// Log verbosity level.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum LogVerbosity {
+    /// Warnings and errors only (default, no flags).
+    #[default]
+    Warn,
+    /// Progress, warnings and errors (-v).
+    Progress,
+    /// Info, progress, warnings and errors (-vv).
+    Info,
+    /// All messages including debug (-vvv).
+    Debug,
+}
+
+impl std::str::FromStr for LogVerbosity {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "warn" => Ok(LogVerbosity::Warn),
+            "progress" => Ok(LogVerbosity::Progress),
+            "info" => Ok(LogVerbosity::Info),
+            "debug" => Ok(LogVerbosity::Debug),
+            _ => Err(format!(
+                "Invalid log level '{}'. Valid options: warn, progress, info, debug",
+                s
+            )),
+        }
+    }
+}
+
 /// Parsed command-line arguments.
 #[derive(Debug)]
 pub struct CliArgs {
@@ -105,8 +136,8 @@ pub struct CliArgs {
     pub threads: Option<usize>,
     pub output_dir: String,
     pub prefix: Option<String>,
-    /// Suppress progress output.
-    pub quiet: bool,
+    /// Log verbosity level.
+    pub log_level: LogVerbosity,
     /// Write intermediate results during solve.
     pub intermediate_output: bool,
     pub nuke_lens_file: Option<String>,
@@ -131,7 +162,7 @@ impl Default for CliArgs {
             threads: None,
             output_dir: DEFAULT_OUTPUT_DIR.to_string(),
             prefix: None,
-            quiet: false,
+            log_level: LogVerbosity::default(),
             intermediate_output: false,
             nuke_lens_file: None,
         }
@@ -184,7 +215,11 @@ OUTPUT:
     --output-dir <PATH>         Output directory for Kuper file [default: ./output]
     --prefix <NAME>             Custom prefix for output files
     --with-intermediate-output  Write intermediate results during solve
-    --quiet                     Suppress progress output
+    --log-level <LEVEL>         Set log verbosity [default: warn]
+                                warn     = warnings and errors only
+                                progress = progress + warnings
+                                info     = info + progress + warnings
+                                debug    = all messages (verbose)
 
 HELP:
     -h, --help                Show this help message
@@ -237,9 +272,16 @@ pub fn parse_args() -> ParseResult {
             ARG_VERSION_SHORT | ARG_VERSION_LONG => {
                 return ParseResult::Version
             }
-            ARG_QUIET => {
-                cli.quiet = true;
-                i += 1;
+            ARG_LOG_LEVEL => {
+                let val = try_parse!(parser::parse_string_arg(
+                    &args,
+                    &mut i,
+                    ARG_LOG_LEVEL
+                ));
+                cli.log_level = match val.parse() {
+                    Ok(l) => l,
+                    Err(e) => return ParseResult::Error(e),
+                };
             }
             ARG_INTERMEDIATE_OUTPUT => {
                 cli.intermediate_output = true;

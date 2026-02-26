@@ -26,7 +26,7 @@ use std::time::{Duration, Instant};
 
 use anyhow::{bail, Result};
 use mmlogger::Logger;
-use mmlogger::{mm_debug_log, mm_info_log};
+use mmlogger::{mm_debug_log, mm_info_log, mm_progress_log};
 
 use mmio::uvtrack_reader::{FrameNumber, FrameRange, MarkersData};
 
@@ -517,14 +517,14 @@ pub(crate) fn camera_solve_inner<L: Logger>(
     *quality_metrics = SolveQualityMetrics::default();
 
     if PROGRESS && print_summary {
-        mm_info_log!(
+        mm_progress_log!(
             logger,
             "[Phase 0] {:>5} | Solve: {} total frames, {} total markers",
             "Time",
             scene_frame_range.frame_count(),
             markers.len()
         );
-        mm_info_log!(
+        mm_progress_log!(
             logger,
             "[Phase 0] {:>5} | Frame range: {} to {}",
             "-----",

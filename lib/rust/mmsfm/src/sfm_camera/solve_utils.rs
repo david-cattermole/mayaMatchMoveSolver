@@ -23,6 +23,7 @@
 use std::time::Instant;
 
 use mmio::uvtrack_reader::FrameNumber;
+use mmlogger::mm_progress_log;
 use mmlogger::Logger;
 
 /// Format a list of frame numbers as ranges
@@ -77,7 +78,7 @@ pub(super) fn progress_text<L: Logger>(
     text: &str,
 ) {
     let time_str = format!("{:.1}s", solve_start.elapsed().as_secs_f64());
-    mm_info_log!(logger, "[Phase {}] {:>5} | {}", phase, time_str, text);
+    mm_progress_log!(logger, "[Phase {}] {:>5} | {}", phase, time_str, text);
 }
 
 /// Print the numeric-column header and its separator row.
@@ -88,7 +89,7 @@ pub(super) fn progress_table_header<L: Logger>(
     solve_start: Instant,
 ) {
     let time_str = format!("{:.1}s", solve_start.elapsed().as_secs_f64());
-    mm_info_log!(
+    mm_progress_log!(
         logger,
         "[Phase {}] {:>5} | {:>7} | {:>9} | {:>6} | {:>7} | {}",
         phase,
@@ -99,7 +100,7 @@ pub(super) fn progress_table_header<L: Logger>(
         "Bundles",
         "Stage"
     );
-    mm_info_log!(
+    mm_progress_log!(
         logger,
         "[Phase {}] {:>5} | {:>7} | {:>9} | {:>6} | {:>7} | {}",
         phase,
@@ -125,7 +126,7 @@ pub(super) fn progress_row<L: Logger>(
     stage: &str,
 ) {
     let time_str = format!("{:.1}s", solve_start.elapsed().as_secs_f64());
-    mm_info_log!(
+    mm_progress_log!(
         logger,
         "[Phase {}] {:>5} | {:>7.3} | {:>9.3} | {:>6} | {:>7} | {}",
         phase,

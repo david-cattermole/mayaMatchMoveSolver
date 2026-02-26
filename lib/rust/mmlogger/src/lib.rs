@@ -367,7 +367,14 @@ pub struct NoOpLogger;
 
 impl Logger for NoOpLogger {
     #[inline(always)]
-    fn log(&self, _level: LogLevel, _msg: &str, _file: &'static str, _line: u32) {}
+    fn log(
+        &self,
+        _level: LogLevel,
+        _msg: &str,
+        _file: &'static str,
+        _line: u32,
+    ) {
+    }
 }
 
 // ====================================================================

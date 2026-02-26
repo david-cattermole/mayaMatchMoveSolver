@@ -173,7 +173,7 @@
 //! ```
 
 use anyhow::Result;
-use mmlogger::mm_info_log;
+use mmlogger::mm_progress_log;
 use rayon::prelude::*;
 use thiserror::Error;
 
@@ -918,7 +918,7 @@ impl DifferentialEvolution {
             };
 
             if PRINT_SOLVER_DETAILS {
-                mm_info_log!(
+                mm_progress_log!(
                     logger,
                     "[DE] Gen {}/{}: cost={:.9} (Δ={:+.9}, {:+.6}%), diversity={:.9}, params={}, time={:.2}s",
                     gen + 1,
@@ -967,13 +967,13 @@ impl DifferentialEvolution {
                 // Stop immediately when criteria met.
                 if diversity_low && (cost_stagnant || params_stagnant) {
                     if PRINT_SOLVER_DETAILS {
-                        mm_info_log!(
+                        mm_progress_log!(
                             logger,
                             "[DE] Early stopping at generation {}/{}: convergence detected",
                             gen + 1,
                             cfg.generations
                         );
-                        mm_info_log!(
+                        mm_progress_log!(
                             logger,
                             "[DE]   diversity={:.9}, cost_change={:.9}, param_change={:.9}",
                             current_diversity,

@@ -133,44 +133,41 @@ fn run() -> Result<()> {
         let file = std::fs::File::create(&log_path).with_context(|| {
             format!("Failed to create log file: {}", log_path)
         })?;
-        let (stdout_format, stdout_level, file_format, file_level) =
-            match args.log_level {
-                cli::LogVerbosity::Warn => (
-                    LogFormat::Plain,
-                    LevelFilter::WARN | LevelFilter::ERROR,
-                    LogFormat::Timestamp,
-                    LevelFilter::INFO
-                        | LevelFilter::PROGRESS
-                        | LevelFilter::WARN
-                        | LevelFilter::ERROR,
-                ),
-                cli::LogVerbosity::Progress => (
-                    LogFormat::Plain,
-                    LevelFilter::PROGRESS
-                        | LevelFilter::WARN
-                        | LevelFilter::ERROR,
-                    LogFormat::Timestamp,
-                    LevelFilter::INFO
-                        | LevelFilter::PROGRESS
-                        | LevelFilter::WARN
-                        | LevelFilter::ERROR,
-                ),
-                cli::LogVerbosity::Info => (
-                    LogFormat::Plain,
-                    LevelFilter::INFO
-                        | LevelFilter::PROGRESS
-                        | LevelFilter::WARN
-                        | LevelFilter::ERROR,
-                    LogFormat::Timestamp,
-                    LevelFilter::ALL,
-                ),
-                cli::LogVerbosity::Debug => (
-                    LogFormat::Full,
-                    LevelFilter::ALL,
-                    LogFormat::Full,
-                    LevelFilter::ALL,
-                ),
-            };
+        let (stdout_format, stdout_level) = match args.console_level {
+            cli::LogVerbosity::Warn => {
+                (LogFormat::Plain, LevelFilter::WARN | LevelFilter::ERROR)
+            }
+            cli::LogVerbosity::Progress => (
+                LogFormat::Plain,
+                LevelFilter::PROGRESS | LevelFilter::WARN | LevelFilter::ERROR,
+            ),
+            cli::LogVerbosity::Info => (
+                LogFormat::Plain,
+                LevelFilter::INFO
+                    | LevelFilter::PROGRESS
+                    | LevelFilter::WARN
+                    | LevelFilter::ERROR,
+            ),
+            cli::LogVerbosity::Debug => (LogFormat::Full, LevelFilter::ALL),
+        };
+
+        let (file_format, file_level) = match args.log_level {
+            cli::LogVerbosity::Warn => {
+                (LogFormat::Timestamp, LevelFilter::WARN | LevelFilter::ERROR)
+            }
+            cli::LogVerbosity::Progress => (
+                LogFormat::Timestamp,
+                LevelFilter::PROGRESS | LevelFilter::WARN | LevelFilter::ERROR,
+            ),
+            cli::LogVerbosity::Info => (
+                LogFormat::Timestamp,
+                LevelFilter::INFO
+                    | LevelFilter::PROGRESS
+                    | LevelFilter::WARN
+                    | LevelFilter::ERROR,
+            ),
+            cli::LogVerbosity::Debug => (LogFormat::Full, LevelFilter::ALL),
+        };
 
         let (log, handle) = mmlogger::channel_logger(
             std::io::stdout(),
@@ -686,7 +683,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
             &bundle_positions,
             &camera_intrinsics,
             &image_size,
-            args.log_level == cli::LogVerbosity::Warn,
+            args.console_level == cli::LogVerbosity::Warn,
         )?;
         viz_start.elapsed()
     };

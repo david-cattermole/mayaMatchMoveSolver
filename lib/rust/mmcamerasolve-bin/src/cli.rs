@@ -39,6 +39,7 @@ const ARG_HELP_LONG: &str = "--help";
 const ARG_VERSION_SHORT: &str = "-v";
 const ARG_VERSION_LONG: &str = "--version";
 const ARG_LOG_LEVEL: &str = "--log-level";
+const ARG_CONSOLE_LEVEL: &str = "--console-level";
 const ARG_FOCAL_LENGTH: &str = "--focal-length";
 const ARG_LENS_CENTER_X: &str = "--lens-center-x";
 const ARG_LENS_CENTER_Y: &str = "--lens-center-y";
@@ -136,7 +137,9 @@ pub struct CliArgs {
     pub threads: Option<usize>,
     pub output_dir: String,
     pub prefix: Option<String>,
-    /// Log verbosity level.
+    /// Log verbosity level for console (stdout) output.
+    pub console_level: LogVerbosity,
+    /// Log verbosity level for file output.
     pub log_level: LogVerbosity,
     /// Write intermediate results during solve.
     pub intermediate_output: bool,
@@ -162,7 +165,8 @@ impl Default for CliArgs {
             threads: None,
             output_dir: DEFAULT_OUTPUT_DIR.to_string(),
             prefix: None,
-            log_level: LogVerbosity::default(),
+            console_level: LogVerbosity::Progress,
+            log_level: LogVerbosity::Info,
             intermediate_output: false,
             nuke_lens_file: None,
         }
@@ -215,11 +219,13 @@ OUTPUT:
     --output-dir <PATH>         Output directory for Kuper file [default: ./output]
     --prefix <NAME>             Custom prefix for output files
     --with-intermediate-output  Write intermediate results during solve
-    --log-level <LEVEL>         Set log verbosity [default: warn]
+    --console-level <LEVEL>     Set console (stdout) log verbosity [default: progress]
                                 warn     = warnings and errors only
                                 progress = progress + warnings
                                 info     = info + progress + warnings
                                 debug    = all messages (verbose)
+    --log-level <LEVEL>         Set file log verbosity [default: info]
+                                Same levels as --console-level
 
 HELP:
     -h, --help                Show this help message
@@ -271,6 +277,17 @@ pub fn parse_args() -> ParseResult {
             ARG_HELP_SHORT | ARG_HELP_LONG => return ParseResult::Help,
             ARG_VERSION_SHORT | ARG_VERSION_LONG => {
                 return ParseResult::Version
+            }
+            ARG_CONSOLE_LEVEL => {
+                let val = try_parse!(parser::parse_string_arg(
+                    &args,
+                    &mut i,
+                    ARG_CONSOLE_LEVEL
+                ));
+                cli.console_level = match val.parse() {
+                    Ok(l) => l,
+                    Err(e) => return ParseResult::Error(e),
+                };
             }
             ARG_LOG_LEVEL => {
                 let val = try_parse!(parser::parse_string_arg(

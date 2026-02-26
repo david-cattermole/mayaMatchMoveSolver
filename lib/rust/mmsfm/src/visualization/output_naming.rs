@@ -183,6 +183,9 @@ pub struct OutputFileNaming {
     view_name: Option<ViewName>,
     frame_number: Option<u32>,
     triangulation_method: Option<String>,
+    /// When true, `directory_path()` returns `output_dir` directly
+    /// without appending test_type/dataset/condition subdirectories.
+    flat_directory: bool,
 }
 
 impl OutputFileNaming {
@@ -203,7 +206,13 @@ impl OutputFileNaming {
             view_name: None,
             frame_number: None,
             triangulation_method: None,
+            flat_directory: false,
         }
+    }
+
+    pub fn with_flat_directory(mut self) -> Self {
+        self.flat_directory = true;
+        self
     }
 
     pub fn with_condition(mut self, condition: DataCondition) -> Self {
@@ -244,6 +253,11 @@ impl OutputFileNaming {
     /// Format: `{output_dir}/{test_type}/{dataset}/{condition}_{solver}_{triangulation_method}`
     pub fn directory_path(&self) -> Result<PathBuf> {
         let mut path = self.output_dir.clone();
+
+        if self.flat_directory {
+            return Ok(path);
+        }
+
         path.push(self.test_type.as_str());
 
         // Always add dataset name.

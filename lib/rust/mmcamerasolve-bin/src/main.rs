@@ -959,12 +959,18 @@ fn generate_visualizations<L: Logger + Sync>(
 
     let dataset_name = prefix.as_deref().unwrap_or("solve");
 
+    let viz_dir = match prefix_str {
+        "" => format!("{}/visualizations", output_dir),
+        p => format!("{}/{}_visualizations", output_dir, p),
+    };
+
     let scene_frame_naming = OutputFileNaming::new(
-        output_dir,
+        &viz_dir,
         TestType::CameraSolve,
         dataset_name,
         VisualizationType::Scene3d,
-    );
+    )
+    .with_flat_directory();
 
     let views = vec![ViewConfigurationBuilder::new()
         .view_name("top")
@@ -985,11 +991,12 @@ fn generate_visualizations<L: Logger + Sync>(
     )?;
 
     let reproj_naming = OutputFileNaming::new(
-        output_dir,
+        &viz_dir,
         TestType::CameraSolve,
         dataset_name,
         VisualizationType::MarkerReprojection2d,
-    );
+    )
+    .with_flat_directory();
 
     let reproj_title = if prefix_str.is_empty() {
         "Marker Reprojections".to_string()
@@ -1044,11 +1051,12 @@ fn generate_visualizations<L: Logger + Sync>(
         )?;
 
     let residual_naming = OutputFileNaming::new(
-        output_dir,
+        &viz_dir,
         TestType::CameraSolve,
         dataset_name,
         VisualizationType::ResidualsLinePlot,
-    );
+    )
+    .with_flat_directory();
 
     let residual_title = if prefix_str.is_empty() {
         "Per-Frame Reprojection Errors".to_string()

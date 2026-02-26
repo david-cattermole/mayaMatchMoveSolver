@@ -245,6 +245,7 @@ pub fn run_bundle_adjustment_dataset_test(
         // Task 1: 3D scene views
         let handle_3d = s.spawn(|| {
             scene::visualize_sfm_scene_views(
+                &mmlogger::NoOpLogger,
                 &pose_a,
                 &pose_b,
                 &filtered_points_3d_initial,
@@ -515,6 +516,7 @@ pub fn run_bundle_adjustment_dataset_test(
         // Task 1: 3D scene views
         let handle_3d = s.spawn(|| {
             scene::visualize_sfm_scene_views(
+                &mmlogger::NoOpLogger,
                 &optimized_cameras[0],
                 &optimized_cameras[1],
                 &optimized_points,
@@ -869,6 +871,7 @@ pub fn run_bundle_adjustment_dataset_test(
             .clone_with_visualization(VisualizationType::ResidualsLinePlot);
 
         scene::visualize_sfm_scene_views(
+            &mmlogger::NoOpLogger,
             &final_cameras[0],
             &final_cameras[1],
             &final_points,

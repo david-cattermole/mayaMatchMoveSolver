@@ -29,6 +29,7 @@ use crate::datatype::{
     camera_pose::CameraPose, CameraIntrinsics, ImageSize, UnitValue, UvPoint2,
 };
 use anyhow::Result;
+use mmlogger::{mm_progress_log, Logger};
 use nalgebra::Point3;
 use plotters::coord::types::RangedCoordf64;
 use plotters::prelude::*;
@@ -331,10 +332,6 @@ pub fn visualize_marker_reprojections_2d_scatter(
     )?;
 
     area.present()?;
-    println!(
-        "2D marker reprojection visualization saved to: {}",
-        file_path.display()
-    );
     if DEBUG {
         println!(
             "  Camera A mean error: {:.4} pixels (max: {:.4})",
@@ -670,7 +667,8 @@ where
 }
 
 /// Creates one 2D scatter plot per camera comparing observed markers with reprojected 3D points.
-pub fn visualize_marker_reprojections_sequential(
+pub fn visualize_marker_reprojections_sequential<L: Logger + Sync>(
+    logger: &L,
     camera_poses: &[CameraPose],
     points_3d: &[Point3<f64>],
     observations_per_camera: &[Vec<(usize, UvPoint2<f64>)>],
@@ -699,11 +697,11 @@ pub fn visualize_marker_reprojections_sequential(
     if num_cameras > 0 {
         let example_naming = naming.clone().with_frame(1);
         if let Ok(example_path) = example_naming.full_path() {
-            print!(
-                "Generating marker reprojections: {} ",
+            mm_progress_log!(
+                logger,
+                "Generating marker reprojections: {}",
                 example_path.display()
             );
-            let _ = std::io::Write::flush(&mut std::io::stdout());
         }
     }
 
@@ -940,13 +938,14 @@ pub fn visualize_marker_reprojections_sequential(
 
             area.present()?;
 
-            print!(".");
-            let _ = std::io::Write::flush(&mut std::io::stdout());
-
             Ok(())
         })?;
 
-    println!();
+    mm_progress_log!(
+        logger,
+        "Generated {} marker reprojection frames",
+        num_cameras
+    );
 
     Ok(())
 }

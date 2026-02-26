@@ -95,6 +95,7 @@ fn camera_orientation_validation_sfm_test() -> Result<()> {
     );
 
     visualize_sfm_scene_views(
+        &mmlogger::NoOpLogger,
         &pose_a,
         &pose_b,
         &points_3d,

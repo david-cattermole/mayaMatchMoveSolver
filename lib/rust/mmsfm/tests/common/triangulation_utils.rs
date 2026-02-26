@@ -560,6 +560,7 @@ pub fn generate_visualization_outputs(
     use crate::common::Stage;
     let naming_scene = base_naming.clone_with_stage(Stage::Initial);
     visualize_sfm_scene_views(
+        &mmlogger::NoOpLogger,
         camera_pose_a,
         camera_pose_b,
         points_3d,

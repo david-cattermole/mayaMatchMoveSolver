@@ -146,6 +146,7 @@ pub fn run_relative_pose_dataset_test(
 
     let naming_scene = base_naming.clone_with_stage(Stage::Initial);
     visualize_sfm_scene_views(
+        &mmlogger::NoOpLogger,
         &pose_a,
         &pose_b,
         &valid_triangulated_points,

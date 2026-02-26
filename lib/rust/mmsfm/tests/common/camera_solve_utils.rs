@@ -350,6 +350,7 @@ fn generate_per_frame_3d_trajectory(
         compute_bundle_visibility(markers, bundle_positions);
 
     scene::visualize_sfm_trajectory_views(
+        &mmlogger::NoOpLogger,
         &trajectory,
         &bundle_points,
         "Camera Solve",
@@ -511,6 +512,7 @@ pub fn run_camera_solve_dataset_test(
         .clone_with_visualization(VisualizationType::ResidualsLinePlot);
 
     residuals::visualize_multi_frame_residuals_per_marker(
+        &mmlogger::NoOpLogger,
         &per_frame_residuals,
         Some(&markers.names),
         &residual_stats,

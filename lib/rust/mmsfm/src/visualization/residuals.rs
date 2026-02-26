@@ -23,6 +23,7 @@
 //! Creates line plots of reprojection errors with mean and median overlays.
 
 use anyhow::Result;
+use mmlogger::{mm_progress_log, Logger};
 use plotters::prelude::*;
 
 use super::output_naming::OutputFileNaming;
@@ -136,16 +137,13 @@ pub fn visualize_residual_errors_line_plot(
     }
 
     area.present()?;
-    println!(
-        "Residual error visualization saved to: {}",
-        file_path.display()
-    );
 
     Ok(())
 }
 
 /// Creates a timeline plot of per-marker reprojection error across all frames.
-pub fn visualize_multi_frame_residuals_per_marker(
+pub fn visualize_multi_frame_residuals_per_marker<L: Logger>(
+    logger: &L,
     per_frame_residuals: &std::collections::HashMap<u32, Vec<f64>>,
     _marker_names: Option<&[String]>,
     stats: &ResidualStats,
@@ -298,8 +296,9 @@ pub fn visualize_multi_frame_residuals_per_marker(
     }
 
     area.present()?;
-    println!(
-        "Multi-frame residual visualization saved to: {}",
+    mm_progress_log!(
+        logger,
+        "Generated residual visualization saved to: {}",
         file_path.display()
     );
 

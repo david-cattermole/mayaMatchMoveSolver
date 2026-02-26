@@ -348,6 +348,7 @@ fn generate_trajectory_visualizations(
     }
     let step_by_frames = 10;
     scene::visualize_sfm_trajectory_views(
+        &mmlogger::NoOpLogger,
         &all_camera_poses,
         points_3d,
         dataset_name,

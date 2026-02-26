@@ -676,6 +676,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     let viz_duration = {
         let viz_start = Instant::now();
         generate_visualizations(
+            logger,
             &args.output_dir,
             args.prefix.clone(),
             &markers,
@@ -683,7 +684,6 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
             &bundle_positions,
             &camera_intrinsics,
             &image_size,
-            args.console_level == cli::LogVerbosity::Warn,
         )?;
         viz_start.elapsed()
     };
@@ -919,7 +919,8 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
 }
 
 #[cfg(feature = "visualization")]
-fn generate_visualizations(
+fn generate_visualizations<L: Logger + Sync>(
+    logger: &L,
     output_dir: &str,
     prefix: Option<String>,
     markers: &MarkersData,
@@ -927,7 +928,6 @@ fn generate_visualizations(
     bundle_positions: &BundlePositions,
     camera_intrinsics: &CameraIntrinsics,
     image_size: &ImageSize<f64>,
-    quiet: bool,
 ) -> Result<()> {
     // Create output directory if it doesn't exist.
     std::fs::create_dir_all(output_dir).with_context(|| {
@@ -973,6 +973,7 @@ fn generate_visualizations(
         .build()];
 
     visualize_sfm_trajectory_views(
+        logger,
         &camera_poses_with_frames,
         &bundles,
         &title,
@@ -1022,6 +1023,7 @@ fn generate_visualizations(
             .collect();
 
     visualize_marker_reprojections_sequential(
+        logger,
         &camera_pose_vec,
         &bundles,
         &observations_per_camera,
@@ -1055,21 +1057,13 @@ fn generate_visualizations(
     };
 
     visualize_multi_frame_residuals_per_marker(
+        logger,
         &per_frame_residuals,
         Some(&markers.names),
         &residual_stats,
         &residual_title,
         &residual_naming,
     )?;
-
-    if !quiet {
-        let residual_path = residual_naming.full_path()?;
-        println!("  Residual errors plot: {}", residual_path.display());
-        println!(
-            "    Mean: {:.4} px, Median: {:.4} px",
-            residual_stats.mean, residual_stats.median
-        );
-    }
 
     Ok(())
 }

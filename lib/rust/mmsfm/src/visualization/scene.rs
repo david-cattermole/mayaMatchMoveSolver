@@ -27,6 +27,7 @@ use super::output_naming::{OutputFileNaming, ViewName};
 use crate::datatype::camera_pose::CameraPose;
 use crate::datatype::{CameraFrustum, CameraIntrinsics};
 use anyhow::Result;
+use mmlogger::{mm_progress_log, Logger};
 use nalgebra::{Point3, Vector3};
 use plotters::coord::cartesian::Cartesian3d;
 use plotters::coord::types::RangedCoordf64;
@@ -642,7 +643,8 @@ fn map_view_name_str(name: &str) -> ViewName {
 }
 
 /// Renders multiple views of a two-camera SfM scene.
-pub fn visualize_sfm_scene_views(
+pub fn visualize_sfm_scene_views<L: Logger + Sync>(
+    logger: &L,
     pose_a: &CameraPose,
     pose_b: &CameraPose,
     points_3d: &[Point3<f64>],
@@ -657,6 +659,7 @@ pub fn visualize_sfm_scene_views(
         let view_naming = naming.clone_with_view(view_name);
 
         render_single_view_with_intrinsics(
+            logger,
             pose_a,
             pose_b,
             points_3d,
@@ -671,7 +674,8 @@ pub fn visualize_sfm_scene_views(
 }
 
 /// Renders per-frame trajectory views showing how the camera moves over time.
-pub fn visualize_sfm_trajectory_views(
+pub fn visualize_sfm_trajectory_views<L: Logger + Sync>(
+    logger: &L,
     camera_poses_with_frames: &[CameraPoseWithFrame],
     points_3d: &[Point3<f64>],
     title: &str,
@@ -710,15 +714,16 @@ pub fn visualize_sfm_trajectory_views(
             let example_naming =
                 naming.clone_with_view(view_name).with_frame(*first_frame);
             if let Ok(example_path) = example_naming.full_path() {
-                print!(
-                    "Generating trajectory views: {} ",
+                mm_progress_log!(
+                    logger,
+                    "Generating trajectory views: {}",
                     example_path.display()
                 );
-                let _ = std::io::Write::flush(&mut std::io::stdout());
             }
         }
     }
 
+    let num_frames = frame_list.len();
     frame_list.par_iter().step_by(step_by).try_for_each(
         |&frame| -> Result<()> {
             for view_config in &views {
@@ -744,19 +749,17 @@ pub fn visualize_sfm_trajectory_views(
                 )?;
             }
 
-            print!(".");
-            let _ = std::io::Write::flush(&mut std::io::stdout());
-
             Ok(())
         },
     )?;
 
-    println!();
+    mm_progress_log!(logger, "Generated {} trajectory frames", num_frames);
 
     Ok(())
 }
 
-fn render_single_view_with_intrinsics(
+fn render_single_view_with_intrinsics<L: Logger + Sync>(
+    logger: &L,
     pose_a: &CameraPose,
     pose_b: &CameraPose,
     points_3d: &[Point3<f64>],
@@ -881,7 +884,11 @@ fn render_single_view_with_intrinsics(
 
     area.present()
         .map_err(|e| anyhow::anyhow!("Failed to save visualization: {}", e))?;
-    println!("SfM visualization saved to: {}", file_path.display());
+    mm_progress_log!(
+        logger,
+        "SfM visualization saved to: {}",
+        file_path.display()
+    );
 
     Ok(())
 }

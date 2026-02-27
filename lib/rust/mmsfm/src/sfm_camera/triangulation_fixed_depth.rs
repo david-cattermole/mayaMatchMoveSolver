@@ -501,7 +501,7 @@ pub fn triangulate_missing_bundles_at_fixed_depth(
     }
 
     if DEBUG && fixed_count > 0 {
-        eprintln!(
+        mm_eprintln_debug!(
             "    Fixed-depth triangulation: placed {} new bundles ({} refined via BA, total: {})",
             fixed_count,
             refined_count,

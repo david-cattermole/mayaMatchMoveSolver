@@ -316,20 +316,35 @@ impl FrameGraph {
             components.iter().map(|c| c.len()).collect();
         let largest = component_sizes.iter().max().copied().unwrap_or(0);
 
-        eprintln!("    [{}] {} vertices, {} edges", label, n, total_edges);
-        eprintln!(
+        mm_eprintln_debug!(
+            "    [{}] {} vertices, {} edges",
+            label,
+            n,
+            total_edges
+        );
+        mm_eprintln_debug!(
             "    [{}] degree: min={}, max={}, mean={:.1}, median={}",
-            label, min_deg, max_deg, mean_deg, median_deg
+            label,
+            min_deg,
+            max_deg,
+            mean_deg,
+            median_deg
         );
-        eprintln!(
+        mm_eprintln_debug!(
             "    [{}] isolated={}, leaves={}, internal={}",
-            label, isolated, leaves, internal
+            label,
+            isolated,
+            leaves,
+            internal
         );
-        eprintln!(
+        mm_eprintln_debug!(
             "    [{}] uniformity: {}/{} valid, {} zero",
-            label, valid_uniformity, n, zero_uniformity
+            label,
+            valid_uniformity,
+            n,
+            zero_uniformity
         );
-        eprintln!(
+        mm_eprintln_debug!(
             "    [{}] components: {}, largest={}",
             label,
             components.len(),
@@ -379,9 +394,11 @@ impl FrameGraph {
             }
         }
 
-        eprintln!(
+        mm_eprintln_debug!(
             "  Edge heuristic scores: {} positive, {} zero, {} negative",
-            positive_heuristic, zero_heuristic, negative_heuristic
+            positive_heuristic,
+            zero_heuristic,
+            negative_heuristic
         );
         for (
             i,
@@ -393,7 +410,7 @@ impl FrameGraph {
             sc,
         ) in &sample_scores
         {
-            eprintln!(
+            mm_eprintln_debug!(
                 "    edge({},{}): observation_count={}, parallax={:.4}, uniformity=({:?},{:?}), score={:.6}",
                 i, j, observation_count, parallax, uniformity_value_i, uniformity_value_j, sc
             );

@@ -118,7 +118,7 @@ where
         let sum_sq_f64: f64 = NumCast::from(sum_sq).unwrap_or(f64::NAN);
         let w_perturb_f64: f64 = NumCast::from(w_perturb).unwrap_or(f64::NAN);
         if sum_sq_f64 >= 0.95 {
-            eprintln!(
+            mm_eprintln_debug!(
                 "[BA_MATHS] WARNING: perturbation norm close to 1: ||perturb||^2={:.6}, w_perturb={:.6}",
                 sum_sq_f64, w_perturb_f64
             );
@@ -157,7 +157,7 @@ where
     if DEBUG {
         let norm_f64: f64 = NumCast::from(norm).unwrap_or(f64::NAN);
         if (norm_f64 - 1.0).abs() > 0.01 {
-            eprintln!(
+            mm_eprintln_debug!(
                 "[BA_MATHS] WARNING: composed quaternion norm far from 1: norm={:.6}",
                 norm_f64
             );
@@ -239,7 +239,7 @@ where
         // Warn if point is behind camera (positive Z in Maya
         // convention).
         if cam_z >= 0.0 {
-            eprintln!(
+            mm_eprintln_debug!(
                 "[BA_MATHS] WARNING: point behind camera: cam_z={:.6} (should be negative)",
                 cam_z
             );
@@ -309,10 +309,10 @@ pub fn rotation_matrix_to_quaternion_vector(
         // Validate input rotation matrix is finite.
         for &v in rotation.iter() {
             if !v.is_finite() {
-                eprintln!(
+                mm_eprintln_debug!(
                     "ERROR: rotation_matrix_to_quaternion_vector: input matrix contains NaN/Inf"
                 );
-                eprintln!("  Input matrix:\n{}", rotation);
+                mm_eprintln_debug!("  Input matrix:\n{}", rotation);
                 return [f64::NAN, f64::NAN, f64::NAN];
             }
         }
@@ -353,11 +353,11 @@ pub fn rotation_matrix_to_quaternion_vector(
         // Validate output is finite
         for (i, &v) in result.iter().enumerate() {
             if !v.is_finite() {
-                eprintln!(
+                mm_eprintln_debug!(
                     "ERROR: rotation_matrix_to_quaternion_vector: output[{}] is NaN/Inf: {}",
                     i, v
                 );
-                eprintln!("  Input matrix:\n{}", rotation);
+                mm_eprintln_debug!("  Input matrix:\n{}", rotation);
             }
         }
     }

@@ -369,7 +369,7 @@ fn remove_temporal_outlier_marker(
             let frame_data = &markers.frame_data[marker_index];
             let start = frame_data.frames.first().unwrap_or(&0);
             let end = frame_data.frames.last().unwrap_or(&0);
-            eprintln!("    Removing temporal outlier marker {} (frames {}-{}, distance={})",
+            mm_eprintln_debug!("    Removing temporal outlier marker {} (frames {}-{}, distance={})",
                      marker_index, start, end, max_distance);
         }
         selected_markers[marker_index] = false;
@@ -416,9 +416,11 @@ fn remove_marker_with_fewest_frames(
             } else {
                 analysis_data.marker_frame_counts[marker_index]
             };
-            eprintln!(
+            mm_eprintln_debug!(
                 "    Removing marker {} with {} frames ({} count)",
-                marker_index, count_value, count_type
+                marker_index,
+                count_value,
+                count_type
             );
         }
         selected_markers[marker_index] = false;
@@ -1058,7 +1060,7 @@ pub fn analyze_frame_scoring_and_marker_selection(
         .collect();
 
     if DEBUG {
-        eprintln!(
+        mm_eprintln_debug!(
             "Combined scoring: Selected {} markers {:?} across {} frames",
             combined_result.selected_count,
             combined_selected_indices,
@@ -1071,9 +1073,12 @@ pub fn analyze_frame_scoring_and_marker_selection(
             let min_frame = frame_data.frames.iter().min().unwrap_or(&0);
             let max_frame = frame_data.frames.iter().max().unwrap_or(&0);
             let count = frame_data.frames.len();
-            eprintln!(
+            mm_eprintln_debug!(
                 "  Marker {}: frames {}-{} ({} observations)",
-                marker_idx, min_frame, max_frame, count
+                marker_idx,
+                min_frame,
+                max_frame,
+                count
             );
         }
     }

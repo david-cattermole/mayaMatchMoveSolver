@@ -122,15 +122,17 @@ pub fn visualize_marker_reprojections_2d_scatter(
             .filter(|uv| uv.x.value().is_finite() && uv.y.value().is_finite())
             .count();
 
-        println!("=== Reprojection Debug ===");
-        println!("  3D points: {}", num_points);
-        println!(
+        mm_eprintln_debug!("=== Reprojection Debug ===");
+        mm_eprintln_debug!("  3D points: {}", num_points);
+        mm_eprintln_debug!(
             "  Camera A valid reprojections: {}/{}",
-            valid_reprojections_a, num_points
+            valid_reprojections_a,
+            num_points
         );
-        println!(
+        mm_eprintln_debug!(
             "  Camera B valid reprojections: {}/{}",
-            valid_reprojections_b, num_points
+            valid_reprojections_b,
+            num_points
         );
 
         if !pixel_coords_a.is_empty() {
@@ -151,14 +153,14 @@ pub fn visualize_marker_reprojections_2d_scatter(
                 .map(|pt| pt.1)
                 .fold(f64::NEG_INFINITY, f64::max);
 
-            println!("Camera A observed pixel coordinates range:");
-            println!(
+            mm_eprintln_debug!("Camera A observed pixel coordinates range:");
+            mm_eprintln_debug!(
                 "  X: {:.2} to {:.2} px (width: {:.2} px)",
                 x_min_obs_a,
                 x_max_obs_a,
                 x_max_obs_a - x_min_obs_a
             );
-            println!(
+            mm_eprintln_debug!(
                 "  Y: {:.2} to {:.2} px (height: {:.2} px)",
                 y_min_obs_a,
                 y_max_obs_a,
@@ -188,14 +190,14 @@ pub fn visualize_marker_reprojections_2d_scatter(
                 .map(|pt| pt.1)
                 .fold(f64::NEG_INFINITY, f64::max);
 
-            println!("Camera A reprojected pixel coordinates range:");
-            println!(
+            mm_eprintln_debug!("Camera A reprojected pixel coordinates range:");
+            mm_eprintln_debug!(
                 "  X: {:.2} to {:.2} px (width: {:.2} px)",
                 x_min_repr_a,
                 x_max_repr_a,
                 x_max_repr_a - x_min_repr_a
             );
-            println!(
+            mm_eprintln_debug!(
                 "  Y: {:.2} to {:.2} px (height: {:.2} px)",
                 y_min_repr_a,
                 y_max_repr_a,
@@ -203,34 +205,36 @@ pub fn visualize_marker_reprojections_2d_scatter(
             );
         }
 
-        println!("Camera intrinsics A:");
-        println!(
+        mm_eprintln_debug!("Camera intrinsics A:");
+        mm_eprintln_debug!(
             "  Focal length A: X={:.6}, Y={:.6} (normalized)",
-            intrinsics_a.focal_length_x, intrinsics_a.focal_length_y
+            intrinsics_a.focal_length_x,
+            intrinsics_a.focal_length_y
         );
-        println!(
+        mm_eprintln_debug!(
             "  Principal point A: ({:.6}, {:.6})",
             intrinsics_a.principal_point.x.value(),
             intrinsics_a.principal_point.y.value()
         );
-        println!(
+        mm_eprintln_debug!(
             "  Film back A: {:.1}mm x {:.1}mm (aspect: {:.3})",
             intrinsics_a.film_back.width.value(),
             intrinsics_a.film_back.height.value(),
             intrinsics_a.film_back.aspect_ratio()
         );
 
-        println!("Camera intrinsics B:");
-        println!(
+        mm_eprintln_debug!("Camera intrinsics B:");
+        mm_eprintln_debug!(
             "  Focal length B: X={:.6}, Y={:.6} (normalized)",
-            intrinsics_a.focal_length_x, intrinsics_a.focal_length_y
+            intrinsics_a.focal_length_x,
+            intrinsics_a.focal_length_y
         );
-        println!(
+        mm_eprintln_debug!(
             "  Principal point B: ({:.6}, {:.6})",
             intrinsics_a.principal_point.x.value(),
             intrinsics_a.principal_point.y.value()
         );
-        println!(
+        mm_eprintln_debug!(
             "  Film back B: {:.1}mm x {:.1}mm (aspect: {:.3})",
             intrinsics_a.film_back.width.value(),
             intrinsics_a.film_back.height.value(),
@@ -238,12 +242,12 @@ pub fn visualize_marker_reprojections_2d_scatter(
         );
 
         if valid_reprojections_a == 0 {
-            println!("  WARNING: No valid reprojections for Camera A - all points behind camera (Maya: +Z)");
+            mm_eprintln_debug!("  WARNING: No valid reprojections for Camera A - all points behind camera (Maya: +Z)");
         }
         if valid_reprojections_b == 0 {
-            println!("  WARNING: No valid reprojections for Camera B - all points behind camera (Maya: +Z)");
+            mm_eprintln_debug!("  WARNING: No valid reprojections for Camera B - all points behind camera (Maya: +Z)");
         }
-        println!("==========================");
+        mm_eprintln_debug!("==========================");
     }
 
     // Calculate reprojection error in pixels.
@@ -333,13 +337,15 @@ pub fn visualize_marker_reprojections_2d_scatter(
 
     area.present()?;
     if DEBUG {
-        println!(
+        mm_eprintln_debug!(
             "  Camera A mean error: {:.4} pixels (max: {:.4})",
-            mean_error_a, max_error_a
+            mean_error_a,
+            max_error_a
         );
-        println!(
+        mm_eprintln_debug!(
             "  Camera B mean error: {:.4} pixels (max: {:.4})",
-            mean_error_b, max_error_b
+            mean_error_b,
+            max_error_b
         );
     }
 

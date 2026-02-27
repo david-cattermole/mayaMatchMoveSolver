@@ -357,7 +357,7 @@ pub fn validate_and_filter_bundles(
             "original"
         };
 
-        eprintln!(
+        mm_eprintln_debug!(
             "[Bundle Validation] Starting with {} bundles, median_depth={:.4}, scale={}",
             initial_count, median_depth, scale_context
         );
@@ -396,10 +396,11 @@ pub fn validate_and_filter_bundles(
 
     // Safety check: ensure we never drop below minimum bundle count.
     if result.final_bundle_count < MINIMUM_BUNDLE_COUNT {
-        eprintln!(
+        mm_eprintln_debug!(
             "WARNING: Validation reduced bundles to {} (below minimum {}). \
              Bundle adjustment will be underdetermined.",
-            result.final_bundle_count, MINIMUM_BUNDLE_COUNT
+            result.final_bundle_count,
+            MINIMUM_BUNDLE_COUNT
         );
     }
 

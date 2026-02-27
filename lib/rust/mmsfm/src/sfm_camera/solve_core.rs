@@ -26,7 +26,7 @@ use std::time::{Duration, Instant};
 
 use anyhow::{bail, Result};
 use mmlogger::Logger;
-use mmlogger::{mm_debug_log, mm_log_info, mm_log_progress};
+use mmlogger::{mm_log_debug, mm_log_info, mm_log_progress};
 
 use mmio::uvtrack_reader::{FrameNumber, FrameRange, MarkersData};
 

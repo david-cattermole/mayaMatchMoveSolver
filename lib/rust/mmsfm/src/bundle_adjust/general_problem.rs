@@ -123,7 +123,7 @@ impl GeneralBundleAdjustmentProblem {
             for (i, (quat, trans)) in initial_camera_poses.iter().enumerate() {
                 for (j, &v) in quat.iter().chain(trans.iter()).enumerate() {
                     if !v.is_finite() {
-                        eprintln!(
+                        mm_eprintln_debug!(
                         "ERROR: GeneralBundleAdjustmentProblem::new: Camera {} param {} is NaN/Inf: {}",
                         i, j, v
                     );
@@ -135,7 +135,7 @@ impl GeneralBundleAdjustmentProblem {
             for (i, point) in initial_bundle_points.iter().enumerate() {
                 for (j, &v) in point.iter().enumerate() {
                     if !v.is_finite() {
-                        eprintln!(
+                        mm_eprintln_debug!(
                         "ERROR: GeneralBundleAdjustmentProblem::new: Point {} coord {} is NaN/Inf: {}",
                         i, j, v
                     );
@@ -183,7 +183,7 @@ impl GeneralBundleAdjustmentProblem {
                     + rot[2] * rot[2]
                     + rot[3] * rot[3])
                     .sqrt();
-                eprintln!(
+                mm_eprintln_debug!(
                     "[BA_PROBLEM::new] Camera {} initial_rot=[{:.6}, {:.6}, {:.6}, {:.6}], norm={:.6}",
                     i, rot[0], rot[1], rot[2], rot[3], norm
                 );

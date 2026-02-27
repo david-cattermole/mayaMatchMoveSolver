@@ -315,9 +315,11 @@ impl TriangulatorOptimalAngular {
             let cost = r[0] * r[0] + r[1] * r[1];
 
             if DEBUG && iter == 0 {
-                eprintln!(
+                mm_eprintln_debug!(
                     "DEBUG OA: iter {} cost={:.9} lambda={:.2e}",
-                    iter, cost, lambda
+                    iter,
+                    cost,
+                    lambda
                 );
             }
 

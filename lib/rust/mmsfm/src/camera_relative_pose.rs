@@ -295,13 +295,13 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
     if valid_candidates.is_empty() {
         // TODO: Convert these raw macros into proper debug prints.
         if DEBUG {
-            eprintln!(
+            mm_eprintln_debug!(
                 "[Phase 2] Essential matrix decomposition (Optimal Angular): {} correspondences",
                 num_correspondences
             );
             for pose_diagnostics in &all_pose_diagnostics {
                 if !pose_diagnostics.is_valid_pose {
-                    eprintln!(
+                    mm_eprintln_debug!(
                         "  Pose {}/4: INVALID (det != 1 or contains NaN)",
                         pose_diagnostics.pose_idx + 1
                     );
@@ -309,7 +309,7 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
                 }
 
                 let total_points = num_correspondences;
-                eprintln!(
+                mm_eprintln_debug!(
                     "  Pose {}/4: FAILED - {}/{} valid triangulations ({:.1}%)",
                     pose_diagnostics.pose_idx + 1,
                     pose_diagnostics.valid_count,
@@ -318,8 +318,8 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
                         * 100.0
                 );
             }
-            eprintln!("WARNING: All 4 pose candidates have zero valid triangulations.");
-            eprintln!(
+            mm_eprintln_debug!("WARNING: All 4 pose candidates have zero valid triangulations.");
+            mm_eprintln_debug!(
                 "         Attempting fallback: selecting pose with most triangulation attempts."
             );
         }

@@ -335,7 +335,7 @@ pub fn run_pre_ba_validation(
     );
 
     if DEBUG && result.total_removed() > 0 {
-        eprintln!(
+        mm_eprintln_debug!(
             "  {} Pre-BA validation: {} -> {} bundles ({:.1}% retained)",
             debug_prefix,
             result.initial_bundle_count,
@@ -383,7 +383,7 @@ pub fn run_post_ba_validation(
     );
 
     if DEBUG && result.total_removed() > 0 {
-        eprintln!(
+        mm_eprintln_debug!(
             "  {} Post-BA validation: {} -> {} bundles ({:.1}% retained)",
             debug_prefix,
             result.initial_bundle_count,

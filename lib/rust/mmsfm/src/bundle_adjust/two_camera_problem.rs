@@ -164,7 +164,7 @@ impl TwoCameraBAProblem {
         );
         if DEBUG {
             let (theta, phi) = cartesian_to_spherical(&camera_b_translation);
-            eprintln!(
+            mm_eprintln_debug!(
                 "[TwoCameraBA] Initial translation: [{:.4}, {:.4}, {:.4}] -> theta={:.4}, phi={:.4}",
                 camera_b_translation[0], camera_b_translation[1], camera_b_translation[2],
                 theta, phi

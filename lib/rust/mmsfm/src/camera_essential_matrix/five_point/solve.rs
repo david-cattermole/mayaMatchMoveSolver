@@ -545,7 +545,10 @@ fn solve_polynomial_constraints(
             mm_eprintln_debug!("DEBUG: Successfully recovered E matrix");
             essential_matrices.push(e_mat);
         } else if DEBUG {
-            eprintln!("DEBUG: Failed to recover E matrix for w={}", w_root);
+            mm_eprintln_debug!(
+                "DEBUG: Failed to recover E matrix for w={}",
+                w_root
+            );
         }
     }
 

@@ -199,7 +199,7 @@ pub fn expand_marker_selection_and_retriangulate(
     let bundles_after = bundle_positions.len();
 
     if DEBUG && markers_added > 0 {
-        println!(
+        mm_eprintln_debug!(
             "  [Marker Expansion] Added {} markers to selection ({} -> {}, bundles: {} -> {})",
             markers_added, markers_before, markers_after, bundles_before, bundles_after
         );

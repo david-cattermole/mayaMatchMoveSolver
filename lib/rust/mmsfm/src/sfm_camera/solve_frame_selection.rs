@@ -656,7 +656,7 @@ fn generate_unsolved_frames_from_frame_graph(
     };
 
     if DEBUG && !result.is_empty() {
-        eprintln!(
+        mm_eprintln_debug!(
             "    [all frames] returning {} frames = {}",
             result.len(),
             format_frame_list(&result)

@@ -23,6 +23,7 @@
 //! Implements cheirality, MAD-based statistical outlier removal, and camera
 //! position collapse detection to ensure bundle adjustment stability.
 
+use mmcore::statistics::{SortedDataSliceOps, UnsortedDataSlice};
 use mmio::uvtrack_reader::MarkersData;
 use nalgebra::Point3;
 
@@ -124,14 +125,13 @@ fn compute_median(values: &mut [f64]) -> f64 {
     if values.is_empty() {
         return 0.0;
     }
-    values
-        .sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-    let mid = values.len() / 2;
-    if values.len().is_multiple_of(2) {
-        (values[mid - 1] + values[mid]) / 2.0
-    } else {
-        values[mid]
-    }
+    let unsorted = UnsortedDataSlice::new(values, None)
+        .expect("Non-empty data");
+    let mut sort_workspace = vec![0.0; values.len()];
+    let sorted = unsorted
+        .into_sorted(&mut sort_workspace)
+        .expect("Sort workspace matches data length");
+    sorted.median()
 }
 
 // ============================================================

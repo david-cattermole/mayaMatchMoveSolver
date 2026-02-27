@@ -21,6 +21,9 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use mmcore::statistics::{
+    SortedDataSliceOps, UnsortedDataSlice, UnsortedDataSliceOps,
+};
 use nalgebra::Point3;
 
 use mmio::uvtrack_reader::{FrameNumber, MarkersData};
@@ -283,30 +286,23 @@ pub fn compute_residual_statistics(residuals: &[f64]) -> ResidualStats {
     }
 
     let count = valid_residuals.len();
-    let sum: f64 = valid_residuals.iter().sum();
-    let mean = sum / count as f64;
 
-    // Calculate median.
-    let mut sorted_residuals = valid_residuals.clone();
-    sorted_residuals.sort_by(|a, b| a.partial_cmp(b).unwrap());
-    let median = if count % 2 == 0 {
-        (sorted_residuals[count / 2 - 1] + sorted_residuals[count / 2]) / 2.0
-    } else {
-        sorted_residuals[count / 2]
-    };
+    let unsorted = UnsortedDataSlice::new(&valid_residuals, None)
+        .expect("Non-empty valid data");
+    let mean = unsorted.mean();
 
-    // Calculate standard deviation.
-    let variance: f64 = valid_residuals
-        .iter()
-        .map(|x| (x - mean).powi(2))
-        .sum::<f64>()
-        / count as f64;
-    let std_dev = variance.sqrt();
+    let mut sort_workspace = vec![0.0; count];
+    let sorted = unsorted
+        .into_sorted(&mut sort_workspace)
+        .expect("Sort workspace matches data length");
+    let median = sorted.median();
 
-    let min = valid_residuals.iter().fold(f64::INFINITY, |a, &b| a.min(b));
-    let max = valid_residuals
-        .iter()
-        .fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+    let std_dev =
+        mmcore::statistics::calc_population_standard_deviation(&sorted)
+            .unwrap_or(0.0);
+
+    let min = sorted.data()[0];
+    let max = sorted.data()[count - 1];
 
     ResidualStats {
         mean,

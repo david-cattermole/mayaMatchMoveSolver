@@ -20,6 +20,9 @@
 
 //! Core solving operations: frame solving, triangulation, bundle adjustment, and transformations
 
+use mmcore::statistics::{
+    SortedDataSliceOps, UnsortedDataSlice, UnsortedDataSliceOps,
+};
 use mmio::uvtrack_reader::MarkersData;
 
 use crate::camera_residual_error::project_scene_point_3d_to_uv_point_2d;
@@ -134,26 +137,22 @@ pub fn calculate_reprojection_errors(
     }
 
     // Calculate statistics.
-    let mean: f64 = all_errors.iter().sum::<f64>() / all_errors.len() as f64;
+    let unsorted = UnsortedDataSlice::new(&all_errors, None)
+        .expect("Non-empty finite data");
+    let mean = unsorted.mean();
 
-    // TODO: Avoid this allocation.
-    let mut sorted_errors = all_errors.clone();
-    sorted_errors
-        .sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-    let median = sorted_errors[sorted_errors.len() / 2];
+    let mut sort_workspace = vec![0.0; all_errors.len()];
+    let sorted = unsorted
+        .into_sorted(&mut sort_workspace)
+        .expect("Sort workspace matches data length");
+    let median = sorted.median();
 
-    let variance: f64 = all_errors
-        .iter()
-        .map(|e| {
-            let diff = e - mean;
-            diff * diff
-        })
-        .sum::<f64>()
-        / all_errors.len() as f64;
-    let std_dev = variance.sqrt();
+    let std_dev =
+        mmcore::statistics::calc_population_standard_deviation(&sorted)
+            .unwrap_or(0.0);
 
-    let min = sorted_errors[0];
-    let max = sorted_errors[sorted_errors.len() - 1];
+    let min = sorted.data()[0];
+    let max = sorted.data()[all_errors.len() - 1];
 
     // Print header with improvement/degradation.
     if DEBUG {

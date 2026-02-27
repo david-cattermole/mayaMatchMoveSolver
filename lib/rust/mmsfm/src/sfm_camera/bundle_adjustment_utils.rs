@@ -24,6 +24,7 @@ use std::collections::BTreeMap;
 
 use anyhow::{bail, Result};
 use mmcore::rand_prng_pcg::PCG;
+use mmcore::statistics::{SortedDataSliceOps, UnsortedDataSlice};
 use mmio::uvtrack_reader::{FrameNumber, MarkersData};
 use nalgebra::Point3;
 
@@ -79,7 +80,7 @@ pub fn compute_scene_scale(bundle_positions: &BundlePositions) -> f64 {
 
     // TODO: Avoid allocating a new vector for distances.
     // Compute median distance from centroid.
-    let mut distances: Vec<f64> = bundle_positions
+    let distances: Vec<f64> = bundle_positions
         .values()
         .map(|point| (point - centroid).norm())
         .collect();
@@ -88,15 +89,13 @@ pub fn compute_scene_scale(bundle_positions: &BundlePositions) -> f64 {
         return 1.0;
     }
 
-    distances
-        .sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-    let median_idx = distances.len() / 2;
-
-    let median = if distances.len().is_multiple_of(2) {
-        (distances[median_idx - 1] + distances[median_idx]) / 2.0
-    } else {
-        distances[median_idx]
-    };
+    let unsorted =
+        UnsortedDataSlice::new(&distances, None).expect("Non-empty distances");
+    let mut sort_workspace = vec![0.0; distances.len()];
+    let sorted = unsorted
+        .into_sorted(&mut sort_workspace)
+        .expect("Sort workspace matches data length");
+    let median = sorted.median();
 
     if median < 1e-10 {
         1.0

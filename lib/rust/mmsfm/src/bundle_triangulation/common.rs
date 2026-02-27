@@ -208,7 +208,7 @@ pub fn is_triangulation_quality_good_with_diagnostics(
             "behind camera (depth_a={:.3}, depth_b={:.3})",
             depth_a, depth_b
         );
-        mm_debug_eprintln!("      Triangulation FAIL: {}", reason);
+        mm_eprintln_debug!("      Triangulation FAIL: {}", reason);
         return (false, reason);
     }
 
@@ -226,11 +226,11 @@ pub fn is_triangulation_quality_good_with_diagnostics(
             angle_radian_min.to_degrees(),
             angle_radian_max.to_degrees()
         );
-        mm_debug_eprintln!("      Triangulation FAIL: {}", reason);
+        mm_eprintln_debug!("      Triangulation FAIL: {}", reason);
         return (false, reason);
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "      Triangulation OK: depth_a={:.3}, depth_b={:.3}, angle={:.2}deg",
         depth_a,
         depth_b,

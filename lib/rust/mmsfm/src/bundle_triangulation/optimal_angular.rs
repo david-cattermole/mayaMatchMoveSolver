@@ -252,12 +252,12 @@ impl TriangulatorOptimalAngular {
         let ray_world_a = (rot_t_a * ray_cam_a).normalize();
         let ray_world_b = (rot_t_b * ray_cam_b).normalize();
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "DEBUG OA: point {} center_a=({:.3}, {:.3}, {:.3}) center_b=({:.3}, {:.3}, {:.3})",
             point_index, center_a.x, center_a.y, center_a.z,
             center_b.x, center_b.y, center_b.z
         );
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "DEBUG OA: ray_world_a=({:.3}, {:.3}, {:.3}) ray_world_b=({:.3}, {:.3}, {:.3})",
             ray_world_a.x, ray_world_a.y, ray_world_a.z,
             ray_world_b.x, ray_world_b.y, ray_world_b.z
@@ -272,7 +272,7 @@ impl TriangulatorOptimalAngular {
         ) {
             Some(p) => p,
             None => {
-                mm_debug_eprintln!(
+                mm_eprintln_debug!(
                     "DEBUG OA: line-line init failed for point {}",
                     point_index
                 );
@@ -282,7 +282,7 @@ impl TriangulatorOptimalAngular {
             }
         };
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "DEBUG OA: initial=({:.3}, {:.3}, {:.3})",
             point.x,
             point.y,
@@ -410,7 +410,7 @@ impl TriangulatorOptimalAngular {
         let is_within_tolerance = angular_error < self.config.max_angular_error;
         let valid = is_finite && converged && is_within_tolerance;
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "DEBUG OA: optimized=({:.3}, {:.3}, {:.3}) error={:.6} valid={} iters={}",
             point.x, point.y, point.z, angular_error, valid, iterations
         );
@@ -563,7 +563,7 @@ impl TriangulatorOptimalAngular {
 
             // Negative parameter means the point is behind the camera.
             if param_a < -eps || param_b < -eps {
-                mm_debug_eprintln!(
+                mm_eprintln_debug!(
                     "DEBUG OA: line-line behind camera param_a={:.3} param_b={:.3}",
                     param_a,
                     param_b

@@ -97,14 +97,14 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
 
     // Ensure U and V^T have det = +1 to avoid reflections.
     if u.determinant() < 0.0 {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "U has det = -1, flipping last column to force det = +1"
         );
         let col2 = -u.column(2);
         u.set_column(2, &col2);
     }
     if vt.determinant() < 0.0 {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "V^T has det = -1, flipping last row to force det = +1"
         );
         for j in 0..3 {
@@ -127,11 +127,11 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
     let rotation1 = ensure_orthogonal_rotation(&rotation1_raw);
     let rotation2 = ensure_orthogonal_rotation(&rotation2_raw);
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "\n=== ROTATION MATRIX VALIDATION (OPTIMAL ANGULAR) ==="
     );
-    mm_debug_eprintln!("rotation1 determinant: {:.6}", rotation1.determinant());
-    mm_debug_eprintln!("rotation2 determinant: {:.6}", rotation2.determinant());
+    mm_eprintln_debug!("rotation1 determinant: {:.6}", rotation1.determinant());
+    mm_eprintln_debug!("rotation2 determinant: {:.6}", rotation2.determinant());
 
     // Translation direction (up to scale, sign unknown).
     let translation = u.column(2).into_owned();
@@ -171,7 +171,7 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
     let mut all_pose_diagnostics = Vec::new();
 
     for (pose_idx, candidate_pose) in candidate_poses.iter().enumerate() {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "  Testing pose candidate {}/4 (Optimal Angular): {:?}",
             pose_idx + 1,
             candidate_pose
@@ -185,7 +185,7 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
             failed_validation_count: 0,
         };
         if !pose_diagnostics.is_valid_pose {
-            mm_debug_eprintln!("    Invalid pose (det != 1 or contains NaN)");
+            mm_eprintln_debug!("    Invalid pose (det != 1 or contains NaN)");
             all_pose_diagnostics.push(pose_diagnostics);
             continue;
         }
@@ -225,7 +225,7 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
             triangulation_count = successful_count;
             pose_diagnostics.triangulation_count = successful_count;
 
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "  Triangulation results: {}/{} successful",
                 successful_count,
                 num_correspondences
@@ -263,11 +263,11 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
                     triangulated_points[i] = *point_3d;
                     triangulated_points_valid[i] = valid;
 
-                    mm_debug_eprintln!("    Point {}: VALID - angle={:.3} depth_a={:.3}, depth_b={:.3}, pos=[{:.3}, {:.3}, {:.3}]",
+                    mm_eprintln_debug!("    Point {}: VALID - angle={:.3} depth_a={:.3}, depth_b={:.3}, pos=[{:.3}, {:.3}, {:.3}]",
                                   i, point_angle_radian.to_degrees(), depth_a, depth_b, point_3d.x, point_3d.y, point_3d.z);
                 } else {
                     pose_diagnostics.failed_validation_count += 1;
-                    mm_debug_eprintln!("    Point {}: FAILED - angle={:.3} depth_a={:.3}, depth_b={:.3}",
+                    mm_eprintln_debug!("    Point {}: FAILED - angle={:.3} depth_a={:.3}, depth_b={:.3}",
                             i, point_angle_radian.to_degrees(), depth_a, depth_b);
                 }
             }
@@ -287,12 +287,13 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
         }
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Pose candidates with valid triangulations: {}",
         valid_candidates.len()
     );
 
     if valid_candidates.is_empty() {
+        // TODO: Convert these raw macros into proper debug prints.
         if DEBUG {
             eprintln!(
                 "[Phase 2] Essential matrix decomposition (Optimal Angular): {} correspondences",
@@ -340,7 +341,7 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
         }
 
         if let Some(idx) = best_pose_idx {
-            mm_debug_eprintln!("WARNING: Using fallback pose {} with {} triangulation attempts (0 valid).",
+            mm_eprintln_debug!("WARNING: Using fallback pose {} with {} triangulation attempts (0 valid).",
                       idx + 1, best_triangulation_count);
             return Ok((candidate_poses[idx].clone(), Vec::new(), Vec::new()));
         }
@@ -355,12 +356,12 @@ fn decompose_essential_matrix_to_pose_optimal_angular(
     let mut best_score = -1.0;
     let mut best_candidate_idx = None;
 
-    mm_debug_eprintln!("\n=== POSE SCORING (OPTIMAL ANGULAR) ===");
+    mm_eprintln_debug!("\n=== POSE SCORING (OPTIMAL ANGULAR) ===");
 
     for (candidate_idx, candidate) in valid_candidates.iter().enumerate() {
         let score = candidate.valid_ratio;
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "Candidate {}: valid_ratio={:.3}",
             candidate_idx + 1,
             candidate.valid_ratio
@@ -520,49 +521,49 @@ pub fn compute_relative_pose_optimal_angular(
     };
 
     if DEBUG {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "\n==========================================================="
         );
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "=== ESSENTIAL MATRIX COMPUTATION (OPTIMAL ANGULAR) ==="
         );
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "==========================================================="
         );
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "\nNumber of correspondences: {}",
             correspondences.len()
         );
-        mm_debug_eprintln!("\nOriginal essential matrix E:");
-        mm_debug_eprintln!("{:.6}", essential_matrix);
-        mm_debug_eprintln!("\nUsing transpose: {}", use_transpose);
-        mm_debug_eprintln!("\nEssential matrix to decompose E^T:");
-        mm_debug_eprintln!("{:.6}", essential_matrix_to_decompose);
+        mm_eprintln_debug!("\nOriginal essential matrix E:");
+        mm_eprintln_debug!("{:.6}", essential_matrix);
+        mm_eprintln_debug!("\nUsing transpose: {}", use_transpose);
+        mm_eprintln_debug!("\nEssential matrix to decompose E^T:");
+        mm_eprintln_debug!("{:.6}", essential_matrix_to_decompose);
 
         let svd = essential_matrix_to_decompose.svd(false, false);
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "\nSingular values: [{:.6}, {:.6}, {:.6}]",
             svd.singular_values[0],
             svd.singular_values[1],
             svd.singular_values[2]
         );
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "Determinant: {:.6}",
             essential_matrix_to_decompose.determinant()
         );
 
-        mm_debug_eprintln!("\nError metrics:");
-        mm_debug_eprintln!(
+        mm_eprintln_debug!("\nError metrics:");
+        mm_eprintln_debug!(
             "  Angular error: {:.6} radians ({:.2}deg)",
             angular_error,
             angular_error.to_degrees()
         );
-        mm_debug_eprintln!("  Sampson error: {:.6}", sampson_error);
-        mm_debug_eprintln!(
+        mm_eprintln_debug!("  Sampson error: {:.6}", sampson_error);
+        mm_eprintln_debug!(
             "  Symmetric epipolar error: {:.6}",
             symmetric_epipolar_error
         );
-        mm_debug_eprintln!("  Epipolar error: {:.6}", epipolar_error);
+        mm_eprintln_debug!("  Epipolar error: {:.6}", epipolar_error);
     }
 
     let (relative_pose, triangulated_points, triangulated_points_valid) =
@@ -572,32 +573,32 @@ pub fn compute_relative_pose_optimal_angular(
             &points_b,
         )?;
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "\n==========================================================="
     );
-    mm_debug_eprintln!("=== FINAL RELATIVE POSE (OPTIMAL ANGULAR) ===");
-    mm_debug_eprintln!(
+    mm_eprintln_debug!("=== FINAL RELATIVE POSE (OPTIMAL ANGULAR) ===");
+    mm_eprintln_debug!(
         "==========================================================="
     );
-    mm_debug_eprintln!("\nRotation matrix:");
-    mm_debug_eprintln!("{:.6}", relative_pose.rotation());
-    mm_debug_eprintln!(
+    mm_eprintln_debug!("\nRotation matrix:");
+    mm_eprintln_debug!("{:.6}", relative_pose.rotation());
+    mm_eprintln_debug!(
         "\nCenter: [{:.6}, {:.6}, {:.6}]",
         relative_pose.center().x,
         relative_pose.center().y,
         relative_pose.center().z
     );
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "\nTranslation: [{:.6}, {:.6}, {:.6}]",
         relative_pose.translation().x,
         relative_pose.translation().y,
         relative_pose.translation().z
     );
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "\nRotation determinant: {:.6}",
         relative_pose.rotation().determinant()
     );
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "\n===========================================================\n"
     );
 

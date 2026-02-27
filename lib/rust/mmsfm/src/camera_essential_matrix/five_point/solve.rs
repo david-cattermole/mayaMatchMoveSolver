@@ -96,13 +96,13 @@ pub fn five_point_relative_pose(
     let constraint_matrix = build_constraint_matrix(q1_array, q2_array);
 
     let e_set = null_space_solve_gaussian(&constraint_matrix)?;
-    mm_debug_eprintln!("DEBUG: Gaussian elimination succeeded, E-set created");
-    mm_debug_eprintln!("DEBUG: E[0][0] = {:?}", e_set[0][0]);
-    mm_debug_eprintln!("DEBUG: E[0][1] = {:?}", e_set[0][1]);
-    mm_debug_eprintln!("DEBUG: E[1][1] = {:?}", e_set[1][1]);
+    mm_eprintln_debug!("DEBUG: Gaussian elimination succeeded, E-set created");
+    mm_eprintln_debug!("DEBUG: E[0][0] = {:?}", e_set[0][0]);
+    mm_eprintln_debug!("DEBUG: E[0][1] = {:?}", e_set[0][1]);
+    mm_eprintln_debug!("DEBUG: E[1][1] = {:?}", e_set[1][1]);
 
     let essential_matrices = solve_polynomial_constraints(&e_set);
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "DEBUG: Polynomial solving found {} essential matrices",
         essential_matrices.len()
     );
@@ -517,39 +517,39 @@ fn solve_polynomial_constraints(
     e_set: &EssentialMatrixSet,
 ) -> Vec<EssentialMatrix> {
     let e_poly = build_polynomial_essential_from_essential_matrix_set(e_set);
-    mm_debug_eprintln!("DEBUG: Built polynomial essential matrix");
+    mm_eprintln_debug!("DEBUG: Built polynomial essential matrix");
 
     let mut equations = apply_essential_constraints(&e_poly);
-    mm_debug_eprintln!("DEBUG: Applied essential constraints");
+    mm_eprintln_debug!("DEBUG: Applied essential constraints");
 
     reduce_equation_system(&mut equations);
-    mm_debug_eprintln!("DEBUG: Reduced equation system");
+    mm_eprintln_debug!("DEBUG: Reduced equation system");
 
     let degree10_poly = extract_determinant_polynomial(&equations);
-    mm_debug_eprintln!("DEBUG: Extracted determinant polynomial");
+    mm_eprintln_debug!("DEBUG: Extracted determinant polynomial");
 
     let roots = find_real_roots_sturm(&degree10_poly, false);
-    mm_debug_eprintln!("DEBUG: Polynomial coefficients: {:?}", degree10_poly);
-    mm_debug_eprintln!("DEBUG: Found {} real roots", roots.len());
+    mm_eprintln_debug!("DEBUG: Polynomial coefficients: {:?}", degree10_poly);
+    mm_eprintln_debug!("DEBUG: Found {} real roots", roots.len());
 
     let mut essential_matrices = Vec::new();
 
     for &w_root in &roots {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "DEBUG: Trying to recover E matrix for w={}",
             w_root
         );
         if let Ok(e_mat) =
             recover_essential_matrix_from_ematrix_set(w_root, &equations, e_set)
         {
-            mm_debug_eprintln!("DEBUG: Successfully recovered E matrix");
+            mm_eprintln_debug!("DEBUG: Successfully recovered E matrix");
             essential_matrices.push(e_mat);
         } else if DEBUG {
             eprintln!("DEBUG: Failed to recover E matrix for w={}", w_root);
         }
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "DEBUG: Total essential matrices recovered: {}",
         essential_matrices.len()
     );
@@ -566,7 +566,7 @@ fn build_polynomial_essential_from_essential_matrix_set(
         for j in 0..3 {
             let p = &e_set[i][j];
 
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "DEBUG: E[{}][{}] = Polynomial4Degree1({}, {}, {}, {})",
                 i,
                 j,
@@ -581,7 +581,7 @@ fn build_polynomial_essential_from_essential_matrix_set(
             e_poly.elements[i][j].set(0, 0, 1, 0, p.get(2)); // y term
             e_poly.elements[i][j].set(0, 0, 0, 1, p.get(3)); // z term
 
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "DEBUG: After set, E_poly[{}][{}]: w={}, x={}, y={}, z={}",
                 i,
                 j,
@@ -634,7 +634,7 @@ fn apply_essential_constraints(e_poly: &PolynomialMatrix3x3) -> EquationSet {
         for j in 0..3 {
             let mut constraint = scale_poly(&eee_i[j], 2.0);
 
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "DEBUG: Before subtract, 2*EEE[{}] has w^3 = {}",
                 eqn,
                 constraint.get(3, 0, 0, 0)
@@ -642,7 +642,7 @@ fn apply_essential_constraints(e_poly: &PolynomialMatrix3x3) -> EquationSet {
 
             let trace_e = multiply_polys(&trace, &e_poly.elements[i][j]);
 
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "DEBUG: trace*E[{}][{}] has w^3 = {}",
                 i,
                 j,
@@ -651,7 +651,7 @@ fn apply_essential_constraints(e_poly: &PolynomialMatrix3x3) -> EquationSet {
 
             constraint = subtract_polys(&constraint, &trace_e);
 
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "DEBUG: Final constraint equation {} has w^3 coefficient = {}",
                 eqn,
                 constraint.get(3, 0, 0, 0)
@@ -694,18 +694,18 @@ fn compute_trace_eet(e: &PolynomialMatrix3x3) -> MultivariatePolynomial {
     }
 
     let e00_squared = multiply_polys(&e.elements[0][0], &e.elements[0][0]);
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "DEBUG: E[0][0]*E[0][0] (w*w) = w^2 coefficient: {}",
         e00_squared.get(2, 0, 0, 0)
     );
 
     let e00_cubed = multiply_polys(&e00_squared, &e.elements[0][0]);
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "DEBUG: (w^2)*w = w^3 coefficient: {}",
         e00_cubed.get(3, 0, 0, 0)
     );
 
-    mm_debug_eprintln!("DEBUG: trace(E*E^T) has w^2={}, w*x={}, w*y={}, w*z={}, x^2={}, y^2={}, z^2={}",
+    mm_eprintln_debug!("DEBUG: trace(E*E^T) has w^2={}, w*x={}, w*y={}, w*z={}, x^2={}, y^2={}, z^2={}",
              trace.get(2, 0, 0, 0),
              trace.get(1, 1, 0, 0),
              trace.get(1, 0, 1, 0),
@@ -881,21 +881,21 @@ fn reduce_equation_system(equations: &mut EquationSet) {
         let denominator = equations[0][3 + i][3 + i];
         let fac = numerator / denominator;
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "DEBUG: i={}, numerator={}, denominator={}, fac={}",
             i,
             numerator,
             denominator,
             fac
         );
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "DEBUG: equations[3][{}][0] = {}",
             i + 3,
             equations[3][i + 3][0]
         );
 
         equations[4][i][0] = -equations[3][i + 3][0] * fac;
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "DEBUG: equations[4][{}][0] = {}",
             i,
             equations[4][i][0]
@@ -908,15 +908,15 @@ fn reduce_equation_system(equations: &mut EquationSet) {
         }
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "DEBUG: After reduction, equations[4][0][0] = {}",
         equations[4][0][0]
     );
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "DEBUG: After reduction, equations[4][1][0] = {}",
         equations[4][1][0]
     );
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "DEBUG: After reduction, equations[4][2][0] = {}",
         equations[4][2][0]
     );

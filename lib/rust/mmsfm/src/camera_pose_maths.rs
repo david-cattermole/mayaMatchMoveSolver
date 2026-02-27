@@ -130,21 +130,21 @@ pub fn compute_fundamental_matrix<T: RealField + Copy>(
     camera_a: &Matrix3x4<T>,
     camera_b: &Matrix3x4<T>,
 ) -> Option<Matrix3<T>> {
-    mm_debug_eprintln!("\n[DEBUG compute_fundamental_matrix]");
-    mm_debug_eprintln!("camera_a = {:?}", camera_a);
-    mm_debug_eprintln!("camera_b = {:?}", camera_b);
+    mm_eprintln_debug!("\n[DEBUG compute_fundamental_matrix]");
+    mm_eprintln_debug!("camera_a = {:?}", camera_a);
+    mm_eprintln_debug!("camera_b = {:?}", camera_b);
 
     let (intrinsic_a, rotation_a, translation_a) =
         decompose_projection_matrix(camera_a)?;
     let (intrinsic_b, rotation_b, translation_b) =
         decompose_projection_matrix(camera_b)?;
 
-    mm_debug_eprintln!("intrinsic_a = {:?}", intrinsic_a);
-    mm_debug_eprintln!("rotation_a = {:?}", rotation_a);
-    mm_debug_eprintln!("translation_a = {:?}", translation_a);
-    mm_debug_eprintln!("intrinsic_b = {:?}", intrinsic_b);
-    mm_debug_eprintln!("rotation_b = {:?}", rotation_b);
-    mm_debug_eprintln!("translation_b = {:?}", translation_b);
+    mm_eprintln_debug!("intrinsic_a = {:?}", intrinsic_a);
+    mm_eprintln_debug!("rotation_a = {:?}", rotation_a);
+    mm_eprintln_debug!("translation_a = {:?}", translation_a);
+    mm_eprintln_debug!("intrinsic_b = {:?}", intrinsic_b);
+    mm_eprintln_debug!("rotation_b = {:?}", rotation_b);
+    mm_eprintln_debug!("translation_b = {:?}", translation_b);
 
     let (relative_rotation, relative_translation) = compute_relative_pose(
         &rotation_a,

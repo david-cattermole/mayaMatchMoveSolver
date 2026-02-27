@@ -29,7 +29,7 @@ use crate::datatype::{
     camera_pose::CameraPose, CameraIntrinsics, ImageSize, UnitValue, UvPoint2,
 };
 use anyhow::Result;
-use mmlogger::{mm_progress_log, Logger};
+use mmlogger::{mm_log_progress, Logger};
 use nalgebra::Point3;
 use plotters::coord::types::RangedCoordf64;
 use plotters::prelude::*;
@@ -697,7 +697,7 @@ pub fn visualize_marker_reprojections_sequential<L: Logger + Sync>(
     if num_cameras > 0 {
         let example_naming = naming.clone().with_frame(1);
         if let Ok(example_path) = example_naming.full_path() {
-            mm_progress_log!(
+            mm_log_progress!(
                 logger,
                 "Generating marker reprojections: {}",
                 example_path.display()
@@ -941,7 +941,7 @@ pub fn visualize_marker_reprojections_sequential<L: Logger + Sync>(
             Ok(())
         })?;
 
-    mm_progress_log!(
+    mm_log_progress!(
         logger,
         "Generated {} marker reprojection frames",
         num_cameras

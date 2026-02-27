@@ -508,7 +508,7 @@ where
 /// Requires a `const DEBUG: bool` in the calling scope. When `DEBUG`
 /// is `false`, the compiler optimizes the branch away entirely.
 #[macro_export]
-macro_rules! mm_debug_eprintln {
+macro_rules! mm_eprintln_debug {
     ($($arg:tt)*) => {
         if DEBUG {
             eprintln!($($arg)*);
@@ -525,7 +525,7 @@ macro_rules! mm_debug_eprintln {
 /// If the logger has a `log` method (e.g.
 /// `ChannelLogger`), source file and line are captured automatically.
 #[macro_export]
-macro_rules! mm_debug_log {
+macro_rules! mm_log_debug {
     ($logger:expr, $msg:literal) => {
         if DEBUG {
             $logger.log(
@@ -544,7 +544,7 @@ macro_rules! mm_debug_log {
 
 /// Info log macro — captures source location for `Full` format.
 #[macro_export]
-macro_rules! mm_info_log {
+macro_rules! mm_log_info {
     ($logger:expr, $msg:literal) => {
         $logger.log(
             $crate::LogLevel::Info, $msg, file!(), line!());
@@ -559,7 +559,7 @@ macro_rules! mm_info_log {
 
 /// Progress log macro — captures source location for `Full` format.
 #[macro_export]
-macro_rules! mm_progress_log {
+macro_rules! mm_log_progress {
     ($logger:expr, $msg:literal) => {
         $logger.log(
             $crate::LogLevel::Progress, $msg, file!(), line!());
@@ -574,7 +574,7 @@ macro_rules! mm_progress_log {
 
 /// Warn log macro — captures source location for `Full` format.
 #[macro_export]
-macro_rules! mm_warn_log {
+macro_rules! mm_log_warn {
     ($logger:expr, $msg:literal) => {
         $logger.log(
             $crate::LogLevel::Warn, $msg, file!(), line!());
@@ -589,7 +589,7 @@ macro_rules! mm_warn_log {
 
 /// Error log macro — captures source location for `Full` format.
 #[macro_export]
-macro_rules! mm_error_log {
+macro_rules! mm_log_error {
     ($logger:expr, $msg:literal) => {
         $logger.log(
             $crate::LogLevel::Error, $msg, file!(), line!());

@@ -50,7 +50,7 @@ pub fn transform_to_origin_frame(
         let min_frame = solved_camera_poses.keys().min().copied();
         match min_frame {
             Some(frame) => {
-                mm_debug_eprintln!(
+                mm_eprintln_debug!(
                     "  Warning: Origin frame {} not solved, using first solved frame {} instead.",
                     origin_frame, frame
                 );
@@ -85,7 +85,7 @@ pub fn transform_to_origin_frame(
         1.0 // If all cameras are at origin, no scaling needed.
     };
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Max camera extent before scaling: {:.6}, computed scale factor: {:.6}",
         max_extent, computed_scale
     );
@@ -120,7 +120,7 @@ pub fn transform_to_origin_frame(
         *point = Point3::from(transformed * computed_scale);
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Transformed to origin frame {} with target max extent {}",
         actual_origin_frame,
         scene_scale

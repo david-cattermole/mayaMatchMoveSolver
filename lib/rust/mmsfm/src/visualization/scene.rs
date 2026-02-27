@@ -27,7 +27,7 @@ use super::output_naming::{OutputFileNaming, ViewName};
 use crate::datatype::camera_pose::CameraPose;
 use crate::datatype::{CameraFrustum, CameraIntrinsics};
 use anyhow::Result;
-use mmlogger::{mm_progress_log, Logger};
+use mmlogger::{mm_log_progress, Logger};
 use nalgebra::{Point3, Vector3};
 use plotters::coord::cartesian::Cartesian3d;
 use plotters::coord::types::RangedCoordf64;
@@ -714,7 +714,7 @@ pub fn visualize_sfm_trajectory_views<L: Logger + Sync>(
             let example_naming =
                 naming.clone_with_view(view_name).with_frame(*first_frame);
             if let Ok(example_path) = example_naming.full_path() {
-                mm_progress_log!(
+                mm_log_progress!(
                     logger,
                     "Generating trajectory views: {}",
                     example_path.display()
@@ -753,7 +753,7 @@ pub fn visualize_sfm_trajectory_views<L: Logger + Sync>(
         },
     )?;
 
-    mm_progress_log!(logger, "Generated {} trajectory frames", num_frames);
+    mm_log_progress!(logger, "Generated {} trajectory frames", num_frames);
 
     Ok(())
 }
@@ -884,7 +884,7 @@ fn render_single_view_with_intrinsics<L: Logger + Sync>(
 
     area.present()
         .map_err(|e| anyhow::anyhow!("Failed to save visualization: {}", e))?;
-    mm_progress_log!(
+    mm_log_progress!(
         logger,
         "SfM visualization saved to: {}",
         file_path.display()

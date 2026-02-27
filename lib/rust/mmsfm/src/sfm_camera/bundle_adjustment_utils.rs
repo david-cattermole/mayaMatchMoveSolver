@@ -257,7 +257,7 @@ pub fn convert_and_noise_camera_poses(
             }
         }
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "  {} Initial camera {} (frame {}): translation = ({:.6}, {:.6}, {:.6}), unlocked = {}",
             debug_prefix, i, frame, translation[0], translation[1], translation[2], is_unlocked
         );
@@ -289,7 +289,7 @@ pub fn convert_and_noise_bundle_positions(
             }
         }
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "  {} Initial bundle {}: point = ({:.6}, {:.6}, {:.6}) -> ({:.6}, {:.6}, {:.6})",
             debug_prefix, i, point[0], point[1], point[2],
             noisy_point[0], noisy_point[1], noisy_point[2],
@@ -318,7 +318,7 @@ pub fn run_pre_ba_validation(
         return false;
     };
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  {} Running pre-BA validation ({} bundles)...",
         debug_prefix,
         bundle_positions.len()
@@ -365,7 +365,7 @@ pub fn run_post_ba_validation(
         return;
     };
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  {} Running post-BA validation ({} bundles)...",
         debug_prefix,
         bundle_positions.len()
@@ -448,7 +448,7 @@ where
 {
     match solver_type {
         BundleAdjustmentSolverType::DenseLM => {
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "  {} Using dense Levenberg-Marquardt solver",
                 debug_prefix
             );
@@ -458,7 +458,7 @@ where
             solver.solve_problem(problem, &mut workspace)
         }
         BundleAdjustmentSolverType::SparseLevenbergMarquardt => {
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "  {} Using sparse Levenberg-Marquardt solver (direct CHOLMOD)",
                 debug_prefix
             );

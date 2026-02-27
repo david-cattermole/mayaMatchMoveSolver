@@ -26,7 +26,7 @@ use std::time::{Duration, Instant};
 
 use anyhow::{bail, Result};
 use mmlogger::Logger;
-use mmlogger::{mm_debug_log, mm_info_log, mm_progress_log};
+use mmlogger::{mm_debug_log, mm_log_info, mm_log_progress};
 
 use mmio::uvtrack_reader::{FrameNumber, FrameRange, MarkersData};
 
@@ -138,7 +138,7 @@ fn run_incremental_loop<L: Logger>(
 
     let pass_label = if final_rounds { "final" } else { "draft" };
 
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "\nPhase 3 [{}]: Iterative multi-round camera addition and refinement...",
         pass_label
@@ -153,19 +153,19 @@ fn run_incremental_loop<L: Logger>(
     if DEBUG {
         match &skeleton_frame_numbers {
             Some(skeleton) => {
-                mm_debug_log!(
+                mm_log_debug!(
                     logger,
                     "  Skeleton frame count: {}",
                     skeleton.len()
                 );
             }
             None => {
-                mm_debug_log!(logger, "  Skeleton: None (Connected Dominating Set computation failed or returned empty)");
+                mm_log_debug!(logger, "  Skeleton: None (Connected Dominating Set computation failed or returned empty)");
             }
         }
     }
 
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "  {} potential frames to solve.",
         scene_frame_range.frame_count() - solved_frames.len() as u32,
@@ -179,7 +179,7 @@ fn run_incremental_loop<L: Logger>(
         round_number += 1;
         let round_start = Instant::now();
         if DEBUG {
-            mm_debug_log!(
+            mm_log_debug!(
                 logger,
                 "\n=== Round {} ({}) ===",
                 round_number,
@@ -190,7 +190,7 @@ fn run_incremental_loop<L: Logger>(
             solved_sorted_frames.sort_unstable();
             let formatted_solved_frames =
                 format_frame_list(&solved_sorted_frames);
-            mm_debug_log!(
+            mm_log_debug!(
                 logger,
                 "  solved_frames={}",
                 formatted_solved_frames
@@ -209,18 +209,18 @@ fn run_incremental_loop<L: Logger>(
 
         if DEBUG {
             let formatted_unsolved_frames = format_frame_list(&unsolved_frames);
-            mm_debug_log!(
+            mm_log_debug!(
                 logger,
                 "  unsolved_frames={}",
                 formatted_unsolved_frames
             );
         }
         if unsolved_frames.is_empty() {
-            mm_debug_log!(logger, "  No more frames to attempt - stopping.");
+            mm_log_debug!(logger, "  No more frames to attempt - stopping.");
             break;
         }
 
-        mm_debug_log!(
+        mm_log_debug!(
             logger,
             "  Attempting {} unsolved frames with {} bundles available.",
             unsolved_frames.len(),
@@ -249,7 +249,7 @@ fn run_incremental_loop<L: Logger>(
             solved_frames.insert(camera_pnp_result.frame);
             cameras_added_this_round += 1;
 
-            mm_debug_log!(
+            mm_log_debug!(
                 logger,
                 "    Frame {}: Added after filtering ({} total cameras)",
                 camera_pnp_result.frame,
@@ -260,7 +260,7 @@ fn run_incremental_loop<L: Logger>(
         let cameras_failed_this_round: u32 =
             unsolved_frames.len() as u32 - cameras_added_this_round;
 
-        mm_debug_log!(
+        mm_log_debug!(
             logger,
             "\n  Round {} ({}) camera addition: {} succeeded, {} failed.",
             round_number,
@@ -277,7 +277,7 @@ fn run_incremental_loop<L: Logger>(
         // this loop so the caller can decide what to do next
         // (e.g. run a second pass without skeleton).
         if skeleton_frames_tried && cameras_added_this_round == 0 {
-            mm_debug_log!(
+            mm_log_debug!(
                 logger,
                 "  Skeleton frames failed to add cameras - stopping loop."
             );
@@ -288,14 +288,14 @@ fn run_incremental_loop<L: Logger>(
         if cameras_added_this_round == 0 {
             consecutive_failures += 1;
             if consecutive_failures >= 3 {
-                mm_debug_log!(
+                mm_log_debug!(
                     logger,
                     "  Failed to add cameras even with fallback - stopping."
                 );
                 break;
             }
 
-            mm_debug_log!(
+            mm_log_debug!(
                 logger,
                 "  No new cameras added - trying again (failures: {}).",
                 consecutive_failures
@@ -333,7 +333,7 @@ fn run_incremental_loop<L: Logger>(
         *previous_stats = Some(stats);
 
         // Bundle Adjustment.
-        mm_debug_log!(
+        mm_log_debug!(
             logger,
             "\n  Round {} ({}): Running global bundle adjustment...",
             round_number,
@@ -391,7 +391,7 @@ fn run_incremental_loop<L: Logger>(
             rayon::spawn(move || w.write_intermediate(poses, bundles, s));
         }
 
-        mm_debug_log!(
+        mm_log_debug!(
             logger,
             "\nPhase 3: Transforming to origin frame and scaling..."
         );
@@ -431,7 +431,7 @@ fn run_incremental_loop<L: Logger>(
 
         // Expand marker selection after global BA.
         let marker_expansion_start = Instant::now();
-        mm_debug_log!(
+        mm_log_debug!(
             logger,
             "  Round {} ({}): Expanding marker selection...",
             round_number,
@@ -461,7 +461,7 @@ fn run_incremental_loop<L: Logger>(
         });
     }
 
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "\n  Multi-round solving ({}) complete: {} rounds, {} cameras solved, {} unsolved",
         pass_label,
@@ -502,14 +502,14 @@ pub(crate) fn camera_solve_inner<L: Logger>(
 ) -> Result<()> {
     let solve_start = Instant::now();
 
-    mm_debug_log!(logger, "Starting camera solve...");
-    mm_debug_log!(
+    mm_log_debug!(logger, "Starting camera solve...");
+    mm_log_debug!(
         logger,
         "  Frame range: {} to {}",
         scene_frame_range.start_frame,
         scene_frame_range.end_frame
     );
-    mm_debug_log!(logger, "  Total markers: {}", markers.len());
+    mm_log_debug!(logger, "  Total markers: {}", markers.len());
 
     // Clear outputs.
     camera_poses.clear();
@@ -517,14 +517,14 @@ pub(crate) fn camera_solve_inner<L: Logger>(
     *quality_metrics = SolveQualityMetrics::default();
 
     if PROGRESS && print_summary {
-        mm_progress_log!(
+        mm_log_progress!(
             logger,
             "[Phase 0] {:>5} | Solve: {} total frames, {} total markers",
             "Time",
             scene_frame_range.frame_count(),
             markers.len()
         );
-        mm_progress_log!(
+        mm_log_progress!(
             logger,
             "[Phase 0] {:>5} | Frame range: {} to {}",
             "-----",
@@ -535,7 +535,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
 
     // Convert markers to efficient observation format for O(1) frame lookups.
     let observations = MarkerObservations::from_markers_data(markers)?;
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "  Converted to MarkerObservations: {} markers, frame range {}-{}",
         observations.count_markers(),
@@ -544,7 +544,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
     );
 
     // Phase 1: Frame Analysis & Selection.
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "\nPhase 1: Analyzing frames and selecting optimal markers..."
     );
@@ -599,20 +599,20 @@ pub(crate) fn camera_solve_inner<L: Logger>(
         );
     }
 
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "  Selected {} markers across {} frames.",
         marker_indices.len(),
         frame_analysis_result.common_frame_numbers.len()
     );
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "  Best initialization pair: frames {} and {}",
         best_frame_pair.0,
         best_frame_pair.1,
     );
     // Phase 2: Initial Reconstruction.
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "\nPhase 2: Initial reconstruction from frame pair..."
     );
@@ -627,7 +627,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
             frame_a,
             frame_b,
         );
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "  Extracted {} point correspondences between frames {} and {}.",
         uv_coords_a.len(),
@@ -645,7 +645,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
         &uv_coords_b,
     )?;
     let relative_pose_duration = relative_pose_start.elapsed();
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "  Relative pose computed with residual precision: {:.6}",
         relative_pose_info.residual_precision
@@ -659,7 +659,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
     camera_poses.insert(frame_a, pose_a.clone());
     camera_poses.insert(frame_b, pose_b.clone());
 
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "  Stored camera poses for frames {} and {}.",
         frame_a,
@@ -688,7 +688,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
     let successful_count =
         triangulated_points_valid.iter().filter(|&&v| v).count();
 
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "  Triangulated {} / {} initial 3D points successfully ({} failed: {:.1}% success rate).",
         successful_count,
@@ -741,7 +741,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
     );
     let fixed_depth_phase2_duration = fixed_depth_phase2_start.elapsed();
 
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "  Initial reconstruction complete: {} bundles",
         bundle_positions.len()
@@ -775,7 +775,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
 
     // Refine initial reconstruction with bundle adjustment.
     let initial_ba_start = Instant::now();
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "  Refining initial reconstruction with bundle adjustment..."
     );
@@ -826,7 +826,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
     let phase3_start = Instant::now();
     let phase3_result = {
         // Build frame graph and skeleton frames for Phase 3 selection.
-        mm_debug_log!(
+        mm_log_debug!(
             logger,
             "  Building frame graph for Phase 3 frame selection..."
         );
@@ -913,7 +913,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
         camera_intrinsics,
     );
     if DEBUG && fixed_depth_count > 0 {
-        mm_debug_log!(logger,
+        mm_log_debug!(logger,
             "  Placed {} bundles at fixed depth before Phase 4 general bundle adjustment.",
             fixed_depth_count
         );
@@ -922,7 +922,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
         phase4_pre_fixed_depth_start.elapsed();
 
     let phase4_ba_start = Instant::now();
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "\nPhase 4: Running final general bundle adjustment..."
     );
@@ -977,7 +977,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
         camera_intrinsics,
     );
     if DEBUG && fixed_depth_count > 0 {
-        mm_debug_log!(logger,
+        mm_log_debug!(logger,
             "  Placed {} bundles at fixed depth after Phase 4 general bundle adjustment.",
             fixed_depth_count
         );
@@ -1029,7 +1029,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
         );
     }
     // Phase 6: Origin Frame & Scaling
-    mm_debug_log!(
+    mm_log_debug!(
         logger,
         "\nPhase 6: Transforming to origin frame and scaling..."
     );
@@ -1071,29 +1071,29 @@ pub(crate) fn camera_solve_inner<L: Logger>(
     quality_metrics.median_reprojection_error = stats.median;
 
     if SUMMARY && print_summary {
-        mm_info_log!(logger, "");
-        mm_info_log!(logger, "Camera solve completed!");
-        mm_info_log!(
+        mm_log_info!(logger, "");
+        mm_log_info!(logger, "Camera solve completed!");
+        mm_log_info!(
             logger,
             "  Solve time: {:.3}s",
             solve_total_duration.as_secs_f64()
         );
-        mm_info_log!(
+        mm_log_info!(
             logger,
             "  Frames solved: {}",
             quality_metrics.frames_solved
         );
-        mm_info_log!(
+        mm_log_info!(
             logger,
             "  Frames unsolved: {}",
             quality_metrics.frames_unsolved
         );
-        mm_info_log!(
+        mm_log_info!(
             logger,
             "  Bundles triangulated: {}",
             quality_metrics.total_bundles_triangulated
         );
-        mm_info_log!(
+        mm_log_info!(
             logger,
             "  Final reprojection error: mean={:.3} px, median={:.3} px",
             quality_metrics.mean_reprojection_error,
@@ -1107,7 +1107,7 @@ pub(crate) fn camera_solve_inner<L: Logger>(
 
         // Format as ranges for consecutive frames.
         let formatted_frames = format_frame_list(&solved_frame_list);
-        mm_info_log!(logger, "  Solved frames: {}", formatted_frames);
+        mm_log_info!(logger, "  Solved frames: {}", formatted_frames);
         // TODO: Add list of unsolved frames too.
     }
 

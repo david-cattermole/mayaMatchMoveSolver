@@ -82,10 +82,10 @@ pub fn run_two_camera_bundle_adjustment(
         return Ok(());
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  [2-Camera BA] Starting specialized bundle adjustment"
     );
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "    Cameras: {}, Points: {}",
         camera_poses.len(),
         bundle_positions.len()
@@ -98,8 +98,8 @@ pub fn run_two_camera_bundle_adjustment(
     let frame_a = frame_list[0];
     let frame_b = frame_list[1];
 
-    mm_debug_eprintln!("    Frame A (fixed): {}", frame_a);
-    mm_debug_eprintln!("    Frame B (optimized): {}", frame_b);
+    mm_eprintln_debug!("    Frame A (fixed): {}", frame_a);
+    mm_eprintln_debug!("    Frame B (optimized): {}", frame_b);
 
     let mut marker_list: Vec<usize> =
         bundle_positions.keys().copied().collect();
@@ -161,7 +161,7 @@ pub fn run_two_camera_bundle_adjustment(
             + camera_b_translation[1] * camera_b_translation[1]
             + camera_b_translation[2] * camera_b_translation[2])
             .sqrt();
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "    Initial camera B translation: [{:.4}, {:.4}, {:.4}] (norm: {:.4})",
             camera_b_translation[0],
             camera_b_translation[1],
@@ -193,14 +193,14 @@ pub fn run_two_camera_bundle_adjustment(
     let num_parameters = problem.parameter_count();
     let num_residuals = problem.residual_count();
     if num_residuals < num_parameters {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "  [2-Camera BA] Skipping: insufficient observations ({} residuals < {} parameters)",
             num_residuals, num_parameters
         );
         return Ok(());
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  [2-Camera BA] Problem: {} parameters, {} residuals",
         num_parameters,
         num_residuals
@@ -211,7 +211,7 @@ pub fn run_two_camera_bundle_adjustment(
     let initial_params = problem.pack_parameters();
     let solver_config = create_basic_dense_solver_config(max_iterations);
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  [2-Camera BA] Using dense Levenberg-Marquardt solver"
     );
 
@@ -220,7 +220,7 @@ pub fn run_two_camera_bundle_adjustment(
         LevenbergMarquardtWorkspace::new(&problem, &initial_params)?;
     let result = solver.solve_problem(&problem, &mut workspace)?;
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  [2-Camera BA] Problem finished in {:.6}s.",
         problem_start.elapsed().as_secs_f64()
     );
@@ -239,7 +239,7 @@ pub fn run_two_camera_bundle_adjustment(
             + optimized_translation[1] * optimized_translation[1]
             + optimized_translation[2] * optimized_translation[2])
             .sqrt();
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "  [2-Camera BA] Optimized camera B translation: [{:.4}, {:.4}, {:.4}] (norm: {:.4})",
             optimized_translation[0],
             optimized_translation[1],
@@ -293,7 +293,7 @@ pub fn run_two_camera_bundle_adjustment(
     // The unit baseline constraint is sufficient gauge fixing for the
     // 2-camera case.
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  [2-Camera BA] Complete: {} iterations, final cost: {:.6}",
         result.iterations,
         result.cost
@@ -318,10 +318,10 @@ pub fn run_general_bundle_adjustment(
         return Ok(());
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "\n  [General BA] Starting final general bundle adjustment"
     );
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "    Cameras: {}, Points: {}",
         camera_poses.len(),
         bundle_positions.len()
@@ -430,13 +430,13 @@ pub fn run_general_bundle_adjustment(
     let num_parameters = problem.parameter_count();
     let num_residuals = problem.residual_count();
     if num_residuals < num_parameters {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "  [General BA] Skipping: insufficient observations ({} residuals < {} parameters)",
             num_residuals, num_parameters
         );
         return Ok(());
     }
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  [General BA] Problem: {} parameters, {} residuals",
         num_parameters,
         num_residuals
@@ -456,7 +456,7 @@ pub fn run_general_bundle_adjustment(
         "[General BA]",
     )?;
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  [General BA] Problem finished in {:.6}s.",
         problem_start.elapsed().as_secs_f64()
     );
@@ -506,12 +506,12 @@ pub fn run_general_bundle_adjustment(
         "[General BA]",
     );
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  [General BA] Complete: {} iterations, final cost: {:.6}",
         result.iterations,
         result.cost
     );
-    mm_debug_eprintln!("  [General BA] Status: {:?}", result.status);
+    mm_eprintln_debug!("  [General BA] Status: {:?}", result.status);
 
     Ok(())
 }

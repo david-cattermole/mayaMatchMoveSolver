@@ -22,7 +22,7 @@
 
 use anyhow::{bail, Result};
 use mmlogger::Logger;
-use mmlogger::{mm_info_log, mm_progress_log};
+use mmlogger::{mm_log_info, mm_log_progress};
 use std::sync::atomic::AtomicUsize;
 use std::sync::{Arc, Mutex};
 
@@ -228,23 +228,23 @@ pub(super) fn run_camera_solve_with_global_adjustment<
             }
 
             if PRINT_SOLVER_DETAILS {
-                mm_progress_log!(
+                mm_log_progress!(
                     logger,
                     "Global adjustment: Differential Evolution"
                 );
-                mm_info_log!(
+                mm_log_info!(
                     logger,
                     "  Initial: {:.2} mm",
                     initial_focal_length_mm
                 );
-                mm_info_log!(
+                mm_log_info!(
                     logger,
                     "  Bounds: {:.2} - {:.2} mm",
                     focal_length_bounds.0,
                     focal_length_bounds.1
                 );
-                mm_info_log!(logger, "  Mode: {:?}", mode);
-                mm_info_log!(logger, "  Generations: {}", generations);
+                mm_log_info!(logger, "  Mode: {:?}", mode);
+                mm_log_info!(logger, "  Generations: {}", generations);
             }
 
             // Create DE configuration based on mode.
@@ -297,21 +297,21 @@ pub(super) fn run_camera_solve_with_global_adjustment<
 
                 // Run DE optimization.
                 if PRINT_SOLVER_DETAILS {
-                    mm_info_log!(
+                    mm_log_info!(
                         logger,
                         "  Starting Differential Evolution optimization..."
                     );
-                    mm_info_log!(
+                    mm_log_info!(
                         logger,
                         "  Population size: {} (typical for {} parameters)",
                         coarse_de_config.population_size,
                         coarse_de_config.num_dimensions
                     );
-                    mm_info_log!(logger, "  Using three-stage optimization: coarse + refined + final");
-                    mm_info_log!(logger, "  Mode: {:?}", mode);
-                    mm_progress_log!(logger, "  === DE Stage 1: Coarse Search ===  Focal length bounds: {:.2} - {:.2} mm",
+                    mm_log_info!(logger, "  Using three-stage optimization: coarse + refined + final");
+                    mm_log_info!(logger, "  Mode: {:?}", mode);
+                    mm_log_progress!(logger, "  === DE Stage 1: Coarse Search ===  Focal length bounds: {:.2} - {:.2} mm",
                         focal_length_bounds.0, focal_length_bounds.1);
-                    mm_info_log!(
+                    mm_log_info!(
                         logger,
                         "  Coarse diversity tolerance: {:.2e}",
                         coarse_de_config.diversity_tolerance.unwrap_or(0.0)
@@ -361,7 +361,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                 let (cache_hits, cache_misses) =
                     tracking_evaluator.cache_stats();
                 if PRINT_SOLVER_DETAILS {
-                    mm_info_log!(logger, "  Coarse DE cache stats: {} hits, {} misses ({:.1}% hit rate)",
+                    mm_log_info!(logger, "  Coarse DE cache stats: {} hits, {} misses ({:.1}% hit rate)",
                         cache_hits,
                         cache_misses,
                         if cache_hits + cache_misses > 0 {
@@ -376,7 +376,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                 let valid_focal_lengths =
                     tracking_evaluator.get_valid_focal_lengths();
                 if PRINT_SOLVER_DETAILS {
-                    mm_info_log!(
+                    mm_log_info!(
                         logger,
                         "  Valid focal lengths from coarse search: {}/{}",
                         valid_focal_lengths.len(),
@@ -400,7 +400,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                             costs[costs.len() / 2]
                         };
 
-                        mm_info_log!(logger, "  Quality range: best={:.4} px, median={:.4} px, worst={:.4} px",
+                        mm_log_info!(logger, "  Quality range: best={:.4} px, median={:.4} px, worst={:.4} px",
                                 best_cost, median_cost, worst_cost
                             );
 
@@ -410,7 +410,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                             .map(|(fl, _cost)| *fl)
                             .collect();
                         focal_lengths.sort_by(|a, b| a.partial_cmp(b).unwrap());
-                        mm_info_log!(
+                        mm_log_info!(
                             logger,
                             "  Focal length range: {:.2} - {:.2} mm",
                             focal_lengths[0],
@@ -423,7 +423,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                 coarse_search_time_secs = Some(de_elapsed.as_secs_f64());
 
                 if PRINT_SOLVER_DETAILS {
-                    mm_info_log!(
+                    mm_log_info!(
                         logger,
                         "  Coarse DE optimization completed in {:.2}s",
                         coarse_search_time_secs.unwrap()
@@ -441,36 +441,36 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                 )) = calculate_refined_bounds(&valid_focal_lengths)
                 {
                     if PRINT_SOLVER_DETAILS {
-                        mm_progress_log!(
+                        mm_log_progress!(
                             logger,
                             "  === DE Stage 2: Refined Search ==="
                         );
-                        mm_info_log!(
+                        mm_log_info!(
                             logger,
                             "    Total evaluations: {}",
                             valid_focal_lengths.len()
                         );
-                        mm_info_log!(
+                        mm_log_info!(
                             logger,
                             "    Valid focal lengths used: {}",
                             num_valid
                         );
-                        mm_info_log!(
+                        mm_log_info!(
                             logger,
                             "    Weighted mean focal length: {:.2} mm",
                             weighted_mean
                         );
-                        mm_info_log!(
+                        mm_log_info!(
                             logger,
                             "    Weighted std deviation: {:.2} mm",
                             weighted_std_dev
                         );
-                        mm_info_log!(logger, "    Original bounds: {:.2} - {:.2} mm (range: {:.2} mm)",
+                        mm_log_info!(logger, "    Original bounds: {:.2} - {:.2} mm (range: {:.2} mm)",
                                 focal_length_bounds.0,
                                 focal_length_bounds.1,
                                 focal_length_bounds.1 - focal_length_bounds.0
                             );
-                        mm_info_log!(logger, "    Refined bounds:  {:.2} - {:.2} mm (range: {:.2} mm)",
+                        mm_log_info!(logger, "    Refined bounds:  {:.2} - {:.2} mm (range: {:.2} mm)",
                                 refined_min,
                                 refined_max,
                                 refined_max - refined_min
@@ -479,7 +479,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                             / (focal_length_bounds.1 - focal_length_bounds.0)
                             - 1.0)
                             * 100.0;
-                        mm_info_log!(
+                        mm_log_info!(
                             logger,
                             "    Range change: {:+.1}% {}",
                             range_change_pct.abs(),
@@ -539,7 +539,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                         CachingEvaluator::new(refined_evaluator);
 
                     if PRINT_SOLVER_DETAILS {
-                        mm_info_log!(
+                        mm_log_info!(
                             logger,
                             "  Starting refined DE optimization..."
                         );
@@ -563,7 +563,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                     if PRINT_SOLVER_DETAILS {
                         let (ref_hits, ref_misses) =
                             refined_cached.cache_stats();
-                        mm_info_log!(logger, "  Refined DE cache stats: {} hits, {} misses ({:.1}% hit rate)",
+                        mm_log_info!(logger, "  Refined DE cache stats: {} hits, {} misses ({:.1}% hit rate)",
                                 ref_hits,
                                 ref_misses,
                                 if ref_hits + ref_misses > 0 {
@@ -573,18 +573,18 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                                     0.0
                                 }
                             );
-                        mm_info_log!(
+                        mm_log_info!(
                             logger,
                             "  Refined DE optimization completed in {:.2}s",
                             refined_search_time_secs.unwrap()
                         );
-                        mm_info_log!(logger, "  Refined best focal length: {:.2} mm (cost: {:.4} px)",
+                        mm_log_info!(logger, "  Refined best focal length: {:.2} mm (cost: {:.4} px)",
                                 best_focal_length[0], best_cost
                             );
                     }
                 } else if PRINT_SOLVER_DETAILS {
-                    mm_warn_log!(logger, "  Could not calculate refined bounds from valid focal lengths");
-                    mm_warn_log!(
+                    mm_log_warn!(logger, "  Could not calculate refined bounds from valid focal lengths");
+                    mm_log_warn!(
                         logger,
                         "  Skipping refined search, using coarse result"
                     );
@@ -592,15 +592,15 @@ pub(super) fn run_camera_solve_with_global_adjustment<
             } else {
                 // Coarse search disabled - run single high-quality search
                 if PRINT_SOLVER_DETAILS {
-                    mm_info_log!(
+                    mm_log_info!(
                         logger,
                         "  Starting Differential Evolution optimization..."
                     );
-                    mm_info_log!(logger, "  Coarse search disabled - running single refined search");
-                    mm_progress_log!(logger, "  === DE Stage 1: Refined Search (Full Range) ===  Focal length bounds: {:.2} - {:.2} mm",
+                    mm_log_info!(logger, "  Coarse search disabled - running single refined search");
+                    mm_log_progress!(logger, "  === DE Stage 1: Refined Search (Full Range) ===  Focal length bounds: {:.2} - {:.2} mm",
                             focal_length_bounds.0, focal_length_bounds.1
                         );
-                    mm_info_log!(logger, "  Mode: {:?}", mode);
+                    mm_log_info!(logger, "  Mode: {:?}", mode);
                 }
 
                 let refined_de_start = std::time::Instant::now();
@@ -636,7 +636,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
 
                 if PRINT_SOLVER_DETAILS {
                     let (ref_hits, ref_misses) = refined_cached.cache_stats();
-                    mm_info_log!(logger, "  Refined DE cache stats: {} hits, {} misses ({:.1}% hit rate)",
+                    mm_log_info!(logger, "  Refined DE cache stats: {} hits, {} misses ({:.1}% hit rate)",
                             ref_hits,
                             ref_misses,
                             if ref_hits + ref_misses > 0 {
@@ -646,12 +646,12 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                                 0.0
                             }
                         );
-                    mm_info_log!(
+                    mm_log_info!(
                         logger,
                         "  Refined DE optimization completed in {:.2}s",
                         refined_search_time_secs.unwrap()
                     );
-                    mm_info_log!(
+                    mm_log_info!(
                         logger,
                         "  Best focal length: {:.2} mm (cost: {:.4} px)",
                         best_focal_length[0],
@@ -668,25 +668,25 @@ pub(super) fn run_camera_solve_with_global_adjustment<
             }
 
             if PRINT_SOLVER_DETAILS {
-                mm_info_log!(logger, "  Global optimization result:");
-                mm_info_log!(
+                mm_log_info!(logger, "  Global optimization result:");
+                mm_log_info!(
                     logger,
                     "    Initial focal length: {:.2} mm",
                     initial_focal_length_mm
                 );
-                mm_info_log!(
+                mm_log_info!(
                     logger,
                     "    Optimized focal length: {:.2} mm",
                     best_focal_length[0]
                 );
-                mm_info_log!(logger, "    Final cost: {:.4} px", best_cost);
+                mm_log_info!(logger, "    Final cost: {:.4} px", best_cost);
             }
 
             // Run final solve with optimized focal length to populate
             // outputs.
             if PRINT_SOLVER_DETAILS {
-                mm_progress_log!(logger, "  === DE Stage 3: Final Solve ===");
-                mm_info_log!(logger, "  Running full camera solve with optimized focal length: {:.2} mm",
+                mm_log_progress!(logger, "  === DE Stage 3: Final Solve ===");
+                mm_log_info!(logger, "  Running full camera solve with optimized focal length: {:.2} mm",
                         best_focal_length[0]
                     );
             }
@@ -747,22 +747,22 @@ pub(super) fn run_camera_solve_with_global_adjustment<
             }
 
             if PRINT_SOLVER_DETAILS {
-                mm_progress_log!(
+                mm_log_progress!(
                     logger,
                     "Global adjustment: Uniform Grid Search"
                 );
-                mm_info_log!(
+                mm_log_info!(
                     logger,
                     "  Initial: {:.2} mm",
                     initial_focal_length_mm
                 );
-                mm_info_log!(
+                mm_log_info!(
                     logger,
                     "  Bounds: {:.2} - {:.2} mm",
                     focal_length_bounds.0,
                     focal_length_bounds.1
                 );
-                mm_info_log!(logger, "  Num samples: {}", num_samples);
+                mm_log_info!(logger, "  Num samples: {}", num_samples);
             }
 
             // Create grid search configuration.
@@ -792,7 +792,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
             let cached_evaluator = CachingEvaluator::new(evaluator);
 
             if PRINT_SOLVER_DETAILS {
-                mm_info_log!(
+                mm_log_info!(
                     logger,
                     "  Starting Uniform Grid Search optimization..."
                 );
@@ -809,7 +809,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
             let grid_elapsed = grid_start_time.elapsed();
 
             if PRINT_SOLVER_DETAILS {
-                mm_info_log!(
+                mm_log_info!(
                     logger,
                     "  Grid search completed in {:.2}s",
                     grid_elapsed.as_secs_f64()
@@ -824,18 +824,18 @@ pub(super) fn run_camera_solve_with_global_adjustment<
             }
 
             if PRINT_SOLVER_DETAILS {
-                mm_info_log!(logger, "  Global optimization result:");
-                mm_info_log!(
+                mm_log_info!(logger, "  Global optimization result:");
+                mm_log_info!(
                     logger,
                     "    Initial focal length: {:.2} mm",
                     initial_focal_length_mm
                 );
-                mm_info_log!(
+                mm_log_info!(
                     logger,
                     "    Optimized focal length: {:.2} mm",
                     best_focal_length[0]
                 );
-                mm_info_log!(
+                mm_log_info!(
                     logger,
                     "    Improvement: {:.2} mm ({:+.1}%)",
                     best_focal_length[0] - initial_focal_length_mm,
@@ -843,7 +843,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                         / initial_focal_length_mm)
                         * 100.0
                 );
-                mm_info_log!(logger, "    Final cost: {:.4} px", best_cost);
+                mm_log_info!(logger, "    Final cost: {:.4} px", best_cost);
             }
 
             // Run final solve with optimized focal length to populate

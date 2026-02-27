@@ -23,7 +23,7 @@
 //! Creates line plots of reprojection errors with mean and median overlays.
 
 use anyhow::Result;
-use mmlogger::{mm_progress_log, Logger};
+use mmlogger::{mm_log_progress, Logger};
 use plotters::prelude::*;
 
 use super::output_naming::OutputFileNaming;
@@ -296,7 +296,7 @@ pub fn visualize_multi_frame_residuals_per_marker<L: Logger>(
     }
 
     area.present()?;
-    mm_progress_log!(
+    mm_log_progress!(
         logger,
         "Generated residual visualization saved to: {}",
         file_path.display()

@@ -128,7 +128,7 @@ pub fn compute_camera_pose_with_method(
     let num_correspondences = correspondences.len();
 
     if num_correspondences < 3 {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "      SQPnP: insufficient points ({} < 3)",
             num_correspondences
         );
@@ -167,12 +167,12 @@ pub fn compute_camera_pose_with_method(
 
             if DEBUG {
                 if let Some(ref result) = best_result {
-                    mm_debug_eprintln!(
+                    mm_eprintln_debug!(
                         "      SQPnP: success, error={:.6}",
                         result.reprojection_error
                     );
                 } else {
-                    mm_debug_eprintln!(
+                    mm_eprintln_debug!(
                         "      SQPnP: all solutions failed cheirality"
                     );
                 }
@@ -181,11 +181,11 @@ pub fn compute_camera_pose_with_method(
             Ok(best_result)
         }
         Ok(_) => {
-            mm_debug_eprintln!("      SQPnP: returned empty solutions");
+            mm_eprintln_debug!("      SQPnP: returned empty solutions");
             Ok(None)
         }
         Err(e) => {
-            mm_debug_eprintln!("      SQPnP: failed with error: {:?}", e);
+            mm_eprintln_debug!("      SQPnP: failed with error: {:?}", e);
             Ok(None)
         }
     }

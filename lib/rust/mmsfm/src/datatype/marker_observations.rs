@@ -92,7 +92,7 @@ impl MarkerObservations {
         let frame_count = full_frame_range.frame_count() as usize;
         let marker_count = markers.len();
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "MarkerObservations::from_markers_data: {} markers, {} frames",
             marker_count,
             frame_count

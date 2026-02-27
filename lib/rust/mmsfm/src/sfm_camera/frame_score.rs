@@ -542,7 +542,7 @@ fn compute_all_parallax_and_find_best(
     } else {
         0.0
     };
-    mm_debug_eprintln!("Uniformity filtering: {} -> {} frames ({:.1}% reduction in frame pairs: {} -> {})",
+    mm_eprintln_debug!("Uniformity filtering: {} -> {} frames ({:.1}% reduction in frame pairs: {} -> {})",
                   common_frame_indices.len(),
                   filtered_frame_indices.len(),
                   reduction_percent,
@@ -640,7 +640,7 @@ fn select_markers_with_combined_scoring(
         }
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "Initial selection: {} markers after removing zero-count markers",
         selected_count
     );
@@ -758,12 +758,12 @@ fn select_markers_with_combined_scoring(
         } else {
             // Not enough common frames, remove a marker to try to get
             // some overlap.
-            mm_debug_eprintln!("  Not enough common frames ({}), trying to remove a marker (selected_count={})", common_frame_count, selected_count);
+            mm_eprintln_debug!("  Not enough common frames ({}), trying to remove a marker (selected_count={})", common_frame_count, selected_count);
 
             if selected_count <= min_marker_count {
                 // Can't remove more markers - return what we have
                 // even if no common frames.
-                mm_debug_eprintln!("  Reached minimum marker count, returning with {} common frames", common_frame_count);
+                mm_eprintln_debug!("  Reached minimum marker count, returning with {} common frames", common_frame_count);
                 return MarkerSelectionResult {
                     selected_markers,
                     common_frames,

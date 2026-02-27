@@ -266,16 +266,16 @@ impl GeneralBundleAdjustmentProblem {
             composed[3] / norm,
         ];
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "[BA_PROBLEM::extract] camera_idx={}, perturb=[{:.6},{:.6},{:.6}] -> full=[{:.6},{:.6},{:.6},{:.6}]",
             camera_idx, perturbation[0], perturbation[1], perturbation[2],
             perturb_full[0], perturb_full[1], perturb_full[2], perturb_full[3]
         );
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "[BA_PROBLEM::extract] camera_idx={}, initial=[{:.6},{:.6},{:.6},{:.6}]",
             camera_idx, initial_rot[0], initial_rot[1], initial_rot[2], initial_rot[3]
         );
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "[BA_PROBLEM::extract] camera_idx={}, composed=[{:.6},{:.6},{:.6},{:.6}], norm={:.6}",
             camera_idx, normalized[0], normalized[1], normalized[2], normalized[3], norm
         );

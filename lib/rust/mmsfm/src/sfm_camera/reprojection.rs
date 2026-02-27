@@ -53,7 +53,7 @@ pub fn calculate_reprojection_errors(
     previous_stats: Option<&ReprojectionErrorStats>,
 ) -> ReprojectionErrorStats {
     if solved_camera_poses.is_empty() || bundle_positions.is_empty() {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "[Reprojection Errors] {}: No data to evaluate",
             stage_name
         );
@@ -123,7 +123,7 @@ pub fn calculate_reprojection_errors(
     all_errors.retain(|&e| e.is_finite());
 
     if all_errors.is_empty() {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "[Reprojection Errors] {}: No valid observations (all NaN/Inf)",
             stage_name
         );
@@ -164,29 +164,29 @@ pub fn calculate_reprojection_errors(
             } else {
                 format!("degradation: +{:.3} px", change)
             };
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "[Reprojection Errors] {} ({}):",
                 stage_name,
                 change_str
             );
         } else {
-            mm_debug_eprintln!("[Reprojection Errors] {}:", stage_name);
+            mm_eprintln_debug!("[Reprojection Errors] {}:", stage_name);
         }
     }
 
     // Print summary statistics.
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Cameras: {}, Observations: {}",
         solved_camera_poses.len(),
         total_observations
     );
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Mean: {:.3} px, Median: {:.3} px, Std Dev: {:.3} px",
         mean,
         median,
         std_dev
     );
-    mm_debug_eprintln!("  Min: {:.3} px, Max: {:.3} px", min, max);
+    mm_eprintln_debug!("  Min: {:.3} px, Max: {:.3} px", min, max);
 
     ReprojectionErrorStats { mean, median }
 }

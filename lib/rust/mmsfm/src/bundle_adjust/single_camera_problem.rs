@@ -135,7 +135,7 @@ impl SingleCameraBAProblem {
             observations_ndc[point_idx] = (obs_x, obs_y);
         }
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "[SingleCameraBA] Created with {} points, {} observations",
             num_points,
             observations.len()

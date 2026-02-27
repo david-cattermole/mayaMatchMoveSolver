@@ -409,7 +409,7 @@ pub fn triangulate_missing_bundles_at_fixed_depth(
     let mean_depth =
         calculate_mean_depth_for_scene(bundle_positions, camera_poses);
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "    Fixed-depth triangulation: mean_depth={:.4}, {} existing bundles, {} camera poses",
         mean_depth,
         bundle_positions.len(),
@@ -535,7 +535,7 @@ pub fn fixed_depth_triangulation(
         return;
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Attempting fixed-depth placement for {} failed triangulations...",
         failed_count
     );
@@ -617,7 +617,7 @@ pub fn fixed_depth_triangulation(
         }
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Placed {} points at fixed depth ({} total bundles now)",
         fixed_depth_count,
         bundle_positions.len()

@@ -54,7 +54,7 @@ pub fn rotation_matrix_to_full_quaternion(rotation: &Matrix3<f64>) -> [f64; 4] {
     // Check orthogonality and re-orthogonalize if needed.
     const ORTHOGONALITY_TOLERANCE: f64 = 1e-6;
     let rotation_to_use = if !is_orthogonal(rotation, ORTHOGONALITY_TOLERANCE) {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "WARNING: rotation_matrix_to_full_quaternion: input matrix is not orthogonal, re-orthogonalizing"
         );
         ensure_orthogonal_rotation(rotation)
@@ -325,10 +325,10 @@ pub fn rotation_matrix_to_quaternion_vector(
     // orthogonality.
     const ORTHOGONALITY_TOLERANCE: f64 = 1e-6;
     let rotation_to_use = if !is_orthogonal(rotation, ORTHOGONALITY_TOLERANCE) {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "WARNING: rotation_matrix_to_quaternion_vector: input matrix is not orthogonal, re-orthogonalizing"
         );
-        mm_debug_eprintln!("  Input matrix:\n{}", rotation);
+        mm_eprintln_debug!("  Input matrix:\n{}", rotation);
         ensure_orthogonal_rotation(rotation)
     } else {
         *rotation

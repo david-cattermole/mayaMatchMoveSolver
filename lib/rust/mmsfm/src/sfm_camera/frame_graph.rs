@@ -625,7 +625,7 @@ impl FrameGraph {
 
         let component_set: BTreeSet<FrameId> =
             largest_component.iter().copied().collect();
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "    CDS: {} components, largest has {} vertices (of {} total)",
             components.len(),
             largest_component.len(),
@@ -733,7 +733,7 @@ impl FrameGraph {
         }
 
         let phase1_size = dominating_set.len();
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "    CDS Phase I: {} vertices in dominating set",
             phase1_size
         );
@@ -842,7 +842,7 @@ impl FrameGraph {
             }
         }
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "    CDS Phase II: {} vertices added as connectors ({} total)",
             dominating_set.len() - phase1_size,
             dominating_set.len()
@@ -851,7 +851,7 @@ impl FrameGraph {
         let mut result: Vec<FrameId> = dominating_set.into_iter().collect();
         result.sort_unstable();
 
-        mm_debug_eprintln!("    CDS Frames: {:?}", result);
+        mm_eprintln_debug!("    CDS Frames: {:?}", result);
 
         result
     }

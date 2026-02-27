@@ -104,7 +104,7 @@ pub fn reproject_3d_points_to_2d_uv_coordinates(
         ) {
             reprojected.push(uv_point_2d);
 
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "  Point {} reprojection: 3D({:.3}, {:.3}, {:.3}) -> UV({:.6}, {:.6})",
                 i, scene_point_3d.x, scene_point_3d.y, scene_point_3d.z,
                 uv_point_2d.x.value(), uv_point_2d.y.value()
@@ -116,7 +116,7 @@ pub fn reproject_3d_points_to_2d_uv_coordinates(
             reprojected.push(UvValue::point2(f64::NAN, f64::NAN));
             points_behind_camera += 1;
 
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "  Point {} behind camera (Maya: +Z is behind): 3D({:.3}, {:.3}, {:.3})",
                 i, scene_point_3d.x, scene_point_3d.y, scene_point_3d.z,
             );
@@ -124,7 +124,7 @@ pub fn reproject_3d_points_to_2d_uv_coordinates(
     }
 
     if points_behind_camera > 0 {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "  {} out of {} points are behind the camera",
             points_behind_camera,
             scene_points_3d.len()

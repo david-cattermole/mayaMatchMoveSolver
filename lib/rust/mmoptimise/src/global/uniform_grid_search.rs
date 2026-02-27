@@ -113,7 +113,7 @@
 //! For high-dimensional problems, use Differential Evolution instead.
 
 use anyhow::Result;
-use mmlogger::mm_progress_log;
+use mmlogger::mm_log_progress;
 use rayon::prelude::*;
 use thiserror::Error;
 
@@ -385,7 +385,7 @@ impl UniformGridSearch {
         let grid_points = generate_grid_points(&samples_per_dim);
         let total_points = grid_points.len();
 
-        mm_progress_log!(
+        mm_log_progress!(
             logger,
             "[Grid Search] Evaluating {} grid points across {} dimension(s)...",
             total_points,
@@ -412,7 +412,7 @@ impl UniformGridSearch {
         // Copy best solution to output buffer
         best_out.copy_from_slice(&grid_points[*best_idx]);
 
-        mm_progress_log!(
+        mm_log_progress!(
             logger,
             "[Grid Search] Best cost: {:.6}, params: {:?}, time: {:.2}s",
             best_cost,

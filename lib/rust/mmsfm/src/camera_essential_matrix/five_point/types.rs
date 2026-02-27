@@ -84,7 +84,7 @@ impl Polynomial {
 
     pub fn derivative(&self) -> Polynomial {
         if self.degree() == 0 {
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "DEBUG_POLY: Derivative of constant/zero polynomial: {:?}",
                 self.coefficients
             );
@@ -96,7 +96,7 @@ impl Polynomial {
             deriv_coeffs.push(self.coefficients[i] * i as f64);
         }
         let derivative = Polynomial::new(deriv_coeffs);
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "DEBUG_POLY: Original: {:?}, Derivative: {:?}",
             self.coefficients,
             derivative.coefficients

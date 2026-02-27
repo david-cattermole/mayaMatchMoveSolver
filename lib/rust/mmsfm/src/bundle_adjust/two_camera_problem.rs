@@ -157,7 +157,7 @@ impl TwoCameraBAProblem {
             num_points,
         };
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "[TwoCameraBA] Created with {} points, {} observations",
             num_points,
             observations.len()

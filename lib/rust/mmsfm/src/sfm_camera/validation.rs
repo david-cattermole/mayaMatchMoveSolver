@@ -179,7 +179,7 @@ pub fn validate_cheirality(
     let removed_count = to_remove.len();
     for idx in to_remove {
         bundle_positions.remove(&idx);
-        mm_debug_eprintln!("    Cheirality: removed bundle {}", idx);
+        mm_eprintln_debug!("    Cheirality: removed bundle {}", idx);
     }
 
     removed_count
@@ -240,7 +240,7 @@ pub fn validate_mad_outliers(
     const MAD_SCALE: f64 = 1.4826;
     let scaled_mad = MAD_SCALE * mad;
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "    MAD stats: median_depth={:.3}, normalized_MAD={:.3}, scaled_MAD={:.3}, threshold={:.1}",
         median_depth, mad, scaled_mad, mad_threshold
     );
@@ -257,7 +257,7 @@ pub fn validate_mad_outliers(
         let deviation = (normalized_depth - 1.0).abs();
         if deviation > cutoff {
             to_remove.push(idx);
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "    MAD: bundle {} has normalized_depth={:.3}, deviation={:.3} (> cutoff {:.3})",
                 idx, normalized_depth, deviation, cutoff
             );
@@ -310,7 +310,7 @@ pub fn detect_camera_position_collapse(
         );
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "[Validation] Camera spread check passed: max_spread={:.6} >= {:.6}",
         max_spread,
         MIN_BASELINE_THRESHOLD
@@ -371,7 +371,7 @@ pub fn validate_and_filter_bundles(
             marker_indices,
             camera_poses,
         );
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "  Cheirality: removed {} bundles ({} remaining)",
             result.removed_by_cheirality,
             bundle_positions.len()
@@ -385,7 +385,7 @@ pub fn validate_and_filter_bundles(
             camera_poses,
             config.mad_threshold,
         );
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "  MAD outliers: removed {} bundles ({} remaining)",
             result.removed_by_mad,
             bundle_positions.len()
@@ -403,7 +403,7 @@ pub fn validate_and_filter_bundles(
         );
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "[Bundle Validation] Complete: {} -> {} bundles ({} removed, {:.1}% retained)",
         initial_count,
         result.final_bundle_count,

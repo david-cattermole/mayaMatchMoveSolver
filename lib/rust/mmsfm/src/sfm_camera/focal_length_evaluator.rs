@@ -96,7 +96,7 @@ impl<L: Logger> Evaluator for CameraSolveFocalLengthEvaluator<L> {
         let eval_num = self.eval_counter.fetch_add(1, Ordering::SeqCst) + 1;
         let gen = self.current_generation.load(Ordering::SeqCst);
 
-        mm_debug_log!(
+        mm_log_debug!(
             self.logger,
             "[DE Eval {} Gen {}] [#{}] focal_length={:.8}mm - Running...",
             eval_num,
@@ -145,7 +145,7 @@ impl<L: Logger> Evaluator for CameraSolveFocalLengthEvaluator<L> {
                 let num_frames = self.frame_range.frame_count();
 
                 if num_bundles >= MINIMUM_ACCEPTED_BUNDLE_COUNT {
-                    mm_debug_log!(
+                    mm_log_debug!(
                         self.logger,
                         "[DE Eval {} Gen {}] [#{}] focal_length={:.8}mm ACCEPTED mean={:.6}px, median={:.6}px, bundles={}, frames_solved={}/{}, time={:.3}s",
                         eval_num, gen, thread_id, focal_length_mm,
@@ -159,7 +159,7 @@ impl<L: Logger> Evaluator for CameraSolveFocalLengthEvaluator<L> {
 
                     quality_metrics.mean_reprojection_error
                 } else {
-                    mm_debug_log!(
+                    mm_log_debug!(
                         self.logger,
                         "[DE Eval {} Gen {}] [#{}] focal_length={:.8}mm REJECTED mean={:.6}px, median={:.6}px, bundles={}, frames_solved={}/{}, time={:.3}s",
                         eval_num, gen, thread_id, focal_length_mm,
@@ -175,7 +175,7 @@ impl<L: Logger> Evaluator for CameraSolveFocalLengthEvaluator<L> {
             }
             Err(e) => {
                 let elapsed = start_time.elapsed();
-                mm_debug_log!(
+                mm_log_debug!(
                     self.logger,
                     "[DE Eval {} Gen {}] [#{}] focal_length={:.8}mm FAILED (time={:.3}s) error: {}",
                     eval_num, gen, thread_id, focal_length_mm, elapsed.as_secs_f64(), e

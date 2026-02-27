@@ -142,8 +142,8 @@ pub fn refine_camera_pose_with_fixed_bundles(
         f64::INFINITY
     };
 
-    mm_debug_eprintln!("  [Refinement] Final RMSE (NDC): {:.6}", mean_error);
-    mm_debug_eprintln!("  [Refinement] Iterations: {}", result.iterations);
+    mm_eprintln_debug!("  [Refinement] Final RMSE (NDC): {:.6}", mean_error);
+    mm_eprintln_debug!("  [Refinement] Iterations: {}", result.iterations);
 
     let refined_rotation_matrix =
         problem.extract_camera_rotation_matrix(&result.parameters);
@@ -217,7 +217,7 @@ fn solve_frame_with_pnp(
         }
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "    Frame {}: {} markers with bundles, {} visible, {} correspondences",
         frame,
         markers_with_bundles_count,
@@ -226,7 +226,7 @@ fn solve_frame_with_pnp(
     );
 
     if correspondences.len() < MIN_MARKERS_FOR_PNP {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "    Frame {}: FAILED - insufficient correspondences ({} < {})",
             frame,
             correspondences.len(),
@@ -237,7 +237,7 @@ fn solve_frame_with_pnp(
 
     match compute_camera_pose_with_method(&correspondences, camera_intrinsics) {
         Ok(Some(method_result)) => {
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "    Frame {}: PnP succeeded with {} correspondences, initial error: {:.6}",
                 frame, method_result.num_correspondences, method_result.reprojection_error
             );
@@ -257,7 +257,7 @@ fn solve_frame_with_pnp(
                     workspace,
                 ) {
                     Ok((refined_pose, rmse)) => {
-                        mm_debug_eprintln!(
+                        mm_eprintln_debug!(
                             "    Frame {}: pose refinement succeeded, RMSE: {:.6}",
                             frame, rmse
                         );
@@ -265,7 +265,7 @@ fn solve_frame_with_pnp(
                         rmse
                     }
                     Err(e) => {
-                        mm_debug_eprintln!(
+                        mm_eprintln_debug!(
                             "    Frame {}: WARNING - pose refinement failed: {:?}, using unrefined pose",
                             frame, e
                         );
@@ -276,7 +276,7 @@ fn solve_frame_with_pnp(
 
             const MAX_RMSE: f64 = f64::INFINITY;
             if rmse >= MAX_RMSE {
-                mm_debug_eprintln!(
+                mm_eprintln_debug!(
                     "    Frame {}: REJECTED - RMSE too high ({:.6} > {:.4} threshold)",
                     frame, rmse, MAX_RMSE
                 );
@@ -285,7 +285,7 @@ fn solve_frame_with_pnp(
 
             if DEBUG {
                 let camera_center = best_pose.center();
-                mm_debug_eprintln!(
+                mm_eprintln_debug!(
                     "    Frame {}: SUCCESS - SQPnP at ({:.3}, {:.3}, {:.3}) RMSE: {:.6}, using {}/{} correspondences",
                     frame,
                     camera_center.x,
@@ -304,14 +304,14 @@ fn solve_frame_with_pnp(
             Some(result)
         }
         Ok(None) => {
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "    Frame {}: FAILED - SQPnP returned no valid poses",
                 frame,
             );
             None
         }
         Err(e) => {
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "    Frame {}: FAILED - SQPnP error: {:?}",
                 frame,
                 e
@@ -370,7 +370,7 @@ pub fn collect_all_camera_pnp_results(
         );
 
         if marker_count_overlap < RECOMENDED_MARKERS_FOR_PNP {
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "    Frame {}: Skipped (overlap={} < min_required={})",
                 frame,
                 marker_count_overlap,
@@ -390,7 +390,7 @@ pub fn collect_all_camera_pnp_results(
             &mut workspace,
         ) {
             Some(result) => {
-                mm_debug_eprintln!(
+                mm_eprintln_debug!(
                     "    Frame {}: PnP succeeded (overlap={}, RMSE={:.6})",
                     frame,
                     marker_count_overlap,
@@ -399,12 +399,12 @@ pub fn collect_all_camera_pnp_results(
                 pnp_results.push(result);
             }
             None => {
-                mm_debug_eprintln!("    Frame {}: PnP failed", frame);
+                mm_eprintln_debug!("    Frame {}: PnP failed", frame);
             }
         }
     }
 
-    mm_debug_eprintln!("  PnP results: {}", pnp_results.len());
+    mm_eprintln_debug!("  PnP results: {}", pnp_results.len());
 
     pnp_results
 }

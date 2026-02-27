@@ -136,7 +136,7 @@ impl SinglePointBAProblem {
             observations_ndc[camera_idx] = (obs_x, obs_y);
         }
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "[SinglePointBA] Created with {} cameras, {} observations",
             num_cameras,
             observations.len()

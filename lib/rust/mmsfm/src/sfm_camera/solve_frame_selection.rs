@@ -53,7 +53,7 @@ pub fn build_frame_graph_for_initial_pair(
         return graph;
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "Building FrameGraph for {} common frames",
         common_frame_numbers.len()
     );
@@ -133,7 +133,7 @@ pub fn build_frame_graph_for_initial_pair(
         }
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  FrameGraph built with {} valid edges",
         graph.num_valid_edges()
     );
@@ -160,7 +160,7 @@ pub fn build_frame_graph_for_full_range(
         return graph;
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "Building FrameGraph for {} frames in full range",
         frame_numbers.len()
     );
@@ -205,7 +205,7 @@ pub fn build_frame_graph_for_full_range(
         }
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Index build: {:.3}s",
         index_build_start.elapsed().as_secs_f64()
     );
@@ -241,7 +241,7 @@ pub fn build_frame_graph_for_full_range(
         }
     }
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Uniformity + markers: {:.3}s",
         uniformity_start.elapsed().as_secs_f64()
     );
@@ -306,18 +306,18 @@ pub fn build_frame_graph_for_full_range(
     let pairs_skipped_distance =
         (num_frames * (num_frames - 1) / 2) - pairs_considered;
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Edge building: {:.3}s ({} pairs considered, {} skipped due to distance > {})",
         edge_build_start.elapsed().as_secs_f64(),
         pairs_considered,
         pairs_skipped_distance,
         max_frame_distance
     );
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  FrameGraph built with {} valid edges",
         graph.num_valid_edges()
     );
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Total time: {:.3}s",
         start_time.elapsed().as_secs_f64()
     );
@@ -331,7 +331,7 @@ pub fn build_frame_graph_skeleton_frames(
     initial_frame_pair: Option<(FrameNumber, FrameNumber)>,
     densify_iterations: u32,
 ) -> Option<BTreeSet<FrameNumber>> {
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Connected Dominating Set input: {} frames, {} valid edges in frame graph",
         frame_graph.num_frames(),
         frame_graph.num_valid_edges()
@@ -353,12 +353,12 @@ pub fn build_frame_graph_skeleton_frames(
     }
 
     let dominating_set = spanning_tree.compute_connected_dominating_set();
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Connected Dominating Set result: {} vertices in dominating set",
         dominating_set.len()
     );
     if dominating_set.is_empty() {
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "  Connected Dominating Set returned empty - Maximum Spanning Tree may be disconnected."
         );
         return None;
@@ -369,7 +369,7 @@ pub fn build_frame_graph_skeleton_frames(
         .iter()
         .filter_map(|&idx| all_frame_numbers.get(idx as usize).copied())
         .collect();
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Skeleton frames (CDS on MST before initial pair): {} frames: {}",
         frame_numbers.len(),
         format_frame_list(
@@ -381,13 +381,13 @@ pub fn build_frame_graph_skeleton_frames(
     if let Some((frame_a, frame_b)) = initial_frame_pair {
         frame_numbers.insert(frame_a);
         frame_numbers.insert(frame_b);
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "  Added initial frame pair ({}, {}) to skeleton frames.",
             frame_a,
             frame_b
         );
     }
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  Skeleton frames (CDS on MST): {} frames: {}",
         frame_numbers.len(),
         format_frame_list(
@@ -442,7 +442,7 @@ pub fn build_frame_graph_skeleton_frames(
                 frame_numbers.insert(f);
             }
 
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "  Skeleton densify iteration {}: added {} frames, total {} frames: {}",
                 iteration + 1,
                 added,
@@ -465,7 +465,7 @@ pub fn find_best_frame_pair(
     marker_indices: &[usize],
     frame_analysis_result: &FrameAnalysisResult,
 ) -> Result<(FrameNumber, FrameNumber)> {
-    mm_debug_eprintln!("\nUsing FrameGraph for initial pair selection...");
+    mm_eprintln_debug!("\nUsing FrameGraph for initial pair selection...");
 
     // Build frame graph from selected markers.
     let frame_graph = build_frame_graph_for_initial_pair(
@@ -485,7 +485,7 @@ pub fn find_best_frame_pair(
     let frame_a = frame_analysis_result.common_frame_numbers[frame_idx_a];
     let frame_b = frame_analysis_result.common_frame_numbers[frame_idx_b];
 
-    mm_debug_eprintln!(
+    mm_eprintln_debug!(
         "  FrameGraph selected pair: frames {} and {} (score: {:.4})",
         frame_a,
         frame_b,
@@ -546,7 +546,7 @@ fn generate_unsolved_frames_from_frame_graph(
                 .copied()
                 .collect();
 
-            mm_debug_eprintln!(
+            mm_eprintln_debug!(
                 "    [skeleton] total={}, unsolved={}",
                 skeleton.len(),
                 unsolved_skeleton_frames.len(),
@@ -560,7 +560,7 @@ fn generate_unsolved_frames_from_frame_graph(
                     max_candidates,
                     0.3,
                 );
-                mm_debug_eprintln!(
+                mm_eprintln_debug!(
                     "    [skeleton] candidates with min_connections={}: {} total",
                     min_connections,
                     candidates.len()
@@ -570,13 +570,13 @@ fn generate_unsolved_frames_from_frame_graph(
                     .map(|c| frame_numbers[c.frame_id as usize])
                     .filter(|f| unsolved_skeleton_frames.contains(f))
                     .collect();
-                mm_debug_eprintln!(
+                mm_eprintln_debug!(
                     "    [skeleton] after filter: {} frames = {}",
                     filtered.len(),
                     format_frame_list(&filtered)
                 );
                 if !filtered.is_empty() {
-                    mm_debug_eprintln!(
+                    mm_eprintln_debug!(
                         "    [skeleton] Returning skeleton frames"
                     );
                     return (filtered, true);
@@ -590,7 +590,7 @@ fn generate_unsolved_frames_from_frame_graph(
                         max_candidates,
                         0.3,
                     );
-                    mm_debug_eprintln!(
+                    mm_eprintln_debug!(
                         "    [skeleton] relaxed candidates with min_connections=1: {} total",
                         candidates.len()
                     );
@@ -599,20 +599,20 @@ fn generate_unsolved_frames_from_frame_graph(
                         .map(|c| frame_numbers[c.frame_id as usize])
                         .filter(|f| unsolved_skeleton_frames.contains(f))
                         .collect();
-                    mm_debug_eprintln!(
+                    mm_eprintln_debug!(
                         "    [skeleton] after relaxed filter: {} frames = {}",
                         filtered.len(),
                         format_frame_list(&filtered)
                     );
                     if !filtered.is_empty() {
-                        mm_debug_eprintln!(
+                        mm_eprintln_debug!(
                             "    [skeleton] Returning skeleton frames (relaxed)"
                         );
                         return (filtered, true);
                     }
                 }
 
-                mm_debug_eprintln!("    [skeleton] No skeleton frames found in frame graph, signalling skeleton exhausted");
+                mm_eprintln_debug!("    [skeleton] No skeleton frames found in frame graph, signalling skeleton exhausted");
                 // Skeleton was attempted but no candidates connected
                 // to solved frames - signal this so the caller can
                 // switch to the final pass.
@@ -620,7 +620,7 @@ fn generate_unsolved_frames_from_frame_graph(
             } else {
                 // All skeleton frames already solved - draft pass is
                 // complete, signal to switch to final.
-                mm_debug_eprintln!(
+                mm_eprintln_debug!(
                     "    [skeleton] All skeleton frames solved, signalling draft complete"
                 );
                 return (Vec::new(), true);
@@ -631,7 +631,7 @@ fn generate_unsolved_frames_from_frame_graph(
     let result: Vec<FrameNumber> = {
         // Fall back to all unsolved frames using max-diversity
         // traversal ordering.
-        mm_debug_eprintln!("    [all frames] Using max-diversity traversal");
+        mm_eprintln_debug!("    [all frames] Using max-diversity traversal");
 
         let traversal = frame_graph
             .compute_max_diversity_traversal(RECOMENDED_MARKERS_FOR_PNP);
@@ -645,7 +645,7 @@ fn generate_unsolved_frames_from_frame_graph(
             .take(max_candidates)
             .collect();
 
-        mm_debug_eprintln!(
+        mm_eprintln_debug!(
             "    [all frames] traversal: {} total, {} unsolved candidates = {}",
             traversal.len(),
             candidates.len(),

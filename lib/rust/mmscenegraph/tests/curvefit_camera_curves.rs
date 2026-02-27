@@ -54,12 +54,12 @@ use crate::common::save_chart_linear_regression;
 use crate::common::save_chart_n_points_regression;
 use crate::common::CHART_RESOLUTION;
 
+use mmcore::statistics::calc_normalized_root_mean_square_error;
 use mmscenegraph_rust::math::curve_fit::linear_regression;
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points;
 use mmscenegraph_rust::math::curve_fit::AngleRadian;
 use mmscenegraph_rust::math::curve_fit::Point2;
 use mmscenegraph_rust::math::interpolate::Interpolation;
-use mmcore::statistics::calc_normalized_root_mean_square_error;
 
 /// Generate predicted values from 2-point linear regression.
 fn generate_predicted_values_linear_regression(

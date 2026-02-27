@@ -64,8 +64,8 @@ pub enum SolverType {
     None,
     /// Differential Evolution with refinement.
     EvolutionRefine,
-    /// Differential Evolution with uniform sampling.
-    EvolutionUniform,
+    /// Differential Evolution with unknown inputs.
+    EvolutionUnknown,
     /// Uniform grid search.
     UniformGrid,
 }
@@ -79,14 +79,14 @@ impl std::str::FromStr for SolverType {
             "evolution_refine" | "evolution-refine" => {
                 Ok(SolverType::EvolutionRefine)
             }
-            "evolution_uniform" | "evolution-uniform" => {
-                Ok(SolverType::EvolutionUniform)
+            "evolution_unknown" | "evolution-unknown" => {
+                Ok(SolverType::EvolutionUnknown)
             }
             "uniform_grid" | "uniform-grid" => {
                 Ok(SolverType::UniformGrid)
             }
             _ => Err(format!(
-                "Invalid solver type '{}'. Valid options: none, evolution_refine, evolution_uniform, uniform_grid",
+                "Invalid solver type '{}'. Valid options: none, evolution_refine, evolution_unknown, uniform_grid",
                 s
             )),
         }
@@ -221,7 +221,7 @@ SOLVER SETTINGS:
     --solver <TYPE>           Solver type [default: none]
                               none              = no adjustment
                               evolution_refine  = DE with refinement
-                              evolution_uniform = DE with uniform sampling
+                              evolution_unknown = DE with uniform sampling
                               uniform_grid      = uniform grid search
     --threads <COUNT>         Thread count [default: auto]
 

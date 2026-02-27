@@ -482,8 +482,8 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
                 AdjustmentSolverType::EvolutionRefine => {
                     SolverType::EvolutionRefine
                 }
-                AdjustmentSolverType::EvolutionUniform => {
-                    SolverType::EvolutionUniform
+                AdjustmentSolverType::EvolutionUnknown => {
+                    SolverType::EvolutionUnknown
                 }
                 AdjustmentSolverType::UniformGrid => SolverType::UniformGrid,
             }
@@ -548,7 +548,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
                 enable_coarse_search,
             })
         }
-        SolverType::EvolutionUniform => {
+        SolverType::EvolutionUnknown => {
             let (min_fl, max_fl) = settings_fl_bounds.unwrap_or((
                 defaults::UNKNOWN_FL_MIN_MM,
                 defaults::UNKNOWN_FL_MAX_MM,

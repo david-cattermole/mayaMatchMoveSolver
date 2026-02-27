@@ -27,8 +27,8 @@ use crate::json_parser::parse_json_with_comments;
 pub enum AdjustmentSolverType {
     /// Differential Evolution with refinement.
     EvolutionRefine,
-    /// Differential Evolution with uniform sampling.
-    EvolutionUniform,
+    /// Differential Evolution with unknown inputs.
+    EvolutionUnknown,
     /// Uniform grid search.
     UniformGrid,
 }
@@ -140,7 +140,7 @@ pub fn parse_mmsettings_string(
             .unwrap_or("evolution_refine")
         {
             "evolution_refine" => AdjustmentSolverType::EvolutionRefine,
-            "evolution_uniform" => AdjustmentSolverType::EvolutionUniform,
+            "evolution_unknown" => AdjustmentSolverType::EvolutionUnknown,
             "uniform_grid" => AdjustmentSolverType::UniformGrid,
             other => {
                 return Err(format!(

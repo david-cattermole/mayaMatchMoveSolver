@@ -20,6 +20,7 @@
 
 //! Default values for CLI parameters and solver configuration.
 
+//////////////////////////////
 // --- Camera parameters ---
 
 /// Default focal length in millimeters (standard 35mm lens).
@@ -39,6 +40,7 @@ pub const DEFAULT_FILM_BACK_HEIGHT_MM: f64 = 24.0;
 
 pub const DEFAULT_OUTPUT_DIR: &str = "./output";
 
+///////////////////////////////////////
 // --- Focal length solver bounds ---
 
 /// Minimum focal length the solver can use.
@@ -65,6 +67,7 @@ pub const UNIFORM_GRID_FL_MIN_MM: f64 = 0.1;
 /// Maximum focal length for uniform grid search.
 pub const UNIFORM_GRID_FL_MAX_MM: f64 = 120.0;
 
+//////////////////////////////////////////////
 // --- Differential Evolution parameters ---
 
 pub const REFINE_DE_GENERATIONS: usize = 200;

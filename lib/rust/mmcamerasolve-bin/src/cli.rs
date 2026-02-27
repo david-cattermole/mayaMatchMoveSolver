@@ -53,7 +53,7 @@ const ARG_SOLVER: &str = "--solver";
 const ARG_THREADS: &str = "--threads";
 const ARG_OUTPUT_DIR: &str = "--output-dir";
 const ARG_PREFIX: &str = "--prefix";
-const ARG_INTERMEDIATE_OUTPUT: &str = "--with-intermediate-output";
+const ARG_INTERMEDIATE_OUTPUT: &str = "--intermediate-output";
 const ARG_NUKE_LENS: &str = "--nuke-lens";
 
 /// Solver type for focal length adjustment.
@@ -216,16 +216,16 @@ SOLVER SETTINGS:
     --threads <COUNT>         Thread count [default: auto]
 
 OUTPUT:
-    --output-dir <PATH>         Output directory for Kuper file [default: ./output]
-    --prefix <NAME>             Custom prefix for output files
-    --with-intermediate-output  Write intermediate results during solve
-    --console-level <LEVEL>     Set console (stdout) log verbosity [default: progress]
-                                warn     = warnings and errors only
-                                progress = progress + warnings
-                                info     = info + progress + warnings
-                                debug    = all messages (verbose)
-    --log-level <LEVEL>         Set file log verbosity [default: info]
-                                Same levels as --console-level
+    --output-dir <PATH>       Output directory for Kuper file [default: ./output]
+    --prefix <NAME>           Custom prefix for output files
+    --intermediate-output     Write intermediate results during solve
+    --console-level <LEVEL>   Set console (stdout) log verbosity [default: progress]
+                              warn     = warnings and errors only
+                              progress = progress + warnings
+                              info     = info + progress + warnings
+                              debug    = all messages (verbose)
+    --log-level <LEVEL>       Set file log verbosity [default: info]
+                              Same levels as --console-level
 
 HELP:
     -h, --help                Show this help message

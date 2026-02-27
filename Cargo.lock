@@ -889,9 +889,12 @@ dependencies = [
 name = "mmcore_rust"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "approx",
  "log",
  "num-traits",
  "shellexpand",
+ "thiserror 2.0.3",
 ]
 
 [[package]]

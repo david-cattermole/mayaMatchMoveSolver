@@ -22,7 +22,7 @@ use anyhow::Result;
 
 use mmscenegraph_rust::constant::FrameTime;
 use mmscenegraph_rust::constant::Real;
-use mmscenegraph_rust::math::statistics::calc_normalized_root_mean_square_error;
+use mmcore::statistics::calc_normalized_root_mean_square_error;
 
 #[allow(dead_code)]
 pub fn print_actual_pops(

@@ -21,4 +21,5 @@
 pub mod dual;
 pub mod pathutils;
 pub mod rand_prng_pcg;
+pub mod statistics;
 pub mod threadutils;

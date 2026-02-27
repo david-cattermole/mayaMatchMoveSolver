@@ -26,11 +26,11 @@ use crate::constant::Real;
 use crate::curve::derivatives::allocate_derivatives_order_2;
 use crate::curve::derivatives::calculate_derivatives_order_2;
 use crate::curve::smooth::gaussian::gaussian_smooth_2d;
-use crate::math::statistics::calc_median_absolute_deviation_sigma;
-use crate::math::statistics::calc_population_standard_deviation;
-use crate::math::statistics::calc_z_score;
-use crate::math::statistics::SortedDataSlice;
-use crate::math::statistics::SortedDataSliceOps;
+use mmcore::statistics::calc_median_absolute_deviation_sigma;
+use mmcore::statistics::calc_population_standard_deviation;
+use mmcore::statistics::calc_z_score;
+use mmcore::statistics::SortedDataSlice;
+use mmcore::statistics::SortedDataSliceOps;
 
 fn calculate_per_frame_pop_score(
     times: &[Real],

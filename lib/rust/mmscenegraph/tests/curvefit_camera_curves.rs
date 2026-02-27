@@ -59,7 +59,7 @@ use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points;
 use mmscenegraph_rust::math::curve_fit::AngleRadian;
 use mmscenegraph_rust::math::curve_fit::Point2;
 use mmscenegraph_rust::math::interpolate::Interpolation;
-use mmscenegraph_rust::math::statistics::calc_normalized_root_mean_square_error;
+use mmcore::statistics::calc_normalized_root_mean_square_error;
 
 /// Generate predicted values from 2-point linear regression.
 fn generate_predicted_values_linear_regression(

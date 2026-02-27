@@ -30,7 +30,7 @@ use crate::constant::Real;
 use crate::math::interpolate::remap_f64;
 use crate::math::interpolate::Interpolation;
 use crate::math::line::curve_fit_linear_regression_type1;
-use crate::math::statistics::calc_normalized_root_mean_square_error;
+use mmcore::statistics::calc_normalized_root_mean_square_error;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point2 {

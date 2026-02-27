@@ -27,5 +27,5 @@ pub mod line;
 pub mod line_intersect;
 pub mod reprojection;
 pub mod rotate;
-pub mod statistics;
+pub use mmcore::statistics;
 pub mod transform;

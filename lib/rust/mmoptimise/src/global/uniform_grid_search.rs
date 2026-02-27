@@ -339,14 +339,6 @@ impl UniformGridSearch {
     /// # Panics
     ///
     /// Panics if `best_out.len()` != `num_dimensions`.
-    ///
-    /// # Examples
-    ///
-    /// ```ignore
-    /// let mut best_params = vec![0.0; config.num_dimensions];
-    /// let best_cost = solver.run(&evaluator, &mut best_params, &mmlogger::NoOpLogger)?;
-    /// println!("Best: {:?} (cost: {})", best_params, best_cost);
-    /// ```
     pub fn run<E: Evaluator + Sync, L: mmlogger::Logger>(
         &self,
         evaluator: &E,

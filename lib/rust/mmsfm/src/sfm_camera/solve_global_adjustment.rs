@@ -443,7 +443,9 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                     if PRINT_SOLVER_DETAILS {
                         mm_log_progress!(
                             logger,
-                            "  === DE Stage 2: Refined Search ==="
+                            "  === DE Stage 2: Refined Search  ===  Focal length bounds: {:.2} - {:.2} mm",
+                            refined_min,
+                            refined_max,
                         );
                         mm_log_info!(
                             logger,
@@ -465,16 +467,20 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                             "    Weighted std deviation: {:.2} mm",
                             weighted_std_dev
                         );
-                        mm_log_info!(logger, "    Original bounds: {:.2} - {:.2} mm (range: {:.2} mm)",
-                                focal_length_bounds.0,
-                                focal_length_bounds.1,
-                                focal_length_bounds.1 - focal_length_bounds.0
-                            );
-                        mm_log_info!(logger, "    Refined bounds:  {:.2} - {:.2} mm (range: {:.2} mm)",
-                                refined_min,
-                                refined_max,
-                                refined_max - refined_min
-                            );
+                        mm_log_info!(
+                            logger,
+                            "    Original bounds: {:.2} - {:.2} mm (range: {:.2} mm)",
+                            focal_length_bounds.0,
+                            focal_length_bounds.1,
+                            focal_length_bounds.1 - focal_length_bounds.0
+                        );
+                        mm_log_info!(
+                            logger,
+                            "    Refined bounds:  {:.2} - {:.2} mm (range: {:.2} mm)",
+                            refined_min,
+                            refined_max,
+                            refined_max - refined_min
+                        );
                         let range_change_pct = ((refined_max - refined_min)
                             / (focal_length_bounds.1 - focal_length_bounds.0)
                             - 1.0)

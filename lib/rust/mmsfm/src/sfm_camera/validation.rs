@@ -125,8 +125,8 @@ fn compute_median(values: &mut [f64]) -> f64 {
     if values.is_empty() {
         return 0.0;
     }
-    let unsorted = UnsortedDataSlice::new(values, None)
-        .expect("Non-empty data");
+    let unsorted =
+        UnsortedDataSlice::new(values, None).expect("Non-empty data");
     let mut sort_workspace = vec![0.0; values.len()];
     let sorted = unsorted
         .into_sorted(&mut sort_workspace)

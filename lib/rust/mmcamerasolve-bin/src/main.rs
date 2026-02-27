@@ -911,9 +911,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
         total_time_mins
     );
 
-    mm_info_log!(logger, "Total time: {:.2}s", total_time_secs);
-
-    mm_progress_log!(logger, "Done!");
+    mm_progress_log!(logger, "Done! Total time: {:.2}s", total_time_secs);
 
     Ok(())
 }

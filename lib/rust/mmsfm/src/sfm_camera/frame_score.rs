@@ -20,6 +20,9 @@
 
 use anyhow::Result;
 
+use mmcore::statistics::{
+    calc_population_variance, UnsortedDataSlice, UnsortedDataSliceOps,
+};
 use mmio::uvtrack_reader::{FrameData, FrameNumber, FrameRange, MarkersData};
 
 use crate::sfm_camera::constants::UNIFORMITY_GRID_SIZE_MAX;
@@ -907,17 +910,11 @@ pub fn compute_parallax_residual(
         .collect();
 
     // Compute mean and variance of the residuals.
-    let count = residuals.len() as f32;
-    let mean = residuals.iter().sum::<f32>() / count;
-
-    let variance = residuals
-        .iter()
-        .map(|&r| {
-            let diff = r - mean;
-            diff * diff
-        })
-        .sum::<f32>()
-        / count;
+    let data_slice =
+        UnsortedDataSlice::new(&residuals, None).expect("residuals should be valid");
+    let mean = data_slice.mean();
+    let variance = calc_population_variance(&data_slice)
+        .expect("population variance should be computable");
 
     // Use both mean and variance for the score. Higher variance indicates
     // more "structure" in the residual (parallax), rather than just

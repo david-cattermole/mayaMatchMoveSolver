@@ -898,7 +898,7 @@ impl DifferentialEvolution {
 
             // Calculate cost change metrics.
             let cost_change = best_cost - prev_best_cost;
-            let cost_change_pct = if prev_best_cost.abs() > 1e-15 {
+            let cost_change_percentage = if prev_best_cost.abs() > 1e-15 {
                 100.0 * cost_change / prev_best_cost.abs()
             } else {
                 0.0
@@ -920,12 +920,11 @@ impl DifferentialEvolution {
             if PRINT_SOLVER_DETAILS {
                 mm_log_progress!(
                     logger,
-                    "[DE] Gen {}/{}: cost={:.9} (Δ={:+.9}, {:+.6}%), diversity={:.9}, params={}, time={:.2}s",
+                    "[DE] Gen {}/{}: cost={:.9} ({:+.6}%), diversity={:.9}, params={}, time={:.2}s",
                     gen + 1,
                     cfg.generations,
                     best_cost,
-                    cost_change,
-                    cost_change_pct,
+                    cost_change_percentage,
                     current_diversity,
                     params_str,
                     gen_elapsed.as_secs_f64()

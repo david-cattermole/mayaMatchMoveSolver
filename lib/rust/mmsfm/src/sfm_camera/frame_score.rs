@@ -910,8 +910,8 @@ pub fn compute_parallax_residual(
         .collect();
 
     // Compute mean and variance of the residuals.
-    let data_slice =
-        UnsortedDataSlice::new(&residuals, None).expect("residuals should be valid");
+    let data_slice = UnsortedDataSlice::new(&residuals, None)
+        .expect("residuals should be valid");
     let mean = data_slice.mean();
     let variance = calc_population_variance(&data_slice)
         .expect("population variance should be computable");

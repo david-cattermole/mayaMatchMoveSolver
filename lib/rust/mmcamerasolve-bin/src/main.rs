@@ -479,9 +479,13 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     } else if let Some(ref s) = settings {
         if let Some(ref adj) = s.adjustment_solver {
             match adj.solver_type {
-                AdjustmentSolverType::EvolutionRefine => SolverType::Refine,
-                AdjustmentSolverType::EvolutionUniform => SolverType::Unknown,
-                AdjustmentSolverType::UniformGrid => SolverType::Refine,
+                AdjustmentSolverType::EvolutionRefine => {
+                    SolverType::EvolutionRefine
+                }
+                AdjustmentSolverType::EvolutionUniform => {
+                    SolverType::EvolutionUniform
+                }
+                AdjustmentSolverType::UniformGrid => SolverType::UniformGrid,
             }
         } else {
             SolverType::None
@@ -489,13 +493,6 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     } else {
         SolverType::None
     };
-
-    // Check if settings request uniform grid search.
-    let use_uniform_grid = settings
-        .as_ref()
-        .and_then(|s| s.adjustment_solver.as_ref())
-        .map(|adj| adj.solver_type == AdjustmentSolverType::UniformGrid)
-        .unwrap_or(false);
 
     // Get generation count from settings file.
     let settings_generations: Option<usize> = settings
@@ -506,56 +503,52 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     // Configure global adjustment based on solver type.
     let global_adjustment_config = match solver_type {
         SolverType::None => None,
-        SolverType::Refine => {
-            if use_uniform_grid {
-                let (min_fl, max_fl) = settings_fl_bounds.unwrap_or((
-                    defaults::UNIFORM_GRID_FL_MIN_MM,
-                    defaults::UNIFORM_GRID_FL_MAX_MM,
-                ));
-                let num_samples = settings_fl_sample_count
-                    .unwrap_or(defaults::UNIFORM_GRID_DEFAULT_SAMPLES as u32)
-                    as usize;
+        SolverType::UniformGrid => {
+            let (min_fl, max_fl) = settings_fl_bounds.unwrap_or((
+                defaults::UNIFORM_GRID_FL_MIN_MM,
+                defaults::UNIFORM_GRID_FL_MAX_MM,
+            ));
+            let num_samples = settings_fl_sample_count
+                .unwrap_or(defaults::UNIFORM_GRID_DEFAULT_SAMPLES as u32)
+                as usize;
 
-                mm_log_info!(
-                    logger,
-                    "Solver: uniform grid ({:.1}-{:.1} mm, {} samples)",
-                    min_fl,
-                    max_fl,
-                    num_samples
-                );
-                Some(GlobalAdjustmentConfig::UniformGridSearch {
-                    focal_length_bounds: (min_fl, max_fl),
-                    num_samples,
-                })
-            } else {
-                let (min_fl, max_fl) = settings_fl_bounds.unwrap_or((
-                    (args.focal_length_mm
-                        * defaults::REFINE_BOUNDS_LOWER_FACTOR)
-                        .max(defaults::MIN_FOCAL_LENGTH_MM),
-                    (args.focal_length_mm
-                        * defaults::REFINE_BOUNDS_UPPER_FACTOR)
-                        .min(defaults::MAX_FOCAL_LENGTH_MM),
-                ));
-                let generations = settings_generations
-                    .unwrap_or(defaults::REFINE_DE_GENERATIONS);
-
-                mm_log_info!(
-                    logger,
-                    "Solver: refine mode (DE SmallRefinement, {:.1}-{:.1} mm)",
-                    min_fl,
-                    max_fl
-                );
-                Some(GlobalAdjustmentConfig::DifferentialEvolution {
-                    mode:
-                        mmsfm::sfm_camera::GlobalAdjustmentMode::SmallRefinement,
-                    focal_length_bounds: (min_fl, max_fl),
-                    generations,
-                    seed: defaults::REFINE_DE_SEED,
-                    enable_coarse_search,
-                })
-            }
+            mm_log_info!(
+                logger,
+                "Solver: uniform grid ({:.1}-{:.1} mm, {} samples)",
+                min_fl,
+                max_fl,
+                num_samples
+            );
+            Some(GlobalAdjustmentConfig::UniformGridSearch {
+                focal_length_bounds: (min_fl, max_fl),
+                num_samples,
+            })
         }
-        SolverType::Unknown => {
+        SolverType::EvolutionRefine => {
+            let (min_fl, max_fl) = settings_fl_bounds.unwrap_or((
+                (args.focal_length_mm * defaults::REFINE_BOUNDS_LOWER_FACTOR)
+                    .max(defaults::MIN_FOCAL_LENGTH_MM),
+                (args.focal_length_mm * defaults::REFINE_BOUNDS_UPPER_FACTOR)
+                    .min(defaults::MAX_FOCAL_LENGTH_MM),
+            ));
+            let generations =
+                settings_generations.unwrap_or(defaults::REFINE_DE_GENERATIONS);
+
+            mm_log_info!(
+                logger,
+                "Solver: refine mode (DE SmallRefinement, {:.1}-{:.1} mm)",
+                min_fl,
+                max_fl
+            );
+            Some(GlobalAdjustmentConfig::DifferentialEvolution {
+                mode: mmsfm::sfm_camera::GlobalAdjustmentMode::SmallRefinement,
+                focal_length_bounds: (min_fl, max_fl),
+                generations,
+                seed: defaults::REFINE_DE_SEED,
+                enable_coarse_search,
+            })
+        }
+        SolverType::EvolutionUniform => {
             let (min_fl, max_fl) = settings_fl_bounds.unwrap_or((
                 defaults::UNKNOWN_FL_MIN_MM,
                 defaults::UNKNOWN_FL_MAX_MM,

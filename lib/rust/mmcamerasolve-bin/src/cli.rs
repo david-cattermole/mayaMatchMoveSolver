@@ -62,10 +62,12 @@ pub enum SolverType {
     /// Use provided focal length as-is.
     #[default]
     None,
-    /// Small refinement around the provided focal length (±20%).
-    Refine,
-    /// Large search range for an unknown focal length (10-200mm).
-    Unknown,
+    /// Differential Evolution with refinement.
+    EvolutionRefine,
+    /// Differential Evolution with uniform sampling.
+    EvolutionUniform,
+    /// Uniform grid search.
+    UniformGrid,
 }
 
 impl std::str::FromStr for SolverType {
@@ -74,10 +76,17 @@ impl std::str::FromStr for SolverType {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
             "none" => Ok(SolverType::None),
-            "refine" => Ok(SolverType::Refine),
-            "unknown" => Ok(SolverType::Unknown),
+            "evolution_refine" | "evolution-refine" => {
+                Ok(SolverType::EvolutionRefine)
+            }
+            "evolution_uniform" | "evolution-uniform" => {
+                Ok(SolverType::EvolutionUniform)
+            }
+            "uniform_grid" | "uniform-grid" => {
+                Ok(SolverType::UniformGrid)
+            }
             _ => Err(format!(
-                "Invalid solver type '{}'. Valid options: none, refine, unknown",
+                "Invalid solver type '{}'. Valid options: none, evolution_refine, evolution_uniform, uniform_grid",
                 s
             )),
         }
@@ -210,9 +219,10 @@ FRAME RANGE:
 
 SOLVER SETTINGS:
     --solver <TYPE>           Solver type [default: none]
-                              none    = use provided focal length
-                              refine  = small adjustment (+/-10%)
-                              unknown = large search (10-200mm)
+                              none              = no adjustment
+                              evolution_refine  = DE with refinement
+                              evolution_uniform = DE with uniform sampling
+                              uniform_grid      = uniform grid search
     --threads <COUNT>         Thread count [default: auto]
 
 OUTPUT:

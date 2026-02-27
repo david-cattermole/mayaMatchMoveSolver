@@ -213,7 +213,7 @@ if [ -f "${UV_FILE}" ] && [ -f "${SETTINGS_FILE2}" ]; then
         --image-width 3600 \
         --image-height 2400 \
         --prefix stA \
-        --solver refine \
+        --solver evolution_refine \
         --solver-settings "${SETTINGS_FILE2}" \
         --output-dir "${OUTPUT_BASE}" \
         --log-level info
@@ -235,7 +235,7 @@ if [ -f "${UV_FILE}" ]; then
         --film-back-height 20.25 \
         --image-width 3600 \
         --image-height 2025 \
-        --solver refine \
+        --solver evolution_refine \
         --prefix blasterwalk \
         --output-dir "${OUTPUT_BASE}" \
         --log-level info
@@ -257,7 +257,7 @@ if [ -f "${UV_FILE}" ]; then
         --film-back-height 20.25 \
         --image-width 1920 \
         --image-height 1080 \
-        --solver refine \
+        --solver evolution_refine \
         --prefix hcw_painting \
         --output-dir "${OUTPUT_BASE}" \
         --log-level info
@@ -279,7 +279,7 @@ if [ -f "${UV_FILE}" ]; then
         --film-back-height 27 \
         --image-width 3072 \
         --image-height 2304 \
-        --solver refine \
+        --solver evolution_refine \
         --prefix operahouse \
         --output-dir "${OUTPUT_BASE}" \
         --log-level info
@@ -325,7 +325,7 @@ if [ -f "${UV_FILE}" ]; then
         --film-back-height 24 \
         --image-width 3600 \
         --image-height 2400 \
-        --solver refine \
+        --solver evolution_refine \
         --prefix quiet_test \
         --output-dir "${OUTPUT_BASE}"
     echo "Quiet mode completed (no output expected above)"
@@ -349,7 +349,7 @@ if [ -f "${UV_FILE}" ]; then
         --image-height 2400 \
         --start-frame 1 \
         --end-frame 10 \
-        --solver refine \
+        --solver evolution_refine \
         --prefix frame_range \
         --output-dir "${OUTPUT_BASE}" \
         --log-level info

@@ -29,7 +29,8 @@ use std::sync::{Arc, Mutex};
 use mmio::uvtrack_reader::{FrameRange, MarkersData};
 use mmoptimise::global::{
     CachingEvaluator, DifferentialEvolution, DifferentialEvolutionConfig,
-    Evaluator, UniformGridSearch, UniformGridSearchConfig,
+    DifferentialEvolutionStrategy, Evaluator, UniformGridSearch,
+    UniformGridSearchConfig,
 };
 
 use super::config::GlobalAdjustmentConfig;
@@ -294,6 +295,11 @@ pub(super) fn run_camera_solve_with_global_adjustment<
                 // stopping.
                 let mut coarse_de_config = de_config;
                 coarse_de_config.diversity_tolerance = Some(1e-2);
+
+                // Because coarse search should have global
+                // exploration of the problem space.
+                coarse_de_config.strategy =
+                    DifferentialEvolutionStrategy::Rand1Bin;
 
                 // Run DE optimization.
                 if PRINT_SOLVER_DETAILS {

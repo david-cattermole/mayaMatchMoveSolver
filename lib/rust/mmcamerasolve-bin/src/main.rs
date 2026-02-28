@@ -977,6 +977,33 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
 }
 
 #[cfg(feature = "visualization")]
+/// Build a map from frame number to list of (marker_index, uv_position).
+fn build_frame_marker_data(
+    markers: &MarkersData,
+) -> std::collections::HashMap<u32, Vec<(MarkerIndex, UvPoint2<f64>)>> {
+    let mut frame_marker_data: std::collections::HashMap<
+        u32,
+        Vec<(MarkerIndex, UvPoint2<f64>)>,
+    > = std::collections::HashMap::new();
+
+    for (marker_index, frame_data) in markers.frame_data.iter().enumerate() {
+        for i in 0..frame_data.frames.len() {
+            let frame = frame_data.frames[i];
+            let uv_point = UvPoint2::new(
+                UvValue::new(frame_data.u_coords[i]),
+                UvValue::new(frame_data.v_coords[i]),
+            );
+            frame_marker_data
+                .entry(frame)
+                .or_insert_with(Vec::new)
+                .push((marker_index, uv_point));
+        }
+    }
+
+    frame_marker_data
+}
+
+#[cfg(feature = "visualization")]
 fn generate_visualizations<L: Logger + Sync>(
     logger: &L,
     output_dir: &str,
@@ -1132,33 +1159,6 @@ fn generate_visualizations<L: Logger + Sync>(
     )?;
 
     Ok(())
-}
-
-#[cfg(feature = "visualization")]
-/// Build a map from frame number to list of (marker_index, uv_position).
-fn build_frame_marker_data(
-    markers: &MarkersData,
-) -> std::collections::HashMap<u32, Vec<(MarkerIndex, UvPoint2<f64>)>> {
-    let mut frame_marker_data: std::collections::HashMap<
-        u32,
-        Vec<(MarkerIndex, UvPoint2<f64>)>,
-    > = std::collections::HashMap::new();
-
-    for (marker_index, frame_data) in markers.frame_data.iter().enumerate() {
-        for i in 0..frame_data.frames.len() {
-            let frame = frame_data.frames[i];
-            let uv_point = UvPoint2::new(
-                UvValue::new(frame_data.u_coords[i]),
-                UvValue::new(frame_data.v_coords[i]),
-            );
-            frame_marker_data
-                .entry(frame)
-                .or_insert_with(Vec::new)
-                .push((marker_index, uv_point));
-        }
-    }
-
-    frame_marker_data
 }
 
 fn write_kuper_output(

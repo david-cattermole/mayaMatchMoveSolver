@@ -303,178 +303,106 @@ impl IntermediateResultWriter for FileIntermediateResultWriter {
     }
 }
 
-fn run_camera_solve<L: Logger + Clone + Send + Sync>(
-    args: &CliArgs,
+fn determine_settings<L: Logger + Clone + Send + Sync>(
     logger: &L,
-) -> Result<()> {
-    let total_start = Instant::now();
-
-    // Load solver settings file if provided.
-    let settings: Option<MmSettingsData> = if let Some(ref settings_path) =
-        args.solver_settings_file
-    {
+    args: &CliArgs,
+) -> Option<MmSettingsData> {
+    if let Some(ref settings_path) = args.solver_settings_file {
         mm_log_info!(logger, "Loading solver settings from: {}", settings_path);
         let s = parse_mmsettings_file(settings_path)
             .map_err(|e| anyhow::anyhow!("{}", e))?;
         Some(s)
     } else {
         None
-    };
+    }
+}
 
-    // Load Nuke lens distortion file if provided.
-    let nuke_lens_data: Option<Arc<NukeLensData>> =
-        if let Some(ref lens_path) = args.nuke_lens_file {
-            mm_log_info!(logger, "Loading Nuke lens file from: {}", lens_path);
-            let data = read_nuke_lens_file(lens_path)
-                .map_err(|e| anyhow::anyhow!("{}", e))?;
+fn determine_nuke_lens_data<L: Logger + Clone + Send + Sync>(
+    logger: &L,
+    args: &CliArgs,
+) -> Option<Arc<NukeLensData>> {
+    if let Some(ref lens_path) = args.nuke_lens_file {
+        mm_log_info!(logger, "Loading Nuke lens file from: {}", lens_path);
+        let data = read_nuke_lens_file(lens_path)
+            .map_err(|e| anyhow::anyhow!("{}", e))?;
 
-            mm_log_info!(logger, "  Loaded {} lens layer(s)", data.layer_count);
-            Some(Arc::new(data))
-        } else {
-            None
-        };
+        mm_log_info!(logger, "  Loaded {} lens layer(s)", data.layer_count);
+        Some(Arc::new(data))
+    } else {
+        None
+    }
+}
 
-    // Thread count: CLI flag > settings file > auto.
-    let thread_count = args.threads.or_else(|| {
+fn determine_thread_count(
+    args: &CliArgs,
+    settings: &Option<MmSettingsData>,
+) -> Option<usize> {
+    args.threads.or_else(|| {
         settings
             .as_ref()
             .and_then(|s| s.adjustment_solver.as_ref())
             .and_then(|adj| adj.thread_count)
-    });
-    setup_thread_pool(thread_count)?;
+    })
+}
 
-    if let Some(ref mmcamera_path) = args.mmcamera_file {
-        mm_log_info!(logger, "Using mmcamera defaults from: {}", mmcamera_path);
-    }
-    mm_log_info!(logger, "Loading UV markers from: {}", args.uv_file);
-
-    let (file_info, mut markers) = parse_file(&args.uv_file)
-        .with_context(|| format!("Failed to load UV file: {}", args.uv_file))?;
-
-    mm_log_info!(logger, "Loaded {} markers:", markers.len());
-    mm_log_info!(logger, "  Format version: {:?}", file_info.version);
-    mm_log_info!(
-        logger,
-        "  Frame range: {} - {}",
-        markers.frame_range.start_frame,
-        markers.frame_range.end_frame
-    );
-
-    // Determine frame range: CLI > settings file > UV file.
+fn determine_frame_range(
+    args: &CliArgs,
+    settings: &Option<MmSettingsData>,
+    markers: &MarkersData,
+) -> FrameRange {
     let settings_start = settings.as_ref().and_then(|s| s.start_frame);
     let settings_end = settings.as_ref().and_then(|s| s.end_frame);
-    let frame_range = FrameRange {
-        start_frame: args
-            .start_frame
-            .or(settings_start)
-            .unwrap_or(markers.frame_range.start_frame),
-        end_frame: args
-            .end_frame
-            .or(settings_end)
-            .unwrap_or(markers.frame_range.end_frame),
-    };
 
-    mm_log_info!(
-        logger,
-        "  Using frame range: {} - {}",
-        frame_range.start_frame,
-        frame_range.end_frame
-    );
+    let start_frame = args
+        .start_frame
+        .or(settings_start)
+        .unwrap_or(markers.frame_range.start_frame);
+    let end_frame = args
+        .end_frame
+        .or(settings_end)
+        .unwrap_or(markers.frame_range.end_frame);
 
-    // Check for distorted/undistorted marker data.
-    let has_explicit_distorted =
-        markers.frame_data.iter().any(|fd| fd.has_distorted());
-
-    if nuke_lens_data.is_some() {
-        // Lens file provided - apply undistortion in-place.
-        // For v3+ files with explicit distorted data, the source is u_coords_dist/v_coords_dist.
-        // For v1/v2 files (or v3+ without distorted data), the source is u_coords/v_coords.
-        mm_log_info!(
-            logger,
-            "  Applying lens undistortion to marker positions..."
-        );
-
-        undistort_markers_with_lens(
-            &mut markers,
-            nuke_lens_data.as_ref().unwrap(),
-            has_explicit_distorted,
-        )?;
-        mm_log_info!(logger, "  Undistortion applied successfully.");
-    } else if has_explicit_distorted {
-        if file_info.marker_undistorted {
-            // File has both distorted and undistorted data; use the stored undistorted positions.
-            mm_log_info!(logger, "  UV file contains both distorted and undistorted data; using stored undistorted positions.");
-        } else {
-            mm_log_warn!(logger, "  UV file contains only distorted marker positions but no lens file was provided. Solving will use distorted positions which may reduce accuracy.");
-        }
+    FrameRange {
+        start_frame,
+        end_frame,
     }
+}
 
-    let film_back = CameraFilmBack::from_millimeters(
-        args.film_back_width_mm,
-        args.film_back_height_mm,
-    );
+fn determine_focal_length_bounds(
+    settings: &Options<MmSettingsData>,
+) -> Option<(f64, f64)> {
+    settings.as_ref().and_then(|s| {
+        s.adjustment_attributes
+            .iter()
+            .find(|a| a.name == "camera.focal_length_mm")
+            .map(|a| (a.value_min, a.value_max))
+    })
+}
 
-    let camera_intrinsics = CameraIntrinsics::from_physical_parameters(
-        MillimeterUnit::new(args.focal_length_mm),
-        MillimeterUnit::new(args.lens_center_x_mm),
-        MillimeterUnit::new(args.lens_center_y_mm),
-        film_back,
-    );
+fn determine_focal_length_sample_count(
+    settings: &Options<MmSettingsData>,
+) -> Option<(u32)> {
+    settings.as_ref().and_then(|s| {
+        s.adjustment_attributes
+            .iter()
+            .find(|a| a.name == "camera.focal_length_mm")
+            .and_then(|a| a.sample_count)
+    })
+}
 
-    let image_size = ImageSize::from_pixels(
-        args.image_width as f64,
-        args.image_height as f64,
-    );
-
-    mm_log_info!(logger, "Camera parameters:");
-    mm_log_info!(logger, "  Focal length: {} mm", args.focal_length_mm);
-    mm_log_info!(
-        logger,
-        "  Lens center: ({}, {}) mm",
-        args.lens_center_x_mm,
-        args.lens_center_y_mm
-    );
-    mm_log_info!(
-        logger,
-        "  Image size: {}x{} pixels",
-        args.image_width,
-        args.image_height
-    );
-    mm_log_info!(
-        logger,
-        "  Film back: {}x{} mm",
-        args.film_back_width_mm,
-        args.film_back_height_mm
-    );
-
-    let mut config = CameraSolveConfig::default();
-    if let Some(ref s) = settings {
-        config.origin_frame = s.origin_frame;
-    }
-
-    let settings_fl_bounds: Option<(f64, f64)> =
-        settings.as_ref().and_then(|s| {
-            s.adjustment_attributes
-                .iter()
-                .find(|a| a.name == "camera.focal_length_mm")
-                .map(|a| (a.value_min, a.value_max))
-        });
-    let settings_fl_sample_count: Option<u32> =
-        settings.as_ref().and_then(|s| {
-            s.adjustment_attributes
-                .iter()
-                .find(|a| a.name == "camera.focal_length_mm")
-                .and_then(|a| a.sample_count)
-        });
-
-    let enable_coarse_search = settings
+fn determine_enable_coarse_search(settings: &Option<MmSettingsData>) -> bool {
+    settings
         .as_ref()
         .and_then(|s| s.adjustment_solver.as_ref())
         .map(|adj| adj.evolution_value_range_estimate)
-        .unwrap_or(true);
+        .unwrap_or(true)
+}
 
-    // Determine solver type: CLI > settings file > default (None).
-    let solver_type = if args.solver != SolverType::None {
+fn determine_solver_type(
+    args: &CliArgs,
+    settings: &Option<MmSettingsData>,
+) -> SolverType {
+    if args.solver != SolverType::None {
         args.solver
     } else if let Some(ref s) = settings {
         if let Some(ref adj) = s.adjustment_solver {
@@ -492,16 +420,29 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
         }
     } else {
         SolverType::None
-    };
+    }
+}
 
-    // Get generation count from settings file.
-    let settings_generations: Option<usize> = settings
+fn determine_solver_generations(
+    settings: &Option<MmSettingsData>,
+) -> Option<usize> {
+    settings
         .as_ref()
         .and_then(|s| s.adjustment_solver.as_ref())
-        .and_then(|adj| adj.evolution_generation_count);
+        .and_then(|adj| adj.evolution_generation_count)
+}
 
-    // Configure global adjustment based on solver type.
-    let global_adjustment_config = match solver_type {
+// Configure global adjustment based on solver type.
+fn determine_global_adjustment_config<L: Logger + Clone + Send + Sync>(
+    logger: &L,
+    args: &CliArgs,
+    solver_type: SolverType,
+    settings_fl_bounds: Option<(f64, f64)>,
+    settings_fl_sample_count: Option<u32>,
+    settings_generations: Option<usize>,
+    enable_coarse_search: bool,
+) -> Option<GlobalAdjustmentConfig> {
+    match solver_type {
         SolverType::None => None,
         SolverType::UniformGrid => {
             let (min_fl, max_fl) = settings_fl_bounds.unwrap_or((
@@ -570,7 +511,133 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
                 enable_coarse_search,
             })
         }
-    };
+    }
+}
+
+fn run_camera_solve<L: Logger + Clone + Send + Sync>(
+    args: &CliArgs,
+    logger: &L,
+) -> Result<()> {
+    let total_start = Instant::now();
+
+    let settings = determine_settings(logger, args);
+    let nuke_lens_data = determine_nuke_lens_data(logger, args);
+
+    let thread_count = determine_thread_count(args, &settings);
+    setup_thread_pool(thread_count)?;
+
+    if let Some(ref mmcamera_path) = args.mmcamera_file {
+        mm_log_info!(logger, "Using mmcamera defaults from: {}", mmcamera_path);
+    }
+
+    mm_log_info!(logger, "Loading UV markers from: {}", args.uv_file);
+    let (file_info, mut markers) = parse_file(&args.uv_file)
+        .with_context(|| format!("Failed to load UV file: {}", args.uv_file))?;
+
+    mm_log_info!(logger, "Loaded {} markers:", markers.len());
+    mm_log_info!(logger, "  Format version: {:?}", file_info.version);
+    mm_log_info!(
+        logger,
+        "  Frame range: {} - {}",
+        markers.frame_range.start_frame,
+        markers.frame_range.end_frame
+    );
+
+    let frame_range = determine_frame_range(args, &settings, &markers);
+    mm_log_info!(
+        logger,
+        "  Using frame range: {} - {}",
+        frame_range.start_frame,
+        frame_range.end_frame
+    );
+
+    // Check for distorted/undistorted marker data.
+    let has_explicit_distorted =
+        markers.frame_data.iter().any(|fd| fd.has_distorted());
+
+    if nuke_lens_data.is_some() {
+        // Lens file provided - apply undistortion in-place.
+        // For v3+ files with explicit distorted data, the source is u_coords_dist/v_coords_dist.
+        // For v1/v2 files (or v3+ without distorted data), the source is u_coords/v_coords.
+        mm_log_info!(
+            logger,
+            "  Applying lens undistortion to marker positions..."
+        );
+
+        undistort_markers_with_lens(
+            &mut markers,
+            nuke_lens_data
+                .as_ref()
+                .expect("Nuke lens data will always exist here."),
+            has_explicit_distorted,
+        )?;
+        mm_log_info!(logger, "  Undistortion applied successfully.");
+    } else if has_explicit_distorted {
+        if file_info.marker_undistorted {
+            // File has both distorted and undistorted data, so use
+            // the stored undistorted positions.
+            mm_log_info!(logger, "  UV file contains both distorted and undistorted data; using stored undistorted positions.");
+        } else {
+            mm_log_warn!(logger, "  UV file contains only distorted marker positions but no lens file was provided. Solving will use distorted positions which may reduce accuracy.");
+        }
+    }
+
+    let film_back = CameraFilmBack::from_millimeters(
+        args.film_back_width_mm,
+        args.film_back_height_mm,
+    );
+    let camera_intrinsics = CameraIntrinsics::from_physical_parameters(
+        MillimeterUnit::new(args.focal_length_mm),
+        MillimeterUnit::new(args.lens_center_x_mm),
+        MillimeterUnit::new(args.lens_center_y_mm),
+        film_back,
+    );
+    let image_size = ImageSize::from_pixels(
+        args.image_width as f64,
+        args.image_height as f64,
+    );
+
+    mm_log_info!(logger, "Camera parameters:");
+    mm_log_info!(logger, "  Focal length: {} mm", args.focal_length_mm);
+    mm_log_info!(
+        logger,
+        "  Lens center: ({}, {}) mm",
+        args.lens_center_x_mm,
+        args.lens_center_y_mm
+    );
+    mm_log_info!(
+        logger,
+        "  Image size: {}x{} pixels",
+        args.image_width,
+        args.image_height
+    );
+    mm_log_info!(
+        logger,
+        "  Film back: {}x{} mm",
+        args.film_back_width_mm,
+        args.film_back_height_mm
+    );
+
+    let mut config = CameraSolveConfig::default();
+    if let Some(ref s) = settings {
+        config.origin_frame = s.origin_frame;
+    }
+
+    let settings_fl_bounds = determine_focal_length_bounds(&settings);
+    let settings_fl_sample_count =
+        determine_focal_length_sample_count(&settings);
+    let enable_coarse_search = determine_enable_coarse_search(&settings);
+    let solver_type = determine_solver_type(args, &settings);
+    let settings_generations = determine_solver_generations(&settings);
+    let global_adjustment_config = determine_global_adjustment_config(
+        logger,
+        args,
+        solver_type,
+        settings_fl_bounds,
+        settings_fl_sample_count,
+        settings_generations,
+        enable_coarse_search,
+    );
 
     let mut camera_poses = CameraPoses::new();
     let mut bundle_positions = BundlePositions::new();

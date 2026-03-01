@@ -81,7 +81,14 @@ ignore = [
 # Unlike Flake8, default to a complexity level of 10.
 max-complexity = 10
 
-
 [tool.ruff.format]
 # Leave quote characters as the are.
 quote-style = "preserve"
+
+[tool.pyright]
+include = ["python"]
+exclude = ["**/__pycache__"]
+pythonVersion = "3.6"
+reportMissingImports = true
+reportMissingModuleSource = true
+reportTypeCommentUsage = false

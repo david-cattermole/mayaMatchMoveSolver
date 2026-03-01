@@ -554,8 +554,12 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
 
     if nuke_lens_data.is_some() {
         // Lens file provided - apply undistortion in-place.
-        // For v3+ files with explicit distorted data, the source is u_coords_dist/v_coords_dist.
-        // For v1/v2 files (or v3+ without distorted data), the source is u_coords/v_coords.
+        //
+        // For v3+ files with explicit distorted data, the source is
+        // u_coords_dist/v_coords_dist.
+        //
+        // For v1/v2 files (or v3+ without distorted data), the source
+        // is u_coords/v_coords.
         mm_log_info!(
             logger,
             "  Applying lens undistortion to marker positions..."

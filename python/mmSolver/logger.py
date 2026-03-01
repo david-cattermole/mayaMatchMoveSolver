@@ -51,16 +51,18 @@ def get_logger(level=None):
     :type level: str, int or None
 
     :return: A Logger object.
+    :rtype: logging.Logger
     """
+    module_name = 'root'
+
     # The calling module name, in module hierarchy.
     # Source: https://gist.github.com/techtonik/2151727
     stack = inspect.stack()
     start = 1
     if len(stack) < start + 1:
-        return None
+        return logging.getLogger(module_name)
     parentframe = stack[start][0]
     module = inspect.getmodule(parentframe)
-    module_name = 'root'
     if module is not None:
         module_name = module.__name__
 

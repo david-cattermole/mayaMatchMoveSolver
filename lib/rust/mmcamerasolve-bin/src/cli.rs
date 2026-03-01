@@ -19,6 +19,8 @@
 //
 //! CLI argument parsing without external dependencies.
 
+use std::env;
+
 use crate::parser;
 
 use crate::defaults::DEFAULT_FILM_BACK_HEIGHT_MM;
@@ -182,12 +184,30 @@ impl Default for CliArgs {
     }
 }
 
+fn default_executable_file_name() -> &'static str {
+    match env::consts::OS {
+        "windows" => "mmcamerasolve.exe",
+        _ => "mmcamerasolve",
+    }
+}
+
+fn current_executable_file_name() -> String {
+    match env::current_exe() {
+        Ok(exe_path) => match exe_path.file_name() {
+            Some(exe_file_name) => exe_file_name.to_string_lossy().to_string(),
+            None => default_executable_file_name().to_string(),
+        },
+        Err(_) => default_executable_file_name().to_string(),
+    }
+}
+
 pub fn print_help() {
+    let executable_name = current_executable_file_name();
     println!(
         "mmSolver Camera Solver - Structure from Motion camera solver.
 
 USAGE:
-    mmsfm <UV_FILE> [OPTIONS]
+    {executable_name} <UV_FILE> [OPTIONS]
 
 ARGUMENTS:
     <UV_FILE>    Path to UV markers file (.uv)
@@ -244,7 +264,8 @@ HELP:
 }
 
 pub fn print_version() {
-    println!("mmsfm {}", env!("CARGO_PKG_VERSION"));
+    let executable_name = current_executable_file_name();
+    println!("{executable_name} {}", env!("CARGO_PKG_VERSION"));
 }
 
 macro_rules! try_parse {

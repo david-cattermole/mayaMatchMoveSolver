@@ -304,7 +304,7 @@ if [ -f "${UV_FILE}" ]; then
         --prefix garage \
         --start-frame 2000 \
         --end-frame 2706 \
-        --with-intermediate-output \
+        --intermediate-output \
         --output-dir "${OUTPUT_BASE}" \
         --log-level info
     echo "Output: ${OUTPUT_BASE}"

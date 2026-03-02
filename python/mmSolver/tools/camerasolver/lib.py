@@ -210,7 +210,7 @@ def save_camera_to_file(cam, frame_range, file_prefix, output_dir):
 
 def save_nuke_lens_to_file(cam, lens, frame_range, file_prefix, output_dir):
     file_suffix = ''
-    data_list = savelensfile_lib.generate(cam, lens, frame_range)
+    data_list = [savelensfile_lib.generate(cam, lens, frame_range)]
     file_path = construct_output_file_path(output_dir, file_prefix, file_suffix, '.nk')
     savelensfile_lib.write_nuke_file(file_path, data_list)
     return file_path

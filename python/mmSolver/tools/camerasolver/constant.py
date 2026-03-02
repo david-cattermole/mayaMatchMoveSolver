@@ -29,8 +29,8 @@ WINDOW_BUTTON_CLOSE_LABEL = 'Close'
 WINDOW_BUTTON_CLOSE_AND_STOP_LABEL = 'Stop Solve and Close'
 
 # Available log levels for the Camera Solver UI.
-LOG_LEVEL_ERROR = 'error'
-LOG_LEVEL_WARNING = 'warning'
+LOG_LEVEL_ERROR = 'warn'
+LOG_LEVEL_WARNING = 'warn'
 LOG_LEVEL_PROGRESS = 'progress'
 LOG_LEVEL_INFO = 'info'
 LOG_LEVEL_DEBUG = 'debug'

@@ -131,6 +131,9 @@ fn run() -> Result<()> {
             format!("Failed to create log file: {}", log_path)
         })?;
         let (stdout_format, stdout_level) = match args.console_level {
+            cli::LogVerbosity::Error => {
+                (LogFormat::Plain, LevelFilter::ERROR)
+            }
             cli::LogVerbosity::Warn => {
                 (LogFormat::Plain, LevelFilter::WARN | LevelFilter::ERROR)
             }
@@ -149,6 +152,9 @@ fn run() -> Result<()> {
         };
 
         let (file_format, file_level) = match args.log_level {
+            cli::LogVerbosity::Error => {
+                (LogFormat::Timestamp, LevelFilter::ERROR)
+            }
             cli::LogVerbosity::Warn => {
                 (LogFormat::Timestamp, LevelFilter::WARN | LevelFilter::ERROR)
             }

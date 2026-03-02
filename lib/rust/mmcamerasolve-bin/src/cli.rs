@@ -98,6 +98,8 @@ impl std::str::FromStr for SolverType {
 /// Log verbosity level.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum LogVerbosity {
+    /// Errors only.
+    Error,
     /// Warnings and errors only (default, no flags).
     #[default]
     Warn,
@@ -114,12 +116,13 @@ impl std::str::FromStr for LogVerbosity {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
+            "error" => Ok(LogVerbosity::Error),
             "warn" => Ok(LogVerbosity::Warn),
             "progress" => Ok(LogVerbosity::Progress),
             "info" => Ok(LogVerbosity::Info),
             "debug" => Ok(LogVerbosity::Debug),
             _ => Err(format!(
-                "Invalid log level '{}'. Valid options: warn, progress, info, debug",
+                "Invalid log level '{}'. Valid options: error, warn, progress, info, debug",
                 s
             )),
         }
@@ -250,6 +253,7 @@ OUTPUT:
     --prefix <NAME>           Custom prefix for output files
     --intermediate-output     Write intermediate results during solve
     --console-level <LEVEL>   Set console (stdout) log verbosity [default: progress]
+                              error    = errors only
                               warn     = warnings and errors only
                               progress = progress + warnings
                               info     = info + progress + warnings

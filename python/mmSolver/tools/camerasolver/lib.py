@@ -378,107 +378,22 @@ def _start_solve_process(cmd_args):
     return SolveProcess(proc, stdout_thread, stderr_thread, stdout_lines, stderr_lines)
 
 
-def launch_solve(
-    cam,  # type: mmapi.Camera
-    lens,  # type: mmapi.Lens | None
-    mkr_list,  # type: list[mmapi.Marker]
-    frame_range,  # type: time_utils.FrameRange
-    adjustment_solver,  # type: AdjustmentSolver
-    adjustment_attrs,  # type: AdjustmentAttributes
-    log_level,  # type: str
-    prefix_name,  # type: str
-    output_dir,  # type: str
+def _build_solve_cmd_args(
+    cam,
+    lens,
+    mkr_list,
+    frame_range,
+    adjustment_solver,
+    adjustment_attrs,
+    log_level,
+    prefix_name,
+    output_dir,
 ):
-    # type: (...) -> tuple[int, str, str]
+    # type: (...) -> list[str] | None
+    """Write input files and return the solver command-line arguments.
+
+    Returns None if the executable cannot be found.
     """
-    Write .uv/.mmcamera/.mmsettings (and optionally .nk) then run the
-    camera solver executable.
-
-    Returns (returncode, stdout, stderr).
-    """
-    assert isinstance(cam, mmapi.Camera)
-    assert lens is None or isinstance(lens, mmapi.Lens)
-    assert isinstance(mkr_list, list)
-    assert isinstance(frame_range, time_utils.FrameRange)
-    assert isinstance(adjustment_solver, AdjustmentSolver)
-    assert isinstance(adjustment_attrs, AdjustmentAttributes)
-    assert log_level in const.LOG_LEVEL_LIST
-    assert isinstance(prefix_name, pycompat.TEXT_TYPE)
-    assert output_dir and os.path.isdir(output_dir)
-
-    executable_file_path = find_executable_file_path()
-    if executable_file_path is None:
-        LOG.error('Could not find %r executable!', const.EXECUTABLE_FILE_NAME)
-        return (-1, '', '')
-
-    uv_file_path = save_markers_to_file(mkr_list, frame_range, prefix_name, output_dir)
-    mmcamera_file_path = save_camera_to_file(cam, frame_range, prefix_name, output_dir)
-    solver_settings_file_path = save_solver_settings_to_file(
-        frame_range, adjustment_solver, adjustment_attrs, prefix_name, output_dir
-    )
-
-    nuke_lens_file_path = None
-    if lens is not None:
-        nuke_lens_file_path = save_nuke_lens_to_file(
-            cam, lens, frame_range, prefix_name, output_dir
-        )
-
-    cmd_args = [
-        executable_file_path,
-        uv_file_path,
-        '--mmcamera',
-        mmcamera_file_path,
-        '--solver-settings',
-        solver_settings_file_path,
-    ]
-
-    if nuke_lens_file_path is not None:
-        cmd_args += ['--nuke-lens', nuke_lens_file_path]
-
-    cmd_args += [
-        '--prefix',
-        prefix_name,
-        '--output-dir',
-        output_dir,
-        '--log-level',
-        log_level,
-    ]
-
-    LOG.debug('Camera solver command: %s', ' '.join(cmd_args))
-    solve_process = _start_solve_process(cmd_args)
-    solve_process.wait()
-    return solve_process.result()
-
-
-def launch_solve_async(
-    cam,  # type: mmapi.Camera
-    lens,  # type: mmapi.Lens | None
-    mkr_list,  # type: list[mmapi.Marker]
-    frame_range,  # type: time_utils.FrameRange
-    adjustment_solver,  # type: AdjustmentSolver
-    adjustment_attrs,  # type: AdjustmentAttributes
-    log_level,  # type: str
-    prefix_name,  # type: str
-    output_dir,  # type: str
-):
-    # type: (...) -> SolveProcess
-    """Non-blocking variant of :func:`launch_solve`.
-
-    Writes the input files, starts the solver executable in the
-    background, and returns a :class:`SolveProcess` immediately so the
-    caller can continue working.  Call :meth:`SolveProcess.wait` /
-    :meth:`SolveProcess.result` when the result is needed.
-    """
-    assert isinstance(cam, mmapi.Camera)
-    assert lens is None or isinstance(lens, mmapi.Lens)
-    assert isinstance(mkr_list, list)
-    assert isinstance(frame_range, time_utils.FrameRange)
-    assert isinstance(adjustment_solver, AdjustmentSolver)
-    assert isinstance(adjustment_attrs, AdjustmentAttributes)
-    assert log_level in const.LOG_LEVEL_LIST
-    assert isinstance(prefix_name, pycompat.TEXT_TYPE)
-    assert output_dir and os.path.isdir(output_dir)
-
     executable_file_path = find_executable_file_path()
     if executable_file_path is None:
         LOG.error('Could not find %r executable!', const.EXECUTABLE_FILE_NAME)
@@ -516,7 +431,82 @@ def launch_solve_async(
         '--log-level',
         log_level,
     ]
+    return cmd_args
 
+
+def launch_solve(
+    cam,  # type: mmapi.Camera
+    lens,  # type: mmapi.Lens | None
+    mkr_list,  # type: list[mmapi.Marker]
+    frame_range,  # type: time_utils.FrameRange
+    adjustment_solver,  # type: AdjustmentSolver
+    adjustment_attrs,  # type: AdjustmentAttributes
+    log_level,  # type: str
+    prefix_name,  # type: str
+    output_dir,  # type: str
+):
+    # type: (...) -> tuple[int, str, str]
+    """
+    Write .uv/.mmcamera/.mmsettings (and optionally .nk) then run the
+    camera solver executable.
+
+    Returns (returncode, stdout, stderr).
+    """
+    assert isinstance(cam, mmapi.Camera)
+    assert lens is None or isinstance(lens, mmapi.Lens)
+    assert isinstance(mkr_list, list)
+    assert isinstance(frame_range, time_utils.FrameRange)
+    assert isinstance(adjustment_solver, AdjustmentSolver)
+    assert isinstance(adjustment_attrs, AdjustmentAttributes)
+    assert log_level in const.LOG_LEVEL_LIST
+    assert isinstance(prefix_name, pycompat.TEXT_TYPE)
+    assert output_dir and os.path.isdir(output_dir)
+    cmd_args = _build_solve_cmd_args(
+        cam, lens, mkr_list, frame_range, adjustment_solver, adjustment_attrs,
+        log_level, prefix_name, output_dir,
+    )
+    if cmd_args is None:
+        return (-1, '', '')
+    LOG.debug('Camera solver command: %s', ' '.join(cmd_args))
+    solve_process = _start_solve_process(cmd_args)
+    solve_process.wait()
+    return solve_process.result()
+
+
+def launch_solve_async(
+    cam,  # type: mmapi.Camera
+    lens,  # type: mmapi.Lens | None
+    mkr_list,  # type: list[mmapi.Marker]
+    frame_range,  # type: time_utils.FrameRange
+    adjustment_solver,  # type: AdjustmentSolver
+    adjustment_attrs,  # type: AdjustmentAttributes
+    log_level,  # type: str
+    prefix_name,  # type: str
+    output_dir,  # type: str
+):
+    # type: (...) -> SolveProcess
+    """Non-blocking variant of :func:`launch_solve`.
+
+    Writes the input files, starts the solver executable in the
+    background, and returns a :class:`SolveProcess` immediately so the
+    caller can continue working.  Call :meth:`SolveProcess.wait` /
+    :meth:`SolveProcess.result` when the result is needed.
+    """
+    assert isinstance(cam, mmapi.Camera)
+    assert lens is None or isinstance(lens, mmapi.Lens)
+    assert isinstance(mkr_list, list)
+    assert isinstance(frame_range, time_utils.FrameRange)
+    assert isinstance(adjustment_solver, AdjustmentSolver)
+    assert isinstance(adjustment_attrs, AdjustmentAttributes)
+    assert log_level in const.LOG_LEVEL_LIST
+    assert isinstance(prefix_name, pycompat.TEXT_TYPE)
+    assert output_dir and os.path.isdir(output_dir)
+    cmd_args = _build_solve_cmd_args(
+        cam, lens, mkr_list, frame_range, adjustment_solver, adjustment_attrs,
+        log_level, prefix_name, output_dir,
+    )
+    if cmd_args is None:
+        return None
     LOG.debug('Camera solver command: %s', ' '.join(cmd_args))
     return _start_solve_process(cmd_args)
 

@@ -479,7 +479,10 @@ def launch_solve(
     LOG.debug('Camera solver command: %s', ' '.join(cmd_args))
     solve_process = _start_solve_process(cmd_args)
     solve_process.wait()
-    return solve_process.result()
+    returncode, stdout, stderr = solve_process.result()
+    if returncode == 0:
+        load_camera_outputs(cam, prefix_name, output_dir)
+    return (returncode, stdout, stderr)
 
 
 def launch_solve_async(
@@ -527,9 +530,78 @@ def launch_solve_async(
     return _start_solve_process(cmd_args)
 
 
-def load_camera_outputs():
-    raise NotImplementedError
-    # TODO: Read camera outputs
+def load_solved_camera_from_file(cam, file_path):
+    # type: (mmapi.Camera, str) -> bool
+    """Apply solved camera data from a .mmcamera file to a Maya camera.
+
+    Keyframes are set on the camera transform and shape for every frame
+    stored in the file.  Film-back attributes are converted from mm
+    (file units) back to inches (Maya units).
+
+    Returns True on success, False if the file could not be loaded.
+    """
+    assert isinstance(cam, mmapi.Camera)
+    assert isinstance(file_path, pycompat.TEXT_TYPE)
+
+    if not os.path.isfile(file_path):
+        LOG.error('Solved camera file not found: %r', file_path)
+        return False
+
+    with open(file_path, 'r') as fh:
+        doc = json.load(fh)
+
+    attr_data = doc.get('data', {}).get('attr', {})
+    if not attr_data:
+        LOG.error('No attribute data found in: %r', file_path)
+        return False
+
+    cam_tfm = cam.get_transform_node()
+    cam_shp = cam.get_shape_node()
+
+    # Map from mmcamera attribute name -> (node, maya_attr, mm_to_inches)
+    MM_TO_INCHES = 1.0 / INCHES_TO_MM
+    attr_map = {
+        'translateX': (cam_tfm, 'translateX', False),
+        'translateY': (cam_tfm, 'translateY', False),
+        'translateZ': (cam_tfm, 'translateZ', False),
+        'rotateX': (cam_tfm, 'rotateX', False),
+        'rotateY': (cam_tfm, 'rotateY', False),
+        'rotateZ': (cam_tfm, 'rotateZ', False),
+        'focalLength': (cam_shp, 'focalLength', False),
+        'filmBackWidth': (cam_shp, 'horizontalFilmAperture', True),
+        'filmBackHeight': (cam_shp, 'verticalFilmAperture', True),
+        'filmBackOffsetX': (cam_shp, 'horizontalFilmOffset', True),
+        'filmBackOffsetY': (cam_shp, 'verticalFilmOffset', True),
+    }
+
+    for file_attr, (node, maya_attr, convert_to_inches) in attr_map.items():
+        samples = attr_data.get(file_attr)
+        if not samples:
+            continue
+        scale = MM_TO_INCHES if convert_to_inches else 1.0
+        for frame, value in samples:
+            maya.cmds.setKeyframe(
+                node, attribute=maya_attr, time=frame, value=value * scale
+            )
+
+    return True
+
+
+def load_camera_outputs(cam, prefix_name, output_dir):
+    # type: (mmapi.Camera, str, str) -> bool
+    """Load the solved camera from the output directory into Maya.
+
+    The solver writes ``{prefix_name}_camera.mmcamera`` to *output_dir*.
+    This function reads that file and keyframes the supplied *cam*.
+
+    Returns True on success.
+    """
+    assert isinstance(cam, mmapi.Camera)
+    assert isinstance(prefix_name, pycompat.TEXT_TYPE)
+    assert output_dir and os.path.isdir(output_dir)
+    file_name = prefix_name + '_camera.mmcamera'
+    file_path = os.path.join(output_dir, file_name)
+    return load_solved_camera_from_file(cam, file_path)
 
 
 def load_nuke_lens_file():

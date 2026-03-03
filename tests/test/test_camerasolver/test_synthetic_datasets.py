@@ -25,6 +25,8 @@ from __future__ import print_function
 
 import unittest
 
+import maya.cmds
+
 import mmSolver.tools.camerasolver.lib as camerasolver_lib
 import mmSolver.tools.camerasolver.constant as camerasolver_const
 
@@ -70,6 +72,30 @@ class TestCubeADataset(camerasolverutils.CameraSolverTestCase):
         print('stderr:', stderr)
         self.assertEqual(returncode, 0)
 
+        # Verify the solved camera was loaded back into Maya.
+        cam_tfm = cam.get_transform_node()
+        cam_shp = cam.get_shape_node()
+
+        tx_keys = maya.cmds.keyframe(
+            cam_tfm, attribute='translateX', query=True, timeChange=True
+        )
+        self.assertIsNotNone(tx_keys)
+        self.assertGreater(len(tx_keys), 0, 'No translateX keyframes after solve')
+
+        tx_vals = maya.cmds.keyframe(
+            cam_tfm, attribute='translateX', query=True, valueChange=True
+        )
+        self.assertTrue(
+            any(abs(v) > 1e-6 for v in tx_vals),
+            'All translateX values are zero – camera was not moved',
+        )
+
+        fl_keys = maya.cmds.keyframe(
+            cam_shp, attribute='focalLength', query=True, timeChange=True
+        )
+        self.assertIsNotNone(fl_keys)
+        self.assertGreater(len(fl_keys), 0, 'No focalLength keyframes after solve')
+
 
 # @unittest.skip
 class TestCubeBDataset(camerasolverutils.CameraSolverTestCase):
@@ -104,6 +130,30 @@ class TestCubeBDataset(camerasolverutils.CameraSolverTestCase):
         print('stdout:', stdout)
         print('stderr:', stderr)
         self.assertEqual(returncode, 0)
+
+        # Verify the solved camera was loaded back into Maya.
+        cam_tfm = cam.get_transform_node()
+        cam_shp = cam.get_shape_node()
+
+        tx_keys = maya.cmds.keyframe(
+            cam_tfm, attribute='translateX', query=True, timeChange=True
+        )
+        self.assertIsNotNone(tx_keys)
+        self.assertGreater(len(tx_keys), 0, 'No translateX keyframes after solve')
+
+        tx_vals = maya.cmds.keyframe(
+            cam_tfm, attribute='translateX', query=True, valueChange=True
+        )
+        self.assertTrue(
+            any(abs(v) > 1e-6 for v in tx_vals),
+            'All translateX values are zero – camera was not moved',
+        )
+
+        fl_keys = maya.cmds.keyframe(
+            cam_shp, attribute='focalLength', query=True, timeChange=True
+        )
+        self.assertIsNotNone(fl_keys)
+        self.assertGreater(len(fl_keys), 0, 'No focalLength keyframes after solve')
 
 
 if __name__ == '__main__':

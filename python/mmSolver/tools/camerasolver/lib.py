@@ -501,7 +501,7 @@ def launch_solve_async(
     prefix_name,  # type: str
     output_dir,  # type: str
 ):
-    # type: (...) -> SolveProcess
+    # type: (...) -> SolveProcess | None
     """Non-blocking variant of :func:`launch_solve`.
 
     Writes the input files, starts the solver executable in the

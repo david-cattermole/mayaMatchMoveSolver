@@ -39,7 +39,7 @@ CUBE_FILM_BACK_HEIGHT_MM = 24.0
 
 
 def _run_executable(extra_args):
-    """Run the executable directly (bypassing launch_solve) for flag-only tests."""
+    """Run the executable directly for flag-only tests."""
     exe = camerasolver_lib.find_executable_file_path()
     if exe is None:
         return (-1, '', '')

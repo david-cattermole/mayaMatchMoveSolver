@@ -381,15 +381,15 @@ def _start_solve_process(cmd_args):
 
 
 def _build_solve_cmd_args(
-    cam,
-    lens,
-    mkr_list,
-    frame_range,
-    adjustment_solver,
-    adjustment_attrs,
-    log_level,
-    prefix_name,
-    output_dir,
+    cam,  # type: mmapi.Camera
+    lens,  # type: mmapi.Lens | None
+    mkr_list,  # type: list[mmapi.Marker]
+    frame_range,  # type: time_utils.FrameRange
+    adjustment_solver,  # type: AdjustmentSolver
+    adjustment_attrs,  # type: AdjustmentAttributes
+    log_level,  # type: str
+    prefix_name,  # type: str
+    output_dir,  # type: str
 ):
     # type: (...) -> list[str] | None
     """Write input files and return the solver command-line arguments.

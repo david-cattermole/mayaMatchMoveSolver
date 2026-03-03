@@ -139,6 +139,13 @@ class CameraSolverTestCase(baseUtils.TestBase):
     ):
         """Wrapper around camerasolver_lib.launch_solve that saves the Maya
         scene before and after the solve."""
+        maya.cmds.playbackOptions(
+            animationStartTime=frame_range.start,
+            minTime=frame_range.start,
+            animationEndTime=frame_range.end,
+            maxTime=frame_range.end,
+        )
+
         path = self.get_output_path('test_camerasolver_%s_before.ma' % prefix_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)

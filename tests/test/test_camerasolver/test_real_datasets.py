@@ -26,7 +26,6 @@ from __future__ import print_function
 import unittest
 
 import mmSolver.utils.time as time_utils
-import mmSolver.tools.camerasolver.lib as camerasolver_lib
 import mmSolver.tools.camerasolver.constant as camerasolver_const
 
 import test.test_camerasolver.camerasolverutils as camerasolverutils
@@ -52,7 +51,7 @@ class TestBlasterwalkDataset(camerasolverutils.CameraSolverTestCase):
 
         adj_solver, adj_attrs = self.make_default_solver()
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=None,
             mkr_list=mkr_list,
@@ -87,7 +86,7 @@ class TestHcwPaintingDataset(camerasolverutils.CameraSolverTestCase):
 
         adj_solver, adj_attrs = self.make_default_solver()
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=None,
             mkr_list=mkr_list,
@@ -122,7 +121,7 @@ class TestOperaHouseDataset(camerasolverutils.CameraSolverTestCase):
 
         adj_solver, adj_attrs = self.make_evolution_refine_solver()
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=None,
             mkr_list=mkr_list,
@@ -167,7 +166,7 @@ class TestGarageDataset(camerasolverutils.CameraSolverTestCase):
         frame_range = time_utils.FrameRange(start=2000, end=2706)
         adj_solver, adj_attrs = self.make_default_solver()
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=None,
             mkr_list=mkr_list,

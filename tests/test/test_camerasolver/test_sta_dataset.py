@@ -26,7 +26,6 @@ from __future__ import print_function
 import unittest
 
 import mmSolver.api as mmapi
-import mmSolver.tools.camerasolver.lib as camerasolver_lib
 import mmSolver.tools.camerasolver.constant as camerasolver_const
 
 import test.test_camerasolver.camerasolverutils as camerasolverutils
@@ -62,7 +61,7 @@ class TestStAWithCameraFile(camerasolverutils.CameraSolverTestCase):
 
         adj_solver, adj_attrs = self.make_default_solver()
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=None,
             mkr_list=mkr_list,
@@ -96,7 +95,7 @@ class TestStAWithNukeLens(camerasolverutils.CameraSolverTestCase):
 
         adj_solver, adj_attrs = self.make_default_solver()
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=lens,
             mkr_list=mkr_list,
@@ -130,7 +129,7 @@ class TestStAWithLensUndistortionUV(camerasolverutils.CameraSolverTestCase):
 
         adj_solver, adj_attrs = self.make_default_solver()
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=lens,
             mkr_list=mkr_list,
@@ -167,7 +166,7 @@ class TestStAWithLensUndistortionUVNoLens(camerasolverutils.CameraSolverTestCase
 
         adj_solver, adj_attrs = self.make_default_solver()
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=None,
             mkr_list=mkr_list,

@@ -125,6 +125,42 @@ class CameraSolverTestCase(baseUtils.TestBase):
     def load_markers(self, uv_file_path, cam):
         return load_markers_from_uv_file(uv_file_path, cam)
 
+    def launch_solve(
+        self,
+        cam,
+        lens,
+        mkr_list,
+        frame_range,
+        adjustment_solver,
+        adjustment_attrs,
+        log_level,
+        prefix_name,
+        output_dir,
+    ):
+        """Wrapper around camerasolver_lib.launch_solve that saves the Maya
+        scene before and after the solve."""
+        path = self.get_output_path('test_camerasolver_%s_before.ma' % prefix_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+            cam=cam,
+            lens=lens,
+            mkr_list=mkr_list,
+            frame_range=frame_range,
+            adjustment_solver=adjustment_solver,
+            adjustment_attrs=adjustment_attrs,
+            log_level=log_level,
+            prefix_name=prefix_name,
+            output_dir=output_dir,
+        )
+
+        path = self.get_output_path('test_camerasolver_%s_after.ma' % prefix_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        return returncode, stdout, stderr
+
     def make_default_solver(self):
         adj_solver = camerasolver_lib.AdjustmentSolver()
         adj_attrs = camerasolver_lib.AdjustmentAttributes()

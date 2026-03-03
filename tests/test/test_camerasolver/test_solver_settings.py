@@ -30,7 +30,6 @@ from __future__ import print_function
 
 import unittest
 
-import mmSolver.tools.camerasolver.lib as camerasolver_lib
 import mmSolver.tools.camerasolver.constant as camerasolver_const
 
 import test.test_camerasolver.camerasolverutils as camerasolverutils
@@ -66,7 +65,7 @@ class TestSolverSettingsFile(camerasolverutils.CameraSolverTestCase):
             sample_count=8,
         )
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=None,
             mkr_list=mkr_list,
@@ -116,7 +115,7 @@ class TestSolverSettingsDisableValueRangeEstimate(
             solver_type=camerasolver_const.ADJUSTMENT_SOLVER_TYPE_EVOLUTION_REFINE,
         )
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=None,
             mkr_list=mkr_list,

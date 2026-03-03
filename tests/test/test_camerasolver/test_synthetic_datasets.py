@@ -27,7 +27,6 @@ import unittest
 
 import maya.cmds
 
-import mmSolver.tools.camerasolver.lib as camerasolver_lib
 import mmSolver.tools.camerasolver.constant as camerasolver_const
 
 import test.test_camerasolver.camerasolverutils as camerasolverutils
@@ -56,7 +55,7 @@ class TestCubeADataset(camerasolverutils.CameraSolverTestCase):
 
         adj_solver, adj_attrs = self.make_default_solver()
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=None,
             mkr_list=mkr_list,
@@ -115,7 +114,7 @@ class TestCubeBDataset(camerasolverutils.CameraSolverTestCase):
 
         adj_solver, adj_attrs = self.make_default_solver()
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=None,
             mkr_list=mkr_list,

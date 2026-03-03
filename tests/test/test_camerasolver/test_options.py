@@ -99,7 +99,7 @@ class TestFrameRangeOverride(camerasolverutils.CameraSolverTestCase):
         frame_range = time_utils.FrameRange(start=1, end=10)
         adj_solver, adj_attrs = self.make_evolution_refine_solver()
 
-        returncode, stdout, stderr = camerasolver_lib.launch_solve(
+        returncode, stdout, stderr = self.launch_solve(
             cam=cam,
             lens=None,
             mkr_list=mkr_list,

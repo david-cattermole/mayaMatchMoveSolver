@@ -341,7 +341,9 @@ class SolveProcess(object):
         stderr = '\n'.join(self._stderr_lines)
         returncode = self._proc.returncode
         if returncode != 0:
-            LOG.error('Camera solver failed (exit %d):\n%s', returncode, stderr or stdout)
+            LOG.error(
+                'Camera solver failed (exit %d):\n%s', returncode, stderr or stdout
+            )
         return (returncode, stdout, stderr)
 
 
@@ -462,8 +464,15 @@ def launch_solve(
     assert isinstance(prefix_name, pycompat.TEXT_TYPE)
     assert output_dir and os.path.isdir(output_dir)
     cmd_args = _build_solve_cmd_args(
-        cam, lens, mkr_list, frame_range, adjustment_solver, adjustment_attrs,
-        log_level, prefix_name, output_dir,
+        cam,
+        lens,
+        mkr_list,
+        frame_range,
+        adjustment_solver,
+        adjustment_attrs,
+        log_level,
+        prefix_name,
+        output_dir,
     )
     if cmd_args is None:
         return (-1, '', '')
@@ -502,8 +511,15 @@ def launch_solve_async(
     assert isinstance(prefix_name, pycompat.TEXT_TYPE)
     assert output_dir and os.path.isdir(output_dir)
     cmd_args = _build_solve_cmd_args(
-        cam, lens, mkr_list, frame_range, adjustment_solver, adjustment_attrs,
-        log_level, prefix_name, output_dir,
+        cam,
+        lens,
+        mkr_list,
+        frame_range,
+        adjustment_solver,
+        adjustment_attrs,
+        log_level,
+        prefix_name,
+        output_dir,
     )
     if cmd_args is None:
         return None

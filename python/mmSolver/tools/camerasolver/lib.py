@@ -463,6 +463,7 @@ def launch_solve(
     assert log_level in const.LOG_LEVEL_LIST
     assert isinstance(prefix_name, pycompat.TEXT_TYPE)
     assert output_dir and os.path.isdir(output_dir)
+
     cmd_args = _build_solve_cmd_args(
         cam,
         lens,
@@ -476,12 +477,16 @@ def launch_solve(
     )
     if cmd_args is None:
         return (-1, '', '')
+
     LOG.debug('Camera solver command: %s', ' '.join(cmd_args))
     solve_process = _start_solve_process(cmd_args)
+
     solve_process.wait()
     returncode, stdout, stderr = solve_process.result()
     if returncode == 0:
         load_camera_outputs(cam, prefix_name, output_dir)
+        # TODO: Load bundle positions.
+        # TODO: Load Nuke lens distortion values.
     return (returncode, stdout, stderr)
 
 
@@ -513,6 +518,7 @@ def launch_solve_async(
     assert log_level in const.LOG_LEVEL_LIST
     assert isinstance(prefix_name, pycompat.TEXT_TYPE)
     assert output_dir and os.path.isdir(output_dir)
+
     cmd_args = _build_solve_cmd_args(
         cam,
         lens,
@@ -526,6 +532,7 @@ def launch_solve_async(
     )
     if cmd_args is None:
         return None
+
     LOG.debug('Camera solver command: %s', ' '.join(cmd_args))
     return _start_solve_process(cmd_args)
 
@@ -605,5 +612,10 @@ def load_camera_outputs(cam, prefix_name, output_dir):
 
 
 def load_nuke_lens_file():
-    # TODO: Read lens file.
+    # TODO: Read nuke lens file.
+    raise NotImplementedError
+
+
+def load_bundle_file():
+    # TODO: Read bundle file.
     raise NotImplementedError

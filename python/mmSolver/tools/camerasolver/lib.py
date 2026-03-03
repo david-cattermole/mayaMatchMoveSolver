@@ -309,6 +309,75 @@ def find_executable_file_path():
     return executable_file_path
 
 
+class SolveProcess(object):
+    """Handle for a running (or completed) camera solver process.
+
+    Call :meth:`wait` to block until finished, or poll :meth:`is_done`
+    from the main thread without blocking.
+    """
+
+    def __init__(self, proc, stdout_thread, stderr_thread, stdout_lines, stderr_lines):
+        self._proc = proc
+        self._stdout_thread = stdout_thread
+        self._stderr_thread = stderr_thread
+        self._stdout_lines = stdout_lines
+        self._stderr_lines = stderr_lines
+
+    def is_done(self):
+        # type: () -> bool
+        """Return True when the subprocess has finished."""
+        return self._proc.poll() is not None
+
+    def wait(self):
+        """Block until the subprocess and reader threads have finished."""
+        self._stdout_thread.join()
+        self._stderr_thread.join()
+        self._proc.wait()
+
+    def result(self):
+        # type: () -> tuple[int, str, str]
+        """Return (returncode, stdout, stderr).  Call after :meth:`wait`."""
+        stdout = '\n'.join(self._stdout_lines)
+        stderr = '\n'.join(self._stderr_lines)
+        returncode = self._proc.returncode
+        if returncode != 0:
+            LOG.error('Camera solver failed (exit %d):\n%s', returncode, stderr or stdout)
+        return (returncode, stdout, stderr)
+
+
+def _start_solve_process(cmd_args):
+    # type: (list[str]) -> SolveProcess
+    proc = subprocess.Popen(
+        cmd_args,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+    stdout_lines = []
+    stderr_lines = []
+
+    def _read_stream(stream, line_list, log_fn):
+        for raw in iter(stream.readline, b''):
+            line = raw.decode('utf-8', errors='replace').rstrip('\n')
+            line_list.append(line)
+            log_fn('%s', line)
+        stream.close()
+
+    stdout_thread = threading.Thread(
+        target=_read_stream,
+        args=(proc.stdout, stdout_lines, LOG.info),
+        daemon=True,
+    )
+    stderr_thread = threading.Thread(
+        target=_read_stream,
+        args=(proc.stderr, stderr_lines, LOG.warning),
+        daemon=True,
+    )
+    stdout_thread.start()
+    stderr_thread.start()
+    return SolveProcess(proc, stdout_thread, stderr_thread, stdout_lines, stderr_lines)
+
+
 def launch_solve(
     cam,  # type: mmapi.Camera
     lens,  # type: mmapi.Lens | None
@@ -376,44 +445,80 @@ def launch_solve(
     ]
 
     LOG.debug('Camera solver command: %s', ' '.join(cmd_args))
-    proc = subprocess.Popen(
-        cmd_args,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+    solve_process = _start_solve_process(cmd_args)
+    solve_process.wait()
+    return solve_process.result()
+
+
+def launch_solve_async(
+    cam,  # type: mmapi.Camera
+    lens,  # type: mmapi.Lens | None
+    mkr_list,  # type: list[mmapi.Marker]
+    frame_range,  # type: time_utils.FrameRange
+    adjustment_solver,  # type: AdjustmentSolver
+    adjustment_attrs,  # type: AdjustmentAttributes
+    log_level,  # type: str
+    prefix_name,  # type: str
+    output_dir,  # type: str
+):
+    # type: (...) -> SolveProcess
+    """Non-blocking variant of :func:`launch_solve`.
+
+    Writes the input files, starts the solver executable in the
+    background, and returns a :class:`SolveProcess` immediately so the
+    caller can continue working.  Call :meth:`SolveProcess.wait` /
+    :meth:`SolveProcess.result` when the result is needed.
+    """
+    assert isinstance(cam, mmapi.Camera)
+    assert lens is None or isinstance(lens, mmapi.Lens)
+    assert isinstance(mkr_list, list)
+    assert isinstance(frame_range, time_utils.FrameRange)
+    assert isinstance(adjustment_solver, AdjustmentSolver)
+    assert isinstance(adjustment_attrs, AdjustmentAttributes)
+    assert log_level in const.LOG_LEVEL_LIST
+    assert isinstance(prefix_name, pycompat.TEXT_TYPE)
+    assert output_dir and os.path.isdir(output_dir)
+
+    executable_file_path = find_executable_file_path()
+    if executable_file_path is None:
+        LOG.error('Could not find %r executable!', const.EXECUTABLE_FILE_NAME)
+        return None
+
+    uv_file_path = save_markers_to_file(mkr_list, frame_range, prefix_name, output_dir)
+    mmcamera_file_path = save_camera_to_file(cam, frame_range, prefix_name, output_dir)
+    solver_settings_file_path = save_solver_settings_to_file(
+        frame_range, adjustment_solver, adjustment_attrs, prefix_name, output_dir
     )
 
-    stdout_lines = []
-    stderr_lines = []
+    nuke_lens_file_path = None
+    if lens is not None:
+        nuke_lens_file_path = save_nuke_lens_to_file(
+            cam, lens, frame_range, prefix_name, output_dir
+        )
 
-    def _read_stream(stream, line_list, log_fn):
-        for raw in iter(stream.readline, b''):
-            line = raw.decode('utf-8', errors='replace').rstrip('\n')
-            line_list.append(line)
-            log_fn('%s', line)
-        stream.close()
+    cmd_args = [
+        executable_file_path,
+        uv_file_path,
+        '--mmcamera',
+        mmcamera_file_path,
+        '--solver-settings',
+        solver_settings_file_path,
+    ]
 
-    stdout_thread = threading.Thread(
-        target=_read_stream,
-        args=(proc.stdout, stdout_lines, LOG.info),
-        daemon=True,
-    )
-    stderr_thread = threading.Thread(
-        target=_read_stream,
-        args=(proc.stderr, stderr_lines, LOG.warning),
-        daemon=True,
-    )
-    stdout_thread.start()
-    stderr_thread.start()
-    stdout_thread.join()
-    stderr_thread.join()
-    proc.wait()
+    if nuke_lens_file_path is not None:
+        cmd_args += ['--nuke-lens', nuke_lens_file_path]
 
-    stdout = '\n'.join(stdout_lines)
-    stderr = '\n'.join(stderr_lines)
-    returncode = proc.returncode
-    if returncode != 0:
-        LOG.error('Camera solver failed (exit %d):\n%s', returncode, stderr or stdout)
-    return (returncode, stdout, stderr)
+    cmd_args += [
+        '--prefix',
+        prefix_name,
+        '--output-dir',
+        output_dir,
+        '--log-level',
+        log_level,
+    ]
+
+    LOG.debug('Camera solver command: %s', ' '.join(cmd_args))
+    return _start_solve_process(cmd_args)
 
 
 def load_camera_outputs():

@@ -68,6 +68,7 @@ class SolveProcess(object):
     """
 
     def __init__(self, proc, stdout_thread, stderr_thread, stdout_lines, stderr_lines):
+        # type: (...) -> None
         self._proc = proc
         self._stdout_thread = stdout_thread
         self._stderr_thread = stderr_thread
@@ -80,6 +81,7 @@ class SolveProcess(object):
         return self._proc.poll() is not None
 
     def wait(self):
+        # type: () -> None
         """Block until the subprocess and reader threads have finished."""
         self._stdout_thread.join()
         self._stderr_thread.join()
@@ -99,7 +101,8 @@ class SolveProcess(object):
 
 
 def _start_solve_process(cmd_args):
-    # type: (list[str]) -> SolveProcess
+    # type: (...) -> SolveProcess
+    assert isinstance(cmd_args, list)
     proc = subprocess.Popen(
         cmd_args,
         stdout=subprocess.PIPE,
@@ -132,21 +135,30 @@ def _start_solve_process(cmd_args):
 
 
 def _build_solve_cmd_args(
-    cam,  # type: mmapi.Camera
-    lens,  # type: mmapi.Lens | None
-    mkr_list,  # type: list[mmapi.Marker]
-    frame_range,  # type: time_utils.FrameRange
+    cam,
+    lens,
+    mkr_list,
+    frame_range,
     adjustment_solver,
     adjustment_attrs,
-    log_level,  # type: str
-    prefix_name,  # type: str
-    output_dir,  # type: str
+    log_level,
+    prefix_name,
+    output_dir,
 ):
     # type: (...) -> list[str] | None
     """Write input files and return the solver command-line arguments.
 
     Returns None if the executable cannot be found.
     """
+    assert isinstance(cam, mmapi.Camera)
+    assert lens is None or isinstance(lens, mmapi.Lens)
+    assert isinstance(mkr_list, list)
+    assert isinstance(frame_range, time_utils.FrameRange)
+    assert isinstance(adjustment_solver, AdjustmentSolver)
+    assert isinstance(adjustment_attrs, AdjustmentAttributes)
+    assert log_level in const.LOG_LEVEL_LIST
+    assert isinstance(prefix_name, pycompat.TEXT_TYPE)
+    assert output_dir and os.path.isdir(output_dir)
     executable_file_path = find_executable_file_path()
     if executable_file_path is None:
         LOG.error('Could not find %r executable!', const.EXECUTABLE_FILE_NAME)
@@ -188,14 +200,14 @@ def _build_solve_cmd_args(
 
 
 def launch_solve(
-    cam,  # type: mmapi.Camera
-    lens,  # type: mmapi.Lens | None
-    mkr_list,  # type: list[mmapi.Marker]
-    frame_range,  # type: time_utils.FrameRange
+    cam,
+    lens,
+    mkr_list,
+    frame_range,
     adjustment_solver,
     adjustment_attrs,
     log_level,  # type: str
-    prefix_name,  # type: str
+    prefix_name,
     output_dir,  # type: str
 ):
     # type: (...) -> tuple[int, str, str]
@@ -242,14 +254,14 @@ def launch_solve(
 
 
 def launch_solve_async(
-    cam,  # type: mmapi.Camera
-    lens,  # type: mmapi.Lens | None
-    mkr_list,  # type: list[mmapi.Marker]
-    frame_range,  # type: time_utils.FrameRange
+    cam,
+    lens,
+    mkr_list,
+    frame_range,
     adjustment_solver,
     adjustment_attrs,
     log_level,  # type: str
-    prefix_name,  # type: str
+    prefix_name,
     output_dir,  # type: str
 ):
     # type: (...) -> SolveProcess | None

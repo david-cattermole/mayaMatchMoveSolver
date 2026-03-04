@@ -34,7 +34,7 @@ LOG = mmSolver.logger.get_logger()
 
 
 def load_solved_camera_from_file(cam, file_path):
-    # type: (mmapi.Camera, str) -> bool
+    # type: (...) -> bool
     """Apply solved camera data from a .mmcamera file to a Maya camera.
 
     Keyframes are set on the camera transform and shape for every frame
@@ -91,7 +91,7 @@ def load_solved_camera_from_file(cam, file_path):
 
 
 def load_camera_outputs(cam, prefix_name, output_dir):
-    # type: (mmapi.Camera, str, str) -> bool
+    # type: (...) -> bool
     """Load the solved camera from the output directory into Maya.
 
     The solver writes ``{prefix_name}_camera.mmcamera`` to *output_dir*.
@@ -108,12 +108,13 @@ def load_camera_outputs(cam, prefix_name, output_dir):
 
 
 def load_nuke_lens_file():
+    # type: () -> None
     # TODO: Read nuke lens file.
     raise NotImplementedError
 
 
 def load_solved_bundles_from_file(mkr_list, file_path):
-    # type: (list[mmapi.Marker], str) -> bool
+    # type: (...) -> bool
     """Apply solved bundle positions from a .mmbundles file to Maya bundles.
 
     Matches each entry in the file by name to a marker in *mkr_list*,
@@ -186,7 +187,7 @@ def load_solved_bundles_from_file(mkr_list, file_path):
 
 
 def load_bundle_outputs(mkr_list, prefix_name, output_dir):
-    # type: (list[mmapi.Marker], str, str) -> bool
+    # type: (...) -> bool
     """Load the solved bundle positions from the output directory into Maya.
 
     The solver writes ``{prefix_name}_bundles.mmbundles`` to *output_dir*.

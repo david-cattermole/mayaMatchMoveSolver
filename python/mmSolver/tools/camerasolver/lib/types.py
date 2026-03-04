@@ -38,7 +38,8 @@ class AdjustmentSolver(object):
         return self.__adjustment_solver_type
 
     def set_adjustment_solver_type(self, value):
-        # type: (AdjustmentSolver, str) -> None
+        # type: (...) -> None
+        assert isinstance(value, pycompat.TEXT_TYPE)
         assert value in const.ADJUSTMENT_SOLVER_TYPE_LIST
         self.__adjustment_solver_type = value
 

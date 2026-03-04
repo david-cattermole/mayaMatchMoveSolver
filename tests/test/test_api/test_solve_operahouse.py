@@ -60,7 +60,7 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         # Camera
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
-        maya.cmds.setAttr(cam_tfm + '.rotateOrder', 2)  # zxy
+        maya.cmds.setAttr(cam_tfm + '.rotateOrder', 2)  # 2 = ZXY
         maya.cmds.setAttr(cam_shp + '.focalLength', 14)
         maya.cmds.setAttr(cam_shp + '.horizontalFilmAperture', 5.4187 / 25.4)
         maya.cmds.setAttr(cam_shp + '.verticalFilmAperture', 4.0640 / 25.4)

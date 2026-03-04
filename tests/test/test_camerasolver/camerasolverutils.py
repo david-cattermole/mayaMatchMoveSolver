@@ -111,6 +111,7 @@ class CameraSolverTestCase(baseUtils.TestBase):
     ):
         cam_tfm = maya.cmds.createNode('transform', name=name + '_tfm')
         cam_shp = maya.cmds.createNode('camera', name=name + '_shp', parent=cam_tfm)
+        maya.cmds.setAttr(cam_tfm + '.rotateOrder', 2)  # 2 = ZXY
         maya.cmds.setAttr(cam_shp + '.focalLength', focal_length_mm)
         maya.cmds.setAttr(
             cam_shp + '.horizontalFilmAperture',

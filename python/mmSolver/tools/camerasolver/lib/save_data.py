@@ -32,6 +32,8 @@ import mmSolver.tools.savelensfile.lib as savelensfile_lib
 
 import mmSolver.tools.camerasolver.constant as const
 
+from mmSolver.tools.camerasolver.lib.types import AdjustmentSolver, AdjustmentAttributes
+
 # Maya stores film aperture in inches; camera solver expects mm.
 INCHES_TO_MM = 25.4
 

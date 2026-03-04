@@ -485,7 +485,7 @@ def launch_solve(
     returncode, stdout, stderr = solve_process.result()
     if returncode == 0:
         load_camera_outputs(cam, prefix_name, output_dir)
-        # TODO: Load bundle positions.
+        load_bundle_outputs(mkr_list, prefix_name, output_dir)
         # TODO: Load Nuke lens distortion values.
     return (returncode, stdout, stderr)
 
@@ -616,6 +616,90 @@ def load_nuke_lens_file():
     raise NotImplementedError
 
 
-def load_bundle_file():
-    # TODO: Read bundle file.
-    raise NotImplementedError
+def load_solved_bundles_from_file(mkr_list, file_path):
+    # type: (list[mmapi.Marker], str) -> bool
+    """Apply solved bundle positions from a .mmbundles file to Maya bundles.
+
+    Matches each entry in the file by name to a marker in *mkr_list*,
+    then sets translateX/Y/Z on the linked bundle.
+
+    Returns True on success, False if the file could not be loaded.
+    """
+    assert isinstance(mkr_list, list)
+    assert isinstance(file_path, pycompat.TEXT_TYPE)
+
+    if not os.path.isfile(file_path):
+        LOG.error('Solved bundle file not found: %r', file_path)
+        return False
+
+    with open(file_path, 'r') as fh:
+        lines = fh.read().splitlines()
+
+    if not lines:
+        LOG.error('Bundle file is empty: %r', file_path)
+        return False
+
+    try:
+        count = int(lines[0].strip())
+    except ValueError:
+        LOG.error('Invalid bundle count in: %r', file_path)
+        return False
+
+    # Build name -> bundle node map from the marker list.
+    name_to_bnd_node = {}
+    for mkr in mkr_list:
+        mkr_node = mkr.get_node()
+        if mkr_node is None:
+            continue
+        mkr_name = mkr_node.split('|')[-1]
+        bnd = mkr.get_bundle()
+        if bnd is None:
+            continue
+        bnd_node = bnd.get_node()
+        if bnd_node is None:
+            continue
+        name_to_bnd_node[mkr_name] = bnd_node
+
+    line_idx = 1
+    applied = 0
+    for _ in range(count):
+        if line_idx + 1 >= len(lines):
+            break
+        name = lines[line_idx]
+        pos_line = lines[line_idx + 1]
+        line_idx += 2
+
+        bnd_node = name_to_bnd_node.get(name)
+        if bnd_node is None:
+            LOG.warning('No bundle found for marker name %r, skipping.', name)
+            continue
+
+        parts = pos_line.split()
+        if len(parts) < 3:
+            LOG.warning('Invalid position line for %r: %r', name, pos_line)
+            continue
+
+        x, y, z = float(parts[0]), float(parts[1]), float(parts[2])
+        maya.cmds.setAttr(bnd_node + '.translateX', x)
+        maya.cmds.setAttr(bnd_node + '.translateY', y)
+        maya.cmds.setAttr(bnd_node + '.translateZ', z)
+        applied += 1
+
+    LOG.debug('Applied %d bundle positions from %r', applied, file_path)
+    return True
+
+
+def load_bundle_outputs(mkr_list, prefix_name, output_dir):
+    # type: (list[mmapi.Marker], str, str) -> bool
+    """Load the solved bundle positions from the output directory into Maya.
+
+    The solver writes ``{prefix_name}_bundles.mmbundles`` to *output_dir*.
+
+    Returns True on success.
+    """
+    assert isinstance(mkr_list, list)
+    assert isinstance(prefix_name, pycompat.TEXT_TYPE)
+    assert output_dir and os.path.isdir(output_dir)
+    file_name = prefix_name + '_bundles.mmbundles'
+    file_path = os.path.join(output_dir, file_name)
+    return load_solved_bundles_from_file(mkr_list, file_path)

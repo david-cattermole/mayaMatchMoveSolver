@@ -41,6 +41,7 @@ from mmSolver.tools.camerasolver.lib.save_data import (
 from mmSolver.tools.camerasolver.lib.load_data import (
     load_camera_outputs,
     load_bundle_outputs,
+    load_residuals_outputs,
 )
 
 LOG = mmSolver.logger.get_logger()
@@ -249,6 +250,7 @@ def launch_solve(
     if returncode == 0:
         load_camera_outputs(cam, prefix_name, output_dir)
         load_bundle_outputs(mkr_list, prefix_name, output_dir)
+        load_residuals_outputs(mkr_list, prefix_name, output_dir)
         # TODO: Load Nuke lens distortion values.
     return (returncode, stdout, stderr)
 

@@ -32,6 +32,8 @@ from mmSolver.tools.camerasolver.lib.load_data import (
     load_solved_camera_from_file,
     load_camera_outputs,
     load_nuke_lens_file,
+    load_residuals_file,
+    load_residuals_outputs,
     load_solved_bundles_from_file,
     load_bundle_outputs,
 )

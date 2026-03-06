@@ -113,6 +113,118 @@ def load_nuke_lens_file():
     raise NotImplementedError
 
 
+def load_residuals_file(mkr_list, file_path):
+    # type: (...) -> bool
+    """Apply per-frame deviation values from a .mmresiduals file to markers.
+
+    Returns True on success, False on failure.
+    """
+    assert isinstance(mkr_list, list)
+    assert isinstance(file_path, pycompat.TEXT_TYPE)
+
+    if not os.path.isfile(file_path):
+        LOG.error('Residuals file not found: %r', file_path)
+        return False
+
+    with open(file_path, 'r') as fh:
+        doc = json.load(fh)
+
+    assert isinstance(doc, dict)
+    version = doc.get('version')
+    if version != 1:
+        LOG.error('Unsupported residuals version %r in: %r', version, file_path)
+        return False
+    assert version == 1
+
+    data = doc.get('data', {})
+    assert isinstance(data, dict)
+    marker_names = data.get('marker_names', [])
+    per_frame = data.get('per_frame_per_marker', [])
+    assert isinstance(marker_names, list)
+    assert isinstance(per_frame, list)
+
+    if not marker_names or not per_frame:
+        LOG.error('No marker data in residuals file: %r', file_path)
+        return False
+
+    name_to_mkr = {}
+    for mkr in mkr_list:
+        assert isinstance(mkr, mmapi.Marker)
+        mkr_node = mkr.get_node()
+        if mkr_node is None:
+            continue
+        mkr_name = mkr_node.split('|')[-1]
+        name_to_mkr[mkr_name] = mkr
+
+    # Every marker name in the file must have a corresponding Marker
+    # in the scene. The file is produced by the solver from the same
+    # markers we passed in, so a mismatch indicates a pipeline error.
+    for name in marker_names:
+        assert isinstance(name, pycompat.TEXT_TYPE)
+        if name not in name_to_mkr:
+            LOG.error(
+                'Marker %r from residuals file not found in scene.'
+                ' file marker_names=%r, scene marker names=%r',
+                name,
+                marker_names,
+                list(name_to_mkr.keys()),
+            )
+            return False
+
+    # Collect per-marker frame/error lists. After this loop each
+    # marker has exactly len(per_frame) entries.
+    marker_count = len(marker_names)
+    frame_lists = [[] for _ in range(marker_count)]
+    dev_lists = [[] for _ in range(marker_count)]
+
+    for frame_entry in per_frame:
+        assert isinstance(frame_entry, dict)
+        frame = frame_entry.get('frame')
+        assert isinstance(frame, (int, float))
+        errors = frame_entry.get('errors', [])
+        assert isinstance(errors, list)
+        # The solver writes exactly one error per marker per frame.
+        assert len(errors) == marker_count
+        for i, error in enumerate(errors):
+            frame_lists[i].append(frame)
+            if error is None:
+                error = 0.0
+            assert isinstance(error, (int, float))
+            dev_lists[i].append(error)
+
+    for i, name in enumerate(marker_names):
+        mkr = name_to_mkr[name]
+        assert isinstance(mkr, mmapi.Marker)
+        frames = frame_lists[i]
+        devs = dev_lists[i]
+        assert len(frames) == len(devs)
+
+        mkr.set_deviation(frames, devs)
+        avg_dev = mmapi.calculate_average_deviation(devs)
+        assert isinstance(avg_dev, float)
+        mkr.set_average_deviation(avg_dev)
+        max_dev, max_frm = mmapi.calculate_maximum_deviation(frames, devs)
+        assert isinstance(max_dev, float)
+        mkr.set_maximum_deviation(max_dev, max_frm)
+
+    LOG.debug('Applied residuals for %d markers from %r', marker_count, file_path)
+    return True
+
+
+def load_residuals_outputs(mkr_list, prefix_name, output_dir):
+    # type: (...) -> bool
+    """Load residuals from the output directory into Maya markers.
+
+    Returns True on success.
+    """
+    assert isinstance(mkr_list, list)
+    assert isinstance(prefix_name, pycompat.TEXT_TYPE)
+    assert output_dir and os.path.isdir(output_dir)
+    file_name = prefix_name + '_residuals.mmresiduals'
+    file_path = os.path.join(output_dir, file_name)
+    return load_residuals_file(mkr_list, file_path)
+
+
 def load_solved_bundles_from_file(mkr_list, file_path):
     # type: (...) -> bool
     """Apply solved bundle positions from a .mmbundles file to Maya bundles.

@@ -40,6 +40,8 @@ details and features to use.
 .. toctree::
    :maxdepth: 1
 
+   camera_solver_overview
+   camera_solver_global_optimization
    solver_concepts
    solver_design
    nodes

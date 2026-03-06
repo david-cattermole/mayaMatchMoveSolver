@@ -59,7 +59,7 @@ public:
         , m_sensor_width_mm_b(1.0)
         , m_sensor_height_mm_b(1.0)
         , m_frame_a(1)
-        , m_frame_b(10){};
+        , m_frame_b(1){};
 
     virtual ~MMMarkerHomographyCmd();
 

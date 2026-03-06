@@ -70,6 +70,11 @@ class SolveProcess(object):
 
     def __init__(self, proc, stdout_thread, stderr_thread, stdout_lines, stderr_lines):
         # type: (...) -> None
+        assert isinstance(proc, subprocess.Popen)
+        assert isinstance(stdout_thread, threading.Thread)
+        assert isinstance(stderr_thread, threading.Thread)
+        assert isinstance(stdout_lines, list)
+        assert isinstance(stderr_lines, list)
         self._proc = proc
         self._stdout_thread = stdout_thread
         self._stderr_thread = stderr_thread
@@ -104,6 +109,8 @@ class SolveProcess(object):
 def _start_solve_process(cmd_args):
     # type: (...) -> SolveProcess
     assert isinstance(cmd_args, list)
+    assert len(cmd_args) > 0
+    assert all(isinstance(arg, pycompat.TEXT_TYPE) for arg in cmd_args)
     proc = subprocess.Popen(
         cmd_args,
         stdout=subprocess.PIPE,
@@ -154,6 +161,8 @@ def _build_solve_cmd_args(
     assert isinstance(cam, mmapi.Camera)
     assert lens is None or isinstance(lens, mmapi.Lens)
     assert isinstance(mkr_list, list)
+    assert len(mkr_list) > 0
+    assert all(isinstance(mkr, mmapi.Marker) for mkr in mkr_list)
     assert isinstance(frame_range, time_utils.FrameRange)
     assert isinstance(adjustment_solver, AdjustmentSolver)
     assert isinstance(adjustment_attrs, AdjustmentAttributes)
@@ -221,6 +230,8 @@ def launch_solve(
     assert isinstance(cam, mmapi.Camera)
     assert lens is None or isinstance(lens, mmapi.Lens)
     assert isinstance(mkr_list, list)
+    assert len(mkr_list) > 0
+    assert all(isinstance(mkr, mmapi.Marker) for mkr in mkr_list)
     assert isinstance(frame_range, time_utils.FrameRange)
     assert isinstance(adjustment_solver, AdjustmentSolver)
     assert isinstance(adjustment_attrs, AdjustmentAttributes)
@@ -247,6 +258,9 @@ def launch_solve(
 
     solve_process.wait()
     returncode, stdout, stderr = solve_process.result()
+    assert isinstance(returncode, int)
+    assert isinstance(stdout, pycompat.TEXT_TYPE)
+    assert isinstance(stderr, pycompat.TEXT_TYPE)
     if returncode == 0:
         load_camera_outputs(cam, prefix_name, output_dir)
         load_bundle_outputs(mkr_list, prefix_name, output_dir)
@@ -277,6 +291,8 @@ def launch_solve_async(
     assert isinstance(cam, mmapi.Camera)
     assert lens is None or isinstance(lens, mmapi.Lens)
     assert isinstance(mkr_list, list)
+    assert len(mkr_list) > 0
+    assert all(isinstance(mkr, mmapi.Marker) for mkr in mkr_list)
     assert isinstance(frame_range, time_utils.FrameRange)
     assert isinstance(adjustment_solver, AdjustmentSolver)
     assert isinstance(adjustment_attrs, AdjustmentAttributes)

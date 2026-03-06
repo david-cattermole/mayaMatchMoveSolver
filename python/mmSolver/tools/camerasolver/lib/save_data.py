@@ -44,6 +44,8 @@ def construct_output_file_path(output_dir, file_prefix, file_suffix, file_ext):
     assert isinstance(file_prefix, pycompat.TEXT_TYPE)
     assert isinstance(file_suffix, pycompat.TEXT_TYPE)
     assert isinstance(file_ext, pycompat.TEXT_TYPE)
+    assert len(output_dir) > 0
+    assert len(file_ext) > 0
     file_name = file_prefix + file_suffix + file_ext
     return os.path.join(output_dir, file_name)
 
@@ -51,9 +53,11 @@ def construct_output_file_path(output_dir, file_prefix, file_suffix, file_ext):
 def save_markers_to_file(mkr_list, frame_range, file_prefix, output_dir):
     # type: (...) -> str
     assert isinstance(mkr_list, list)
+    assert len(mkr_list) > 0
     assert isinstance(frame_range, time_utils.FrameRange)
     assert isinstance(file_prefix, pycompat.TEXT_TYPE)
     assert isinstance(output_dir, pycompat.TEXT_TYPE)
+    assert os.path.isdir(output_dir)
     data = savemarkerfile_lib.generate(mkr_list, frame_range)
     file_suffix = ''
     file_path = construct_output_file_path(output_dir, file_prefix, file_suffix, '.uv')
@@ -64,8 +68,11 @@ def save_markers_to_file(mkr_list, frame_range, file_prefix, output_dir):
 def _query_sample_attr_over_frames(node, attr_name, frames):
     # type: (...) -> list[list]
     assert isinstance(node, pycompat.TEXT_TYPE)
+    assert len(node) > 0
     assert isinstance(attr_name, pycompat.TEXT_TYPE)
+    assert len(attr_name) > 0
     assert isinstance(frames, list)
+    assert len(frames) > 0
     result = []
     for frame in frames:
         value = maya.cmds.getAttr(node + '.' + attr_name, time=frame)
@@ -77,6 +84,9 @@ def save_camera_to_file(cam, frame_range, file_prefix, output_dir):
     # type: (...) -> str
     assert isinstance(cam, mmapi.Camera)
     assert isinstance(frame_range, time_utils.FrameRange)
+    assert isinstance(file_prefix, pycompat.TEXT_TYPE)
+    assert isinstance(output_dir, pycompat.TEXT_TYPE)
+    assert os.path.isdir(output_dir)
     file_suffix = ''
     file_path = construct_output_file_path(
         output_dir, file_prefix, file_suffix, '.mmcamera'
@@ -140,6 +150,7 @@ def save_nuke_lens_to_file(cam, lens, frame_range, file_prefix, output_dir):
     assert isinstance(frame_range, time_utils.FrameRange)
     assert isinstance(file_prefix, pycompat.TEXT_TYPE)
     assert isinstance(output_dir, pycompat.TEXT_TYPE)
+    assert os.path.isdir(output_dir)
     file_suffix = ''
     data_list = [savelensfile_lib.generate(cam, lens, frame_range)]
     file_path = construct_output_file_path(output_dir, file_prefix, file_suffix, '.nk')
@@ -160,6 +171,7 @@ def save_solver_settings_to_file(
     assert isinstance(adjustment_attrs, AdjustmentAttributes)
     assert isinstance(file_prefix, pycompat.TEXT_TYPE)
     assert isinstance(output_dir, pycompat.TEXT_TYPE)
+    assert os.path.isdir(output_dir)
 
     file_suffix = ''
     file_path = construct_output_file_path(

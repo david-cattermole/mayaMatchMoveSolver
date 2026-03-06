@@ -60,6 +60,8 @@ def load_solved_camera_from_file(cam, file_path):
 
     cam_tfm = cam.get_transform_node()
     cam_shp = cam.get_shape_node()
+    assert isinstance(cam_tfm, pycompat.TEXT_TYPE)
+    assert isinstance(cam_shp, pycompat.TEXT_TYPE)
 
     # Map from mmcamera attribute name -> (node, maya_attr, mm_to_inches)
     MM_TO_INCHES = 1.0 / INCHES_TO_MM
@@ -120,6 +122,8 @@ def load_residuals_file(mkr_list, file_path):
     Returns True on success, False on failure.
     """
     assert isinstance(mkr_list, list)
+    assert len(mkr_list) > 0
+    assert all(isinstance(mkr, mmapi.Marker) for mkr in mkr_list)
     assert isinstance(file_path, pycompat.TEXT_TYPE)
 
     if not os.path.isfile(file_path):
@@ -218,6 +222,8 @@ def load_residuals_outputs(mkr_list, prefix_name, output_dir):
     Returns True on success.
     """
     assert isinstance(mkr_list, list)
+    assert len(mkr_list) > 0
+    assert all(isinstance(mkr, mmapi.Marker) for mkr in mkr_list)
     assert isinstance(prefix_name, pycompat.TEXT_TYPE)
     assert output_dir and os.path.isdir(output_dir)
     file_name = prefix_name + '_residuals.mmresiduals'
@@ -235,6 +241,8 @@ def load_solved_bundles_from_file(mkr_list, file_path):
     Returns True on success, False if the file could not be loaded.
     """
     assert isinstance(mkr_list, list)
+    assert len(mkr_list) > 0
+    assert all(isinstance(mkr, mmapi.Marker) for mkr in mkr_list)
     assert isinstance(file_path, pycompat.TEXT_TYPE)
 
     if not os.path.isfile(file_path):
@@ -253,6 +261,7 @@ def load_solved_bundles_from_file(mkr_list, file_path):
     except ValueError:
         LOG.error('Invalid bundle count in: %r', file_path)
         return False
+    assert count >= 0
 
     # Build name -> bundle node map from the marker list.
     name_to_bnd_node = {}
@@ -307,6 +316,8 @@ def load_bundle_outputs(mkr_list, prefix_name, output_dir):
     Returns True on success.
     """
     assert isinstance(mkr_list, list)
+    assert len(mkr_list) > 0
+    assert all(isinstance(mkr, mmapi.Marker) for mkr in mkr_list)
     assert isinstance(prefix_name, pycompat.TEXT_TYPE)
     assert output_dir and os.path.isdir(output_dir)
     file_name = prefix_name + '_bundles.mmbundles'

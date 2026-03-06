@@ -104,6 +104,7 @@ class AdjustmentAttributes(object):
         assert isinstance(attr_name, pycompat.TEXT_TYPE)
         assert isinstance(min_value, float)
         assert isinstance(max_value, float)
+        assert min_value <= max_value
         self.__attribute_to_bounds[attr_name] = [min_value, max_value]
 
     def get_attribute_sample_count(self, attr_name):

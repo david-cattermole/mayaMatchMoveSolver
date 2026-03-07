@@ -53,18 +53,18 @@ def get_camera_from_selection():
     node_categories = mmapi.filter_nodes_into_categories(nodes)
     camera_nodes = node_categories.get(mmapi.OBJECT_TYPE_CAMERA, [])
     if camera_nodes:
-        _, camera_shape_node = camera_utils.get_camera(camera_nodes[0])
-        if camera_shape_node is not None:
-            return mmapi.Camera(shape=camera_shape_node)
+        _, cam_shp_node = camera_utils.get_camera(camera_nodes[0])
+        if cam_shp_node is not None:
+            return mmapi.Camera(shape=cam_shp_node)
 
     # Fall back to the camera shown in the active viewport.
     model_editor = viewport_utils.get_active_model_editor()
     if model_editor is None:
         return None
-    _, camera_shape_node = viewport_utils.get_viewport_camera(model_editor)
-    if camera_shape_node is None:
+    _, cam_shp_node = viewport_utils.get_viewport_camera(model_editor)
+    if cam_shp_node is None:
         return None
-    return mmapi.Camera(shape=camera_shape_node)
+    return mmapi.Camera(shape=cam_shp_node)
 
 
 def get_markers_under_camera(camera):
@@ -77,13 +77,13 @@ def get_markers_under_camera(camera):
     """
     # type: (...) -> list
     assert isinstance(camera, mmapi.Camera)
-    camera_transform_node = camera.get_transform_node()
-    if camera_transform_node is None:
+    cam_tfm_node = camera.get_transform_node()
+    if cam_tfm_node is None:
         return []
-    below_nodes = maya.cmds.ls(camera_transform_node, dag=True, long=True) or []
-    marker_nodes = mmapi.filter_marker_nodes(below_nodes)
-    marker_nodes = list(set(marker_nodes))
-    return [mmapi.Marker(node=x) for x in marker_nodes]
+    below_nodes = maya.cmds.ls(cam_tfm_node, dag=True, long=True) or []
+    mkr_nodes = mmapi.filter_marker_nodes(below_nodes)
+    mkr_nodes = list(set(mkr_nodes))
+    return [mmapi.Marker(node=x) for x in mkr_nodes]
 
 
 def get_lens_from_camera(camera):
@@ -96,12 +96,12 @@ def get_lens_from_camera(camera):
     """
     # type: (...) -> mmapi.Lens | None
     assert isinstance(camera, mmapi.Camera)
-    camera_shape_node = camera.get_shape_node()
-    if camera_shape_node is None:
+    cam_shp_node = camera.get_shape_node()
+    if cam_shp_node is None:
         return None
     lens_nodes = (
         maya.cmds.listConnections(
-            camera_shape_node + '.inLens',
+            cam_shp_node + '.inLens',
             source=True,
             destination=False,
             type='mmLensModel3de',
@@ -125,10 +125,11 @@ def get_camera_focal_length(camera):
     assert camera is None or isinstance(camera, mmapi.Camera)
     if camera is None:
         return 35.0
-    camera_shape_node = camera.get_shape_node()
-    if camera_shape_node is None:
+    cam_shp_node = camera.get_shape_node()
+    if cam_shp_node is None:
         return 35.0
-    return float(maya.cmds.getAttr(camera_shape_node + '.focalLength'))
+    node_attr = cam_shp_node + '.focalLength'
+    return maya.cmds.getAttr(node_attr)
 
 
 def get_output_directory():
@@ -179,6 +180,6 @@ def get_prefix_name(camera):
     """
     # type: (...) -> str
     assert isinstance(camera, mmapi.Camera)
-    camera_transform_node = camera.get_transform_node() or ''
-    camera_name = camera_transform_node.split('|')[-1]
+    cam_tfm_node = camera.get_transform_node() or ''
+    camera_name = cam_tfm_node.split('|')[-1]
     return 'camerasolver_' + camera_name

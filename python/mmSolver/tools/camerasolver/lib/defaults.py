@@ -28,6 +28,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.utils.time as time_utils
+import mmSolver.utils.python_compat as pycompat
 
 import mmSolver.tools.camerasolver.constant as const
 from mmSolver.tools.camerasolver.lib.types import AdjustmentSolver
@@ -48,6 +49,9 @@ def compute_focal_length_min_max_from_percentage(focal_length_mm, percentage_val
     :returns: ``(focal_length_min, focal_length_max)`` in millimetres.
     :rtype: (float, float)
     """
+    # type: (...) -> tuple
+    assert isinstance(focal_length_mm, float)
+    assert isinstance(percentage_value, float)
     factor = percentage_value / 100.0
     # TODO: Define a "standard" range and then create range of values
     # from that.
@@ -78,6 +82,15 @@ def make_adjustment_solver(
 
     :rtype: AdjustmentSolver
     """
+    # type: (...) -> AdjustmentSolver
+    assert isinstance(solver_type, pycompat.TEXT_TYPE)
+    assert solver_type in const.ADJUSTMENT_SOLVER_TYPE_LIST
+    assert isinstance(thread_count, int)
+    assert thread_count > 0
+    assert isinstance(evolution_generation_count, int)
+    assert evolution_generation_count > 0
+    assert isinstance(evolution_population_count, int)
+    assert evolution_population_count > 0
     adjustment_solver = AdjustmentSolver()
     adjustment_solver.set_adjustment_solver_type(solver_type)
     adjustment_solver.set_thread_count(thread_count)
@@ -102,6 +115,13 @@ def make_adjustment_attributes(
 
     :rtype: AdjustmentAttributes
     """
+    # type: (...) -> AdjustmentAttributes
+    assert isinstance(focal_length_min, float)
+    assert isinstance(focal_length_max, float)
+    assert isinstance(focal_length_samples, int)
+    assert focal_length_min > 0.0
+    assert focal_length_max > focal_length_min
+    assert focal_length_samples > 0
     adjustment_attributes = AdjustmentAttributes()
     adjustment_attributes.set_attribute_bounds(
         const.ATTR_CAMERA_FOCAL_LENGTH,
@@ -128,6 +148,10 @@ def get_frame_range(frame_range_mode, start_frame=1, end_frame=120):
 
     :rtype: mmSolver.utils.time.FrameRange
     """
+    # type: (...) -> time_utils.FrameRange
+    assert isinstance(frame_range_mode, int)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
     if frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_OUTER_INDEX:
         return time_utils.get_maya_timeline_range_outer()
     if frame_range_mode == const.FRAME_RANGE_MODE_CUSTOM_INDEX:

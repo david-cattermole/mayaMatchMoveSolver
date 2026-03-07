@@ -110,6 +110,7 @@ def run_camera_solve():
     background process so that Maya remains interactive.
     Use :func:`load_solved_camera` afterwards to apply the results.
     """
+    # type: () -> lib.SolveProcess | None
     mmapi.load_plugin()
 
     camera = lib.get_camera_from_selection()
@@ -159,6 +160,7 @@ def load_solved_camera():
     The selected/active camera is used. The camera name must match the
     one that was originally solved.
     """
+    # type: () -> None
     mmapi.load_plugin()
 
     undo_id = 'camerasolver load: '
@@ -201,6 +203,7 @@ def open_window():
     """
     Open the Camera Solver UI window.
     """
+    # type: () -> None
     import mmSolver.tools.camerasolver.ui.camerasolver_window as camerasolver_window
 
     camerasolver_window.main()

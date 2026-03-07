@@ -48,6 +48,7 @@ def get_camera_from_selection():
     :returns: A Camera object, or None if no camera can be determined.
     :rtype: mmapi.Camera or None
     """
+    # type: () -> mmapi.Camera | None
     nodes = maya.cmds.ls(long=True, selection=True) or []
     node_categories = mmapi.filter_nodes_into_categories(nodes)
     camera_nodes = node_categories.get(mmapi.OBJECT_TYPE_CAMERA, [])
@@ -74,6 +75,8 @@ def get_markers_under_camera(camera):
 
     :rtype: list[mmapi.Marker]
     """
+    # type: (...) -> list
+    assert isinstance(camera, mmapi.Camera)
     camera_transform_node = camera.get_transform_node()
     if camera_transform_node is None:
         return []
@@ -91,6 +94,8 @@ def get_lens_from_camera(camera):
 
     :rtype: mmapi.Lens or None
     """
+    # type: (...) -> mmapi.Lens | None
+    assert isinstance(camera, mmapi.Camera)
     camera_shape_node = camera.get_shape_node()
     if camera_shape_node is None:
         return None
@@ -116,6 +121,8 @@ def get_camera_focal_length(camera):
 
     :rtype: float
     """
+    # type: (...) -> float
+    assert camera is None or isinstance(camera, mmapi.Camera)
     if camera is None:
         return 35.0
     camera_shape_node = camera.get_shape_node()
@@ -132,6 +139,7 @@ def get_output_directory():
 
     :rtype: str
     """
+    # type: () -> str
     workspace_path = maya.cmds.workspace(query=True, fullName=True)
     if workspace_path is not None:
         workspace_path = os.path.abspath(workspace_path)
@@ -169,6 +177,8 @@ def get_prefix_name(camera):
 
     :rtype: str
     """
+    # type: (...) -> str
+    assert isinstance(camera, mmapi.Camera)
     camera_transform_node = camera.get_transform_node() or ''
     camera_name = camera_transform_node.split('|')[-1]
     return 'camerasolver_' + camera_name

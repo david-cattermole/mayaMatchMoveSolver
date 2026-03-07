@@ -42,7 +42,6 @@ LOG_LEVEL_LIST = [
     LOG_LEVEL_DEBUG,
 ]
 
-
 # Adjustment solver type.
 ADJUSTMENT_SOLVER_TYPE_NONE = 'adjustment_solver_type_none'
 ADJUSTMENT_SOLVER_TYPE_EVOLUTION_REFINE = 'adjustment_solver_type_evolution_refine'
@@ -61,7 +60,72 @@ MMSOLVER_LOCATION_ENV_VAR_NAME = 'MMSOLVER_LOCATION'
 # The expected file name for the camera solver executable.
 EXECUTABLE_FILE_NAME = 'mmsolver-camerasolve'
 
-
 # This is a special attribute name that is expected by the
 # mmcamerasolve executable.
 ATTR_CAMERA_FOCAL_LENGTH = 'camera.focal_length_mm'
+
+# Output directory location within the Maya workspace.
+WORKSPACE_OUTPUT_SUBDIR = 'data'
+OUTPUT_DIRECTORY_NAME = 'mmSolver_camerasolver'
+
+# Scene option keys for storing camera solver settings in the Maya
+# scene.  Using the scene means each saved .ma/.mb file carries its
+# own solver preferences, and multiple open Maya sessions can hold
+# independent values.
+SCENE_OPTION_LOG_LEVEL = 'mmSolver_camerasolver_log_level'
+SCENE_OPTION_ADJUSTMENT_SOLVER_TYPE = 'mmSolver_camerasolver_adjustment_solver_type'
+SCENE_OPTION_THREAD_COUNT = 'mmSolver_camerasolver_thread_count'
+SCENE_OPTION_EVOLUTION_GENERATION_COUNT = (
+    'mmSolver_camerasolver_evolution_generation_count'
+)
+SCENE_OPTION_EVOLUTION_POPULATION_COUNT = (
+    'mmSolver_camerasolver_evolution_population_count'
+)
+SCENE_OPTION_FRAME_RANGE_MODE = 'mmSolver_camerasolver_frame_range_mode'
+SCENE_OPTION_FRAME_START = 'mmSolver_camerasolver_frame_start'
+SCENE_OPTION_FRAME_END = 'mmSolver_camerasolver_frame_end'
+SCENE_OPTION_FOCAL_LENGTH_RANGE_MODE = 'mmSolver_camerasolver_focal_length_range_mode'
+SCENE_OPTION_FOCAL_LENGTH_PERCENTAGE = 'mmSolver_camerasolver_focal_length_percentage'
+SCENE_OPTION_FOCAL_LENGTH_MIN = 'mmSolver_camerasolver_focal_length_min'
+SCENE_OPTION_FOCAL_LENGTH_MAX = 'mmSolver_camerasolver_focal_length_max'
+SCENE_OPTION_FOCAL_LENGTH_SAMPLES = 'mmSolver_camerasolver_focal_length_samples'
+
+# Frame range mode combo box indices.
+FRAME_RANGE_MODE_TIMELINE_INNER_INDEX = 0
+FRAME_RANGE_MODE_TIMELINE_OUTER_INDEX = 1
+FRAME_RANGE_MODE_CUSTOM_INDEX = 2
+
+# Focal length range mode combo box indices.
+FOCAL_LENGTH_RANGE_MODE_PERCENTAGE_INDEX = 0
+FOCAL_LENGTH_RANGE_MODE_MIN_MAX_INDEX = 1
+
+# Ordered lists mapping combo box index to constant string value.
+# The position in the list corresponds to the combo box item index.
+ADJUSTMENT_SOLVER_TYPE_INDEX_LIST = [
+    ADJUSTMENT_SOLVER_TYPE_NONE,
+    ADJUSTMENT_SOLVER_TYPE_EVOLUTION_REFINE,
+    ADJUSTMENT_SOLVER_TYPE_EVOLUTION_UNKNOWN,
+    ADJUSTMENT_SOLVER_TYPE_UNIFORM_GRID,
+]
+LOG_LEVEL_INDEX_LIST = [
+    LOG_LEVEL_ERROR,
+    LOG_LEVEL_WARNING,
+    LOG_LEVEL_PROGRESS,
+    LOG_LEVEL_INFO,
+    LOG_LEVEL_DEBUG,
+]
+
+# Default values used when a scene option has not yet been set.
+DEFAULT_LOG_LEVEL = LOG_LEVEL_PROGRESS
+DEFAULT_ADJUSTMENT_SOLVER_TYPE = ADJUSTMENT_SOLVER_TYPE_NONE
+DEFAULT_THREAD_COUNT = 4
+DEFAULT_EVOLUTION_GENERATION_COUNT = 100
+DEFAULT_EVOLUTION_POPULATION_COUNT = 100
+DEFAULT_FRAME_RANGE_MODE = FRAME_RANGE_MODE_TIMELINE_INNER_INDEX
+DEFAULT_FRAME_START = 1
+DEFAULT_FRAME_END = 120
+DEFAULT_FOCAL_LENGTH_RANGE_MODE = FOCAL_LENGTH_RANGE_MODE_PERCENTAGE_INDEX
+DEFAULT_FOCAL_LENGTH_PERCENTAGE = 20.0
+DEFAULT_FOCAL_LENGTH_MIN = 0.1
+DEFAULT_FOCAL_LENGTH_MAX = 1000.0
+DEFAULT_FOCAL_LENGTH_SAMPLES = 100

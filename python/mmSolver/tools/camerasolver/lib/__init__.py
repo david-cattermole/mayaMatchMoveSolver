@@ -49,3 +49,19 @@ from mmSolver.tools.camerasolver.lib.execute import (
     launch_solve,
     launch_solve_async,
 )
+
+from mmSolver.tools.camerasolver.lib.defaults import (
+    compute_focal_length_min_max_from_percentage,
+    make_adjustment_solver,
+    make_adjustment_attributes,
+    get_frame_range,
+)
+
+from mmSolver.tools.camerasolver.lib.scene import (
+    get_camera_from_selection,
+    get_markers_under_camera,
+    get_lens_from_camera,
+    get_camera_focal_length,
+    get_output_directory,
+    get_prefix_name,
+)

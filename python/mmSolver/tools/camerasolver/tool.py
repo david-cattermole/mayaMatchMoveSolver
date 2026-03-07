@@ -153,6 +153,115 @@ def run_camera_solve():
     return solver_process
 
 
+def run_camera_solve_and_load():
+    """
+    Run the camera solver, wait for it to finish, then load the solved
+    camera data onto the camera.
+
+    The solve runs in the background so Maya stays interactive. A Qt
+    event filter intercepts the ESC key: if pressed the solve is
+    cancelled and the camera is left unchanged.
+    """
+    # type: () -> None
+    import mmSolver.ui.Qt.QtCore as QtCore
+    import mmSolver.ui.Qt.QtWidgets as QtWidgets
+
+    mmapi.load_plugin()
+
+    camera = lib.get_camera_from_selection()
+    if camera is None:
+        LOG.warning('No camera selected or active in viewport.')
+        return
+
+    mkr_list = lib.get_markers_under_camera(camera)
+    if not mkr_list:
+        LOG.warning('No markers found under camera %r.', camera.get_transform_node())
+        return
+
+    lens = lib.get_lens_from_camera(camera)
+    frame_range = time_utils.get_maya_timeline_range_inner()
+    log_level = _get_log_level()
+    adjustment_solver = _get_adjustment_solver()
+    adjustment_attributes = _get_default_adjustment_attributes()
+    output_directory = lib.get_output_directory()
+    prefix_name = lib.get_prefix_name(camera)
+
+    solver_process = lib.launch_solve_async(
+        camera,
+        lens,
+        mkr_list,
+        frame_range,
+        adjustment_solver,
+        adjustment_attributes,
+        log_level,
+        prefix_name,
+        output_directory,
+    )
+    if solver_process is None:
+        LOG.error('Failed to launch camera solver.')
+        return
+
+    LOG.info(
+        'Camera solver running for %r. Press ESC to cancel.',
+        camera.get_transform_node(),
+    )
+
+    app = QtWidgets.QApplication.instance()
+    timer = QtCore.QTimer()
+    timer.setInterval(100)
+
+    # Use a mutable container so the nested functions can write to it.
+    state = {'cancelled': False}
+
+    class _EscFilter(QtCore.QObject):
+        def eventFilter(self, obj, event):
+            if event.type() == QtCore.QEvent.KeyPress:
+                if event.key() == QtCore.Qt.Key_Escape:
+                    state['cancelled'] = True
+                    timer.stop()
+                    solver_process.cancel()
+                    app.removeEventFilter(self)
+                    LOG.info('Camera solve cancelled by user (ESC).')
+                    return True
+            return False
+
+    esc_filter = _EscFilter()
+    app.installEventFilter(esc_filter)
+
+    def _on_poll():
+        if not solver_process.is_done():
+            return
+        timer.stop()
+        app.removeEventFilter(esc_filter)
+        if state['cancelled']:
+            return
+        solver_process.wait()
+        returncode, _stdout, _stderr = solver_process.result()
+        if returncode != 0:
+            LOG.error('Camera solve failed (exit %d).', returncode)
+            return
+        undo_id = 'camerasolver load: '
+        undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
+        undo_id += ' '
+        undo_id += str(uuid.uuid4())
+        with tools_utils.tool_context(
+            use_undo_chunk=True,
+            undo_chunk_name=undo_id,
+            restore_current_frame=False,
+            pre_update_frame=False,
+            post_update_frame=False,
+            use_dg_evaluation_mode=True,
+            disable_viewport=False,
+        ):
+            lib.load_camera_outputs(camera, prefix_name, output_directory)
+            lib.load_bundle_outputs(mkr_list, prefix_name, output_directory)
+            lib.load_residuals_outputs(mkr_list, prefix_name, output_directory)
+        LOG.info('Loaded solved camera data for %r.', camera.get_transform_node())
+
+    timer.timeout.connect(_on_poll)
+    timer.start()
+
+
 def load_solved_camera():
     """
     Load a previously solved camera from the output directory.

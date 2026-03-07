@@ -96,27 +96,33 @@ shelves, menus and plug-in are always loaded.
 
 # Project Configuration
 
-By default, the tool should work without trouble, but some individuals
-may want extra customisation.
+By default, the tool should work without trouble, but some individuals may want
+extra customisation.
 
-To make customisations, edit the Maya Module file (ending with `.mod`)
-using a text editor. The following environment variables are defined
-which can control mmSolver's behaviour. The modified behaviour will be
-for all users loading this module - if the module file is located on
-the network for multiple users changes to this file will affect all
-users.
+The *mmSolver* plug-in package includes a Maya module file named after the
+plug-in version, Maya version and operating system, for example:
 
-| Name                       | Description                                                                                                           |
-|----------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| MMSOLVER_LOAD_AT_STARTUP   | Automatically load mmSolver plug-in at Maya start-up (values of '0' or '1').                                          |
-| MMSOLVER_CREATE_SHELF      | Automatically create a Maya shelf at start-up (values of '0' or '1').                                                 |
-| MMSOLVER_CREATE_MENU       | Automatically create a Maya menu at start-up (values of '0' or '1').                                                  |
-| MMSOLVER_CREATE_HOTKEY_SET | Automatically create a Maya hotkey set at start-up (values of '0' or '1').                                            |
-| MMSOLVER_VIEWPORT_MESSAGES | Enable or disable warnings and errors printed to the viewport (values of '0' or '1').                                 |
-| MMSOLVER_HELP_SOURCE       | Prefer 'internet' or 'local' source of help? For users with internet restrictions set this to 'local'.                |
-| MMSOLVER_DEFAULT_SOLVER    | (Advanced) The default solver to use in mmSolver; 'cminpack_lmdif', 'cminpack_lmder', 'ceres_lmdif' or 'ceres_lmder'. |
-| MMSOLVER_DEBUG             | (Advanced) Forces mmSolver to print out debug messages. Not for users, for use by developers only.                    |
-| MMSOLVER_LOCATION          | Do not change this variable!!!                                                                                        |
+```
+mayaMatchMoveSolver-0.7.0-maya2024-linux.mod
+```
+
+To make customisations, open this `.mod` file in a text editor and edit the
+environment variables listed below. Changes to this file affect all users who
+load the module — if the file is stored on a shared network location,
+modifications will apply to every user.
+
+| Name                        | Description                                                                                                           |
+|-----------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| MMSOLVER_LOAD_AT_STARTUP    | Automatically load mmSolver plug-in at Maya start-up (values of '0' or '1').                                          |
+| MMSOLVER_CREATE_SHELF       | Automatically create a Maya shelf at start-up (values of '0' or '1').                                                 |
+| MMSOLVER_USE_MINIMAL_SHELF  | Controls the minimal shelf variant ('1') or the full shelf ('0', default).                                            |
+| MMSOLVER_CREATE_MENU        | Automatically create a Maya menu at start-up (values of '0' or '1').                                                  |
+| MMSOLVER_CREATE_HOTKEY_SET  | Automatically create a Maya hotkey set at start-up (values of '0' or '1').                                            |
+| MMSOLVER_VIEWPORT_MESSAGES  | Enable or disable warnings and errors printed to the viewport (values of '0' or '1').                                 |
+| MMSOLVER_HELP_SOURCE        | Prefer 'internet' or 'local' source of help? For users with internet restrictions set this to 'local'.                |
+| MMSOLVER_DEFAULT_SOLVER     | (Advanced) The default solver to use in mmSolver; 'cminpack_lmdif', 'cminpack_lmder', 'ceres_lmdif' or 'ceres_lmder'. |
+| MMSOLVER_DEBUG              | (Advanced) Forces mmSolver to print out debug messages. Not for users, for use by developers only.                    |
+| MMSOLVER_LOCATION           | Do not change this variable!!!                                                                                        |
 
 # Install 3DEqualizer Files
 

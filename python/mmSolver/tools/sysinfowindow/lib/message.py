@@ -72,6 +72,7 @@ def get_sysinfo_text():
     load_at_start = os.environ.get('MMSOLVER_LOAD_AT_STARTUP')
     create_menu = os.environ.get('MMSOLVER_CREATE_MENU')
     create_shelf = os.environ.get('MMSOLVER_CREATE_SHELF')
+    use_minimal_shelf = os.environ.get('MMSOLVER_USE_MINIMAL_SHELF')
     help_source = os.environ.get('MMSOLVER_HELP_SOURCE')
     default_solver_env = os.environ.get('MMSOLVER_DEFAULT_SOLVER')
     debug_mode = os.environ.get('MMSOLVER_DEBUG')
@@ -79,6 +80,7 @@ def get_sysinfo_text():
         load_at_start=load_at_start,
         create_menu=create_menu,
         create_shelf=create_shelf,
+        use_minimal_shelf=use_minimal_shelf,
         help_source=help_source,
         default_solver_const=default_solver_const,
         default_solver_env=default_solver_env,

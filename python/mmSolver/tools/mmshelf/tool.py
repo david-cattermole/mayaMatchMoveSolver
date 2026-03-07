@@ -53,13 +53,30 @@ def build_shelf():
     func_config_name = const.CONFIG_FILE_FUNCTIONS_NAME
     shelf_config_name = const.CONFIG_FILE_SHELF_DEFAULT_NAME
     result = lib.build(shelf, func_config_name, shelf_config_name)
-    # # Activating the shelf will switch the current shelf to
-    # # mmSolver. Although this might be helpful for people, in a
-    # # studio setting where mmSolver is loaded for all users,
-    # # including non-matchmove artists, this might become annoying,
-    # # and should therefore be disabled.
-    # lib.activate_shelf_tab(shelf_name)
     return result
+
+
+def build_minimal_shelf():
+    """
+    Build a shelf with a smaller number of shelf items.
+    """
+    LOG.info('Building mmSolver Minimal Shelf...')
+
+    # Create main shelf.
+    shelf_parent = shelf_utils.get_shelves_parent()
+    shelf_name = str(const.SHELF_NAME)
+    shelf = shelf_utils.create_shelf(
+        parent=shelf_parent,
+        name=shelf_name,
+    )
+    if shelf is None:
+        msg = 'Cannot create shelf. Exiting without creating shelf buttons.'
+        LOG.error(msg)
+        return
+
+    func_config_name = const.CONFIG_FILE_FUNCTIONS_NAME
+    shelf_config_name = const.CONFIG_FILE_SHELF_MINIMAL_NAME
+    return lib.build(shelf, func_config_name, shelf_config_name)
 
 
 def build_minimal_shelf_items(shelf):

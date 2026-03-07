@@ -46,6 +46,15 @@ def mmsolver_create_shelf():
     mmSolver.tools.mmshelf.tool.build_shelf()
 
 
+def mmsolver_create_minimal_shelf():
+    """
+    Build the minimal mmSolver shelf.
+    """
+    import mmSolver.tools.mmshelf.tool
+
+    mmSolver.tools.mmshelf.tool.build_minimal_shelf()
+
+
 def mmsolver_create_menu():
     """
     Build the mmSolver menu.
@@ -107,9 +116,14 @@ def mmsolver_startup():
 
         # Create Shelf.
         build_shelf = bool(int(os.environ.get('MMSOLVER_CREATE_SHELF', 1)))
+        use_minimal_shelf = bool(int(os.environ.get('MMSOLVER_USE_MINIMAL_SHELF', 1)))
         LOG.debug('Build Shelf: %r', build_shelf)
+        LOG.debug('Use Minimal Shelf: %r', use_minimal_shelf)
         if build_shelf is True:
-            maya.utils.executeDeferred(mmsolver_create_shelf)
+            if use_minimal_shelf is True:
+                maya.utils.executeDeferred(mmsolver_create_minimal_shelf)
+            else:
+                maya.utils.executeDeferred(mmsolver_create_shelf)
 
         # Create Hotkey Set.
         build_hotkey_set = bool(int(os.environ.get('MMSOLVER_CREATE_HOTKEY_SET', 1)))

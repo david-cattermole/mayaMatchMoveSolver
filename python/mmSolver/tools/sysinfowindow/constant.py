@@ -47,6 +47,7 @@ CONFIG_TEXT = """== Configuration ==
 Load at Startup: {load_at_start}
 Create Menu: {create_menu}
 Create Shelf: {create_shelf}
+Use Minimal Shelf: {use_minimal_shelf}
 Help Source: {help_source}
 Default Solver (env): {default_solver_env}
 Default Solver (python): {default_solver_const}

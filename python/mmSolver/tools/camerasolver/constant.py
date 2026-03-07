@@ -114,6 +114,10 @@ LOG_LEVEL_INDEX_LIST = [
     LOG_LEVEL_INFO,
     LOG_LEVEL_DEBUG,
 ]
+ADJUSTMENT_SOLVER_TO_INDEX = {
+    v: i for i, v in enumerate(ADJUSTMENT_SOLVER_TYPE_INDEX_LIST)
+}
+LOG_LEVEL_TO_INDEX = {v: i for i, v in enumerate(LOG_LEVEL_INDEX_LIST)}
 
 # Default values used when a scene option has not yet been set.
 DEFAULT_LOG_LEVEL = LOG_LEVEL_PROGRESS

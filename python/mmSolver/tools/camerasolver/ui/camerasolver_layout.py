@@ -51,15 +51,6 @@ import mmSolver.tools.camerasolver.ui.ui_camerasolver_layout as ui_camerasolver_
 
 LOG = mmSolver.logger.get_logger()
 
-# Lookup tables derived from the ordered index lists in constant.py.
-#
-# TODO: Hard-code these variables and move them to the constant.py
-# file.
-_ADJUSTMENT_SOLVER_CONST_TO_INDEX = {
-    v: i for i, v in enumerate(const.ADJUSTMENT_SOLVER_TYPE_INDEX_LIST)
-}
-_LOG_LEVEL_CONST_TO_INDEX = {v: i for i, v in enumerate(const.LOG_LEVEL_INDEX_LIST)}
-
 
 def find_group_box_spacer(outer_layout, widget_before, widget_after):
     """Return the QSpacerItem sitting between two widgets in a layout, or None.
@@ -279,7 +270,7 @@ class CameraSolverLayout(QtWidgets.QWidget, ui_camerasolver_layout.Ui_Form):
             const.SCENE_OPTION_ADJUSTMENT_SOLVER_TYPE,
             default=const.DEFAULT_ADJUSTMENT_SOLVER_TYPE,
         )
-        adjustment_solver_index = _ADJUSTMENT_SOLVER_CONST_TO_INDEX.get(
+        adjustment_solver_index = const.ADJUSTMENT_SOLVER_TO_INDEX.get(
             adjustment_solver_type, 0
         )
         self.adjustmentSolver_comboBox.setCurrentIndex(adjustment_solver_index)
@@ -290,7 +281,7 @@ class CameraSolverLayout(QtWidgets.QWidget, ui_camerasolver_layout.Ui_Form):
             const.SCENE_OPTION_LOG_LEVEL,
             default=const.DEFAULT_LOG_LEVEL,
         )
-        log_level_index = _LOG_LEVEL_CONST_TO_INDEX.get(log_level, 2)
+        log_level_index = const.LOG_LEVEL_TO_INDEX.get(log_level, 2)
         self.logLevel_comboBox.setCurrentIndex(log_level_index)
 
         # Focal length range.

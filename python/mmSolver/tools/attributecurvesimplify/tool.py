@@ -38,6 +38,8 @@ LOG = mmSolver.logger.get_logger()
 
 
 def _get_anim_curves_from_selection():
+    # type: (...) -> list[str] | None
+    """Return animCurve nodes from the current Maya selection."""
     nodes = maya.cmds.ls(selection=True)
     if len(nodes) == 0:
         LOG.warn("Please select at least 1 object.")
@@ -65,6 +67,9 @@ def _get_anim_curves_from_selection():
 
 
 def main(anim_curve_nodes=None):
+    # type: (...) -> None
+    """Run the attribute curve simplify operation."""
+    assert anim_curve_nodes is None or isinstance(anim_curve_nodes, list)
     mmapi.load_plugin()
 
     if anim_curve_nodes is None:
@@ -84,6 +89,7 @@ def main(anim_curve_nodes=None):
     frame_range = lib.get_frame_range(
         frame_range_mode, custom_start_frame, custom_end_frame
     )
+    assert frame_range is not None
     num_control_points = configmaya.get_scene_option(
         const.CONFIG_CONTROL_POINTS_KEY, const.DEFAULT_CONTROL_POINTS
     )
@@ -131,6 +137,8 @@ def main(anim_curve_nodes=None):
 
 
 def open_window():
+    # type: (...) -> None
+    """Open the Attribute Curve Simplify window."""
     mmapi.load_plugin()
 
     import mmSolver.tools.attributecurvesimplify.ui.attrcurvesimplify_window as window

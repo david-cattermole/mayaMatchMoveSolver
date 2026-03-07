@@ -36,9 +36,12 @@ LOG = mmSolver.logger.get_logger()
 
 
 def get_frame_range(frame_range_mode, custom_start_frame, custom_end_frame):
+    # type: (...) -> time_utils.FrameRange | None
+    """Return a FrameRange for the given mode and optional custom bounds."""
     LOG.debug("custom_start_frame: %r", custom_start_frame)
     LOG.debug("custom_end_frame: %r", custom_end_frame)
     LOG.debug("frame_range_mode: %r", frame_range_mode)
+
     assert isinstance(frame_range_mode, pycompat.TEXT_TYPE)
     assert frame_range_mode in const.FRAME_RANGE_MODE_VALUES
     assert isinstance(custom_start_frame, pycompat.INT_TYPES)
@@ -59,6 +62,7 @@ def get_frame_range(frame_range_mode, custom_start_frame, custom_end_frame):
 
 
 def _get_node_attrs_for_selected_keyframes():
+    # type: (...) -> list[str]
     """Get animCurve nodes from the selected keyframes (in the graph
     editor).
     """
@@ -79,6 +83,7 @@ def _get_node_attrs_for_selected_keyframes():
 
 
 def _get_selected_graph_editor_outliner_node_attributes():
+    # type: (...) -> list[str]
     """
     Get the attributes from the selected graph editor outliner.
     """
@@ -98,6 +103,7 @@ def _get_selected_graph_editor_outliner_node_attributes():
 
 
 def _get_selected_channelbox_attributes():
+    # type: (...) -> list[str]
     """Get the selected attributes from the channel box."""
     name = channelbox_utils.get_ui_name()
     attrs = maya.cmds.channelBox(name, query=True, selectedMainAttributes=True) or []
@@ -105,6 +111,7 @@ def _get_selected_channelbox_attributes():
 
 
 def get_selected_node_attrs(nodes):
+    # type: (...) -> list[str]
     """
     Get the selected node attributes, from the Graph Editor or
     Channel Box.
@@ -113,6 +120,9 @@ def get_selected_node_attrs(nodes):
     the animation curve. This includes looking at the channel box, or
     using the selected curves in the Graph Editor, etc.
     """
+    assert isinstance(nodes, list)
+    assert all(isinstance(n, pycompat.TEXT_TYPE) for n in nodes)
+
     node_attrs = _get_node_attrs_for_selected_keyframes()
     if len(node_attrs) > 0:
         return node_attrs
@@ -138,14 +148,16 @@ def get_selected_node_attrs(nodes):
 
 
 def get_attribute_anim_curves(node_attrs):
+    # type: (...) -> list[str]
     """
     Return anim curve nodes from attributes.
 
     :param node_attrs: Node attribute names.
-    :rtype: []
+    :rtype: list[str]
     """
     assert len(node_attrs) > 0
     assert isinstance(node_attrs, (list, set))
+
     anim_curve_node = maya.cmds.listConnections(node_attrs, type="animCurve") or []
 
     anim_curve_nodes = []
@@ -157,6 +169,8 @@ def get_attribute_anim_curves(node_attrs):
 
 
 def get_selected_anim_curves():
+    # type: (...) -> list[str]
+    """Return animCurve nodes for the current Maya selection."""
     nodes = maya.cmds.ls(selection=True) or []
     LOG.debug("nodes: %r", nodes)
     if len(nodes) == 0:
@@ -186,14 +200,22 @@ def get_selected_anim_curves():
 
 
 def node_attr_from_anim_curve_nodes(anim_curve_nodes):
+    # type: (...) -> list[str]
+    """Return node.attr plugs for each anim curve node."""
+    assert isinstance(anim_curve_nodes, list)
+    assert all(isinstance(x, pycompat.TEXT_TYPE) for x in anim_curve_nodes)
+
     return [node_attr_from_anim_curve_node(x) for x in anim_curve_nodes]
 
 
 def node_attr_from_anim_curve_node(anim_curve_node):
+    # type: (...) -> str
+    """Return the destination node.attr plug for an anim curve node."""
     assert isinstance(anim_curve_node, pycompat.TEXT_TYPE)
     assert len(anim_curve_node) > 0
     assert maya.cmds.objExists(anim_curve_node)
     assert maya.cmds.nodeType(anim_curve_node).startswith("animCurve")
+
     plugs = (
         maya.cmds.listConnections(
             anim_curve_node, destination=True, source=False, plugs=True
@@ -205,11 +227,17 @@ def node_attr_from_anim_curve_node(anim_curve_node):
 
 
 def sort_anim_curves_by_node_attrs(anim_curve_nodes, node_attrs):
+    # type: (...) -> tuple[list, list]
     """
     Sort by anim_curve_nodes by the attribute name, especially
     ensuring that translateXYZ goes before rotateXYZ, then scaleXYZ,
     and then any other attributes in alphabetical order.
     """
+    assert isinstance(anim_curve_nodes, list)
+    assert isinstance(node_attrs, list)
+    assert len(anim_curve_nodes) == len(node_attrs)
+    assert all(isinstance(x, pycompat.TEXT_TYPE) for x in anim_curve_nodes)
+    assert all(isinstance(x, pycompat.TEXT_TYPE) for x in node_attrs)
 
     all_anim_curve_nodes = list(anim_curve_nodes)
     all_node_attrs = list(node_attrs)
@@ -257,6 +285,8 @@ def sort_anim_curves_by_node_attrs(anim_curve_nodes, node_attrs):
 
 
 def query_anim_curve_data(anim_curve_node, frame_range):
+    # type: (...) -> tuple[list, list]
+    """Query x/y data from an anim curve over the given frame range."""
     assert isinstance(anim_curve_node, pycompat.TEXT_TYPE)
     assert len(anim_curve_node) > 0
     assert maya.cmds.objExists(anim_curve_node)
@@ -298,9 +328,12 @@ def query_anim_curve_data(anim_curve_node, frame_range):
 
 
 def _parse_individual_curve(results, curve_index_start, curve_length):
+    # type: (...) -> tuple[list, list]
+    """Parse a single curve's x/y data from a flat results list."""
     assert isinstance(results, list)
     assert isinstance(curve_index_start, pycompat.INT_TYPES)
     assert isinstance(curve_length, pycompat.INT_TYPES)
+
     curve_x_data = [None] * curve_length
     curve_y_data = [None] * curve_length
     for i in range(curve_length):
@@ -308,13 +341,17 @@ def _parse_individual_curve(results, curve_index_start, curve_length):
         index_y = index_x + 1
         curve_x_data[i] = results[index_x]
         curve_y_data[i] = results[index_y]
+
     assert len(curve_x_data) == len(curve_y_data)
     assert len(curve_x_data) == curve_length
     return curve_x_data, curve_y_data
 
 
 def _parse_curve_results(results):
+    # type: (...) -> list[tuple]
+    """Parse all curves from a flat results list."""
     assert len(results) > 0
+
     curves = []
 
     curve_index_start = 0
@@ -340,15 +377,18 @@ def simplify_curves(
     interpolation,
     return_results=False,
 ):
+    # type: (...) -> list | None
     """
     Simplify the anim curves.
 
     :param anim_curve_nodes: AnimCurve nodes to simplify.
-    :param start_frame: Start frame to simplify.
-    :param end_frame: End frame to simplify.
-    :param num_control_points: .
-    :param distribution: .
-    :param interpolation: .
+    :param start_frame: Start frame of the simplify range.
+    :param end_frame: End frame of the simplify range.
+    :param num_control_points: Number of control points for the fit curve.
+    :param distribution: How control points are distributed along the curve.
+    :param interpolation: Interpolation method (linear or smooth).
+    :param return_results: If True, return parsed result data instead of applying.
+    :rtype: list | None
     """
     assert len(anim_curve_nodes) > 0
     assert isinstance(start_frame, pycompat.INT_TYPES)
@@ -458,7 +498,11 @@ STAT_NAME_LIST = [
 
 
 def _parse_diff_statistics_result(result):
+    # type: (...) -> dict
     """Parse the result array into a dictionary of statistics."""
+    assert isinstance(result, list)
+    assert len(result) > 0
+
     stats = {}
     stat_count = int(result[0])
 
@@ -498,6 +542,15 @@ def _parse_diff_statistics_result(result):
 
 
 def calc_quality_of_fit(x_values, actual_values, predicted_values):
+    # type: (...) -> float | None
+    """Compute quality-of-fit (0–100) between actual and predicted curves."""
+    assert isinstance(x_values, list)
+    assert isinstance(actual_values, list)
+    assert isinstance(predicted_values, list)
+    assert len(x_values) > 0
+    assert len(x_values) == len(actual_values)
+    assert len(x_values) == len(predicted_values)
+
     result = maya.cmds.mmAnimCurveDiffStatistics(
         xValues=x_values,
         yValuesA=actual_values,

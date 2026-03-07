@@ -93,6 +93,12 @@ class SolveProcess(object):
         self._stderr_thread.join()
         self._proc.wait()
 
+    def cancel(self):
+        # type: () -> None
+        """Terminate the subprocess if still running."""
+        if self._proc.poll() is None:
+            self._proc.terminate()
+
     def result(self):
         # type: () -> tuple[int, str, str]
         """Return (returncode, stdout, stderr).  Call after :meth:`wait`."""

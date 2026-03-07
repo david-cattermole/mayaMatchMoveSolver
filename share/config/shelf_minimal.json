@@ -6,6 +6,8 @@
             "solver_tools/solver_popup/open_solver_ui",
             "solver_tools/solver_popup/solver_run",
             "solver_tools/solver_popup/solver_run_current_frame",
+            "solver_tools/solver_popup/---Camera Solver",
+            "solver_tools/solver_popup/open_camera_solver_ui",
             "create_tools/create_popup/---Camera & Lens",
             "create_tools/create_popup/create_camera",
             "create_tools/create_popup/create_image_plane2",

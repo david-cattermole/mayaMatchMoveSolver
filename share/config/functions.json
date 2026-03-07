@@ -41,6 +41,15 @@
                 "tool.run_solve_on_current_frame();"
             ]
         },
+        "open_camera_solver_ui": {
+            "name": "Open Camera Solver...",
+            "name_shelf": "CamSolv",
+            "tooltip": "Open the Camera Solver window.",
+            "command": [
+                "import mmSolver.tools.camerasolver.tool;",
+                "mmSolver.tools.camerasolver.tool.open_window();"
+            ]
+        },
         "navigate_root_frame_next": {
             "name": "Next User Frame",
             "name_shelf": "",

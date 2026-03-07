@@ -505,8 +505,14 @@ def calc_quality_of_fit(x_values, actual_values, predicted_values):
         normalizedRootMeanSquareError=True,
     )
     stats = _parse_diff_statistics_result(result)
+    if len(stats) == 0:
+        return None
+
+    # When the curve has zero range (constant curve), the stats cannot
+    # be computed properly.
+    if STAT_NAME_NORMALIZED_ROOT_MEAN_SQUARE_ERROR not in stats.keys():
+        return None
 
     nrmse = stats[STAT_NAME_NORMALIZED_ROOT_MEAN_SQUARE_ERROR]
     quality = max(0.0, min(100.0, (1.0 - nrmse) * 100.0))
-
     return quality

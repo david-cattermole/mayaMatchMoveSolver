@@ -311,10 +311,6 @@ class AttributeCurveSimplifyLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.curve_num_sliderSpinBox.setValue(active_index)
         self.updateCurveNameLabel()
 
-        # quality_of_fit = lib.calc_quality_of_fit(x_data, y_data, curve_y_data)
-        # label = "{}<curve name> (0 of 0)".format(prefix)
-        # self.curve_name_label.setText(label)
-
     def curveNumValueChanged(self, value):
         assert isinstance(value, (int, float))
         value = int(value)
@@ -398,6 +394,11 @@ class AttributeCurveSimplifyLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         )
 
         quality_of_fit = lib.calc_quality_of_fit(x_data, y_data, curve_y_data)
+        if quality_of_fit is None:
+            LOG.warn(
+                'Could not calculate quality of fit for %r curve node.', anim_curve_node
+            )
+            quality_of_fit = 0.0
         self.__curve_match_percentages[anim_curve_node] = quality_of_fit
 
     def updateCurveDisplay(

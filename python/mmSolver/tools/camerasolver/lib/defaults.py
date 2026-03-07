@@ -28,6 +28,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.utils.time as time_utils
+import mmSolver.utils.math as math_utils
 import mmSolver.utils.python_compat as pycompat
 
 import mmSolver.tools.camerasolver.constant as const
@@ -52,12 +53,46 @@ def compute_focal_length_min_max_from_percentage(focal_length_mm, percentage_val
     # type: (...) -> tuple
     assert isinstance(focal_length_mm, float)
     assert isinstance(percentage_value, float)
-    factor = percentage_value / 100.0
-    # TODO: Define a "standard" range and then create range of values
-    # from that.
-    focal_length_min = focal_length_mm * (1.0 - factor)
-    focal_length_max = focal_length_mm * (1.0 + factor)
-    return max(0.1, focal_length_min), focal_length_max
+
+    factor = max(0.0, percentage_value / 100.0)
+
+    # The first standard range of values.
+    #
+    # This range of values is what the majority of users will need.
+    std1_range_min = 8.0
+    std1_range_max = 120.0
+
+    # The second standard range of values (outside the first range).
+    std2_range_min = 2.0
+    std2_range_max = 500.0
+
+    # The absolute bounds of what can be solved.
+    #
+    # These values are limitations of Maya itself.
+    bound_range_min = 0.1
+    bound_range_max = 10000.0
+
+    focal_length_min = focal_length_mm
+    focal_length_max = focal_length_mm
+    if factor <= 1.0:
+        # Between 0 and 100.
+        factor1 = max(0.0, min(percentage_value / 100.0, 1.0))
+        focal_length_min = math_utils.lerp(focal_length_mm, std1_range_min, factor1)
+        focal_length_max = math_utils.lerp(focal_length_mm, std1_range_max, factor1)
+    elif factor > 1.0 and factor <= 2.0:
+        # Between 100 and 200.
+        factor2 = max(0.0, min((percentage_value / 100.0) - 1.0, 1.0))
+        focal_length_min = math_utils.lerp(std1_range_min, std2_range_min, factor2)
+        focal_length_max = math_utils.lerp(std1_range_max, std2_range_max, factor2)
+    else:
+        # Between 200 and 300.
+        factor3 = max(0.0, min((percentage_value / 100.0) - 2.0, 1.0))
+        focal_length_min = math_utils.lerp(std2_range_min, bound_range_min, factor3)
+        focal_length_max = math_utils.lerp(std2_range_max, bound_range_max, factor3)
+
+    focal_length_min = max(bound_range_min, focal_length_min)
+    focal_length_max = min(bound_range_max, focal_length_max)
+    return focal_length_min, focal_length_max
 
 
 def make_adjustment_solver(

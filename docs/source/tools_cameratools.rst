@@ -90,3 +90,55 @@ To run the tool, use this Python command:
 
     import mmSolver.tools.setcameraoriginframe.tool as tool
     tool.main()
+
+
+.. _camera-solver-tool-ref:
+
+Camera Solver
+-------------
+
+The `Camera Solver` tool reconstructs animated camera motion and
+static 3D bundle positions "from scratch" - using only 2D marker
+tracks and the initial camera and lens distortion settings.
+
+See :ref:`camera-solver-overview-heading` for a detailed technical
+overview.
+
+Usage:
+
+1) Select a camera, or activate a camera viewport.
+
+2) Ensure `Markers` are parented under the camera with 2D track data.
+
+3) Open the `Camera Solver` UI and press `Solve`.
+
+   - The solve runs as a background process; Maya remains interactive.
+
+4) When the solve has finished, press `Load Solved Camera` to apply the
+   results to the camera and bundles in the scene.
+
+To open the Camera Solver UI, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.camerasolver.tool as tool
+    tool.open_window()
+
+To run the solve and load results without the UI:
+
+.. code:: python
+
+    import mmSolver.tools.camerasolver.tool as tool
+
+    # Run the camera solve with current settings, and wait for the
+    # solve to complete, and then load the solved camera.
+    #
+    # NOTE: Users can press the ESC (Escape) key while the solver runs
+    # to stop the solve.
+    tool.run_camera_solve_and_load()
+
+    # Or, only run the solve (asynchronous - returns immediately).
+    tool.run_camera_solve()
+
+    # After the solve completes, load the results.
+    tool.load_solved_camera()

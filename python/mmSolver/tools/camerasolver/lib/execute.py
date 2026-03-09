@@ -218,6 +218,8 @@ def _build_solve_cmd_args(
         output_dir,
         '--log-level',
         log_level,
+        '--console-level',
+        log_level,
     ]
     return cmd_args
 

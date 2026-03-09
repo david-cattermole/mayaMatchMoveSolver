@@ -26,6 +26,12 @@ if (MMSOLVER_BUILD_TOOLS)
   set(mmcamerasolve_src_name "mmcamerasolve${CMAKE_EXECUTABLE_SUFFIX}")
   set(mmcamerasolve_src_path "${mmsolverlibs_rust_DIR}/${mmcamerasolve_src_name}")
 
+  # Needed for building on Windows... Normalise to forward slashes so
+  # that CMake's install() does not interpret backslash sequences
+  # (e.g. \U, \b) as escape characters when the path is embedded in
+  # the generated cmake_install.cmake.
+  file(TO_CMAKE_PATH "${mmcamerasolve_src_path}" mmcamerasolve_src_path)
+
   # The installed name follows the same convention as other tools.
   set(mmcamerasolve_install_name "mmsolver-camerasolve${CMAKE_EXECUTABLE_SUFFIX}")
 

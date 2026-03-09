@@ -118,10 +118,16 @@ def _start_solve_process(cmd_args):
     assert isinstance(cmd_args, list)
     assert len(cmd_args) > 0
     assert all(isinstance(arg, pycompat.TEXT_TYPE) for arg in cmd_args)
+    creation_flags = 0
+    if os.name == 'nt':
+        # CREATE_NO_WINDOW was added in Python 3.7; fall back to the
+        # raw Win32 constant (0x08000000) for older Python versions.
+        creation_flags = getattr(subprocess, 'CREATE_NO_WINDOW', 0x08000000)
     proc = subprocess.Popen(
         cmd_args,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        creationflags=creation_flags,
     )
 
     stdout_lines = []

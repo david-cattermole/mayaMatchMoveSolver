@@ -115,9 +115,15 @@
 use anyhow::Result;
 use mmlogger::mm_log_progress;
 use rayon::prelude::*;
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::Mutex;
 use thiserror::Error;
 
 use crate::global::Evaluator;
+
+/// How many seconds must pass between periodic progress log lines during
+/// a grid search. Change this value in source to adjust the interval.
+const PROGRESS_LOG_INTERVAL_SECS: f64 = 10.0;
 
 // ----------------------------------------------------------
 // Config / Errors
@@ -339,7 +345,7 @@ impl UniformGridSearch {
     /// # Panics
     ///
     /// Panics if `best_out.len()` != `num_dimensions`.
-    pub fn run<E: Evaluator + Sync, L: mmlogger::Logger>(
+    pub fn run<E: Evaluator + Sync, L: mmlogger::Logger + Sync>(
         &self,
         evaluator: &E,
         best_out: &mut [f64],
@@ -384,11 +390,94 @@ impl UniformGridSearch {
             self.cfg.num_dimensions
         );
 
-        // Step 3: Evaluate all grid points in parallel
+        // Progress tracking shared across rayon threads.
+        let completed = AtomicUsize::new(0);
+        let last_log_time =
+            Mutex::new(std::time::Instant::now());
+        // Tracks (best_cost, best_params) seen so far across all threads.
+        let best_so_far: Mutex<(f64, Vec<f64>)> = Mutex::new((
+            f64::MAX,
+            vec![f64::NAN; self.cfg.num_dimensions],
+        ));
+
+        // Step 3: Evaluate all grid points in parallel.
+        //
+        // After each evaluation, update the shared best and emit a
+        // progress line at most once per PROGRESS_LOG_INTERVAL_SECS.
         let results: Vec<(usize, f64)> = grid_points
             .par_iter()
             .enumerate()
-            .map(|(idx, params)| (idx, evaluator.evaluate(params)))
+            .map(|(idx, params)| {
+                let cost = evaluator.evaluate(params);
+
+                // Update shared best if this result is an improvement.
+                {
+                    let mut best = best_so_far.lock().unwrap();
+                    if cost < best.0 {
+                        best.0 = cost;
+                        best.1.copy_from_slice(params);
+                    }
+                }
+
+                let done =
+                    completed.fetch_add(1, Ordering::Relaxed) + 1;
+
+                // Decide whether to emit a progress line.
+                let now = std::time::Instant::now();
+                let should_log = {
+                    let mut last_time = last_log_time.lock().unwrap();
+                    if now
+                        .duration_since(*last_time)
+                        .as_secs_f64()
+                        >= PROGRESS_LOG_INTERVAL_SECS
+                    {
+                        *last_time = now;
+                        true
+                    } else {
+                        false
+                    }
+                };
+
+                if should_log {
+                    let elapsed_secs =
+                        start_time.elapsed().as_secs_f64();
+                    let remaining = total_points.saturating_sub(done);
+                    let eta_secs = if done > 0 && remaining > 0 {
+                        elapsed_secs * remaining as f64 / done as f64
+                    } else {
+                        0.0
+                    };
+                    let (current_best_cost, current_best_params) = {
+                        let g = best_so_far.lock().unwrap();
+                        (g.0, g.1.clone())
+                    };
+
+                    let num_dimensions = current_best_params.len();
+                    let params_str = if num_dimensions <= 10 {
+                        format!("{:?}", current_best_params)
+                    } else {
+                        format!(
+                            "[{:.6}, {:.6}, ... {} more]",
+                            current_best_params[0],
+                            current_best_params[1],
+                            num_dimensions - 2
+                        )
+                    };
+
+                    mm_log_progress!(
+                        logger,
+                        "[UGS] {}/{} | best cost: {:.9}, params: {} | elapsed: {:.1}s (ETA: ~{:.0}s)",
+                        done,
+                        total_points,
+                        current_best_cost,
+                        params_str,
+                        elapsed_secs,
+                        eta_secs,
+                    );
+                }
+
+                (idx, cost)
+            })
             .collect();
 
         // Step 4: Find minimum cost

@@ -379,7 +379,7 @@ impl UniformGridSearch {
 
         mm_log_progress!(
             logger,
-            "[Grid Search] Evaluating {} grid points across {} dimension(s)...",
+            "[UGS] Evaluating {} grid points across {} dimension(s)...",
             total_points,
             self.cfg.num_dimensions
         );
@@ -406,7 +406,7 @@ impl UniformGridSearch {
 
         mm_log_progress!(
             logger,
-            "[Grid Search] Best cost: {:.6}, params: {:?}, time: {:.2}s",
+            "[UGS] Best cost: {:.6}, params: {:?}, time: {:.2}s",
             best_cost,
             best_out,
             elapsed.as_secs_f64()

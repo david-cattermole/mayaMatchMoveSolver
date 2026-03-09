@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import datetime
+import sys
 import uuid
 
 import maya.cmds
@@ -33,6 +34,7 @@ import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
+import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
@@ -169,6 +171,15 @@ class CameraSolverLayout(QtWidgets.QWidget, ui_camerasolver_layout.Ui_Form):
             self.log_groupBox,
         )
         self.applyLogLayoutState(log_visible=True)
+
+        if sys.platform == 'win32':
+            monospace_font_family = 'Courier New'
+        else:
+            monospace_font_family = 'Monospace'
+        monospace_font = QtGui.QFont(monospace_font_family)
+        monospace_font.setFixedPitch(True)
+        monospace_font.setStyleHint(QtGui.QFont.Monospace)
+        self.log_plainTextEdit.setFont(monospace_font)
 
         self.populateUi()
         self.createConnections()

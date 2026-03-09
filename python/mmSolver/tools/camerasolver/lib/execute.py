@@ -53,9 +53,10 @@ def find_executable_file_path():
     module_location = os.environ.get(var_name)
     if not module_location or not os.path.isdir(module_location):
         return None
-    executable_file_path = os.path.join(
-        module_location, 'bin', const.EXECUTABLE_FILE_NAME
-    )
+    executable_file_name = const.EXECUTABLE_FILE_NAME
+    if os.name == 'nt':
+        executable_file_name += '.exe'
+    executable_file_path = os.path.join(module_location, 'bin', executable_file_name)
     if not os.path.isfile(executable_file_path):
         return None
     return executable_file_path

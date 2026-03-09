@@ -32,7 +32,6 @@ use nalgebra::Point3;
 use rayon::ThreadPoolBuilder;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
-use std::thread::available_parallelism;
 use std::time::Instant;
 
 use mmio::mmresiduals_common::{
@@ -131,9 +130,7 @@ fn run() -> Result<()> {
             format!("Failed to create log file: {}", log_path)
         })?;
         let (stdout_format, stdout_level) = match args.console_level {
-            cli::LogVerbosity::Error => {
-                (LogFormat::Plain, LevelFilter::ERROR)
-            }
+            cli::LogVerbosity::Error => (LogFormat::Plain, LevelFilter::ERROR),
             cli::LogVerbosity::Warn => {
                 (LogFormat::Plain, LevelFilter::WARN | LevelFilter::ERROR)
             }
@@ -194,24 +191,30 @@ fn run() -> Result<()> {
     }
 }
 
-fn setup_thread_pool(threads: Option<usize>) -> Result<()> {
-    match threads {
-        Some(thread_count) => {
-            ThreadPoolBuilder::new()
-                .num_threads(thread_count)
-                .build_global()
-                .unwrap();
-        }
-        None => {
-            let thread_count = available_parallelism()?.get();
-            if thread_count > 0 {
-                ThreadPoolBuilder::new()
-                    .num_threads(thread_count)
-                    .build_global()
-                    .unwrap();
-            }
-        }
+fn setup_thread_pool<L: Logger + Clone + Send + Sync>(
+    logger: &L,
+    threads: Option<usize>,
+) -> Result<()> {
+    if let Some(thread_count) = threads {
+        mm_log_info!(
+            logger,
+            "Using {} rayon thread(s) for parallel work (explicitly configured).",
+            thread_count
+        );
+        ThreadPoolBuilder::new()
+            .num_threads(thread_count)
+            .build_global()
+            .unwrap();
+    } else {
+        mm_log_info!(
+            logger,
+            "Using {} rayon thread(s) for parallel work (auto-detected).",
+            rayon::current_num_threads()
+        )
     }
+
+    // Fallback to Rayon's default number of threads, which we assume
+    // is all of the logical threads available.
     Ok(())
 }
 
@@ -527,7 +530,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     let nuke_lens_data = determine_nuke_lens_data(logger, args)?;
 
     let thread_count = determine_thread_count(args, &settings);
-    setup_thread_pool(thread_count)?;
+    setup_thread_pool(logger, thread_count)?;
 
     if let Some(ref mmcamera_path) = args.mmcamera_file {
         mm_log_info!(logger, "Using mmcamera defaults from: {}", mmcamera_path);

@@ -97,7 +97,7 @@ def compute_focal_length_min_max_from_percentage(focal_length_mm, percentage_val
 
 def make_adjustment_solver(
     solver_type,
-    thread_count=4,
+    thread_count=None,
     evolution_generation_count=100,
     evolution_population_count=100,
 ):
@@ -106,8 +106,8 @@ def make_adjustment_solver(
     :param solver_type: One of the ``ADJUSTMENT_SOLVER_TYPE_*`` constants.
     :type solver_type: str
 
-    :param thread_count: Number of threads for the solver.
-    :type thread_count: int
+    :param thread_count: Number of threads, or None to auto-detect.
+    :type thread_count: int or None
 
     :param evolution_generation_count: Number of evolution generations.
     :type evolution_generation_count: int
@@ -120,15 +120,15 @@ def make_adjustment_solver(
     # type: (...) -> AdjustmentSolver
     assert isinstance(solver_type, pycompat.TEXT_TYPE)
     assert solver_type in const.ADJUSTMENT_SOLVER_TYPE_LIST
-    assert isinstance(thread_count, int)
-    assert thread_count > 0
+    assert thread_count is None or (isinstance(thread_count, int) and thread_count > 0)
     assert isinstance(evolution_generation_count, int)
     assert evolution_generation_count > 0
     assert isinstance(evolution_population_count, int)
     assert evolution_population_count > 0
     adjustment_solver = AdjustmentSolver()
     adjustment_solver.set_adjustment_solver_type(solver_type)
-    adjustment_solver.set_thread_count(thread_count)
+    if thread_count is not None:
+        adjustment_solver.set_thread_count(thread_count)
     adjustment_solver.set_evolution_generation_count(evolution_generation_count)
     adjustment_solver.set_evolution_population_count(evolution_population_count)
     return adjustment_solver

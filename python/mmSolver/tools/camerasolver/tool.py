@@ -63,10 +63,12 @@ def _get_adjustment_solver():
         solver_type = const.ADJUSTMENT_SOLVER_TYPE_NONE
 
     thread_count = configmaya.get_scene_option(
-        const.SCENE_OPTION_THREAD_COUNT, default=4
+        const.SCENE_OPTION_THREAD_COUNT, default=const.DEFAULT_THREAD_COUNT
     )
+    # Only pass an explicit count when the scene has a valid positive
+    # integer stored; anything else (None, 0, negative) means auto-detect.
     if not (isinstance(thread_count, int) and thread_count > 0):
-        thread_count = 4
+        thread_count = None
 
     evolution_generation_count = configmaya.get_scene_option(
         const.SCENE_OPTION_EVOLUTION_GENERATION_COUNT, default=100

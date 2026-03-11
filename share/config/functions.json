@@ -43,7 +43,8 @@
         },
         "open_camera_solver_ui": {
             "name": "Open Camera Solver...",
-            "name_shelf": "CamSolv",
+            "name_shelf": "",
+            "icon_shelf": "cameraSolver.png",
             "tooltip": "Open the Camera Solver window.",
             "command": [
                 "import mmSolver.tools.camerasolver.tool;",

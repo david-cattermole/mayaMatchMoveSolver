@@ -5,7 +5,6 @@
             "open_solver_ui",
             "solver_run",
             "solver_run_current_frame",
-            "---Camera Solver",
             "open_camera_solver_ui",
             "---Create",
             "create_marker",

@@ -19,11 +19,9 @@
  *
  */
 
-use std::mem;
-
 // https://stackoverflow.com/questions/39638363/how-can-i-use-a-hashmap-with-f64-as-key-in-rust
 fn integer_decode_f64(val: f64) -> (u64, i16, i8) {
-    let bits: u64 = unsafe { mem::transmute(val) };
+    let bits: u64 = f64::to_bits(val);
     let sign: i8 = if bits >> 63 == 0 { 1 } else { -1 };
     let mut exponent: i16 = ((bits >> 52) & 0x7ff) as i16;
     let mantissa = if exponent == 0 {
@@ -38,7 +36,7 @@ fn integer_decode_f64(val: f64) -> (u64, i16, i8) {
 
 // /// Returns the mantissa, exponent and sign as integers.
 // fn integer_decode_f32(val: f32) -> (u64, i16, i8) {
-//     let bits: u32 = unsafe { mem::transmute(val) };
+//     let bits: u32 = f32::to_bits(val);
 //     let sign: i8 = if bits >> 31 == 0 { 1 } else { -1 };
 //     let mut exponent: i16 = ((bits >> 23) & 0xff) as i16;
 //     let mantissa = if exponent == 0 {

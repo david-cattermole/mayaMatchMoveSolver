@@ -282,7 +282,7 @@ pub(super) fn run_camera_solve_with_global_adjustment<
             // - SmallRefinement: greedy local refinement.
 
             let mut best_focal_length = vec![initial_focal_length_mm];
-            let mut best_cost = f64::MAX;
+            let mut best_cost;
 
             // Track timing for different stages
             let mut coarse_search_time_secs: Option<f64> = None;

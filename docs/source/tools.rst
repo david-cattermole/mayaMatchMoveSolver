@@ -16,6 +16,7 @@ Pages dedicated to specific tools:
     :maxdepth: 2
 
     tools_solver_ui
+    tools_camera_solver
     tools_createnode
     tools_selection
     tools_frametools

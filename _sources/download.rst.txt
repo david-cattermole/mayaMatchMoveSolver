@@ -3,7 +3,7 @@
 Download
 ========
 
-Download the latest release **mmSolver v0.6.1**:
+Download the latest release **mmSolver v0.7.0**:
 
 .. list-table:: Downloads
    :widths: auto
@@ -14,48 +14,40 @@ Download the latest release **mmSolver v0.6.1**:
      - Link
 
    * - Linux
-     - Maya 2022
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.1/mayaMatchMoveSolver-0.6.1-maya2022-linux.tar.gz>`_
-
-   * - Linux
-     - Maya 2023
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.1/mayaMatchMoveSolver-0.6.1-maya2023-linux.tar.gz>`_
-
-   * - Linux
      - Maya 2024
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.1/mayaMatchMoveSolver-0.6.1-maya2024-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.0/mayaMatchMoveSolver-0.7.0-maya2024-linux.tar.gz>`_
 
    * - Linux
      - Maya 2025
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.1/mayaMatchMoveSolver-0.6.1-maya2025-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.0/mayaMatchMoveSolver-0.7.0-maya2025-linux.tar.gz>`_
 
    * - Linux
      - Maya 2026
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.1/mayaMatchMoveSolver-0.6.1-maya2026-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.0/mayaMatchMoveSolver-0.7.0-maya2026-linux.tar.gz>`_
 
    * - Windows
      - Maya 2020
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.1/mayaMatchMoveSolver-0.6.1-maya2020-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.0/mayaMatchMoveSolver-0.7.0-maya2020-win64.zip>`_
 
    * - Windows
      - Maya 2022
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.1/mayaMatchMoveSolver-0.6.1-maya2022-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.0/mayaMatchMoveSolver-0.7.0-maya2022-win64.zip>`_
 
    * - Windows
      - Maya 2023
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.1/mayaMatchMoveSolver-0.6.1-maya2023-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.0/mayaMatchMoveSolver-0.7.0-maya2023-win64.zip>`_
 
    * - Windows
      - Maya 2024
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.1/mayaMatchMoveSolver-0.6.1-maya2024-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.0/mayaMatchMoveSolver-0.7.0-maya2024-win64.zip>`_
 
    * - Windows
      - Maya 2025
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.1/mayaMatchMoveSolver-0.6.1-maya2025-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.0/mayaMatchMoveSolver-0.7.0-maya2025-win64.zip>`_
 
    * - Windows
      - Maya 2026
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.6.1/mayaMatchMoveSolver-0.6.1-maya2026-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.0/mayaMatchMoveSolver-0.7.0-maya2026-win64.zip>`_
 
 Older versions and full release notes can be found on the GitHub releases_ page.
 

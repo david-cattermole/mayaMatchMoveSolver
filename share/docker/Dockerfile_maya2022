@@ -138,6 +138,7 @@ RUN yum install  --assumeyes \
 
 # Development tools for Maya 2022.
 RUN yum install --assumeyes \
+       lsb \
        rh-python36 \
        rh-git218 \
        llvm-toolset-7-clang-tools-extra \

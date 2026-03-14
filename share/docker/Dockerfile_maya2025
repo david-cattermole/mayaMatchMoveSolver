@@ -142,10 +142,12 @@ RUN dnf --enablerepo=powertools install --assumeyes ninja-build
 
 # Development tools for Maya 2025.
 RUN dnf install --assumeyes \
+       lsb \
        git \
        python39 \
        cmake \
        clang-tools-extra \
+       gcc-c++ \
        gcc-toolset-11
 
 # Install Maya from archive.

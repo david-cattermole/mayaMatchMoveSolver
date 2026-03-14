@@ -265,7 +265,7 @@ Run this Python command:
 
 .. code:: python
 
-    import mmSolver.tools.fastbake.tool as tool
+    import mmSolver.tools.attributebake.tool as tool
     tool.open_window()
 
     # To run the "fast bake" tool directly (with currently set

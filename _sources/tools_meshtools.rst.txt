@@ -8,7 +8,7 @@ specific to the common use cases for MatchMove tasks.
 .. _create-plane-from-points-ref:
 
 Create Aligned Plane From Points
-------------------------
+--------------------------------
 
 The `Create Aligned Plane From Points` tool is used to generate a Maya
 Mesh Plane aligned to a set of 3D points. The plane can be used as a

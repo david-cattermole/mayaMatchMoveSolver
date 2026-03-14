@@ -165,6 +165,7 @@
 <li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_camera.html">Camera Solver Tab</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="tools_camera_solver.html">Camera Solver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_selection.html">Selection Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_frametools.html">Frame Tools</a></li>
@@ -190,6 +191,8 @@
 </li>
 </ul>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_overview.html">Camera Solver Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_global_optimization.html">Global Optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_concepts.html">Understanding the Solver Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -365,14 +368,22 @@ third-party software (such as 3DEqualizer).</p>
 <p>Write out a mmSolver Marker node as a .uv file.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.savemarkerfile.lib.generate">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savemarkerfile.lib.</span></span><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_range</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savemarkerfile.lib.generate" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savemarkerfile.lib.</span></span><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savemarkerfile.lib.generate" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert all Markers to data that can be written out.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of Markers</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>]</em>) – List of Marker objects to convert.</p></li>
+<li><p><strong>frame_range</strong> (<em>range</em>) – Frame range to generate data for.</p></li>
+<li><p><strong>fmt</strong> (<em>None</em><em> or </em><em>int</em>) – The format to generate, either const.UV_TRACK_FORMAT_VERSION_1
+or const.UV_TRACK_FORMAT_VERSION_4. If None, uses preferred version.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker">Marker</a>]</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>String data (v1) or dictionary data (v4) that can be written out</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -380,12 +391,38 @@ third-party software (such as 3DEqualizer).</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.savemarkerfile.lib.write_file">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savemarkerfile.lib.</span></span><span class="sig-name descname"><span class="pre">write_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savemarkerfile.lib.write_file" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Write data to file. Handles both string (v1) and dictionary (v4) data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – Path to write the file to.</p></li>
+<li><p><strong>data</strong> (<em>str</em><em> or </em><em>dict</em>) – Data to write. String for v1, dict for v4.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if file was written successfully.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.savemarkerfile.lib.write_temp_file">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savemarkerfile.lib.</span></span><span class="sig-name descname"><span class="pre">write_temp_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savemarkerfile.lib.write_temp_file" title="Permalink to this definition">#</a></dt>
-<dd><p>Write file.</p>
+<dd><p>Write file to temporary location. Handles both string (v1) and dictionary (v4) data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>str</em><em> or </em><em>dict</em>) – Data to write. String for v1, dict for v4.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Temporary file path or False if failed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -393,10 +430,19 @@ third-party software (such as 3DEqualizer).</p>
 <span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile.constant" title="Permalink to this heading">#</a></h2>
 <p>Contains constant values for the Save Marker File tool.</p>
 <p>The .uv format, resolution independent 2D tracking format.</p>
-<p>This file supports only the .uv version 4 format.</p>
+<p>This file supports .uv version 1 and version 4 formats.</p>
 <p>The UV coordinate (0.0, 0.0) is the lower-left.
 The UV coordinate (1.0, 1.0) is the upper-right.</p>
-<p>Format version 4:</p>
+<p>Format version 1 (ASCII):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">number_of_points</span><span class="p">}</span>
+<span class="p">{</span><span class="n">point_name</span><span class="p">}</span>
+<span class="p">{</span><span class="n">number_of_frames</span><span class="p">}</span>
+<span class="p">{</span><span class="n">frame</span><span class="p">}</span> <span class="p">{</span><span class="n">x</span><span class="p">}</span> <span class="p">{</span><span class="n">y</span><span class="p">}</span> <span class="p">{</span><span class="n">weight</span><span class="p">}</span>
+<span class="p">{</span><span class="n">frame</span><span class="p">}</span> <span class="p">{</span><span class="n">x</span><span class="p">}</span> <span class="p">{</span><span class="n">y</span><span class="p">}</span> <span class="p">{</span><span class="n">weight</span><span class="p">}</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Format version 4 (JSON):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="s1">&#39;num_points&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>

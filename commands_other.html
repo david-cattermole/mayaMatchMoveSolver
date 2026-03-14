@@ -165,6 +165,7 @@
 <li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_camera.html">Camera Solver Tab</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="tools_camera_solver.html">Camera Solver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_selection.html">Selection Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_frametools.html">Frame Tools</a></li>
@@ -190,6 +191,8 @@
 </li>
 </ul>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_overview.html">Camera Solver Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_global_optimization.html">Global Optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_concepts.html">Understanding the Solver Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -343,10 +346,1077 @@
         <article role="main">
           <section id="other-commands">
 <h1>Other Commands<a class="headerlink" href="#other-commands" title="Permalink to this heading">#</a></h1>
-<p><em>To be written.</em></p>
+<p>This page documents utility commands that do not fit into the solve or
+image categories. They cover reprojection, animation-curve analysis and
+filtering, geometry fitting, colour-space queries, and memory
+statistics.</p>
 <section id="mmreprojection-command">
 <h2><code class="docutils literal notranslate"><span class="pre">mmReprojection</span></code> Command<a class="headerlink" href="#mmreprojection-command" title="Permalink to this heading">#</a></h2>
-<p><em>To be written.</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">mmReprojection</span></code> reprojects 3D world-space points (or Maya transform
+nodes) into 2D screen-space coordinates for a given camera at one or
+more times. It is a key utility for scripting deviation calculations
+and for checking whether a transform lies in front of or behind the
+camera.</p>
+<section id="flags">
+<h3>Flags<a class="headerlink" href="#flags" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-worldPoint</p></td>
+<td><p>-wp</p></td>
+<td><p>double, double, double</p></td>
+<td><p>A world-space XYZ point to reproject instead of supplying a node.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-camera</p></td>
+<td><p>-c</p></td>
+<td><p>string, string</p></td>
+<td><p>Camera transform and shape nodes.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-time</p></td>
+<td><p>-t</p></td>
+<td><p>double (multi-use)</p></td>
+<td><p>Frame time(s) at which to evaluate. Can be given multiple times.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-imageResolution</p></td>
+<td><p>-ir</p></td>
+<td><p>double, double</p></td>
+<td><p>Image width and height in pixels, used for pixel-coordinate output.</p></td>
+<td><p>2048, 2048</p></td>
+</tr>
+<tr class="row-even"><td><p>-asCameraPoint</p></td>
+<td><p>-cpt</p></td>
+<td><p>bool</p></td>
+<td><p>Return position in camera space (X, Y, Z).</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-asWorldPoint</p></td>
+<td><p>-wpt</p></td>
+<td><p>bool</p></td>
+<td><p>Return position in world space (X, Y, Z).</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-asCoordinate</p></td>
+<td><p>-cd</p></td>
+<td><p>bool</p></td>
+<td><p>Return as film-back coordinate (0–1 range on each axis).</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-asNormalizedCoordinate</p></td>
+<td><p>-ncd</p></td>
+<td><p>bool</p></td>
+<td><p>Return as normalised coordinate (−0.5 to 0.5 on the short axis).</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-asMarkerCoordinate</p></td>
+<td><p>-mcd</p></td>
+<td><p>bool</p></td>
+<td><p>Return as mmSolver marker coordinate (same range as normalised, used by the solver).</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-asPixelCoordinate</p></td>
+<td><p>-pcd</p></td>
+<td><p>bool</p></td>
+<td><p>Return as pixel coordinate based on <code class="docutils literal notranslate"><span class="pre">-imageResolution</span></code>.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-withCameraDirectionRatio</p></td>
+<td><p>-wcd</p></td>
+<td><p>bool</p></td>
+<td><p>Append a camera-direction ratio value; negative means the point is behind the camera.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-distortMode</p></td>
+<td><p>-dsm</p></td>
+<td><p>unsigned int</p></td>
+<td><p>Apply lens distortion: 0 = none, 1 = distort, 2 = undistort. Requires an <code class="docutils literal notranslate"><span class="pre">outLens</span></code> connection on the camera shape.</p></td>
+<td><p>0 (none)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="return">
+<h3>Return<a class="headerlink" href="#return" title="Permalink to this heading">#</a></h3>
+<p>Returns a flat list of doubles. For each input point and each
+requested time the values for every requested output type are
+appended in order. For example, if <code class="docutils literal notranslate"><span class="pre">-asCoordinate</span></code> is requested
+for two frames the result is <code class="docutils literal notranslate"><span class="pre">[u0,</span> <span class="pre">v0,</span> <span class="pre">u1,</span> <span class="pre">v1]</span></code>.</p>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="c1"># Reproject a bundle node at frames 1, 12 and 24 as marker coordinates.</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmReprojection</span><span class="p">(</span>
+    <span class="s1">&#39;myBundle&#39;</span><span class="p">,</span>
+    <span class="n">camera</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;cameraShape1&#39;</span><span class="p">),</span>
+    <span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">24</span><span class="p">),</span>
+    <span class="n">asMarkerCoordinate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># result is [u1, v1, u12, v12, u24, v24]</span>
+
+<span class="c1"># Reproject a raw world-space point, returning pixel coordinates.</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmReprojection</span><span class="p">(</span>
+    <span class="n">worldPoint</span><span class="o">=</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0</span><span class="p">),</span>
+    <span class="n">camera</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;cameraShape1&#39;</span><span class="p">),</span>
+    <span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,),</span>
+    <span class="n">imageResolution</span><span class="o">=</span><span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">),</span>
+    <span class="n">asPixelCoordinate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmReprojection myBundle
+    -camera &quot;camera1&quot; &quot;cameraShape1&quot;
+    -time 1
+    -time 12
+    -asMarkerCoordinate true;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmanimcurvestatistics-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmAnimCurveStatistics</span></code> Command<a class="headerlink" href="#mmanimcurvestatistics-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmAnimCurveStatistics</span></code> computes statistical measures over the
+keyframe values of one or more animation curves within an optional
+frame range. It can also operate on raw lists of X/Y values instead
+of curve nodes.</p>
+<section id="id1">
+<h3>Flags<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-startFrame</p></td>
+<td><p>-sf</p></td>
+<td><p>unsigned</p></td>
+<td><p>First frame of the evaluation range.</p></td>
+<td><p>(all keys)</p></td>
+</tr>
+<tr class="row-odd"><td><p>-endFrame</p></td>
+<td><p>-ef</p></td>
+<td><p>unsigned</p></td>
+<td><p>Last frame of the evaluation range.</p></td>
+<td><p>(all keys)</p></td>
+</tr>
+<tr class="row-even"><td><p>-mean</p></td>
+<td><p>-m</p></td>
+<td><p>bool</p></td>
+<td><p>Calculate and return the mean (average) value.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-median</p></td>
+<td><p>-md</p></td>
+<td><p>bool</p></td>
+<td><p>Calculate and return the median value.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-populationVariance</p></td>
+<td><p>-pvr</p></td>
+<td><p>bool</p></td>
+<td><p>Calculate and return the population variance.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-populationStandardDeviation</p></td>
+<td><p>-psd</p></td>
+<td><p>bool</p></td>
+<td><p>Calculate and return the population standard deviation.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-signalToNoiseRatio</p></td>
+<td><p>-snr</p></td>
+<td><p>bool</p></td>
+<td><p>Calculate and return the signal-to-noise ratio.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-xValues</p></td>
+<td><p>-xv</p></td>
+<td><p>double</p></td>
+<td><p>(multi-use) Provide raw X (time) values instead of a curve node.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-yValues</p></td>
+<td><p>-yv</p></td>
+<td><p>double</p></td>
+<td><p>(multi-use) Provide raw Y (value) values instead of a curve node.</p></td>
+<td><p>None</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id2">
+<h3>Return<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<p>Returns a flat list of doubles. Each requested statistic contributes
+two values to the list: a type identifier followed by the computed
+value. The type identifiers are: 0 = mean, 1 = median, 2 = population
+variance, 3 = population standard deviation, 4 = signal-to-noise
+ratio.</p>
+</section>
+<section id="id3">
+<h3>Example<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="c1"># Compute mean and standard deviation of an animation curve.</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmAnimCurveStatistics</span><span class="p">(</span>
+    <span class="s1">&#39;myAnimCurve&#39;</span><span class="p">,</span>
+    <span class="n">startFrame</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">endFrame</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">mean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">populationStandardDeviation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># result: [0.0, &lt;mean_value&gt;, 3.0, &lt;std_dev_value&gt;]</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmAnimCurveStatistics myAnimCurve
+    -startFrame 1
+    -endFrame 100
+    -mean true
+    -populationStandardDeviation true;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmanimcurvediffstatistics-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmAnimCurveDiffStatistics</span></code> Command<a class="headerlink" href="#mmanimcurvediffstatistics-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmAnimCurveDiffStatistics</span></code> computes difference-based statistical
+measures between two animation curves (or two sets of raw values)
+over an optional frame range. It is useful for quantifying how closely
+a solved curve matches a reference.</p>
+<section id="id4">
+<h3>Flags<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-startFrame</p></td>
+<td><p>-sf</p></td>
+<td><p>unsigned</p></td>
+<td><p>First frame of the evaluation range.</p></td>
+<td><p>(all keys)</p></td>
+</tr>
+<tr class="row-odd"><td><p>-endFrame</p></td>
+<td><p>-ef</p></td>
+<td><p>unsigned</p></td>
+<td><p>Last frame of the evaluation range.</p></td>
+<td><p>(all keys)</p></td>
+</tr>
+<tr class="row-even"><td><p>-meanAbsoluteDifference</p></td>
+<td><p>-mad</p></td>
+<td><p>bool</p></td>
+<td><p>Return the mean absolute difference between the two curves.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-rootMeanSquareDifference</p></td>
+<td><p>-rsd</p></td>
+<td><p>bool</p></td>
+<td><p>Return the root-mean-square difference.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-meanDifference</p></td>
+<td><p>-mnf</p></td>
+<td><p>bool</p></td>
+<td><p>Return the mean signed difference.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-medianDifference</p></td>
+<td><p>-mdf</p></td>
+<td><p>bool</p></td>
+<td><p>Return the median signed difference.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-populationVariance</p></td>
+<td><p>-pvr</p></td>
+<td><p>bool</p></td>
+<td><p>Return the population variance of the differences.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-populationStandardDeviation</p></td>
+<td><p>-psd</p></td>
+<td><p>bool</p></td>
+<td><p>Return the population standard deviation of the differences.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-peakToPeak</p></td>
+<td><p>-ptp</p></td>
+<td><p>bool</p></td>
+<td><p>Return the peak-to-peak (max minus min) difference.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-signalToNoiseRatio</p></td>
+<td><p>-snr</p></td>
+<td><p>bool</p></td>
+<td><p>Return the signal-to-noise ratio.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-meanAbsoluteError</p></td>
+<td><p>-mae</p></td>
+<td><p>bool</p></td>
+<td><p>Return the mean absolute error.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-rootMeanSquareError</p></td>
+<td><p>-rme</p></td>
+<td><p>bool</p></td>
+<td><p>Return the root-mean-square error.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-normalizedRootMeanSquareError</p></td>
+<td><p>-nse</p></td>
+<td><p>bool</p></td>
+<td><p>Return the normalised root-mean-square error.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-rSquared</p></td>
+<td><p>-r2</p></td>
+<td><p>bool</p></td>
+<td><p>Return the R² (coefficient of determination).</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-xValues</p></td>
+<td><p>-xv</p></td>
+<td><p>double</p></td>
+<td><p>(multi-use) Raw X values shared by both curves.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-yValuesA</p></td>
+<td><p>-yva</p></td>
+<td><p>double</p></td>
+<td><p>(multi-use) Raw Y values for curve A.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-yValuesB</p></td>
+<td><p>-yvb</p></td>
+<td><p>double</p></td>
+<td><p>(multi-use) Raw Y values for curve B.</p></td>
+<td><p>None</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id5">
+<h3>Return<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<p>Returns a flat list of doubles. Each requested statistic contributes a
+type-identifier / value pair. Select curves are passed as the first
+two objects in the selection list; alternatively, supply raw values
+via <code class="docutils literal notranslate"><span class="pre">-xValues</span></code>, <code class="docutils literal notranslate"><span class="pre">-yValuesA</span></code>, and <code class="docutils literal notranslate"><span class="pre">-yValuesB</span></code>.</p>
+</section>
+<section id="id6">
+<h3>Example<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmAnimCurveDiffStatistics</span><span class="p">(</span>
+    <span class="s1">&#39;curveA&#39;</span><span class="p">,</span> <span class="s1">&#39;curveB&#39;</span><span class="p">,</span>
+    <span class="n">startFrame</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">endFrame</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">meanAbsoluteDifference</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">rootMeanSquareError</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmAnimCurveDiffStatistics curveA curveB
+    -startFrame 1 -endFrame 100
+    -meanAbsoluteDifference true
+    -rootMeanSquareError true;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmanimcurvefilterpops-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmAnimCurveFilterPops</span></code> Command<a class="headerlink" href="#mmanimcurvefilterpops-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmAnimCurveFilterPops</span></code> detects and removes single-frame <em>pops</em>
+(outlier keyframe values) from an animation curve. The command is
+undoable. When <code class="docutils literal notranslate"><span class="pre">-returnResultOnly</span></code> is set the curve is not modified
+and the detected pop frames are returned instead.</p>
+<section id="id7">
+<h3>Flags<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<dl class="option-list">
+<dt><kbd><span class="option">-s<var>tartFrame</var></span></kbd></dt>
+<dd><dl class="option-list">
+<dt><kbd><span class="option">-s<var>f</var></span></kbd></dt>
+<dd><p>unsigned First frame of the evaluation range.                                       (all keys)</p>
+</dd>
+</dl>
+</dd>
+<dt><kbd><span class="option">-e<var>ndFrame</var></span></kbd></dt>
+<dd><dl class="option-list">
+<dt><kbd><span class="option">-e<var>f</var></span></kbd></dt>
+<dd><p>unsigned Last frame of the evaluation range.                                        (all keys)</p>
+</dd>
+</dl>
+</dd>
+<dt><kbd><span class="option">-t<var>hreshold</var></span></kbd></dt>
+<dd><dl class="option-list">
+<dt><kbd><span class="option">-t<var>h</var></span></kbd></dt>
+<dd><p>double   Deviation threshold above which a keyframe is considered a pop.            1.0</p>
+</dd>
+</dl>
+</dd>
+<dt><kbd><span class="option">-r<var>eturnResultOnly</var></span></kbd></dt>
+<dd><dl class="option-list">
+<dt><kbd><span class="option">-r<var>ro</var></span></kbd></dt>
+<dd><p>bool     When true, return the affected frame numbers without modifying the curve.  False</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Command Flag           Command Flag (short)   Type     Description                                                                           Default Value
+====================== ====================== ======== ===================================================================================== =============
+-startFrame            -sf                    unsigned First frame of the evaluation range.                                                  (all keys)
+-endFrame              -ef                    unsigned Last frame of the evaluation range.                                                   (all keys)
+-controlPointCount     -cpc                   unsigned Number of control points (keyframes) in the simplified curve.                         0
+-distribution          -dtr                   string   Distribution of control points: <code class="docutils literal notranslate"><span class="pre">&quot;uniform&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto_keypoints&quot;</span></code>.                (none)
+-interpolation         -int                   string   Interpolation method: <code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;quadratic_nubs&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;cubic_nubs&quot;</span></code>.        (none)
+-returnResultOnly      -rro                   bool     When true, return the simplified key times and values without modifying the curve.    False
+====================== ====================== ======== ===================================================================================== =============</p>
+</section>
+<section id="id8">
+<h3>Return<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">-returnResultOnly</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns a flat list of
+alternating time/value pairs for the simplified keys. Otherwise
+modifies the curve in-place and returns nothing.</p>
+</section>
+<section id="id9">
+<h3>Example<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="c1"># Simplify a curve to 5 uniformly-distributed linear keys.</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmAnimCurveSimplify</span><span class="p">(</span>
+    <span class="s1">&#39;myAnimCurve&#39;</span><span class="p">,</span>
+    <span class="n">startFrame</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">endFrame</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">controlPointCount</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">,</span>
+    <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Return simplified values without modifying the curve.</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmAnimCurveSimplify</span><span class="p">(</span>
+    <span class="s1">&#39;myAnimCurve&#39;</span><span class="p">,</span>
+    <span class="n">controlPointCount</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">,</span>
+    <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;cubic_nubs&#39;</span><span class="p">,</span>
+    <span class="n">returnResultOnly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmAnimCurveSimplify myAnimCurve
+    -startFrame 1 -endFrame 100
+    -controlPointCount 5
+    -distribution &quot;uniform&quot;
+    -interpolation &quot;linear&quot;;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmbestfitplane-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmBestFitPlane</span></code> Command<a class="headerlink" href="#mmbestfitplane-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmBestFitPlane</span></code> fits a plane to a set of 3D points using a
+least-squares method and returns the plane’s position and orientation.
+It is useful for establishing a ground plane or reference surface from
+tracked 3D bundles.</p>
+<section id="id10">
+<h3>Flags<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-pointComponent</p></td>
+<td><p>-pc</p></td>
+<td><p>double</p></td>
+<td><p>(multi-use) Flat list of XYZ components of the input points (i.e. X0, Y0, Z0, X1, Y1, Z1, …).</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-withScale</p></td>
+<td><p>-wsc</p></td>
+<td><p>bool</p></td>
+<td><p>Include a scale value in the output when using <code class="docutils literal notranslate"><span class="pre">position_direction_and_scale</span></code> output mode.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-outputValuesAs</p></td>
+<td><p>-ova</p></td>
+<td><p>string</p></td>
+<td><p>Format of the return value: <code class="docutils literal notranslate"><span class="pre">&quot;position_and_direction&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;position_direction_and_scale&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;matrix_4x4&quot;</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;position_and_direction&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>-outputRmsError</p></td>
+<td><p>-ore</p></td>
+<td><p>bool</p></td>
+<td><p>Append the RMS fit error to the output.</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id11">
+<h3>Return<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
+<p>Returns a flat list of doubles. The content depends on
+<code class="docutils literal notranslate"><span class="pre">-outputValuesAs</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;position_and_direction&quot;</span></code>: <code class="docutils literal notranslate"><span class="pre">[px,</span> <span class="pre">py,</span> <span class="pre">pz,</span> <span class="pre">nx,</span> <span class="pre">ny,</span> <span class="pre">nz]</span></code> plus
+optional RMS error.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;position_direction_and_scale&quot;</span></code>: as above with a scale value
+appended before the optional RMS error.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;matrix_4x4&quot;</span></code>: 16 matrix values in row-major order plus optional
+RMS error.</p></li>
+</ul>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if the plane could not be fit (e.g. fewer than 3
+non-collinear points).</p>
+</section>
+<section id="id12">
+<h3>Example<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">nodes</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">ls</span><span class="p">(</span><span class="n">sl</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">long</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+<span class="n">points_flat</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">xform</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">worldSpace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">points_flat</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmBestFitPlane</span><span class="p">(</span>
+    <span class="n">pointComponent</span><span class="o">=</span><span class="n">points_flat</span><span class="p">,</span>
+    <span class="n">outputValuesAs</span><span class="o">=</span><span class="s1">&#39;matrix_4x4&#39;</span><span class="p">,</span>
+    <span class="n">outputRmsError</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">if</span> <span class="n">result</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">17</span><span class="p">:</span>
+    <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">xform</span><span class="p">(</span><span class="s1">&#39;pPlane1&#39;</span><span class="p">,</span> <span class="n">worldSpace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">matrix</span><span class="o">=</span><span class="n">result</span><span class="p">[:</span><span class="mi">16</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmBestFitPlane
+    -pointComponent 0.0 0.0 0.0
+    -pointComponent 1.0 0.0 0.0
+    -pointComponent 0.5 1.0 0.0
+    -outputValuesAs &quot;position_and_direction&quot;
+    -outputRmsError true;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmmarkerhomography-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmMarkerHomography</span></code> Command<a class="headerlink" href="#mmmarkerhomography-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmMarkerHomography</span></code> computes a 2D homography matrix from
+corresponding marker positions in two views (two different frames or
+two different cameras). It is used to warp one frame’s image into
+alignment with another for planar surfaces.</p>
+<section id="id13">
+<h3>Flags<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-cameraA</p></td>
+<td><p>-ca</p></td>
+<td><p>string</p></td>
+<td><p>Camera transform node for view A.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cameraB</p></td>
+<td><p>-cb</p></td>
+<td><p>string</p></td>
+<td><p>Camera transform node for view B.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-frameA</p></td>
+<td><p>-fa</p></td>
+<td><p>unsigned int</p></td>
+<td><p>Frame number for view A.</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>-frameB</p></td>
+<td><p>-fb</p></td>
+<td><p>unsigned int</p></td>
+<td><p>Frame number for view B.</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>-markerPair</p></td>
+<td><p>-mp</p></td>
+<td><p>string, string</p></td>
+<td><p>Pair of marker node names (markerA, markerB). Can be given multiple times (minimum 4 pairs required).</p></td>
+<td><p>None</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id14">
+<h3>Return<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
+<p>Returns a flat list of 9 doubles representing the 3×3 homography
+matrix in row-major order, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the computation fails
+(e.g. insufficient or degenerate correspondences).</p>
+</section>
+<section id="id15">
+<h3>Example<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmMarkerHomography</span><span class="p">(</span>
+    <span class="n">cameraA</span><span class="o">=</span><span class="s1">&#39;cameraA&#39;</span><span class="p">,</span>
+    <span class="n">cameraB</span><span class="o">=</span><span class="s1">&#39;cameraB&#39;</span><span class="p">,</span>
+    <span class="n">frameA</span><span class="o">=</span><span class="mi">21</span><span class="p">,</span>
+    <span class="n">frameB</span><span class="o">=</span><span class="mi">29</span><span class="p">,</span>
+    <span class="n">markerPair</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;markerA1&#39;</span><span class="p">,</span> <span class="s1">&#39;markerB1&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;markerA2&#39;</span><span class="p">,</span> <span class="s1">&#39;markerB2&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;markerA3&#39;</span><span class="p">,</span> <span class="s1">&#39;markerB3&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;markerA4&#39;</span><span class="p">,</span> <span class="s1">&#39;markerB4&#39;</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmMarkerHomography
+    -cameraA &quot;cameraA&quot;
+    -cameraB &quot;cameraB&quot;
+    -frameA 21
+    -frameB 29
+    -markerPair &quot;markerA1&quot; &quot;markerB1&quot;
+    -markerPair &quot;markerA2&quot; &quot;markerB2&quot;
+    -markerPair &quot;markerA3&quot; &quot;markerB3&quot;
+    -markerPair &quot;markerA4&quot; &quot;markerB4&quot;;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmcolorio-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmColorIO</span></code> Command<a class="headerlink" href="#mmcolorio-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmColorIO</span></code> exposes OpenColorIO (OCIO) colour-space information from
+within Maya. It can query the active OCIO configuration, list available
+colour spaces, guess a colour space from a file path, and look up
+standard OCIO role names.</p>
+<section id="id16">
+<h3>Flags<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-colorSpaceExists</p></td>
+<td><p>-ce</p></td>
+<td><p>bool</p></td>
+<td><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the named colour space (given as a string argument) exists in the active config.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-configDescription</p></td>
+<td><p>-de</p></td>
+<td><p>bool</p></td>
+<td><p>Return the description string of the active OCIO config.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-configName</p></td>
+<td><p>-nm</p></td>
+<td><p>bool</p></td>
+<td><p>Return the name of the active OCIO config.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-configSearchPath</p></td>
+<td><p>-sp</p></td>
+<td><p>bool</p></td>
+<td><p>Return the search paths defined in the active OCIO config.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-configWorkingDirectory</p></td>
+<td><p>-wd</p></td>
+<td><p>bool</p></td>
+<td><p>Return the working directory of the active OCIO config.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-guessColorSpaceFromFile</p></td>
+<td><p>-gc</p></td>
+<td><p>bool</p></td>
+<td><p>Guess the colour space for the file path supplied as a string argument.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-listColorSpacesActive</p></td>
+<td><p>-la</p></td>
+<td><p>bool</p></td>
+<td><p>Return the list of active colour space names.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-listColorSpacesAll</p></td>
+<td><p>-lc</p></td>
+<td><p>bool</p></td>
+<td><p>Return the list of all colour space names (active and inactive).</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-listColorSpacesInactive</p></td>
+<td><p>-li</p></td>
+<td><p>bool</p></td>
+<td><p>Return the list of inactive colour space names.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-roleColorPicking</p></td>
+<td><p>-rp</p></td>
+<td><p>bool</p></td>
+<td><p>Return the colour space name assigned to the <code class="docutils literal notranslate"><span class="pre">color_picking</span></code> role.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-roleColorTiming</p></td>
+<td><p>-rt</p></td>
+<td><p>bool</p></td>
+<td><p>Return the colour space name assigned to the <code class="docutils literal notranslate"><span class="pre">color_timing</span></code> role.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-roleCompositingLog</p></td>
+<td><p>-rg</p></td>
+<td><p>bool</p></td>
+<td><p>Return the colour space name assigned to the <code class="docutils literal notranslate"><span class="pre">compositing_log</span></code> role.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-roleData</p></td>
+<td><p>-ra</p></td>
+<td><p>bool</p></td>
+<td><p>Return the colour space name assigned to the <code class="docutils literal notranslate"><span class="pre">data</span></code> role.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-roleDefault</p></td>
+<td><p>-rd</p></td>
+<td><p>bool</p></td>
+<td><p>Return the colour space name assigned to the <code class="docutils literal notranslate"><span class="pre">default</span></code> role.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-roleMattePaint</p></td>
+<td><p>-ri</p></td>
+<td><p>bool</p></td>
+<td><p>Return the colour space name assigned to the <code class="docutils literal notranslate"><span class="pre">matte_paint</span></code> role.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-roleReference</p></td>
+<td><p>-rr</p></td>
+<td><p>bool</p></td>
+<td><p>Return the colour space name assigned to the <code class="docutils literal notranslate"><span class="pre">reference</span></code> role.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-roleRendering</p></td>
+<td><p>-rn</p></td>
+<td><p>bool</p></td>
+<td><p>Return the colour space name assigned to the <code class="docutils literal notranslate"><span class="pre">rendering</span></code> role.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-roleSceneLinear</p></td>
+<td><p>-rl</p></td>
+<td><p>bool</p></td>
+<td><p>Return the colour space name assigned to the <code class="docutils literal notranslate"><span class="pre">scene_linear</span></code> role.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-roleTexturePaint</p></td>
+<td><p>-rx</p></td>
+<td><p>bool</p></td>
+<td><p>Return the colour space name assigned to the <code class="docutils literal notranslate"><span class="pre">texture_paint</span></code> role.</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id17">
+<h3>Return<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h3>
+<p>Depending on the flags used, returns a string, a string array, or a
+boolean. Multiple flags may be combined in a single call; results are
+concatenated in the order the flags appear.</p>
+</section>
+<section id="id18">
+<h3>Example<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="c1"># List all colour spaces in the active config.</span>
+<span class="n">spaces</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmColorIO</span><span class="p">(</span><span class="n">listColorSpacesAll</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Get the scene-linear role name.</span>
+<span class="n">linear_cs</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmColorIO</span><span class="p">(</span><span class="n">roleSceneLinear</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Check whether a colour space exists.</span>
+<span class="n">exists</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmColorIO</span><span class="p">(</span><span class="s1">&#39;ACEScg&#39;</span><span class="p">,</span> <span class="n">colorSpaceExists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Guess the colour space of a file.</span>
+<span class="n">cs</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmColorIO</span><span class="p">(</span>
+    <span class="s1">&#39;/path/to/image.exr&#39;</span><span class="p">,</span>
+    <span class="n">guessColorSpaceFromFile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmColorIO -listColorSpacesAll true;
+mmColorIO -roleSceneLinear true;
+mmColorIO -configName true;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmmemorygpu-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmMemoryGPU</span></code> Command<a class="headerlink" href="#mmmemorygpu-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmMemoryGPU</span></code> queries GPU (VRAM) memory statistics reported by
+Maya’s Viewport 2.0 renderer. It operates in query mode only.</p>
+<section id="id19">
+<h3>Flags<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-total</p></td>
+<td><p>-tot</p></td>
+<td><p>(none)</p></td>
+<td><p>Query total GPU memory.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>-free</p></td>
+<td><p>-fre</p></td>
+<td><p>(none)</p></td>
+<td><p>Query free (available) GPU memory.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>-used</p></td>
+<td><p>-usd</p></td>
+<td><p>(none)</p></td>
+<td><p>Query used GPU memory.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>-asKiloBytes</p></td>
+<td><p>-kb</p></td>
+<td><p>(none)</p></td>
+<td><p>Return the result in kilobytes.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>-asMegaBytes</p></td>
+<td><p>-mb</p></td>
+<td><p>(none)</p></td>
+<td><p>Return the result in megabytes.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>-asGigaBytes</p></td>
+<td><p>-gb</p></td>
+<td><p>(none)</p></td>
+<td><p>Return the result in gigabytes.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The command requires <code class="docutils literal notranslate"><span class="pre">-query</span></code> mode. Exactly one of <code class="docutils literal notranslate"><span class="pre">-total</span></code>,
+<code class="docutils literal notranslate"><span class="pre">-free</span></code>, or <code class="docutils literal notranslate"><span class="pre">-used</span></code> must be given, combined with exactly one
+unit flag.</p>
+</div>
+</section>
+<section id="id20">
+<h3>Return<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h3>
+<p>Returns a single double value representing the requested memory amount
+in the chosen unit.</p>
+</section>
+<section id="id21">
+<h3>Example<a class="headerlink" href="#id21" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">total_mb</span>  <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmMemoryGPU</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="n">asMegaBytes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">free_mb</span>   <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmMemoryGPU</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">free</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>   <span class="n">asMegaBytes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">used_mb</span>   <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmMemoryGPU</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">used</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>   <span class="n">asMegaBytes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmMemoryGPU -query -total -asMegaBytes;
+mmMemoryGPU -query -free  -asMegaBytes;
+mmMemoryGPU -query -used  -asMegaBytes;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmmemorysystem-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmMemorySystem</span></code> Command<a class="headerlink" href="#mmmemorysystem-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmMemorySystem</span></code> queries system (RAM) memory statistics, including
+total, free, and used physical memory as well as the memory used by
+the current Maya process. It operates in query mode only.</p>
+<section id="id22">
+<h3>Flags<a class="headerlink" href="#id22" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-systemPhysicalMemoryTotal</p></td>
+<td><p>-tot</p></td>
+<td><p>(none)</p></td>
+<td><p>Query total physical (RAM) memory on the system.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>-systemPhysicalMemoryFree</p></td>
+<td><p>-fre</p></td>
+<td><p>(none)</p></td>
+<td><p>Query free physical memory on the system.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>-systemPhysicalMemoryUsed</p></td>
+<td><p>-usd</p></td>
+<td><p>(none)</p></td>
+<td><p>Query used physical memory on the system.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>-processMemoryUsed</p></td>
+<td><p>-pud</p></td>
+<td><p>(none)</p></td>
+<td><p>Query memory used by the current Maya process.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>-asKiloBytes</p></td>
+<td><p>-kb</p></td>
+<td><p>(none)</p></td>
+<td><p>Return the result in kilobytes.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>-asMegaBytes</p></td>
+<td><p>-mb</p></td>
+<td><p>(none)</p></td>
+<td><p>Return the result in megabytes.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>-asGigaBytes</p></td>
+<td><p>-gb</p></td>
+<td><p>(none)</p></td>
+<td><p>Return the result in gigabytes.</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The command requires <code class="docutils literal notranslate"><span class="pre">-query</span></code> mode. Combine a memory-type flag
+with a unit flag in each call.</p>
+</div>
+</section>
+<section id="id23">
+<h3>Return<a class="headerlink" href="#id23" title="Permalink to this heading">#</a></h3>
+<p>Returns a single double value representing the requested memory amount
+in the chosen unit.</p>
+</section>
+<section id="id24">
+<h3>Example<a class="headerlink" href="#id24" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">total_mb</span>   <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmMemorySystem</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">systemPhysicalMemoryTotal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">asMegaBytes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">free_mb</span>    <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmMemorySystem</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">systemPhysicalMemoryFree</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="n">asMegaBytes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">used_mb</span>    <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmMemorySystem</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">systemPhysicalMemoryUsed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="n">asMegaBytes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">process_mb</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmMemorySystem</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">processMemoryUsed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>         <span class="n">asMegaBytes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmMemorySystem -query -systemPhysicalMemoryTotal -asMegaBytes;
+mmMemorySystem -query -systemPhysicalMemoryFree  -asMegaBytes;
+mmMemorySystem -query -systemPhysicalMemoryUsed  -asMegaBytes;
+mmMemorySystem -query -processMemoryUsed         -asMegaBytes;
+</pre></div>
+</div>
+</section>
 </section>
 <section id="mmtestcameramatrix-command">
 <h2><code class="docutils literal notranslate"><span class="pre">mmTestCameraMatrix</span></code> Command<a class="headerlink" href="#mmtestcameramatrix-command" title="Permalink to this heading">#</a></h2>
@@ -421,7 +1491,60 @@ for users.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Other Commands</a><ul>
-<li><a class="reference internal" href="#mmreprojection-command"><code class="docutils literal notranslate"><span class="pre">mmReprojection</span></code> Command</a></li>
+<li><a class="reference internal" href="#mmreprojection-command"><code class="docutils literal notranslate"><span class="pre">mmReprojection</span></code> Command</a><ul>
+<li><a class="reference internal" href="#flags">Flags</a></li>
+<li><a class="reference internal" href="#return">Return</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmanimcurvestatistics-command"><code class="docutils literal notranslate"><span class="pre">mmAnimCurveStatistics</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id1">Flags</a></li>
+<li><a class="reference internal" href="#id2">Return</a></li>
+<li><a class="reference internal" href="#id3">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmanimcurvediffstatistics-command"><code class="docutils literal notranslate"><span class="pre">mmAnimCurveDiffStatistics</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id4">Flags</a></li>
+<li><a class="reference internal" href="#id5">Return</a></li>
+<li><a class="reference internal" href="#id6">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmanimcurvefilterpops-command"><code class="docutils literal notranslate"><span class="pre">mmAnimCurveFilterPops</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id7">Flags</a></li>
+<li><a class="reference internal" href="#id8">Return</a></li>
+<li><a class="reference internal" href="#id9">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmbestfitplane-command"><code class="docutils literal notranslate"><span class="pre">mmBestFitPlane</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id10">Flags</a></li>
+<li><a class="reference internal" href="#id11">Return</a></li>
+<li><a class="reference internal" href="#id12">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmmarkerhomography-command"><code class="docutils literal notranslate"><span class="pre">mmMarkerHomography</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id13">Flags</a></li>
+<li><a class="reference internal" href="#id14">Return</a></li>
+<li><a class="reference internal" href="#id15">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmcolorio-command"><code class="docutils literal notranslate"><span class="pre">mmColorIO</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id16">Flags</a></li>
+<li><a class="reference internal" href="#id17">Return</a></li>
+<li><a class="reference internal" href="#id18">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmmemorygpu-command"><code class="docutils literal notranslate"><span class="pre">mmMemoryGPU</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id19">Flags</a></li>
+<li><a class="reference internal" href="#id20">Return</a></li>
+<li><a class="reference internal" href="#id21">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmmemorysystem-command"><code class="docutils literal notranslate"><span class="pre">mmMemorySystem</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id22">Flags</a></li>
+<li><a class="reference internal" href="#id23">Return</a></li>
+<li><a class="reference internal" href="#id24">Example</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#mmtestcameramatrix-command"><code class="docutils literal notranslate"><span class="pre">mmTestCameraMatrix</span></code> Command</a></li>
 </ul>
 </li>

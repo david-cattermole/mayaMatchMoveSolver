@@ -43,7 +43,7 @@ The `Set Camera Origin Frame` tool moves a camera (and world-space
 `Bundles`) to the origin on the current frame, and normalizes the
 scene (Camera and Bundles) scale to a consistent value.
 
-The tool is instended to be used to provide world-space consistency
+The tool is intended to be used to provide world-space consistency
 when solving a camera with no known 3D positions.
 
 .. figure:: images/tools_set_camera_origin_frame.png

@@ -42,7 +42,7 @@ To run the tool, use this Python command:
 Unparent to World
 -----------------
 
-This is equalivent to Maya's *Unparent* tool (`Shift + p` hotkey), except the tool will
+This is equivalent to Maya's *Unparent* tool (`Shift + p` hotkey), except the tool will
 maintain the world-space position of the transform node for each
 keyframe applied to the node.
 
@@ -276,7 +276,7 @@ To run the tool, use this Python command:
 .. _rivet.mel:
    https://www.highend3d.com/maya/script/rivet-button-for-maya
 
-.. _create-rivet-tool-ref:
+.. _surface-cluster-tool-ref:
 
 Surface Cluster
 ---------------

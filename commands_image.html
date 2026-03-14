@@ -165,6 +165,7 @@
 <li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_camera.html">Camera Solver Tab</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="tools_camera_solver.html">Camera Solver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_selection.html">Selection Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_frametools.html">Frame Tools</a></li>
@@ -190,6 +191,8 @@
 </li>
 </ul>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_overview.html">Camera Solver Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_global_optimization.html">Global Optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_concepts.html">Understanding the Solver Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -343,14 +346,378 @@
         <article role="main">
           <section id="image-commands">
 <h1>Image Commands<a class="headerlink" href="#image-commands" title="Permalink to this heading">#</a></h1>
-<p><em>To be written.</em></p>
+<p>Commands for reading and converting image files. These are used
+internally by the image-plane and image-cache toolset, but can also be
+called directly from Python or MEL scripts.</p>
 <section id="mmreadimage-command">
 <h2><code class="docutils literal notranslate"><span class="pre">mmReadImage</span></code> Command<a class="headerlink" href="#mmreadimage-command" title="Permalink to this heading">#</a></h2>
-<p><em>To be written.</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">mmReadImage</span></code> queries metadata from an image file without loading the
+full pixel data into the scene. It runs in query mode only and is not
+undoable.</p>
+<section id="flags">
+<h3>Flags<a class="headerlink" href="#flags" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-widthHeight</p></td>
+<td><p>-wh</p></td>
+<td><p>(none)</p></td>
+<td><p>Return the image width and height in pixels.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>-dataHeader</p></td>
+<td><p>-dhr</p></td>
+<td><p>(none)</p></td>
+<td><p>Return extended header data (width, height, channels, bpc,
+and total byte size).</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>-resolveFilePath</p></td>
+<td><p>-rfp</p></td>
+<td><p>(none)</p></td>
+<td><p>Return the resolved absolute file path, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the
+file does not exist.</p></td>
+<td><p>—</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The image file path is passed as a command object (the selection
+string), not as a flag. Exactly one query flag must be set per call.</p>
+</section>
+<section id="return">
+<h3>Return<a class="headerlink" href="#return" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-widthHeight</span></code>: returns a list of two integers <code class="docutils literal notranslate"><span class="pre">[width,</span> <span class="pre">height]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-dataHeader</span></code>: returns a list of five strings
+<code class="docutils literal notranslate"><span class="pre">[width,</span> <span class="pre">height,</span> <span class="pre">channel_count,</span> <span class="pre">bytes_per_channel,</span> <span class="pre">total_bytes]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-resolveFilePath</span></code>: returns the resolved file path string, or
+<code class="docutils literal notranslate"><span class="pre">None</span></code> if the file cannot be found.</p></li>
+</ul>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">file_path</span> <span class="o">=</span> <span class="s1">&#39;/path/to/image.exr&#39;</span>
+
+<span class="c1"># Query width and height.</span>
+<span class="n">wh</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmReadImage</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">widthHeight</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># e.g. [1920, 1080]</span>
+
+<span class="c1"># Query the full data header.</span>
+<span class="n">header</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmReadImage</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dataHeader</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># e.g. [&#39;1920&#39;, &#39;1080&#39;, &#39;4&#39;, &#39;4&#39;, &#39;33177600&#39;]</span>
+<span class="c1"># Index 0 = width, 1 = height, 2 = channel count,</span>
+<span class="c1"># 3 = bytes per channel, 4 = total size in bytes.</span>
+
+<span class="c1"># Resolve the file path.</span>
+<span class="n">resolved</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmReadImage</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resolveFilePath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>string $file_path = &quot;/path/to/image.exr&quot;;
+
+// Get width and height.
+int $wh[] = `mmReadImage -query -widthHeight $file_path`;
+
+// Get full data header.
+string $header[] = `mmReadImage -query -dataHeader $file_path`;
+
+// Resolve the file path.
+string $resolved = `mmReadImage -query -resolveFilePath $file_path`;
+</pre></div>
+</div>
+</section>
 </section>
 <section id="mmconvertimage-command">
 <h2><code class="docutils literal notranslate"><span class="pre">mmConvertImage</span></code> Command<a class="headerlink" href="#mmconvertimage-command" title="Permalink to this heading">#</a></h2>
-<p><em>To be written.</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">mmConvertImage</span></code> converts an image sequence from one file format to
+another, optionally rescaling it in the process. This is primarily used
+to bake image sequences to Maya IFF format for faster playback.</p>
+<p>Frame numbers in the source and destination paths are represented by
+<code class="docutils literal notranslate"><span class="pre">#</span></code> characters (e.g. <code class="docutils literal notranslate"><span class="pre">image.####.exr</span></code>); the padding width is
+controlled separately by the <code class="docutils literal notranslate"><span class="pre">-sourceFramePadding</span></code> and
+<code class="docutils literal notranslate"><span class="pre">-destinationFramePadding</span></code> flags.</p>
+<p>The command is not undoable.</p>
+<section id="id1">
+<h3>Flags<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+</section>
+<section id="id2">
+<h3>Return<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<p>Returns nothing. Converted files are written to disk.</p>
+</section>
+<section id="id3">
+<h3>Example<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmConvertImage</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="s1">&#39;sourceimages/stA/stA.#.jpg&#39;</span><span class="p">,</span>
+    <span class="n">destination</span><span class="o">=</span><span class="s1">&#39;sourceimages/stA_CONVERT.#.iff&#39;</span><span class="p">,</span>
+    <span class="n">sourceFrameStart</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">sourceFrameEnd</span><span class="o">=</span><span class="mi">94</span><span class="p">,</span>
+    <span class="n">sourceFramePadding</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">destinationOutputFormat</span><span class="o">=</span><span class="s1">&#39;iff&#39;</span><span class="p">,</span>
+    <span class="n">destinationFrameStart</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">destinationFramePadding</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">resizeScale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmConvertImage
+    -source &quot;sourceimages/stA/stA.#.jpg&quot;
+    -destination &quot;sourceimages/stA_CONVERT.#.iff&quot;
+    -sourceFrameStart 0
+    -sourceFrameEnd 94
+    -sourceFramePadding 4
+    -destinationOutputFormat &quot;iff&quot;
+    -destinationFrameStart 0
+    -destinationFramePadding 4
+    -resizeScale 0.5;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmimagecache-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmImageCache</span></code> Command<a class="headerlink" href="#mmimagecache-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmImageCache</span></code> queries and manages the mmSolver in-process image
+cache. It supports <code class="docutils literal notranslate"><span class="pre">-query</span></code> mode (to read cache state) and <code class="docutils literal notranslate"><span class="pre">-edit</span></code>
+mode (to change capacity or evict items). Capacity edits are undoable;
+erase operations are not.</p>
+<p>The cache is split into a <strong>CPU</strong> tier (RAM) and a <strong>GPU</strong> tier
+(VRAM/textures). Each tier organises items into named groups — normally
+one group per image sequence.</p>
+<section id="id4">
+<h3>Flags<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<p>Query-mode flags (use with <code class="docutils literal notranslate"><span class="pre">-query</span></code>):</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-gpuCapacity</p></td>
+<td><p>-gpc</p></td>
+<td><p>(none)</p></td>
+<td><p>GPU cache capacity in bytes.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cpuCapacity</p></td>
+<td><p>-cpc</p></td>
+<td><p>(none)</p></td>
+<td><p>CPU cache capacity in bytes.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>-gpuUsed</p></td>
+<td><p>-gpu</p></td>
+<td><p>(none)</p></td>
+<td><p>GPU memory currently used by the cache, in bytes.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cpuUsed</p></td>
+<td><p>-cpu</p></td>
+<td><p>(none)</p></td>
+<td><p>CPU memory currently used by the cache, in bytes.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>-gpuItemCount</p></td>
+<td><p>-gic</p></td>
+<td><p>(none)</p></td>
+<td><p>Total number of items in the GPU cache.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cpuItemCount</p></td>
+<td><p>-cic</p></td>
+<td><p>(none)</p></td>
+<td><p>Total number of items in the CPU cache.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>-gpuGroupCount</p></td>
+<td><p>-ggc</p></td>
+<td><p>(none)</p></td>
+<td><p>Number of groups in the GPU cache.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cpuGroupCount</p></td>
+<td><p>-cgc</p></td>
+<td><p>(none)</p></td>
+<td><p>Number of groups in the CPU cache.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>-gpuGroupNames</p></td>
+<td><p>-ggn</p></td>
+<td><p>(none)</p></td>
+<td><p>Names of all GPU cache groups.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cpuGroupNames</p></td>
+<td><p>-cgn</p></td>
+<td><p>(none)</p></td>
+<td><p>Names of all CPU cache groups.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>-gpuGroupItemCount</p></td>
+<td><p>-ggt</p></td>
+<td><p>(none)</p></td>
+<td><p>Item count for the named GPU group (pass group name).</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cpuGroupItemCount</p></td>
+<td><p>-cgt</p></td>
+<td><p>(none)</p></td>
+<td><p>Item count for the named CPU group (pass group name).</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>-gpuGroupItemNames</p></td>
+<td><p>-gin</p></td>
+<td><p>(none)</p></td>
+<td><p>Item names for the named GPU group (pass group name).</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cpuGroupItemNames</p></td>
+<td><p>-cin</p></td>
+<td><p>(none)</p></td>
+<td><p>Item names for the named CPU group (pass group name).</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>-briefText</p></td>
+<td><p>-btx</p></td>
+<td><p>(none)</p></td>
+<td><p>Return a human-readable cache summary string.</p></td>
+<td><p>—</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For <code class="docutils literal notranslate"><span class="pre">-gpuGroupItemCount</span></code>, <code class="docutils literal notranslate"><span class="pre">-cpuGroupItemCount</span></code>, <code class="docutils literal notranslate"><span class="pre">-gpuGroupItemNames</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">-cpuGroupItemNames</span></code>, pass the group name as a command object
+(the selection string).</p>
+<p>Edit-mode flags (use with <code class="docutils literal notranslate"><span class="pre">-edit</span></code>):</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-gpuCapacity</p></td>
+<td><p>-gpc</p></td>
+<td><p>string</p></td>
+<td><p>Set the GPU cache capacity to the given number of bytes.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cpuCapacity</p></td>
+<td><p>-cpc</p></td>
+<td><p>string</p></td>
+<td><p>Set the CPU cache capacity to the given number of bytes.</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>-gpuEraseItems</p></td>
+<td><p>-gei</p></td>
+<td><p>(none)</p></td>
+<td><p>Evict named items from the GPU cache (not undoable).</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cpuEraseItems</p></td>
+<td><p>-cei</p></td>
+<td><p>(none)</p></td>
+<td><p>Evict named items from the CPU cache (not undoable).</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>-gpuEraseGroupItems</p></td>
+<td><p>-geg</p></td>
+<td><p>(none)</p></td>
+<td><p>Evict all items for the named GPU group (not undoable).</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cpuEraseGroupItems</p></td>
+<td><p>-ceg</p></td>
+<td><p>(none)</p></td>
+<td><p>Evict all items for the named CPU group (not undoable).</p></td>
+<td><p>—</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For the erase flags, pass item or group names as command objects
+(the selection strings).</p>
+</section>
+<section id="id5">
+<h3>Return<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Size queries (capacity, used, item count, group count): returns a
+single string containing the numeric value in bytes or count.</p></li>
+<li><p>Name queries (group names, item names): returns a string array.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-briefText</span></code>: returns a single human-readable summary string.</p></li>
+<li><p>Edit capacity: returns nothing.</p></li>
+<li><p>Edit erase: returns a string containing the count of evicted items.</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>Example<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="c1"># Query GPU capacity (bytes).</span>
+<span class="n">gpu_cap</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmImageCache</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gpuCapacity</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Query CPU memory in use (bytes).</span>
+<span class="n">cpu_used</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmImageCache</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cpuUsed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># List all CPU cache group names.</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmImageCache</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cpuGroupNames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Query item count for a specific CPU group.</span>
+<span class="n">count</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmImageCache</span><span class="p">(</span>
+    <span class="s1">&#39;/path/to/image.####.exr&#39;</span><span class="p">,</span>
+    <span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cpuGroupItemCount</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Set GPU capacity to 2 GB.</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmImageCache</span><span class="p">(</span><span class="n">edit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gpuCapacity</span><span class="o">=</span><span class="s1">&#39;2147483648&#39;</span><span class="p">)</span>
+
+<span class="c1"># Evict all items belonging to a CPU group.</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmImageCache</span><span class="p">(</span>
+    <span class="s1">&#39;/path/to/image.####.exr&#39;</span><span class="p">,</span>
+    <span class="n">edit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cpuEraseGroupItems</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>// Query GPU capacity.
+string $cap = `mmImageCache -query -gpuCapacity`;
+
+// List CPU group names.
+string $groups[] = `mmImageCache -query -cpuGroupNames`;
+
+// Set CPU capacity to 4 GB.
+mmImageCache -edit -cpuCapacity &quot;4294967296&quot;;
+
+// Evict a CPU group.
+mmImageCache -edit -cpuEraseGroupItems &quot;/path/to/image.####.exr&quot;;
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -410,8 +777,24 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Image Commands</a><ul>
-<li><a class="reference internal" href="#mmreadimage-command"><code class="docutils literal notranslate"><span class="pre">mmReadImage</span></code> Command</a></li>
-<li><a class="reference internal" href="#mmconvertimage-command"><code class="docutils literal notranslate"><span class="pre">mmConvertImage</span></code> Command</a></li>
+<li><a class="reference internal" href="#mmreadimage-command"><code class="docutils literal notranslate"><span class="pre">mmReadImage</span></code> Command</a><ul>
+<li><a class="reference internal" href="#flags">Flags</a></li>
+<li><a class="reference internal" href="#return">Return</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmconvertimage-command"><code class="docutils literal notranslate"><span class="pre">mmConvertImage</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id1">Flags</a></li>
+<li><a class="reference internal" href="#id2">Return</a></li>
+<li><a class="reference internal" href="#id3">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmimagecache-command"><code class="docutils literal notranslate"><span class="pre">mmImageCache</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id4">Flags</a></li>
+<li><a class="reference internal" href="#id5">Return</a></li>
+<li><a class="reference internal" href="#id6">Example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

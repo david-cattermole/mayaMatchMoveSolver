@@ -165,6 +165,7 @@
 <li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_camera.html">Camera Solver Tab</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="tools_camera_solver.html">Camera Solver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_selection.html">Selection Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_frametools.html">Frame Tools</a></li>
@@ -190,6 +191,8 @@
 </li>
 </ul>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_overview.html">Camera Solver Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_global_optimization.html">Global Optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_concepts.html">Understanding the Solver Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -513,33 +516,638 @@ from the core solver engines, so the user can do whatever they wish to.</p>
 </section>
 <section id="mmsolvertype-command">
 <h2><code class="docutils literal notranslate"><span class="pre">mmSolverType</span></code> Command<a class="headerlink" href="#mmsolvertype-command" title="Permalink to this heading">#</a></h2>
-<p><cite>mmSolverType</cite> is used to query the current plug-in’s available
-solvers.</p>
-<p>This tool is commonly used to dynamically query for the different
-types of solvers. See the
-<a class="reference internal" href="solver_design.html#solver-faq-how-to-get-supported-solver-types"><span class="std std-ref">How do I get the list of supported Solver Types?</span></a> for more detail on
-this.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mmSolverType</span></code> queries the available solver back-ends compiled into
+the plug-in and reports which one is used by default.</p>
+<p>This command is commonly used to adapt scripts to whichever solvers
+are present. See <a class="reference internal" href="solver_design.html#solver-faq-how-to-get-supported-solver-types"><span class="std std-ref">How do I get the list of supported Solver Types?</span></a>
+for more detail.</p>
+<section id="id1">
+<h3>Flags<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>All flags require <code class="docutils literal notranslate"><span class="pre">-query</span></code> mode (the command does not support edit
+mode).</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-list</p></td>
+<td><p>-ls</p></td>
+<td><p>bool</p></td>
+<td><p>Return a list of all available solver types.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-default</p></td>
+<td><p>-def</p></td>
+<td><p>bool</p></td>
+<td><p>Return the default solver type.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>-name</p></td>
+<td><p>-n</p></td>
+<td><p>string</p></td>
+<td><p>Filter output to include the solver name.</p></td>
+<td><p>(auto)</p></td>
+</tr>
+<tr class="row-odd"><td><p>-index</p></td>
+<td><p>-idx</p></td>
+<td><p>unsigned</p></td>
+<td><p>Filter output to include the solver index.</p></td>
+<td><p>(auto)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">-list</span></code> and <code class="docutils literal notranslate"><span class="pre">-default</span></code> are mutually exclusive.  When either is
+given without <code class="docutils literal notranslate"><span class="pre">-name</span></code> or <code class="docutils literal notranslate"><span class="pre">-index</span></code>, both name and index are
+returned by default.</p>
+</div>
+</section>
+<section id="id2">
+<h3>Return<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<p>Returns a string array (when <code class="docutils literal notranslate"><span class="pre">-list</span></code> is used) or a single string
+(when <code class="docutils literal notranslate"><span class="pre">-default</span></code> is used).  Each entry has the form
+<code class="docutils literal notranslate"><span class="pre">&lt;index&gt;=&lt;name&gt;</span></code> when both <code class="docutils literal notranslate"><span class="pre">-name</span></code> and <code class="docutils literal notranslate"><span class="pre">-index</span></code> are active,
+otherwise just the index or name alone.</p>
+</section>
+<section id="id3">
+<h3>Example<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
 <p>Python Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solvers</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># List all available solvers (returns e.g. [&quot;0=cminpack_lm&quot;, &quot;1=ceres&quot;])</span>
+<span class="n">solvers</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Query the default solver</span>
 <span class="n">default_solver</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>// List all available solvers
+mmSolverType -query -list true;
+
+// Get default solver
+mmSolverType -query -default true;
+</pre></div>
+</div>
+</section>
 </section>
 <section id="mmsolveraffects-command">
 <h2><code class="docutils literal notranslate"><span class="pre">mmSolverAffects</span></code> Command<a class="headerlink" href="#mmsolveraffects-command" title="Permalink to this heading">#</a></h2>
-<p><em>To be written.</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">mmSolverAffects</span></code> analyses the dependency relationships between
+markers and attributes and caches those relationships as custom
+attributes on the marker nodes. The solver uses this cached data to
+partition a solve into independent sub-problems, improving performance.</p>
+<p>The command accepts the same <code class="docutils literal notranslate"><span class="pre">-camera</span></code>, <code class="docutils literal notranslate"><span class="pre">-marker</span></code>, <code class="docutils literal notranslate"><span class="pre">-attr</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">-frame</span></code> flags as <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code>. The <code class="docutils literal notranslate"><span class="pre">-frame</span></code> flag is optional; the
+command works with time-independent data.</p>
+<section id="id4">
+<h3>Flags<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-camera</p></td>
+<td><p>-c</p></td>
+<td><p>string, string</p></td>
+<td><p>Camera transform and shape nodes.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-marker</p></td>
+<td><p>-m</p></td>
+<td><p>string, string, string</p></td>
+<td><p>Marker, Camera, Bundle.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-attr</p></td>
+<td><p>-a</p></td>
+<td><p>string × 5</p></td>
+<td><p>Node attribute, min, max, offset, scale.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-frame</p></td>
+<td><p>-f</p></td>
+<td><p>long int</p></td>
+<td><p>Frame number (optional).</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-mode</p></td>
+<td><p>-md</p></td>
+<td><p>string</p></td>
+<td><p>Operation mode; see values below.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-graphMode</p></td>
+<td><p>-gmd</p></td>
+<td><p>string</p></td>
+<td><p>Graph representation mode; see values below.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;node_name&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Mode values</strong> (<code class="docutils literal notranslate"><span class="pre">-mode</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;addAttrsToMarkers&quot;</span></code> — compute the affects relationship and write
+it as custom attributes on each marker node. This is the normal use
+case and the operation is undoable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;returnString&quot;</span></code> — return the relationship data as a string instead
+of modifying nodes.</p></li>
+</ul>
+<p><strong>Graph mode values</strong> (<code class="docutils literal notranslate"><span class="pre">-graphMode</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;normal&quot;</span></code> — full graph with all details.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;node_name&quot;</span></code> — identify graph nodes by their Maya node name
+(default).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;object&quot;</span></code> — identify graph nodes by their Python object
+representation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;simple&quot;</span></code> — simplified graph with minimal detail.</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>Return<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<p>With <code class="docutils literal notranslate"><span class="pre">-mode</span> <span class="pre">&quot;addAttrsToMarkers&quot;</span></code>: modifies marker nodes in-place and
+returns nothing.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">-mode</span> <span class="pre">&quot;returnString&quot;</span></code>: returns a string encoding the
+affects-relationship graph.</p>
+</section>
+<section id="id6">
+<h3>Example<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverAffects</span><span class="p">(</span>
+    <span class="n">camera</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1Shape&#39;</span><span class="p">),</span>
+    <span class="n">marker</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;myMarker&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1Shape&#39;</span><span class="p">,</span> <span class="s1">&#39;myBundle&#39;</span><span class="p">),</span>
+    <span class="n">attr</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;myBundle.translateX&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;addAttrsToMarkers&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmSolverAffects
+    -camera &quot;camera1&quot; &quot;camera1Shape&quot;
+    -marker &quot;myMarker&quot; &quot;camera1Shape&quot; &quot;myBundle&quot;
+    -attr &quot;myBundle.translateX&quot; &quot;None&quot; &quot;None&quot; &quot;None&quot; &quot;None&quot;
+    -mode &quot;addAttrsToMarkers&quot;;
+</pre></div>
+</div>
+</section>
 </section>
 <section id="mmsolverscenegraph-command">
 <h2><code class="docutils literal notranslate"><span class="pre">mmSolverSceneGraph</span></code> Command<a class="headerlink" href="#mmsolverscenegraph-command" title="Permalink to this heading">#</a></h2>
-<p><em>To be written.</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">mmSolverSceneGraph</span></code> validates whether the given scene objects can be
+used to construct a scene graph of the requested type. It accepts the
+same object and frame flags as <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> and returns <code class="docutils literal notranslate"><span class="pre">true</span></code> if
+construction succeeds, or <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
+<p>This is useful for detecting in advance whether the MM Scene Graph
+(<code class="docutils literal notranslate"><span class="pre">-sceneGraphMode</span> <span class="pre">1</span></code>) will work for a given set of inputs, so that
+calling code can fall back to the Maya DAG scene graph if needed.</p>
+<p>The command is not undoable.</p>
+<section id="id7">
+<h3>Flags<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-camera</p></td>
+<td><p>-c</p></td>
+<td><p>string, string</p></td>
+<td><p>Camera transform and shape nodes.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-marker</p></td>
+<td><p>-m</p></td>
+<td><p>string, string, string</p></td>
+<td><p>Marker, Camera, Bundle.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-attr</p></td>
+<td><p>-a</p></td>
+<td><p>string × 5</p></td>
+<td><p>Node attribute, min, max, offset, scale.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-frame</p></td>
+<td><p>-f</p></td>
+<td><p>long int</p></td>
+<td><p>Frame number to test with.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-sceneGraphMode</p></td>
+<td><p>-sgm</p></td>
+<td><p>unsigned int</p></td>
+<td><p>Scene graph type; 0=Maya DAG, 1=MM Scene Graph.</p></td>
+<td><p>0 (Maya DAG)</p></td>
+</tr>
+<tr class="row-odd"><td><p>-mode</p></td>
+<td><p>-md</p></td>
+<td><p>string</p></td>
+<td><p>Operation mode; only <code class="docutils literal notranslate"><span class="pre">&quot;debugConstruct&quot;</span></code> is currently valid.</p></td>
+<td><p>None</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id8">
+<h3>Return<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">true</span></code> if the scene graph was constructed without errors,
+<code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
+</section>
+<section id="id9">
+<h3>Example<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverSceneGraph</span><span class="p">(</span>
+    <span class="n">camera</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1Shape&#39;</span><span class="p">),</span>
+    <span class="n">marker</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;myMarker&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1Shape&#39;</span><span class="p">,</span> <span class="s1">&#39;myBundle&#39;</span><span class="p">),</span>
+    <span class="n">attr</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;myBundle.translateX&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+    <span class="n">frame</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">sceneGraphMode</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;debugConstruct&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MM Scene Graph is not supported; falling back to Maya DAG.&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>int $ok = `mmSolverSceneGraph
+    -camera &quot;camera1&quot; &quot;camera1Shape&quot;
+    -marker &quot;myMarker&quot; &quot;camera1Shape&quot; &quot;myBundle&quot;
+    -attr &quot;myBundle.translateX&quot; &quot;None&quot; &quot;None&quot; &quot;None&quot; &quot;None&quot;
+    -frame 1
+    -sceneGraphMode 1
+    -mode &quot;debugConstruct&quot;`;
+</pre></div>
+</div>
+</section>
 </section>
 <section id="mmcamerarelativepose-command">
 <h2><code class="docutils literal notranslate"><span class="pre">mmCameraRelativePose</span></code> Command<a class="headerlink" href="#mmcamerarelativepose-command" title="Permalink to this heading">#</a></h2>
-<p><em>To be written.</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">mmCameraRelativePose</span></code> computes the relative pose (position and
+rotation) of one camera with respect to another using 2D marker
+correspondences observed at two different frames. This is a Structure
+from Motion (SfM) operation based on the essential matrix.</p>
+<p>At least five marker correspondences are required. When
+<code class="docutils literal notranslate"><span class="pre">-setValues</span> <span class="pre">true</span></code> is given the computed poses are written to the
+camera transform nodes (undoable).</p>
+<section id="id10">
+<h3>Flags<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-cameraA</p></td>
+<td><p>-ca</p></td>
+<td><p>selection item</p></td>
+<td><p>Camera A transform node.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-cameraB</p></td>
+<td><p>-cb</p></td>
+<td><p>selection item</p></td>
+<td><p>Camera B transform node.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-frameA</p></td>
+<td><p>-fa</p></td>
+<td><p>long int</p></td>
+<td><p>Frame number for camera A.</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>-frameB</p></td>
+<td><p>-fb</p></td>
+<td><p>long int</p></td>
+<td><p>Frame number for camera B.</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td><p>-markerBundle</p></td>
+<td><p>-mb</p></td>
+<td><p>string, string, string</p></td>
+<td><p>Marker on frame A, marker on frame B, bundle (multi-use).</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-bundlePosition</p></td>
+<td><p>-bp</p></td>
+<td><p>double, double, double</p></td>
+<td><p>World-space XYZ of a bundle (multi-use, optional).</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-setValues</p></td>
+<td><p>-sv</p></td>
+<td><p>bool</p></td>
+<td><p>Write computed poses to the camera transform nodes.</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>-useCameraTransform</p></td>
+<td><p>-ct</p></td>
+<td><p>bool</p></td>
+<td><p>Use an existing camera world-space transform as the reference frame.</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id11">
+<h3>Return<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
+<p>Returns an empty result. Camera transform values are set directly on
+the nodes when <code class="docutils literal notranslate"><span class="pre">-setValues</span> <span class="pre">true</span></code> is given.</p>
+</section>
+<section id="id12">
+<h3>Example<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmCameraRelativePose</span><span class="p">(</span>
+    <span class="n">cameraA</span><span class="o">=</span><span class="s1">&#39;cameraA&#39;</span><span class="p">,</span>
+    <span class="n">cameraB</span><span class="o">=</span><span class="s1">&#39;cameraB&#39;</span><span class="p">,</span>
+    <span class="n">frameA</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">frameB</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">markerBundle</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;markerA1&#39;</span><span class="p">,</span> <span class="s1">&#39;markerB1&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle1&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;markerA2&#39;</span><span class="p">,</span> <span class="s1">&#39;markerB2&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle2&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;markerA3&#39;</span><span class="p">,</span> <span class="s1">&#39;markerB3&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle3&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;markerA4&#39;</span><span class="p">,</span> <span class="s1">&#39;markerB4&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle4&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;markerA5&#39;</span><span class="p">,</span> <span class="s1">&#39;markerB5&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle5&#39;</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">setValues</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmCameraRelativePose
+    -cameraA &quot;cameraA&quot;
+    -cameraB &quot;cameraB&quot;
+    -frameA 1
+    -frameB 10
+    -markerBundle &quot;markerA1&quot; &quot;markerB1&quot; &quot;bundle1&quot;
+    -markerBundle &quot;markerA2&quot; &quot;markerB2&quot; &quot;bundle2&quot;
+    -markerBundle &quot;markerA3&quot; &quot;markerB3&quot; &quot;bundle3&quot;
+    -markerBundle &quot;markerA4&quot; &quot;markerB4&quot; &quot;bundle4&quot;
+    -markerBundle &quot;markerA5&quot; &quot;markerB5&quot; &quot;bundle5&quot;
+    -setValues true;
+</pre></div>
+</div>
+</section>
 </section>
 <section id="mmcameraposefrompoints-command">
 <h2><code class="docutils literal notranslate"><span class="pre">mmCameraPoseFromPoints</span></code> Command<a class="headerlink" href="#mmcameraposefrompoints-command" title="Permalink to this heading">#</a></h2>
-<p><em>To be written.</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">mmCameraPoseFromPoints</span></code> computes a camera pose (position and
+rotation) at one or more frames from known 3D bundle positions and
+their corresponding 2D marker positions (Perspective-n-Point, PnP).</p>
+<p>Paired <code class="docutils literal notranslate"><span class="pre">-marker</span></code> (2D) and <code class="docutils literal notranslate"><span class="pre">-bundle</span></code> (3D) inputs must be provided
+in matching order. When <code class="docutils literal notranslate"><span class="pre">-setValues</span> <span class="pre">true</span></code> is given the result is
+written to the camera transform node at each frame (undoable).</p>
+<section id="id13">
+<h3>Flags<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-camera</p></td>
+<td><p>-c</p></td>
+<td><p>selection item</p></td>
+<td><p>Camera transform node to solve.</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-frame</p></td>
+<td><p>-f</p></td>
+<td><p>unsigned int</p></td>
+<td><p>Frame number to compute the pose at (multi-use).</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-marker</p></td>
+<td><p>-m</p></td>
+<td><p>string, string</p></td>
+<td><p>Marker node and camera shape node (multi-use).</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>-bundle</p></td>
+<td><p>-b</p></td>
+<td><p>string</p></td>
+<td><p>Bundle node corresponding to each marker (multi-use).</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>-setValues</p></td>
+<td><p>-sv</p></td>
+<td><p>bool</p></td>
+<td><p>Write the computed pose to the camera transform node.</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id14">
+<h3>Return<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
+<p>Returns an empty result. Camera transform values are set directly on
+the node at each frame when <code class="docutils literal notranslate"><span class="pre">-setValues</span> <span class="pre">true</span></code> is given.</p>
+</section>
+<section id="id15">
+<h3>Example<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmCameraPoseFromPoints</span><span class="p">(</span>
+    <span class="n">camera</span><span class="o">=</span><span class="s1">&#39;camera1&#39;</span><span class="p">,</span>
+    <span class="n">frame</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="n">marker</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;marker1&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1Shape&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;marker2&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1Shape&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;marker3&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1Shape&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;marker4&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1Shape&#39;</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">bundle</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;bundle1&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle2&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle3&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle4&#39;</span><span class="p">],</span>
+    <span class="n">setValues</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmCameraPoseFromPoints
+    -camera &quot;camera1&quot;
+    -frame 1
+    -frame 2
+    -frame 3
+    -marker &quot;marker1&quot; &quot;camera1Shape&quot;
+    -marker &quot;marker2&quot; &quot;camera1Shape&quot;
+    -marker &quot;marker3&quot; &quot;camera1Shape&quot;
+    -marker &quot;marker4&quot; &quot;camera1Shape&quot;
+    -bundle &quot;bundle1&quot;
+    -bundle &quot;bundle2&quot;
+    -bundle &quot;bundle3&quot;
+    -bundle &quot;bundle4&quot;
+    -setValues true;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmcamerasolve-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmCameraSolve</span></code> Command<a class="headerlink" href="#mmcamerasolve-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmCameraSolve</span></code> is the higher-level camera solver command used by the
+<a class="reference internal" href="camera_solver_overview.html#camera-solver-overview-heading"><span class="std std-ref">Camera Solver</span></a> tool. It accepts a
+selection list of camera transform nodes and marker nodes, reads the
+marker 2D positions at the given frame range, and runs the SfM-based
+camera solve pipeline.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The full solve is currently implemented in Python (see
+<code class="docutils literal notranslate"><span class="pre">python/mmSolver/_api/solvercamerautils.py</span></code>). This C++ command
+handles argument parsing and data preparation but delegates the
+heavy computation to the Python layer. The command is not undoable.</p>
+</div>
+<section id="id16">
+<h3>Flags<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command Flag</p></th>
+<th class="head"><p>Command Flag (short)</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-startFrame</p></td>
+<td><p>-sf</p></td>
+<td><p>unsigned int</p></td>
+<td><p>First frame of the range to solve.</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>-endFrame</p></td>
+<td><p>-ef</p></td>
+<td><p>unsigned int</p></td>
+<td><p>Last frame of the range to solve.</p></td>
+<td><p>120</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>In addition to the flags, pass the camera transform and marker nodes
+as command objects (the selection list).</p>
+</section>
+<section id="id17">
+<h3>Return<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h3>
+<p>Returns an empty array. Results are applied to the scene by the
+calling Python code.</p>
+</section>
+<section id="id18">
+<h3>Example<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmCameraSolve</span><span class="p">(</span>
+    <span class="s1">&#39;camera1&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;marker1&#39;</span><span class="p">,</span> <span class="s1">&#39;marker2&#39;</span><span class="p">,</span> <span class="s1">&#39;marker3&#39;</span><span class="p">,</span>
+    <span class="n">startFrame</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">endFrame</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmCameraSolve
+    -startFrame 1
+    -endFrame 120
+    camera1 marker1 marker2 marker3;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmsolver-v2-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmSolver_v2</span></code> Command<a class="headerlink" href="#mmsolver-v2-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmSolver_v2</span></code> is the second iteration of the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> command
+with a cleaner flag syntax. It performs the same non-linear
+least-squares solve but drops the deprecated <code class="docutils literal notranslate"><span class="pre">-verbose</span></code>,
+<code class="docutils literal notranslate"><span class="pre">-attrStiffness</span></code>, <code class="docutils literal notranslate"><span class="pre">-attrSmoothness</span></code>, and <code class="docutils literal notranslate"><span class="pre">-removeUnused*</span></code> flags,
+and adds flags for results output and marker-deviation attributes.</p>
+<p>The command is undoable.</p>
+<section id="id19">
+<h3>Flags<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h3>
+</section>
+<section id="id20">
+<h3>Return<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h3>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">true</span></code> (integer <code class="docutils literal notranslate"><span class="pre">1</span></code>) if the solve completed without error,
+<code class="docutils literal notranslate"><span class="pre">false</span></code> (<code class="docutils literal notranslate"><span class="pre">0</span></code>) otherwise. Solve quality statistics are printed
+according to <code class="docutils literal notranslate"><span class="pre">-logLevel</span></code> and written to <code class="docutils literal notranslate"><span class="pre">-resultsNode</span></code> when
+provided.</p>
+</section>
+<section id="id21">
+<h3>Example<a class="headerlink" href="#id21" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolver_v2</span><span class="p">(</span>
+    <span class="n">camera</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;cameraShape1&#39;</span><span class="p">),</span>
+    <span class="n">marker</span><span class="o">=</span><span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;marker1&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle1&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;marker2&#39;</span><span class="p">,</span> <span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;bundle2&#39;</span><span class="p">),</span>
+    <span class="p">),</span>
+    <span class="n">attr</span><span class="o">=</span><span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;bundle1.tx&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;bundle1.ty&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;camera1.rx&#39;</span><span class="p">,</span> <span class="s1">&#39;-10.0&#39;</span><span class="p">,</span> <span class="s1">&#39;25.0&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
+    <span class="p">),</span>
+    <span class="n">frame</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">24</span><span class="p">),</span>
+    <span class="n">iterations</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">logLevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">setMarkerDeviationAttrs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Solve succeeded:&#39;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>int $ok = `mmSolver_v2
+    -camera &quot;camera1&quot; &quot;cameraShape1&quot;
+    -marker &quot;marker1&quot; &quot;camera1&quot; &quot;bundle1&quot;
+    -marker &quot;marker2&quot; &quot;camera1&quot; &quot;bundle2&quot;
+    -attr &quot;bundle1.tx&quot; &quot;None&quot; &quot;None&quot; &quot;None&quot; &quot;None&quot;
+    -attr &quot;bundle1.ty&quot; &quot;None&quot; &quot;None&quot; &quot;None&quot; &quot;None&quot;
+    -attr &quot;camera1.rx&quot; &quot;-10.0&quot; &quot;25.0&quot; &quot;None&quot; &quot;None&quot;
+    -frame 1
+    -frame 12
+    -frame 24
+    -iterations 20
+    -logLevel 2
+    -setMarkerDeviationAttrs true`;
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -605,11 +1213,48 @@ this.</p>
 <li><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#mmsolvertype-command"><code class="docutils literal notranslate"><span class="pre">mmSolverType</span></code> Command</a></li>
-<li><a class="reference internal" href="#mmsolveraffects-command"><code class="docutils literal notranslate"><span class="pre">mmSolverAffects</span></code> Command</a></li>
-<li><a class="reference internal" href="#mmsolverscenegraph-command"><code class="docutils literal notranslate"><span class="pre">mmSolverSceneGraph</span></code> Command</a></li>
-<li><a class="reference internal" href="#mmcamerarelativepose-command"><code class="docutils literal notranslate"><span class="pre">mmCameraRelativePose</span></code> Command</a></li>
-<li><a class="reference internal" href="#mmcameraposefrompoints-command"><code class="docutils literal notranslate"><span class="pre">mmCameraPoseFromPoints</span></code> Command</a></li>
+<li><a class="reference internal" href="#mmsolvertype-command"><code class="docutils literal notranslate"><span class="pre">mmSolverType</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id1">Flags</a></li>
+<li><a class="reference internal" href="#id2">Return</a></li>
+<li><a class="reference internal" href="#id3">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmsolveraffects-command"><code class="docutils literal notranslate"><span class="pre">mmSolverAffects</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id4">Flags</a></li>
+<li><a class="reference internal" href="#id5">Return</a></li>
+<li><a class="reference internal" href="#id6">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmsolverscenegraph-command"><code class="docutils literal notranslate"><span class="pre">mmSolverSceneGraph</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id7">Flags</a></li>
+<li><a class="reference internal" href="#id8">Return</a></li>
+<li><a class="reference internal" href="#id9">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmcamerarelativepose-command"><code class="docutils literal notranslate"><span class="pre">mmCameraRelativePose</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id10">Flags</a></li>
+<li><a class="reference internal" href="#id11">Return</a></li>
+<li><a class="reference internal" href="#id12">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmcameraposefrompoints-command"><code class="docutils literal notranslate"><span class="pre">mmCameraPoseFromPoints</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id13">Flags</a></li>
+<li><a class="reference internal" href="#id14">Return</a></li>
+<li><a class="reference internal" href="#id15">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmcamerasolve-command"><code class="docutils literal notranslate"><span class="pre">mmCameraSolve</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id16">Flags</a></li>
+<li><a class="reference internal" href="#id17">Return</a></li>
+<li><a class="reference internal" href="#id18">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmsolver-v2-command"><code class="docutils literal notranslate"><span class="pre">mmSolver_v2</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id19">Flags</a></li>
+<li><a class="reference internal" href="#id20">Return</a></li>
+<li><a class="reference internal" href="#id21">Example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

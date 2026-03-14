@@ -1,10 +1,13 @@
 Commands
 ========
 
-Custom commands in `mmSolver` are used to perform many tasks, such as
-solving the scene, modifying the scene, or calculating values.
+mmSolver provides a set of custom Maya commands (MEL / Python) for
+performing solves, querying scene information, processing animation
+curves, working with images, and more. These commands are the
+low-level building blocks that the high-level Python API and tools
+build upon; advanced users can call them directly from scripts.
 
-You can see the nodes split into categories below:
+Commands are split into the following categories:
 
 .. toctree::
     :maxdepth: 4

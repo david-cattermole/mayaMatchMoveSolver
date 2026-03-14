@@ -165,6 +165,7 @@
 <li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_camera.html">Camera Solver Tab</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="tools_camera_solver.html">Camera Solver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_selection.html">Selection Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_frametools.html">Frame Tools</a></li>
@@ -190,6 +191,8 @@
 </li>
 </ul>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_overview.html">Camera Solver Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_global_optimization.html">Global Optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_concepts.html">Understanding the Solver Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -343,9 +346,12 @@
         <article role="main">
           <section id="commands">
 <h1>Commands<a class="headerlink" href="#commands" title="Permalink to this heading">#</a></h1>
-<p>Custom commands in <cite>mmSolver</cite> are used to perform many tasks, such as
-solving the scene, modifying the scene, or calculating values.</p>
-<p>You can see the nodes split into categories below:</p>
+<p>mmSolver provides a set of custom Maya commands (MEL / Python) for
+performing solves, querying scene information, processing animation
+curves, working with images, and more. These commands are the
+low-level building blocks that the high-level Python API and tools
+build upon; advanced users can call them directly from scripts.</p>
+<p>Commands are split into the following categories:</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="commands_solve.html">Solve Commands</a><ul>
@@ -355,25 +361,143 @@ solving the scene, modifying the scene, or calculating values.</p>
 <li class="toctree-l3"><a class="reference internal" href="commands_solve.html#example">Example</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmsolvertype-command"><code class="docutils literal notranslate"><span class="pre">mmSolverType</span></code> Command</a></li>
-<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmsolveraffects-command"><code class="docutils literal notranslate"><span class="pre">mmSolverAffects</span></code> Command</a></li>
-<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmsolverscenegraph-command"><code class="docutils literal notranslate"><span class="pre">mmSolverSceneGraph</span></code> Command</a></li>
-<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmcamerarelativepose-command"><code class="docutils literal notranslate"><span class="pre">mmCameraRelativePose</span></code> Command</a></li>
-<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmcameraposefrompoints-command"><code class="docutils literal notranslate"><span class="pre">mmCameraPoseFromPoints</span></code> Command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmsolvertype-command"><code class="docutils literal notranslate"><span class="pre">mmSolverType</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id1">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id2">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id3">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmsolveraffects-command"><code class="docutils literal notranslate"><span class="pre">mmSolverAffects</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id4">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id5">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id6">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmsolverscenegraph-command"><code class="docutils literal notranslate"><span class="pre">mmSolverSceneGraph</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id7">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id8">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id9">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmcamerarelativepose-command"><code class="docutils literal notranslate"><span class="pre">mmCameraRelativePose</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id10">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id11">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id12">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmcameraposefrompoints-command"><code class="docutils literal notranslate"><span class="pre">mmCameraPoseFromPoints</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id13">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id14">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id15">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmcamerasolve-command"><code class="docutils literal notranslate"><span class="pre">mmCameraSolve</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id16">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id17">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id18">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_solve.html#mmsolver-v2-command"><code class="docutils literal notranslate"><span class="pre">mmSolver_v2</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id19">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id20">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_solve.html#id21">Example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="commands_other.html">Other Commands</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="commands_other.html#mmreprojection-command"><code class="docutils literal notranslate"><span class="pre">mmReprojection</span></code> Command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html#mmreprojection-command"><code class="docutils literal notranslate"><span class="pre">mmReprojection</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#flags">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#return">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html#mmanimcurvestatistics-command"><code class="docutils literal notranslate"><span class="pre">mmAnimCurveStatistics</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id1">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id2">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id3">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html#mmanimcurvediffstatistics-command"><code class="docutils literal notranslate"><span class="pre">mmAnimCurveDiffStatistics</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id4">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id5">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id6">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html#mmanimcurvefilterpops-command"><code class="docutils literal notranslate"><span class="pre">mmAnimCurveFilterPops</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id7">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id8">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id9">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html#mmbestfitplane-command"><code class="docutils literal notranslate"><span class="pre">mmBestFitPlane</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id10">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id11">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id12">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html#mmmarkerhomography-command"><code class="docutils literal notranslate"><span class="pre">mmMarkerHomography</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id13">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id14">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id15">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html#mmcolorio-command"><code class="docutils literal notranslate"><span class="pre">mmColorIO</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id16">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id17">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id18">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html#mmmemorygpu-command"><code class="docutils literal notranslate"><span class="pre">mmMemoryGPU</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id19">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id20">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id21">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html#mmmemorysystem-command"><code class="docutils literal notranslate"><span class="pre">mmMemorySystem</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id22">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id23">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_other.html#id24">Example</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="commands_other.html#mmtestcameramatrix-command"><code class="docutils literal notranslate"><span class="pre">mmTestCameraMatrix</span></code> Command</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="commands_image.html">Image Commands</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="commands_image.html#mmreadimage-command"><code class="docutils literal notranslate"><span class="pre">mmReadImage</span></code> Command</a></li>
-<li class="toctree-l2"><a class="reference internal" href="commands_image.html#mmconvertimage-command"><code class="docutils literal notranslate"><span class="pre">mmConvertImage</span></code> Command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_image.html#mmreadimage-command"><code class="docutils literal notranslate"><span class="pre">mmReadImage</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_image.html#flags">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_image.html#return">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_image.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_image.html#mmconvertimage-command"><code class="docutils literal notranslate"><span class="pre">mmConvertImage</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_image.html#id1">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_image.html#id2">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_image.html#id3">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_image.html#mmimagecache-command"><code class="docutils literal notranslate"><span class="pre">mmImageCache</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_image.html#id4">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_image.html#id5">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_image.html#id6">Example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="commands_display.html">Display Commands</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="commands_display.html#mmrenderer-command"><code class="docutils literal notranslate"><span class="pre">mmRenderer</span></code> Command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_display.html#mmrendererstandard-command"><code class="docutils literal notranslate"><span class="pre">mmRendererStandard</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_display.html#flags">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_display.html#return">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_display.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="commands_display.html#mmrenderersilhouette-command"><code class="docutils literal notranslate"><span class="pre">mmRendererSilhouette</span></code> Command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="commands_display.html#id1">Flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_display.html#mmrenderglobalssilhouette-node-attributes"><code class="docutils literal notranslate"><span class="pre">mmRenderGlobalsSilhouette</span></code> Node Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_display.html#id2">Return</a></li>
+<li class="toctree-l3"><a class="reference internal" href="commands_display.html#id3">Example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

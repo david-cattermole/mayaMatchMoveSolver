@@ -1,0 +1,710 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Create Node Tools" href="tools_createnode.html" /><link rel="prev" title="Camera Solver Tab" href="tools_solver_ui_tab_camera.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>Camera Solver - mayaMatchMoveSolver master documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">mayaMatchMoveSolver master documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">mayaMatchMoveSolver master documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="tools.html">Tools</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="tools_solver_ui.html">Solver UI</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_basic.html">Basic Solver Tab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_standard.html">Standard Solver Tab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_camera.html">Camera Solver Tab</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Camera Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_selection.html">Selection Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_frametools.html">Frame Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_cameracontextmenu.html">Camera Context Menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_attributetools.html">Attribute Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_cameratools.html">Camera Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markerbundletools.html">Marker Bundle Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_bundletools.html">Bundle Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markertools.html">Marker Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_linetools.html">Line Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_displaytools.html">Display Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_zdepthtools.html">Z-Depth Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_meshtools.html">Mesh Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html">General Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_inputoutput.html">Input/Output Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_hotkeys.html">Hotkeys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_renderer.html">Viewport Renderers</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="techniques.html">Techniques</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="techniques_rigs.html">Solving Maya Rigs</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_overview.html">Camera Solver Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_global_optimization.html">Global Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solver_concepts.html">Understanding the Solver Core Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_transforms.html">Transform Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_shapes.html">Shape Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_imageplane.html">Image Plane Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_lens.html">Lens Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_display.html">Display Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_other.html">Other Nodes</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="commands.html">Commands</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="commands_solve.html">Solve Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html">Other Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_image.html">Image Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_display.html">Display Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="scripting.html">Scripting</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.aboutwindow.html">mmSolver.tools.aboutwindow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attachbundletocurve.html">mmSolver.tools.attachbundletocurve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attributebake.html">mmSolver.tools.attributebake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.averagemarker.html">mmSolver.tools.averagemarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.calibratecamera.html">mmSolver.tools.calibratecamera</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameraaim.html">mmSolver.tools.cameraaim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameracontextmenu.html">mmSolver.tools.cameracontextmenu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameraobjectscaleadjust.html">mmSolver.tools.cameraobjectscaleadjust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameraobjectscaleremove.html">mmSolver.tools.cameraobjectscaleremove</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.centertwodee.html">mmSolver.tools.centertwodee</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.channelsen.html">mmSolver.tools.channelsen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.convertmarker.html">mmSolver.tools.convertmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.copypastecamera.html">mmSolver.tools.copypastecamera</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.copypastemarker.html">mmSolver.tools.copypastemarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createbundle.html">mmSolver.tools.createbundle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createcamera.html">mmSolver.tools.createcamera</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createcontroller.html">mmSolver.tools.createcontroller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createcontroller2.html">mmSolver.tools.createcontroller2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createimageplane.html">mmSolver.tools.createimageplane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createlens.html">mmSolver.tools.createlens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createline.html">mmSolver.tools.createline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createrivet.html">mmSolver.tools.createrivet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createskydome.html">mmSolver.tools.createskydome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.deformmarker.html">mmSolver.tools.deformmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.duplicatemarker.html">mmSolver.tools.duplicatemarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.editrootframes.html">mmSolver.tools.editrootframes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.hotkeyswitcher.html">mmSolver.tools.hotkeyswitcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.linkmarkerbundle.html">mmSolver.tools.linkmarkerbundle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.loadlens.html">mmSolver.tools.loadlens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.loadmarker.html">mmSolver.tools.loadmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.markerbundlerename.html">mmSolver.tools.markerbundlerename</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.markerbundlerenamewithmetadata.html">mmSolver.tools.markerbundlerenamewithmetadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.meshfrompoints.html">mmSolver.tools.meshfrompoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.mmhotkeyset.html">mmSolver.tools.mmhotkeyset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.mmmenu.html">mmSolver.tools.mmmenu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.mmshelf.html">mmSolver.tools.mmshelf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.navigaterootframes.html">mmSolver.tools.navigaterootframes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.placemarkermanip.html">mmSolver.tools.placemarkermanip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.raycastmarker.html">mmSolver.tools.raycastmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.removecontroller2.html">mmSolver.tools.removecontroller2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.removesolvernodes.html">mmSolver.tools.removesolvernodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.reparent.html">mmSolver.tools.reparent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.reparent2.html">mmSolver.tools.reparent2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.reprojectbundle.html">mmSolver.tools.reprojectbundle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.savelensfile.html">mmSolver.tools.savelensfile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.savemarkerfile.html">mmSolver.tools.savemarkerfile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.screenspacemotiontrail.html">mmSolver.tools.screenspacemotiontrail</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.screenspacerigbake.html">mmSolver.tools.screenspacerigbake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.screenspacetransform.html">mmSolver.tools.screenspacetransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.screenzmanipulator.html">mmSolver.tools.screenzmanipulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.selection.html">mmSolver.tools.selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setattributedetails.html">mmSolver.tools.setattributedetails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setcameraoriginframe.html">mmSolver.tools.setcameraoriginframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setmeshholdouts.html">mmSolver.tools.setmeshholdouts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setobjectcolour.html">mmSolver.tools.setobjectcolour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.showdeviationcurves.html">mmSolver.tools.showdeviationcurves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.smoothkeyframes.html">mmSolver.tools.smoothkeyframes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.solver.html">mmSolver.tools.solver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.sortoutlinernodes.html">mmSolver.tools.sortoutlinernodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.subdivideline.html">mmSolver.tools.subdivideline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.surfacecluster.html">mmSolver.tools.surfacecluster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.sysinfowindow.html">mmSolver.tools.sysinfowindow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglebundlelock.html">mmSolver.tools.togglebundlelock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglecameradistort.html">mmSolver.tools.togglecameradistort</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglelinelock.html">mmSolver.tools.togglelinelock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglemarkerlock.html">mmSolver.tools.togglemarkerlock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleobjectmotiontrail.html">mmSolver.tools.toggleobjectmotiontrail</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleviewportctrls.html">mmSolver.tools.toggleviewportctrls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleviewportgeom.html">mmSolver.tools.toggleviewportgeom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleviewportimgplns.html">mmSolver.tools.toggleviewportimgplns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.triangulatebundle.html">mmSolver.tools.triangulatebundle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.undoredoscene.html">mmSolver.tools.undoredoscene</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.userpreferences.html">mmSolver.tools.userpreferences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.userprefswindow.html">mmSolver.tools.userprefswindow</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html">mmSolver.api</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.logger.html">mmSolver.logger</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="mmSolver.ui.html">mmSolver.ui</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.base_maya_window.html">mmSolver.ui.base_maya_window</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.converttypes.html">mmSolver.ui.converttypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.commonmenus.html">mmSolver.ui.commonmenus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.nodes.html">mmSolver.ui.nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.shelfutils.html">mmSolver.ui.shelfutils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.uimodels.html">mmSolver.ui.uimodels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.uiutils.html">mmSolver.ui.uiutils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.utils.html">mmSolver.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">Related Books and Papers</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="licenses.html">Licenses</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="camera-solver">
+<span id="camera-solver-tool-ref"></span><h1>Camera Solver<a class="headerlink" href="#camera-solver" title="Permalink to this heading">#</a></h1>
+<p>The <cite>Camera Solver</cite> tool reconstructs animated camera motion and static 3D
+bundle positions “from scratch” - using only 2D marker tracks and the camera’s
+initial focal length and lens distortion settings.</p>
+<p>See <a class="reference internal" href="camera_solver_overview.html#camera-solver-overview-heading"><span class="std std-ref">Camera Solver Overview</span></a> for a detailed technical overview.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/tools_camera_solver_ui.png"><img alt="Camera Solver User Interface" src="_images/tools_camera_solver_ui.png" style="width: 332.0px; height: 399.20000000000005px;" /></a>
+<figcaption>
+<p><span class="caption-text">Camera Solver User Interface</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Select a camera node, or activate a camera viewport.</p></li>
+<li><p>Ensure <cite>Markers</cite> are parented under the camera and contain 2D track data.</p></li>
+<li><p>Open the <cite>Camera Solver</cite> UI.</p>
+<ul class="simple">
+<li><p>The <strong>Camera</strong> drop-down will auto-populate from the scene and
+pre-select the active camera.  Press <strong>Refresh</strong> if you add new
+cameras after opening the window.</p></li>
+<li><p>The <strong>Markers</strong> count shows how many markers are found under the
+selected camera.  The solve requires at least a few markers with
+tracks across the frame range.</p></li>
+</ul>
+</li>
+<li><p>Set the <strong>Frame Range</strong> and any solver options (see below).</p></li>
+<li><p>Press <strong>Solve</strong>.</p>
+<ul class="simple">
+<li><p>The solve runs as a background process; Maya remains interactive.</p></li>
+<li><p>Progress is shown in the <strong>Log</strong> area and the status bar.</p></li>
+<li><p>Press <strong>Cancel</strong> at any time to stop the solve.</p></li>
+</ul>
+</li>
+<li><p>When the solve completes, press <strong>Apply Solved</strong> to write the results
+back onto the camera transform and bundles in the scene.</p>
+<ul class="simple">
+<li><p>This step is undoable with <code class="docutils literal notranslate"><span class="pre">Ctrl+Z</span></code>.</p></li>
+<li><p>You can press <strong>Apply Solved</strong> again at any time to re-apply the
+last solve result without re-running the solve.</p></li>
+</ul>
+</li>
+</ol>
+<p>To open the Camera Solver UI, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.camerasolver.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="camera-group">
+<h2>Camera Group<a class="headerlink" href="#camera-group" title="Permalink to this heading">#</a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/tools_camera_solver_ui_camera_group.png"><img alt="Camera Solver - Camera group" src="_images/tools_camera_solver_ui_camera_group.png" style="width: 322.40000000000003px; height: 86.4px;" /></a>
+</figure>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Camera</p></td>
+<td><p>Drop-down listing all non-startup cameras in the scene.  The
+camera selected here is used for the solve.  Press <strong>Refresh</strong>
+to update the list after adding cameras.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Markers</p></td>
+<td><p>Read-only count of <cite>Marker</cite> nodes parented under the selected
+camera.  Updates automatically when the camera selection changes.</p></td>
+</tr>
+<tr class="row-even"><td><p>Lens</p></td>
+<td><p>Read-only display of the lens distortion node connected to the
+selected camera, or <code class="docutils literal notranslate"><span class="pre">&lt;none&gt;</span></code> if no lens is attached.  Lens
+distortion is taken into account during the solve when present.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="solver-group">
+<h2>Solver Group<a class="headerlink" href="#solver-group" title="Permalink to this heading">#</a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/tools_camera_solver_ui_solver_group.png"><img alt="Camera Solver - Solver group" src="_images/tools_camera_solver_ui_solver_group.png" style="width: 456.8px; height: 261.6px;" /></a>
+</figure>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Frame Range</p></td>
+<td><p>The frames to solve.  Choose <strong>Timeline (Inner)</strong> or <strong>Timeline
+(Outer)</strong> to follow the Maya timeline bars, or <strong>Custom</strong> to
+type explicit start and end frame numbers.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Adjustment Solver</p></td>
+<td><p>Optional second pass that adjusts camera attributes (such as
+focal length) after the initial reconstruction.  See
+<a class="reference internal" href="#adjustment-solver">Adjustment Solver</a> below.</p></td>
+</tr>
+<tr class="row-even"><td><p>Log Level</p></td>
+<td><p>Controls how much output is written to the <strong>Log</strong> area during
+the solve.  <strong>Progress</strong> (default) shows high-level progress
+messages.  <strong>Debug</strong> is intended for developer diagnostics and
+produces very verbose output.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="adjustment-solver">
+<span id="camera-solver-adjustment-solver-ref"></span><h3>Adjustment Solver<a class="headerlink" href="#adjustment-solver" title="Permalink to this heading">#</a></h3>
+<p>The <strong>Adjustment Solver</strong> runs a second optimisation pass after the initial
+camera reconstruction and can search for a better focal length.  The options
+are:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>None</p></td>
+<td><p>No adjustment pass is run.  The focal length is taken directly
+from the camera node and is not changed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Evolution Refine</p></td>
+<td><p>Uses a Differential Evolution algorithm to refine attribute
+values, starting from the current camera focal length.  A good
+choice when the focal length is approximately known.</p></td>
+</tr>
+<tr class="row-even"><td><p>Evolution Unknown</p></td>
+<td><p>Uses a Differential Evolution algorithm to search the full
+focal length range.  Slower but more thorough than <em>Evolution
+Refine</em> when the focal length is unknown.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Uniform Grid</p></td>
+<td><p>Samples focal length at evenly-spaced values across the search
+range and picks the best result.  The number of samples is set
+by the <strong>Samples</strong> field in the <strong>Adjust Focal Length</strong> group.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="adjust-focal-length-group">
+<h2>Adjust Focal Length Group<a class="headerlink" href="#adjust-focal-length-group" title="Permalink to this heading">#</a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/tools_camera_solver_ui_adjust_group.png"><img alt="Camera Solver - Adjust group" src="_images/tools_camera_solver_ui_adjust_group.png" style="width: 472.8px; height: 190.4px;" /></a>
+</figure>
+<p>This group is enabled only when <strong>Adjustment Solver</strong> is not <em>None</em>.
+It controls the focal length search range used during the adjustment pass.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Range</p></td>
+<td><p>How the search range is defined.  <strong>Percentage</strong> derives the
+min/max automatically from the camera’s current focal length.
+<strong>Min / Max</strong> lets you enter explicit bounds in millimetres.</p></td>
+</tr>
+<tr class="row-odd"><td><p>+/-</p></td>
+<td><p><em>(Percentage mode only)</em>  The search range expressed as a
+percentage of the camera’s current focal length.  Default is
+20 %.  Higher values broaden the search at the cost of solve
+time.</p></td>
+</tr>
+<tr class="row-even"><td><p>Min</p></td>
+<td><p><em>(Min/Max mode only)</em>  Minimum focal length to search, in
+millimetres.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Max</p></td>
+<td><p><em>(Min/Max mode only)</em>  Maximum focal length to search, in
+millimetres.</p></td>
+</tr>
+<tr class="row-even"><td><p>Samples</p></td>
+<td><p><em>(Uniform Grid solver only)</em>  Number of evenly-spaced focal
+length values to evaluate across the search range.  Default is
+100.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="log-group">
+<h2>Log Group<a class="headerlink" href="#log-group" title="Permalink to this heading">#</a></h2>
+<p>The <strong>Log</strong> area displays output from the solver process as it runs.
+Press the <strong>▼ Hide Log</strong> / <strong>▶ Show Log</strong> toggle to collapse or expand
+the log panel.  All solver messages are appended during the solve and
+are not cleared until the next solve starts.</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="_images/tools_camera_solver_ui_solving.png"><img alt="Camera Solver - active solve with log output" src="_images/tools_camera_solver_ui_solving.png" style="width: 332.0px; height: 399.20000000000005px;" /></a>
+<figcaption>
+<p><span class="caption-text">Camera Solver mid-solve, showing log output and the Cancel button enabled.</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The <strong>Log Level</strong> in the Solver group controls the minimum severity of
+messages that appear here.</p>
+</section>
+<section id="buttons">
+<h2>Buttons<a class="headerlink" href="#buttons" title="Permalink to this heading">#</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Button</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Solve</p></td>
+<td><p>Launches the camera solve as a background process.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Apply Solved</p></td>
+<td><p>Applies the most recent solve result to the camera transform and
+bundle positions in the Maya scene.  Enabled only after a
+successful solve.  This operation is undoable.</p></td>
+</tr>
+<tr class="row-even"><td><p>Cancel</p></td>
+<td><p>Cancels the running solve.  The camera and bundles are left
+unchanged.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Close</p></td>
+<td><p>Closes the Camera Solver window.  A running solve is <em>not</em>
+cancelled when the window is closed.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="_images/tools_camera_solver_ui_complete.png"><img alt="Camera Solver - solve complete" src="_images/tools_camera_solver_ui_complete.png" style="width: 332.0px; height: 399.20000000000005px;" /></a>
+<figcaption>
+<p><span class="caption-text">Camera Solver after a successful solve.  Press <strong>Apply Solved</strong> to
+write the results into the Maya scene.</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="scene-settings">
+<h2>Scene Settings<a class="headerlink" href="#scene-settings" title="Permalink to this heading">#</a></h2>
+<p>All Camera Solver options are saved inside the Maya scene file.  This means
+each <code class="docutils literal notranslate"><span class="pre">.ma</span></code> / <code class="docutils literal notranslate"><span class="pre">.mb</span></code> file carries its own solver preferences, and multiple
+open Maya sessions can hold independent values.</p>
+</section>
+<section id="python-functions">
+<h2>Python Functions<a class="headerlink" href="#python-functions" title="Permalink to this heading">#</a></h2>
+<p>Open the Camera Solver UI window:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.camerasolver.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Run the solve and apply results without the UI (synchronous - waits for the
+solve to finish before returning; press <em>ESC</em> key to cancel):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.camerasolver.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">run_camera_solve_and_load</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Run the solve asynchronously and apply the results in a separate step:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.camerasolver.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+
+<span class="c1"># Launch the solve (returns immediately).</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">run_camera_solve</span><span class="p">()</span>
+
+<span class="c1"># After the solve completes, apply the results.</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">load_solved_camera</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="tools_createnode.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Create Node Tools</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="tools_solver_ui_tab_camera.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Camera Solver Tab</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli.
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Camera Solver</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#camera-group">Camera Group</a></li>
+<li><a class="reference internal" href="#solver-group">Solver Group</a><ul>
+<li><a class="reference internal" href="#adjustment-solver">Adjustment Solver</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#adjust-focal-length-group">Adjust Focal Length Group</a></li>
+<li><a class="reference internal" href="#log-group">Log Group</a></li>
+<li><a class="reference internal" href="#buttons">Buttons</a></li>
+<li><a class="reference internal" href="#scene-settings">Scene Settings</a></li>
+<li><a class="reference internal" href="#python-functions">Python Functions</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/scripts/furo.js"></script>
+    </body>
+</html>

@@ -165,6 +165,7 @@
 <li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_camera.html">Camera Solver Tab</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="tools_camera_solver.html">Camera Solver</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_selection.html">Selection Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_frametools.html">Frame Tools</a></li>
@@ -190,6 +191,8 @@
 </li>
 </ul>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_overview.html">Camera Solver Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="camera_solver_global_optimization.html">Global Optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_concepts.html">Understanding the Solver Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -343,11 +346,155 @@
         <article role="main">
           <section id="display-commands">
 <h1>Display Commands<a class="headerlink" href="#display-commands" title="Permalink to this heading">#</a></h1>
-<p><em>To be written.</em></p>
-<section id="mmrenderer-command">
-<h2><code class="docutils literal notranslate"><span class="pre">mmRenderer</span></code> Command<a class="headerlink" href="#mmrenderer-command" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">mmRenderer</span></code> command is unfinished and is disabled in the C++
-build by default.</p>
+<p>Display commands control mmSolver’s custom Viewport 2.0 renderers.
+Two renderers are provided — MM Standard Renderer and MM Silhouette
+Renderer — each registered as a Viewport 2.0 override and documented
+in detail in <a class="reference internal" href="tools_renderer.html#renderer-ref"><span class="std std-ref">Viewport Renderers</span></a>.</p>
+<p>Each renderer exposes a thin Maya command that forces a refresh of the
+active 3D view. Settings for the Silhouette Renderer are stored on the
+<code class="docutils literal notranslate"><span class="pre">mmRenderGlobalsSilhouette</span></code> node and adjusted via <code class="docutils literal notranslate"><span class="pre">setAttr</span></code>.</p>
+<section id="mmrendererstandard-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmRendererStandard</span></code> Command<a class="headerlink" href="#mmrendererstandard-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmRendererStandard</span></code> triggers a forced refresh of the active Viewport
+2.0 panel when the MM Standard Renderer is active. It supports
+<code class="docutils literal notranslate"><span class="pre">-query</span></code> mode (no flags beyond enabling query are defined). The
+command is not undoable.</p>
+<p>See <a class="reference internal" href="tools_renderer.html#renderer-ref"><span class="std std-ref">Viewport Renderers</span></a> for how to activate and use the MM Standard
+Renderer.</p>
+<section id="flags">
+<h3>Flags<a class="headerlink" href="#flags" title="Permalink to this heading">#</a></h3>
+<p>The command accepts <code class="docutils literal notranslate"><span class="pre">-query</span></code> mode only. No additional flags are
+defined; calling the command refreshes the active view.</p>
+</section>
+<section id="return">
+<h3>Return<a class="headerlink" href="#return" title="Permalink to this heading">#</a></h3>
+<p>Returns nothing.</p>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="c1"># Force a refresh of the active view.</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmRendererStandard</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmRendererStandard;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mmrenderersilhouette-command">
+<h2><code class="docutils literal notranslate"><span class="pre">mmRendererSilhouette</span></code> Command<a class="headerlink" href="#mmrenderersilhouette-command" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mmRendererSilhouette</span></code> triggers a forced refresh of the active
+Viewport 2.0 panel when the MM Silhouette Renderer is active. It
+supports <code class="docutils literal notranslate"><span class="pre">-query</span></code> mode (no flags beyond enabling query are defined).
+The command is not undoable.</p>
+<p>The silhouette effect is configured through the
+<code class="docutils literal notranslate"><span class="pre">mmRenderGlobalsSilhouette</span></code> node, which is created automatically when
+the renderer is first activated. Use <code class="docutils literal notranslate"><span class="pre">setAttr</span></code> to change the
+settings described below.</p>
+<p>See <a class="reference internal" href="tools_renderer.html#renderer-silhouette-ref"><span class="std std-ref">MM Silhouette Renderer</span></a> for full usage instructions and a
+description of each setting.</p>
+<section id="id1">
+<h3>Flags<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>The command accepts <code class="docutils literal notranslate"><span class="pre">-query</span></code> mode only. No additional flags are
+defined; calling the command refreshes the active view.</p>
+</section>
+<section id="mmrenderglobalssilhouette-node-attributes">
+<h3><code class="docutils literal notranslate"><span class="pre">mmRenderGlobalsSilhouette</span></code> Node Attributes<a class="headerlink" href="#mmrenderglobalssilhouette-node-attributes" title="Permalink to this heading">#</a></h3>
+<p>The silhouette settings live on the <code class="docutils literal notranslate"><span class="pre">mmRenderGlobalsSilhouette</span></code> node.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enable</span></code></p></td>
+<td><p>bool</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>Toggle the silhouette effect on or off.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">overrideColor</span></code></p></td>
+<td><p>bool</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>Use the <code class="docutils literal notranslate"><span class="pre">color</span></code> attribute for all objects.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">depthOffset</span></code></p></td>
+<td><p>float</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-1.0</span></code></p></td>
+<td><p>Depth separation between solid and wireframe geometry.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">width</span></code></p></td>
+<td><p>float</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">2.0</span></code></p></td>
+<td><p>Width of silhouette lines.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">color</span></code></p></td>
+<td><p>float3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">0</span></code></p></td>
+<td><p>Silhouette line colour (green by default).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">alpha</span></code></p></td>
+<td><p>float</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></td>
+<td><p>Opacity of silhouette lines.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cullFace</span></code></p></td>
+<td><p>enum</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Back</span></code></p></td>
+<td><p>Back-face culling; <code class="docutils literal notranslate"><span class="pre">Back</span></code>, <code class="docutils literal notranslate"><span class="pre">Front</span></code>, <code class="docutils literal notranslate"><span class="pre">FrontAndBack</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">operationNum</span></code></p></td>
+<td><p>uint8</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">255</span></code> (all)</p></td>
+<td><p>Limit rendering to the first N operations (debug).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id2">
+<h3>Return<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<p>Returns nothing.</p>
+</section>
+<section id="id3">
+<h3>Example<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<p>Python Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">maya.cmds</span>
+
+<span class="c1"># Force a refresh of the active view.</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmRendererSilhouette</span><span class="p">()</span>
+
+<span class="c1"># Change the silhouette colour to red.</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="s1">&#39;mmRenderGlobalsSilhouette.color&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;double3&#39;</span><span class="p">)</span>
+
+<span class="c1"># Increase line width.</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="s1">&#39;mmRenderGlobalsSilhouette.width&#39;</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
+
+<span class="c1"># Disable the effect temporarily.</span>
+<span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">setAttr</span><span class="p">(</span><span class="s1">&#39;mmRenderGlobalsSilhouette.enable&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>MEL Example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mmRendererSilhouette;
+
+// Change silhouette colour to red.
+setAttr mmRenderGlobalsSilhouette.color -type double3 1 0 0;
+
+// Increase line width.
+setAttr mmRenderGlobalsSilhouette.width 3.0;
+
+// Disable the effect temporarily.
+setAttr mmRenderGlobalsSilhouette.enable false;
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -407,7 +554,19 @@ build by default.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Display Commands</a><ul>
-<li><a class="reference internal" href="#mmrenderer-command"><code class="docutils literal notranslate"><span class="pre">mmRenderer</span></code> Command</a></li>
+<li><a class="reference internal" href="#mmrendererstandard-command"><code class="docutils literal notranslate"><span class="pre">mmRendererStandard</span></code> Command</a><ul>
+<li><a class="reference internal" href="#flags">Flags</a></li>
+<li><a class="reference internal" href="#return">Return</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmrenderersilhouette-command"><code class="docutils literal notranslate"><span class="pre">mmRendererSilhouette</span></code> Command</a><ul>
+<li><a class="reference internal" href="#id1">Flags</a></li>
+<li><a class="reference internal" href="#mmrenderglobalssilhouette-node-attributes"><code class="docutils literal notranslate"><span class="pre">mmRenderGlobalsSilhouette</span></code> Node Attributes</a></li>
+<li><a class="reference internal" href="#id2">Return</a></li>
+<li><a class="reference internal" href="#id3">Example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

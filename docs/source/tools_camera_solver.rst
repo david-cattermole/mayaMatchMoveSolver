@@ -61,8 +61,8 @@ Camera Group
 
 .. figure:: images/tools_camera_solver_ui_camera_group.png
     :alt: Camera Solver - Camera group
-    :align: right
-    :scale: 80%
+    :align: center
+    :scale: 100%
 
 .. list-table::
    :widths: auto
@@ -91,8 +91,8 @@ Solver Group
 
 .. figure:: images/tools_camera_solver_ui_solver_group.png
     :alt: Camera Solver - Solver group
-    :align: right
-    :scale: 80%
+    :align: center
+    :scale: 100%
 
 .. list-table::
    :widths: auto
@@ -159,8 +159,8 @@ Adjust Focal Length Group
 
 .. figure:: images/tools_camera_solver_ui_adjust_group.png
     :alt: Camera Solver - Adjust group
-    :align: right
-    :scale: 80%
+    :align: center
+    :scale: 100%
 
 This group is enabled only when **Adjustment Solver** is not *None*.
 It controls the focal length search range used during the adjustment pass.

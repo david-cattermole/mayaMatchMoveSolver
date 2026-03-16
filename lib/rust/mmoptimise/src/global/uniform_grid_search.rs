@@ -392,13 +392,10 @@ impl UniformGridSearch {
 
         // Progress tracking shared across rayon threads.
         let completed = AtomicUsize::new(0);
-        let last_log_time =
-            Mutex::new(std::time::Instant::now());
+        let last_log_time = Mutex::new(std::time::Instant::now());
         // Tracks (best_cost, best_params) seen so far across all threads.
-        let best_so_far: Mutex<(f64, Vec<f64>)> = Mutex::new((
-            f64::MAX,
-            vec![f64::NAN; self.cfg.num_dimensions],
-        ));
+        let best_so_far: Mutex<(f64, Vec<f64>)> =
+            Mutex::new((f64::MAX, vec![f64::NAN; self.cfg.num_dimensions]));
 
         // Step 3: Evaluate all grid points in parallel.
         //

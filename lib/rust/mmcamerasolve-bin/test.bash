@@ -72,7 +72,7 @@ if [ -f "${UV_FILE}" ]; then
         --image-height 2400 \
         --prefix cube_a \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"
@@ -93,7 +93,7 @@ if [ -f "${UV_FILE}" ]; then
         --image-height 2400 \
         --prefix cube_b \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"
@@ -111,7 +111,7 @@ if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ]; then
         --mmcamera "${MMCAMERA_FILE}" \
         --prefix stA_mmcamera \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} or ${MMCAMERA_FILE} not found"
@@ -131,7 +131,7 @@ if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ] && [ -f "${NUKE_LENS_FILE}" 
         --nuke-lens "${NUKE_LENS_FILE}" \
         --prefix stA_nuke_lens \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: required files not found"
@@ -151,7 +151,7 @@ if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ] && [ -f "${NUKE_LENS_FILE}" 
         --nuke-lens "${NUKE_LENS_FILE}" \
         --prefix stA_undistort \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: required files not found"
@@ -169,7 +169,7 @@ if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ]; then
         --mmcamera "${MMCAMERA_FILE}" \
         --prefix stA_no_lens \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: required files not found"
@@ -192,7 +192,7 @@ if [ -f "${UV_FILE}" ] && [ -f "${SETTINGS_FILE}" ]; then
         --solver-settings "${SETTINGS_FILE}" \
         --prefix stA_settings \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} or ${SETTINGS_FILE} not found"
@@ -216,60 +216,85 @@ if [ -f "${UV_FILE}" ] && [ -f "${SETTINGS_FILE2}" ]; then
         --solver evolution_refine \
         --solver-settings "${SETTINGS_FILE2}" \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} or ${SETTINGS_FILE2} not found"
 fi
 echo ""
 
-# Test 11: Blasterwalk dataset.
+# Test 11: stA dataset with lens parameter optimization (uniform_grid).
 echo "----------------------------------------------"
-echo "Test 11: Blasterwalk dataset"
+echo "Test 11: stA dataset (lens parameter optimization - uniform grid)"
 echo "----------------------------------------------"
-UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/blasterwalk_camera_2dtracks_v1_format.uv"
-if [ -f "${UV_FILE}" ]; then
+UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/stA_v1_format.uv"
+MMCAMERA_FILE="${PROJECT_ROOT}/tests/data/mmcamera/stA_copyCamera.mmcamera"
+NUKE_LENS_FILE="${PROJECT_ROOT}/tests/data/lens_example_files/stA_v001.nk"
+SETTINGS_FILE_LENS="${PROJECT_ROOT}/tests/data/mmsettings/solver_settings_with_lens.mmsettings"
+if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ] && [ -f "${NUKE_LENS_FILE}" ] && [ -f "${SETTINGS_FILE_LENS}" ]; then
     ${MM_CAMERA_SOLVE} "${UV_FILE}" \
-        --focal-length 56.4 \
-        --film-back-width 36 \
-        --film-back-height 20.25 \
-        --image-width 3600 \
-        --image-height 2025 \
-        --solver evolution_refine \
-        --prefix blasterwalk \
+        --mmcamera "${MMCAMERA_FILE}" \
+        --nuke-lens "${NUKE_LENS_FILE}" \
+        --solver-settings "${SETTINGS_FILE_LENS}" \
+        --solver uniform_grid \
+        --prefix stA_lens_opt_uniform_grid \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
-    echo "SKIP: ${UV_FILE} not found"
+    echo "SKIP: required files not found"
 fi
 echo ""
 
-# Test 12: HCW Painting dataset.
+# Test 12: stA dataset with lens parameter optimization (evolution_refine).
 echo "----------------------------------------------"
-echo "Test 12: HCW Painting dataset"
+echo "Test 12: stA dataset (lens parameter optimization - evolution_refine)"
 echo "----------------------------------------------"
-UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/hcw_painting_2dtracks_v1_format.uv"
-if [ -f "${UV_FILE}" ]; then
+UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/stA_v1_format.uv"
+MMCAMERA_FILE="${PROJECT_ROOT}/tests/data/mmcamera/stA_copyCamera.mmcamera"
+NUKE_LENS_FILE="${PROJECT_ROOT}/tests/data/lens_example_files/stA_v001.nk"
+SETTINGS_FILE_LENS="${PROJECT_ROOT}/tests/data/mmsettings/solver_settings_with_lens.mmsettings"
+if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ] && [ -f "${NUKE_LENS_FILE}" ] && [ -f "${SETTINGS_FILE_LENS}" ]; then
     ${MM_CAMERA_SOLVE} "${UV_FILE}" \
-        --focal-length 35 \
-        --film-back-width 36 \
-        --film-back-height 20.25 \
-        --image-width 1920 \
-        --image-height 1080 \
+        --mmcamera "${MMCAMERA_FILE}" \
+        --nuke-lens "${NUKE_LENS_FILE}" \
+        --solver-settings "${SETTINGS_FILE_LENS}" \
         --solver evolution_refine \
-        --prefix hcw_painting \
+        --prefix stA_lens_opt_evolution_refine \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
-    echo "SKIP: ${UV_FILE} not found"
+    echo "SKIP: required files not found"
 fi
 echo ""
 
-# Test 13: Opera House dataset.
+# Test 13: stA dataset with lens parameter optimization (evolution_unknown).
 echo "----------------------------------------------"
-echo "Test 13: Opera House dataset"
+echo "Test 13: stA dataset (lens parameter optimization - evolution_unknown)"
+echo "----------------------------------------------"
+UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/stA_v1_format.uv"
+MMCAMERA_FILE="${PROJECT_ROOT}/tests/data/mmcamera/stA_copyCamera.mmcamera"
+NUKE_LENS_FILE="${PROJECT_ROOT}/tests/data/lens_example_files/stA_v001.nk"
+SETTINGS_FILE_LENS="${PROJECT_ROOT}/tests/data/mmsettings/solver_settings_with_lens.mmsettings"
+if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ] && [ -f "${NUKE_LENS_FILE}" ] && [ -f "${SETTINGS_FILE_LENS}" ]; then
+    ${MM_CAMERA_SOLVE} "${UV_FILE}" \
+        --mmcamera "${MMCAMERA_FILE}" \
+        --nuke-lens "${NUKE_LENS_FILE}" \
+        --solver-settings "${SETTINGS_FILE_LENS}" \
+        --solver evolution_unknown \
+        --prefix stA_lens_opt_evolution_refine \
+        --output-dir "${OUTPUT_BASE}" \
+        --console-level progress
+    echo "Output: ${OUTPUT_BASE}"
+else
+    echo "SKIP: required files not found"
+fi
+echo ""
+
+# Test 14: Opera House dataset.
+echo "----------------------------------------------"
+echo "Test 14: Opera House dataset"
 echo "----------------------------------------------"
 UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/operahouse_v1_format.uv"
 if [ -f "${UV_FILE}" ]; then
@@ -282,16 +307,60 @@ if [ -f "${UV_FILE}" ]; then
         --solver evolution_refine \
         --prefix operahouse \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"
 fi
 echo ""
 
-# Test 14: Garage dataset.
+# Test 15: HCW Painting dataset.
 echo "----------------------------------------------"
-echo "Test 14: Garage dataset"
+echo "Test 15: HCW Painting dataset"
+echo "----------------------------------------------"
+UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/hcw_painting_2dtracks_v1_format.uv"
+if [ -f "${UV_FILE}" ]; then
+    ${MM_CAMERA_SOLVE} "${UV_FILE}" \
+        --focal-length 35 \
+        --film-back-width 36 \
+        --film-back-height 20.25 \
+        --image-width 1920 \
+        --image-height 1080 \
+        --solver evolution_refine \
+        --prefix hcw_painting \
+        --output-dir "${OUTPUT_BASE}" \
+        --console-level progress
+    echo "Output: ${OUTPUT_BASE}"
+else
+    echo "SKIP: ${UV_FILE} not found"
+fi
+echo ""
+
+# Test 16: Blasterwalk dataset.
+echo "----------------------------------------------"
+echo "Test 16: Blasterwalk dataset"
+echo "----------------------------------------------"
+UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/blasterwalk_camera_2dtracks_v1_format.uv"
+if [ -f "${UV_FILE}" ]; then
+    ${MM_CAMERA_SOLVE} "${UV_FILE}" \
+        --focal-length 56.4 \
+        --film-back-width 36 \
+        --film-back-height 20.25 \
+        --image-width 3600 \
+        --image-height 2025 \
+        --solver evolution_refine \
+        --prefix blasterwalk \
+        --output-dir "${OUTPUT_BASE}" \
+        --console-level progress
+    echo "Output: ${OUTPUT_BASE}"
+else
+    echo "SKIP: ${UV_FILE} not found"
+fi
+echo ""
+
+# Test 17: Garage dataset.
+echo "----------------------------------------------"
+echo "Test 17: Garage dataset"
 echo "----------------------------------------------"
 UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/garage_2dtracks_v1_format.uv"
 if [ -f "${UV_FILE}" ]; then
@@ -306,16 +375,16 @@ if [ -f "${UV_FILE}" ]; then
         --end-frame 2706 \
         --intermediate-output \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"
 fi
 echo ""
 
-# Test 15: Quiet mode.
+# Test 18: Quiet mode.
 echo "----------------------------------------------"
-echo "Test 15: Quiet mode"
+echo "Test 18: Quiet mode"
 echo "----------------------------------------------"
 UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/test_cube_a_markers_v1_fmt.uv"
 if [ -f "${UV_FILE}" ]; then
@@ -327,7 +396,8 @@ if [ -f "${UV_FILE}" ]; then
         --image-height 2400 \
         --solver evolution_refine \
         --prefix quiet_test \
-        --output-dir "${OUTPUT_BASE}"
+        --output-dir "${OUTPUT_BASE}" \
+        --console-level error
     echo "Quiet mode completed (no output expected above)"
     echo "Output: ${OUTPUT_BASE}"
 else
@@ -335,9 +405,9 @@ else
 fi
 echo ""
 
-# Test 16: Frame range override.
+# Test 19: Frame range override.
 echo "----------------------------------------------"
-echo "Test 16: Frame range override (frames 1-10)"
+echo "Test 19: Frame range override (frames 1-10)"
 echo "----------------------------------------------"
 UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/test_cube_a_markers_v1_fmt.uv"
 if [ -f "${UV_FILE}" ]; then
@@ -352,7 +422,7 @@ if [ -f "${UV_FILE}" ]; then
         --solver evolution_refine \
         --prefix frame_range \
         --output-dir "${OUTPUT_BASE}" \
-        --log-level info
+        --console-level progress
     echo "Output: ${OUTPUT_BASE}"
 else
     echo "SKIP: ${UV_FILE} not found"

@@ -22,6 +22,8 @@
 
 mod cli;
 mod defaults;
+mod global_adjustment;
+mod lens_evaluator;
 mod parser;
 mod undistort;
 mod write_data;
@@ -56,9 +58,12 @@ use mmsfm::datatype::{
     MillimeterUnit,
 };
 use mmsfm::sfm_camera::{
-    camera_solve, CameraSolveConfig, GlobalAdjustmentConfig,
-    IntermediateResultWriter, ReprojectionErrorStats, SolveQualityMetrics,
+    camera_solve, camera_solve_inner, AdjustmentParameter,
+    AdjustmentParameterKind, AdjustmentParameterLayout, CameraSolveConfig,
+    GlobalAdjustmentConfig, GlobalAdjustmentMode, IntermediateResultWriter,
+    ReprojectionErrorStats, SolveQuality, SolveQualityMetrics,
 };
+use undistort::apply_lens_overrides;
 
 use mmsfm::camera_residual_error::compute_per_frame_per_marker_residuals;
 #[cfg(feature = "visualization")]
@@ -438,80 +443,225 @@ fn determine_solver_generations(
         .and_then(|adj| adj.evolution_generation_count)
 }
 
-// Configure global adjustment based on solver type.
+/// Parse a lens attribute name like `"lens1.Distortion"` into
+/// `(node_name, knob_name)`. Returns `None` for non-lens attributes
+/// such as `"camera.focal_length_mm"`.
+fn parse_lens_attribute_name(name: &str) -> Option<(&str, &str)> {
+    let dot_pos = name.find('.')?;
+    let node_name = &name[..dot_pos];
+    let knob_name = &name[dot_pos + 1..];
+    if node_name == "camera" || knob_name.is_empty() {
+        return None;
+    }
+    Some((node_name, knob_name))
+}
+
+/// Build the optimization parameter layout from settings attributes.
+///
+/// Maps `"camera.focal_length_mm"` to `FocalLength` and
+/// `"<node>.<knob>"` to `LensParameter` entries, looking up node
+/// indices from `nuke_lens.layer_node_names` and knob indices from
+/// `lens_model_knob_definitions()`.
+fn determine_adjustment_parameter_layout(
+    args: &CliArgs,
+    settings: &Option<mmio::mmsettings_reader::MmSettingsData>,
+    nuke_lens: &Option<Arc<NukeLensData>>,
+) -> AdjustmentParameterLayout {
+    use mmio::nuke_lens_common::lens_model_knob_definitions;
+    use mmio::nuke_lens_common::STATIC_FRAME_NUMBER;
+
+    let mut parameters: Vec<AdjustmentParameter> = Vec::new();
+
+    let attributes = match settings {
+        Some(s) => &s.adjustment_attributes,
+        None => return AdjustmentParameterLayout { parameters },
+    };
+
+    for attr in attributes {
+        if attr.name == "camera.focal_length_mm" {
+            parameters.push(AdjustmentParameter {
+                kind: AdjustmentParameterKind::FocalLength,
+                bounds: (attr.value_min, attr.value_max),
+                initial_value: args.focal_length_mm,
+                sample_count: attr.sample_count.unwrap_or(0) as usize,
+            });
+            continue;
+        }
+
+        if let Some((node_name, knob_name)) =
+            parse_lens_attribute_name(&attr.name)
+        {
+            if let Some(ref lens_data) = nuke_lens {
+                let layer_index = lens_data
+                    .layer_node_names
+                    .iter()
+                    .position(|n| n == node_name);
+
+                if let Some(layer_idx) = layer_index {
+                    let model_type =
+                        lens_data.layer_lens_model_types[layer_idx];
+                    let knob_defs = lens_model_knob_definitions(model_type);
+
+                    let param_match = knob_defs
+                        .iter()
+                        .find(|(kn, _idx, _default)| *kn == knob_name);
+
+                    if let Some(&(_kn, param_index, default_value)) =
+                        param_match
+                    {
+                        let initial_value = lens_data
+                            .lens_parameters
+                            .get(&(layer_idx as u8, STATIC_FRAME_NUMBER))
+                            .map(|block| block[param_index])
+                            .unwrap_or(default_value);
+
+                        parameters.push(AdjustmentParameter {
+                            kind: AdjustmentParameterKind::LensParameter {
+                                layer_index: layer_idx as u8,
+                                param_index,
+                                knob_name: knob_name.to_string(),
+                            },
+                            bounds: (attr.value_min, attr.value_max),
+                            initial_value,
+                            sample_count: attr.sample_count.unwrap_or(0)
+                                as usize,
+                        });
+                    } else {
+                        eprintln!(
+                            "Warning: Unknown lens knob '{}' for model {:?} (node '{}')",
+                            knob_name, model_type, node_name
+                        );
+                    }
+                } else {
+                    eprintln!(
+                        "Warning: Lens node '{}' not found. Available nodes: {:?}",
+                        node_name, lens_data.layer_node_names
+                    );
+                }
+            } else {
+                eprintln!(
+                    "Warning: Lens attribute '{}' specified but no --nuke-lens file provided",
+                    attr.name
+                );
+            }
+        }
+    }
+
+    AdjustmentParameterLayout { parameters }
+}
+
+/// Build a `GlobalAdjustmentConfig` from args, settings, and parameter layout.
+///
+/// When the layout has dimensions (lens and/or focal length parameters
+/// from settings), those drive the config directly. When the layout is
+/// empty, a focal-length-only layout is built from CLI args and
+/// settings bounds, then used to build the config.
 fn determine_global_adjustment_config<L: Logger + Clone + Send + Sync>(
     logger: &L,
     args: &CliArgs,
     solver_type: SolverType,
+    parameter_layout: AdjustmentParameterLayout,
     settings_fl_bounds: Option<(f64, f64)>,
     settings_fl_sample_count: Option<u32>,
     settings_generations: Option<usize>,
     enable_coarse_search: bool,
 ) -> Option<GlobalAdjustmentConfig> {
+    if solver_type == SolverType::None {
+        return None;
+    }
+
+    // If the layout already has parameters (from settings attributes),
+    // use it directly. Otherwise build a focal-length-only layout.
+    let layout = if parameter_layout.num_dimensions() > 0 {
+        parameter_layout
+    } else {
+        // Build a focal-length-only layout from CLI/settings.
+        let (fl_bounds, fl_sample_count) = match solver_type {
+            SolverType::UniformGrid => {
+                let bounds = settings_fl_bounds.unwrap_or((
+                    defaults::UNIFORM_GRID_FL_MIN_MM,
+                    defaults::UNIFORM_GRID_FL_MAX_MM,
+                ));
+                let samples = settings_fl_sample_count
+                    .unwrap_or(defaults::UNIFORM_GRID_DEFAULT_SAMPLES as u32)
+                    as usize;
+                (bounds, samples)
+            }
+            SolverType::EvolutionRefine => {
+                let bounds = settings_fl_bounds.unwrap_or((
+                    (args.focal_length_mm
+                        * defaults::REFINE_BOUNDS_LOWER_FACTOR)
+                        .max(defaults::MIN_FOCAL_LENGTH_MM),
+                    (args.focal_length_mm
+                        * defaults::REFINE_BOUNDS_UPPER_FACTOR)
+                        .min(defaults::MAX_FOCAL_LENGTH_MM),
+                ));
+                (bounds, 0)
+            }
+            SolverType::EvolutionUnknown => {
+                let bounds = settings_fl_bounds.unwrap_or((
+                    defaults::UNKNOWN_FL_MIN_MM,
+                    defaults::UNKNOWN_FL_MAX_MM,
+                ));
+                (bounds, 0)
+            }
+            SolverType::None => unreachable!(),
+        };
+
+        AdjustmentParameterLayout {
+            parameters: vec![AdjustmentParameter {
+                kind: AdjustmentParameterKind::FocalLength,
+                bounds: fl_bounds,
+                initial_value: args.focal_length_mm,
+                sample_count: fl_sample_count,
+            }],
+        }
+    };
+
+    // Build the config from the (possibly constructed) layout.
     match solver_type {
         SolverType::None => None,
         SolverType::UniformGrid => {
-            let (min_fl, max_fl) = settings_fl_bounds.unwrap_or((
-                defaults::UNIFORM_GRID_FL_MIN_MM,
-                defaults::UNIFORM_GRID_FL_MAX_MM,
-            ));
-            let num_samples = settings_fl_sample_count
-                .unwrap_or(defaults::UNIFORM_GRID_DEFAULT_SAMPLES as u32)
-                as usize;
-
+            let num_samples_per_param = layout
+                .num_samples_per_param(defaults::UNIFORM_GRID_DEFAULT_SAMPLES);
             mm_log_info!(
                 logger,
-                "Solver: uniform grid ({:.1}-{:.1} mm, {} samples)",
-                min_fl,
-                max_fl,
-                num_samples
+                "Solver: uniform grid ({} params, samples: {:?})",
+                layout.num_dimensions(),
+                num_samples_per_param
             );
             Some(GlobalAdjustmentConfig::UniformGridSearch {
-                focal_length_bounds: (min_fl, max_fl),
-                num_samples,
+                parameter_layout: layout,
+                num_samples_per_param,
             })
         }
         SolverType::EvolutionRefine => {
-            let (min_fl, max_fl) = settings_fl_bounds.unwrap_or((
-                (args.focal_length_mm * defaults::REFINE_BOUNDS_LOWER_FACTOR)
-                    .max(defaults::MIN_FOCAL_LENGTH_MM),
-                (args.focal_length_mm * defaults::REFINE_BOUNDS_UPPER_FACTOR)
-                    .min(defaults::MAX_FOCAL_LENGTH_MM),
-            ));
             let generations =
                 settings_generations.unwrap_or(defaults::REFINE_DE_GENERATIONS);
-
             mm_log_info!(
                 logger,
-                "Solver: refine mode (DE SmallRefinement, {:.1}-{:.1} mm)",
-                min_fl,
-                max_fl
+                "Solver: refine mode (DE SmallRefinement, {} params)",
+                layout.num_dimensions()
             );
             Some(GlobalAdjustmentConfig::DifferentialEvolution {
-                mode: mmsfm::sfm_camera::GlobalAdjustmentMode::SmallRefinement,
-                focal_length_bounds: (min_fl, max_fl),
+                mode: GlobalAdjustmentMode::SmallRefinement,
+                parameter_layout: layout,
                 generations,
                 seed: defaults::REFINE_DE_SEED,
                 enable_coarse_search,
             })
         }
         SolverType::EvolutionUnknown => {
-            let (min_fl, max_fl) = settings_fl_bounds.unwrap_or((
-                defaults::UNKNOWN_FL_MIN_MM,
-                defaults::UNKNOWN_FL_MAX_MM,
-            ));
             let generations = settings_generations
                 .unwrap_or(defaults::UNKNOWN_DE_GENERATIONS);
-
             mm_log_info!(
                 logger,
-                "Solver: unknown mode (DE LargeRefinement, {:.1}-{:.1} mm)",
-                min_fl,
-                max_fl
+                "Solver: unknown mode (DE LargeRefinement, {} params)",
+                layout.num_dimensions()
             );
             Some(GlobalAdjustmentConfig::DifferentialEvolution {
-                mode: mmsfm::sfm_camera::GlobalAdjustmentMode::LargeRefinement,
-                focal_length_bounds: (min_fl, max_fl),
+                mode: GlobalAdjustmentMode::LargeRefinement,
+                parameter_layout: layout,
                 generations,
                 seed: defaults::UNKNOWN_DE_SEED,
                 enable_coarse_search,
@@ -527,7 +677,10 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     let total_start = Instant::now();
 
     let settings = determine_settings(logger, args)?;
-    let nuke_lens_data = determine_nuke_lens_data(logger, args)?;
+    let mut nuke_lens_data = determine_nuke_lens_data(logger, args)?;
+
+    let parameter_layout =
+        determine_adjustment_parameter_layout(args, &settings, &nuke_lens_data);
 
     let thread_count = determine_thread_count(args, &settings);
     setup_thread_pool(logger, thread_count)?;
@@ -560,37 +713,6 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     // Check for distorted/undistorted marker data.
     let has_explicit_distorted =
         markers.frame_data.iter().any(|fd| fd.has_distorted());
-
-    if nuke_lens_data.is_some() {
-        // Lens file provided - apply undistortion in-place.
-        //
-        // For v3+ files with explicit distorted data, the source is
-        // u_coords_dist/v_coords_dist.
-        //
-        // For v1/v2 files (or v3+ without distorted data), the source
-        // is u_coords/v_coords.
-        mm_log_info!(
-            logger,
-            "  Applying lens undistortion to marker positions..."
-        );
-
-        undistort_markers_with_lens(
-            &mut markers,
-            nuke_lens_data
-                .as_ref()
-                .expect("Nuke lens data will always exist here."),
-            has_explicit_distorted,
-        )?;
-        mm_log_info!(logger, "  Undistortion applied successfully.");
-    } else if has_explicit_distorted {
-        if file_info.marker_undistorted {
-            // File has both distorted and undistorted data, so use
-            // the stored undistorted positions.
-            mm_log_info!(logger, "  UV file contains both distorted and undistorted data; using stored undistorted positions.");
-        } else {
-            mm_log_warn!(logger, "  UV file contains only distorted marker positions but no lens file was provided. Solving will use distorted positions which may reduce accuracy.");
-        }
-    }
 
     let film_back = CameraFilmBack::from_millimeters(
         args.film_back_width_mm,
@@ -643,11 +765,39 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
         logger,
         args,
         solver_type,
+        parameter_layout.clone(),
         settings_fl_bounds,
         settings_fl_sample_count,
         settings_generations,
         enable_coarse_search,
     );
+
+    // Decide whether to undistort markers now or defer to evaluator.
+    let has_lens_adjustment =
+        nuke_lens_data.is_some() && global_adjustment_config.is_some();
+    if has_lens_adjustment {
+        // Evaluator handles undistortion per-evaluation with candidate
+        // lens parameter values.
+        mm_log_info!(logger, "  Deferring undistortion to evaluator.");
+    } else if let Some(ref nuke_lens) = nuke_lens_data {
+        // Pre-undistort (no global adjustment to vary params).
+        mm_log_info!(
+            logger,
+            "  Applying lens undistortion to marker positions..."
+        );
+        undistort_markers_with_lens(
+            &mut markers,
+            nuke_lens,
+            has_explicit_distorted,
+        )?;
+        mm_log_info!(logger, "  Undistortion applied successfully.");
+    } else if has_explicit_distorted {
+        if file_info.marker_undistorted {
+            mm_log_info!(logger, "  UV file contains both distorted and undistorted data; using stored undistorted positions.");
+        } else {
+            mm_log_warn!(logger, "  UV file contains only distorted marker positions but no lens file was provided. Solving will use distorted positions which may reduce accuracy.");
+        }
+    }
 
     let mut camera_poses = CameraPoses::new();
     let mut bundle_positions = BundlePositions::new();
@@ -683,20 +833,61 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     };
 
     let solve_start = Instant::now();
-    camera_solve(
-        logger,
-        frame_range,
-        &markers,
-        &camera_intrinsics,
-        &film_back,
-        &image_size,
-        &config,
-        global_adjustment_config.as_ref(),
-        intermediate_writer,
-        &mut camera_poses,
-        &mut bundle_positions,
-        &mut quality_metrics,
-    )?;
+    match (global_adjustment_config.as_ref(), nuke_lens_data.as_ref()) {
+        (Some(global_config), Some(nuke_lens)) => {
+            // Lens-aware global adjustment (handles focal-only + focal+lens).
+            global_adjustment::run_global_adjustment(
+                logger,
+                frame_range,
+                &markers,
+                &camera_intrinsics,
+                &film_back,
+                &image_size,
+                &config,
+                global_config,
+                nuke_lens,
+                has_explicit_distorted,
+                intermediate_writer,
+                &mut camera_poses,
+                &mut bundle_positions,
+                &mut quality_metrics,
+            )?;
+        }
+        (Some(_global_config), None) => {
+            // No lens file, global adjustment requested: use library API.
+            camera_solve(
+                logger,
+                frame_range,
+                &markers,
+                &camera_intrinsics,
+                &film_back,
+                &image_size,
+                &config,
+                global_adjustment_config.as_ref(),
+                intermediate_writer,
+                &mut camera_poses,
+                &mut bundle_positions,
+                &mut quality_metrics,
+            )?;
+        }
+        (None, _) => {
+            // No global adjustment: direct solve.
+            camera_solve_inner(
+                logger,
+                frame_range,
+                &markers,
+                &camera_intrinsics,
+                &image_size,
+                &config,
+                SolveQuality::Final,
+                true,
+                intermediate_writer,
+                &mut camera_poses,
+                &mut bundle_positions,
+                &mut quality_metrics,
+            )?;
+        }
+    }
     let solve_duration = solve_start.elapsed();
 
     // Use the solved focal length for all downstream output.
@@ -718,6 +909,38 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
         }
         None => camera_intrinsics,
     };
+
+    // When markers were kept in distorted space (has_lens_adjustment),
+    // build an undistorted copy using the optimized lens parameters so
+    // that visualizations and residual output match the solver.
+    let markers_for_residuals_owned: Option<MarkersData> =
+        if has_lens_adjustment {
+            if let Some(ref lens_data_arc) = nuke_lens_data {
+                let mut modified_lens = (**lens_data_arc).clone();
+                if let Some(ref optimized_params) =
+                    quality_metrics.optimized_lens_parameters
+                {
+                    let overrides: Vec<(u8, usize, f64)> = optimized_params
+                        .iter()
+                        .map(|&(li, pi, ref _kn, v)| (li, pi, v))
+                        .collect();
+                    apply_lens_overrides(&mut modified_lens, &overrides);
+                }
+                let mut undistorted = markers.clone();
+                undistort_markers_with_lens(
+                    &mut undistorted,
+                    &modified_lens,
+                    has_explicit_distorted,
+                )?;
+                Some(undistorted)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+    let markers_for_residuals =
+        markers_for_residuals_owned.as_ref().unwrap_or(&markers);
 
     mm_log_info!(
         logger,
@@ -749,7 +972,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
             logger,
             &args.output_dir,
             args.prefix.clone(),
-            &markers,
+            markers_for_residuals,
             &camera_poses,
             &bundle_positions,
             &camera_intrinsics,
@@ -822,7 +1045,7 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
 
     let (per_frame_residuals, residual_stats) =
         compute_per_frame_per_marker_residuals(
-            &markers,
+            markers_for_residuals,
             &camera_poses,
             &bundle_positions,
             &camera_intrinsics,
@@ -873,6 +1096,34 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
         residual_stats.median,
         residual_stats.count
     );
+
+    // Apply optimized lens parameters to NukeLensData before writing.
+    if let Some(optimized_params) =
+        quality_metrics.optimized_lens_parameters.clone()
+    {
+        if let Some(ref mut lens_data_arc) = nuke_lens_data {
+            let mut modified_lens = (**lens_data_arc).clone();
+            let overrides: Vec<(u8, usize, f64)> = optimized_params
+                .iter()
+                .map(|&(li, pi, ref _kn, v)| (li, pi, v))
+                .collect();
+            apply_lens_overrides(&mut modified_lens, &overrides);
+            *lens_data_arc = Arc::new(modified_lens);
+
+            mm_log_info!(logger, "Optimized lens parameters:");
+            for &(layer_idx, _param_idx, ref knob_name, value) in
+                &optimized_params
+            {
+                mm_log_info!(
+                    logger,
+                    "  Layer {}: {} = {:.6}",
+                    layer_idx,
+                    knob_name,
+                    value
+                );
+            }
+        }
+    }
 
     if let Some(ref lens_data) = nuke_lens_data {
         let lens_filename = match &args.prefix {

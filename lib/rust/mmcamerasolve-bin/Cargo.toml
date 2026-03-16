@@ -16,9 +16,11 @@ visualization = ["mmsfm/visualization"]
 
 [dependencies]
 anyhow = { workspace = true }
+mmcore = { package = "mmcore_rust", path = "../mmcore" }
 mmlogger = { workspace = true }
 mmio = { package = "mmio_rust", path = "../mmio" }
 mmlens = { package = "mmlens_cppbind", path = "../../cppbind/mmlens" }
+mmoptimise = { package = "mmoptimise_rust", path = "../mmoptimise" }
 mmsfm = { package = "mmsfm_rust", path = "../mmsfm", default-features = false }
 nalgebra = { workspace = true }
 rayon = { workspace = true }

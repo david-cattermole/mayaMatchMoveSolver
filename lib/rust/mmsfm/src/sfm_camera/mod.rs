@@ -55,13 +55,15 @@ mod validation;
 
 // Re-export public API.
 pub use config::{
+    AdjustmentParameter, AdjustmentParameterKind, AdjustmentParameterLayout,
     BundleAdjustmentSolverType, CameraSolveConfig, GlobalAdjustmentConfig,
-    GlobalAdjustmentMode, SolveQualityMetrics,
+    GlobalAdjustmentMode, SolveQuality, SolveQualityMetrics,
 };
 pub use frame_score::analyze_frame_scoring_and_marker_selection;
 pub use intermediate_writer::IntermediateResultWriter;
 pub use reprojection::ReprojectionErrorStats;
 pub use solve::camera_solve;
+pub use solve_core::camera_solve_inner;
 pub use validation::{
     detect_camera_position_collapse, validate_and_filter_bundles,
     BundleValidationConfig, BundleValidationResult,

@@ -486,7 +486,7 @@ fn run_incremental_loop<L: Logger>(
 /// 2. Build initial reconstruction from that pair.
 /// 3. Incrementally add remaining cameras and run bundle adjustment.
 /// 4. Final bundle adjustment and origin-frame transform.
-pub(crate) fn camera_solve_inner<L: Logger>(
+pub fn camera_solve_inner<L: Logger>(
     logger: &L,
     scene_frame_range: FrameRange,
     markers: &MarkersData,

@@ -852,9 +852,11 @@ name = "mmcamerasolve-bin"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "mmcore_rust",
  "mmio_rust",
  "mmlens_cppbind",
  "mmlogger",
+ "mmoptimise_rust",
  "mmsfm_rust",
  "nalgebra 0.33.2",
  "rayon",

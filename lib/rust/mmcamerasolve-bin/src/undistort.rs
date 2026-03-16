@@ -38,6 +38,29 @@ use mmlens::cxxbridge::ffi::{
     Parameters3deClassic, Parameters3deRadialStdDeg4,
 };
 
+/// Apply lens parameter overrides to a `NukeLensData` instance.
+///
+/// Each override is `(layer_index, param_index, value)`. The value is
+/// applied to every frame of the specified layer.
+pub fn apply_lens_overrides(
+    lens_data: &mut NukeLensData,
+    overrides: &[(u8, usize, f64)],
+) {
+    for &(layer_idx, param_idx, value) in overrides {
+        let keys: Vec<_> = lens_data
+            .lens_parameters
+            .keys()
+            .filter(|(li, _)| *li == layer_idx)
+            .cloned()
+            .collect();
+        for key in keys {
+            if let Some(block) = lens_data.lens_parameters.get_mut(&key) {
+                block[param_idx] = value;
+            }
+        }
+    }
+}
+
 pub fn undistort_markers_with_lens(
     markers: &mut MarkersData,
     nuke_lens: &NukeLensData,

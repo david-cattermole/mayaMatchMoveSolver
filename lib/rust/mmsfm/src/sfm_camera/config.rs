@@ -22,6 +22,131 @@
 
 use mmio::uvtrack_reader::FrameNumber;
 
+/// What kind of parameter an optimizer vector element represents.
+#[derive(Debug, Clone)]
+pub enum AdjustmentParameterKind {
+    /// Focal length in millimeters. `x[i]` is `focal_length_mm`.
+    FocalLength,
+    /// A lens distortion parameter from a Nuke lens layer.
+    LensParameter {
+        /// Layer index (0-based) into `NukeLensData.layer_node_names`.
+        layer_index: u8,
+        /// Index into the `ParameterBlock [f64; 22]` for this layer.
+        param_index: usize,
+        /// Human-readable knob name for logging (e.g. `"Distortion"`).
+        knob_name: String,
+    },
+}
+
+/// One parameter in the global adjustment optimization vector.
+#[derive(Debug, Clone)]
+pub struct AdjustmentParameter {
+    /// What this parameter controls.
+    pub kind: AdjustmentParameterKind,
+    /// Optimizer search bounds `(min, max)`.
+    pub bounds: (f64, f64),
+    /// Starting value (from CLI args or loaded Nuke lens file).
+    pub initial_value: f64,
+    /// Number of samples for uniform grid search. 0 means use default.
+    pub sample_count: usize,
+}
+
+/// Describes the full optimizer parameter vector layout.
+///
+/// Maps each index in the flat `x: &[f64]` vector to its semantic
+/// meaning. For example, if optimizing focal_length + Distortion, the
+/// layout has 2 parameters and `x` has length 2.
+#[derive(Debug, Clone, Default)]
+pub struct AdjustmentParameterLayout {
+    pub parameters: Vec<AdjustmentParameter>,
+}
+
+impl AdjustmentParameterLayout {
+    /// Number of dimensions in the optimizer parameter vector.
+    pub fn num_dimensions(&self) -> usize {
+        self.parameters.len()
+    }
+
+    /// Optimizer bounds for each dimension: `Vec<(min, max)>`.
+    pub fn bounds(&self) -> Vec<(f64, f64)> {
+        self.parameters.iter().map(|p| p.bounds).collect()
+    }
+
+    /// True if any parameter is a `FocalLength`.
+    pub fn has_focal_length(&self) -> bool {
+        self.parameters
+            .iter()
+            .any(|p| matches!(p.kind, AdjustmentParameterKind::FocalLength))
+    }
+
+    /// True if any parameter is a `LensParameter`.
+    pub fn has_lens_parameters(&self) -> bool {
+        self.parameters.iter().any(|p| {
+            matches!(p.kind, AdjustmentParameterKind::LensParameter { .. })
+        })
+    }
+
+    /// Index of the focal length parameter in the vector, if present.
+    pub fn focal_length_index(&self) -> Option<usize> {
+        self.parameters.iter().position(|p| {
+            matches!(p.kind, AdjustmentParameterKind::FocalLength)
+        })
+    }
+
+    /// Focal length bounds `(min, max)`, if a focal length parameter exists.
+    pub fn focal_length_bounds(&self) -> Option<(f64, f64)> {
+        self.parameters.iter().find_map(|p| {
+            if matches!(p.kind, AdjustmentParameterKind::FocalLength) {
+                Some(p.bounds)
+            } else {
+                None
+            }
+        })
+    }
+
+    /// Extract lens parameter overrides from an optimizer vector `x`.
+    /// Returns `Vec<(layer_index, param_index, value)>`.
+    pub fn lens_overrides_from_params(
+        &self,
+        x: &[f64],
+    ) -> Vec<(u8, usize, f64)> {
+        self.parameters
+            .iter()
+            .enumerate()
+            .filter_map(|(i, p)| match &p.kind {
+                AdjustmentParameterKind::LensParameter {
+                    layer_index,
+                    param_index,
+                    ..
+                } => Some((*layer_index, *param_index, x[i])),
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// Get the initial values as a vector (same ordering as the parameter vector).
+    pub fn initial_values(&self) -> Vec<f64> {
+        self.parameters.iter().map(|p| p.initial_value).collect()
+    }
+
+    /// Per-parameter sample counts for uniform grid search.
+    ///
+    /// Returns `sample_count` for each parameter, substituting
+    /// `default_samples` wherever `sample_count` is 0.
+    pub fn num_samples_per_param(&self, default_samples: usize) -> Vec<usize> {
+        self.parameters
+            .iter()
+            .map(|p| {
+                if p.sample_count > 0 {
+                    p.sample_count
+                } else {
+                    default_samples
+                }
+            })
+            .collect()
+    }
+}
+
 /// Bundle adjustment solver type selection.
 #[derive(Debug, Clone, PartialEq)]
 pub enum BundleAdjustmentSolverType {
@@ -40,15 +165,15 @@ pub enum GlobalAdjustmentMode {
     LargeRefinement,
 }
 
-/// Configuration for global focal length optimization.
+/// Configuration for global parameter optimization.
 #[derive(Debug, Clone)]
 pub enum GlobalAdjustmentConfig {
     /// Differential Evolution optimizer.
     DifferentialEvolution {
         /// Optimization mode (SmallRefinement or LargeRefinement).
         mode: GlobalAdjustmentMode,
-        /// Focal length search bounds (min, max) in millimeters.
-        focal_length_bounds: (f64, f64),
+        /// Parameter vector layout (describes what each `x[i]` controls).
+        parameter_layout: AdjustmentParameterLayout,
         /// Number of DE generations (iterations).
         generations: usize,
         /// Random seed for reproducible results.
@@ -59,10 +184,10 @@ pub enum GlobalAdjustmentConfig {
 
     /// Uniform Grid Search optimizer.
     UniformGridSearch {
-        /// Focal length search bounds (min, max) in millimeters.
-        focal_length_bounds: (f64, f64),
-        /// Number of uniformly-spaced samples to evaluate.
-        num_samples: usize,
+        /// Parameter vector layout (describes what each `x[i]` controls).
+        parameter_layout: AdjustmentParameterLayout,
+        /// Number of uniformly-spaced samples per parameter dimension.
+        num_samples_per_param: Vec<usize>,
     },
 }
 
@@ -73,9 +198,16 @@ impl GlobalAdjustmentConfig {
         generations: usize,
         seed: u64,
     ) -> Self {
+        let parameters = vec![AdjustmentParameter {
+            kind: AdjustmentParameterKind::FocalLength,
+            bounds: focal_length_bounds,
+            initial_value: (focal_length_bounds.0 + focal_length_bounds.1)
+                / 2.0,
+            sample_count: 0,
+        }];
         Self::DifferentialEvolution {
             mode: GlobalAdjustmentMode::SmallRefinement,
-            focal_length_bounds,
+            parameter_layout: AdjustmentParameterLayout { parameters },
             generations,
             seed,
             enable_coarse_search: true,
@@ -88,9 +220,16 @@ impl GlobalAdjustmentConfig {
         generations: usize,
         seed: u64,
     ) -> Self {
+        let parameters = vec![AdjustmentParameter {
+            kind: AdjustmentParameterKind::FocalLength,
+            bounds: focal_length_bounds,
+            initial_value: (focal_length_bounds.0 + focal_length_bounds.1)
+                / 2.0,
+            sample_count: 0,
+        }];
         Self::DifferentialEvolution {
             mode: GlobalAdjustmentMode::LargeRefinement,
-            focal_length_bounds,
+            parameter_layout: AdjustmentParameterLayout { parameters },
             generations,
             seed,
             enable_coarse_search: true,
@@ -102,9 +241,28 @@ impl GlobalAdjustmentConfig {
         focal_length_bounds: (f64, f64),
         num_samples: usize,
     ) -> Self {
+        let parameters = vec![AdjustmentParameter {
+            kind: AdjustmentParameterKind::FocalLength,
+            bounds: focal_length_bounds,
+            initial_value: (focal_length_bounds.0 + focal_length_bounds.1)
+                / 2.0,
+            sample_count: 0,
+        }];
         Self::UniformGridSearch {
-            focal_length_bounds,
-            num_samples,
+            parameter_layout: AdjustmentParameterLayout { parameters },
+            num_samples_per_param: vec![num_samples],
+        }
+    }
+
+    /// Get the parameter layout for this configuration.
+    pub fn parameter_layout(&self) -> &AdjustmentParameterLayout {
+        match self {
+            Self::DifferentialEvolution {
+                parameter_layout, ..
+            } => parameter_layout,
+            Self::UniformGridSearch {
+                parameter_layout, ..
+            } => parameter_layout,
         }
     }
 }
@@ -178,6 +336,9 @@ pub struct SolveQualityMetrics {
     pub frames_unsolved: usize,
     /// Optimized focal length from global adjustment, if enabled.
     pub optimized_focal_length_mm: Option<f64>,
+    /// Optimized lens parameters from global adjustment.
+    /// Each tuple: `(layer_index, param_index, knob_name, optimized_value)`.
+    pub optimized_lens_parameters: Option<Vec<(u8, usize, String, f64)>>,
     /// Time spent in the coarse global search stage (seconds), DE mode only.
     pub coarse_search_time_secs: Option<f64>,
     /// Time spent in the refined global search stage (seconds), DE mode only.

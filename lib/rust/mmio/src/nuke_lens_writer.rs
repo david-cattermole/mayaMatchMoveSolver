@@ -114,6 +114,12 @@ pub fn write_nuke_lens_string(data: &NukeLensData) -> Result<String> {
             writeln!(output, " {} {}", knob_name, value_str)?;
         }
 
+        if let Some(node_name) = data.layer_node_names.get(layer_idx as usize) {
+            if !node_name.is_empty() {
+                writeln!(output, " name {}", node_name)?;
+            }
+        }
+
         writeln!(output, "}}")?;
     }
 
@@ -261,6 +267,7 @@ mod tests {
             layer_count: 1,
             layer_lens_model_types: vec![LensModelType::TdeClassic],
             layer_frame_range: vec![(STATIC_FRAME_NUMBER, STATIC_FRAME_NUMBER)],
+            layer_node_names: vec!["lens1".to_string()],
             camera_parameters: CameraParameters {
                 focal_length_cm: 5.0,
                 film_back_width_cm: 3.6,
@@ -310,6 +317,7 @@ mod tests {
             layer_count: 1,
             layer_lens_model_types: vec![LensModelType::TdeRadialStdDeg4],
             layer_frame_range: vec![(1, 3)],
+            layer_node_names: vec!["lens1".to_string()],
             camera_parameters: CameraParameters::default(),
             lens_parameters,
         };

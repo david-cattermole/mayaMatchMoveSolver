@@ -88,6 +88,9 @@ pub struct NukeLensData {
     pub layer_count: LayerSize,
     pub layer_lens_model_types: Vec<LensModelType>,
     pub layer_frame_range: Vec<(FrameNumber, FrameNumber)>,
+    /// Nuke node name (e.g. `"lens1"`) for each layer.
+    /// Index matches `layer_lens_model_types` and `layer_frame_range`.
+    pub layer_node_names: Vec<String>,
     pub camera_parameters: CameraParameters,
     pub lens_parameters: HashMap<(LayerSize, FrameNumber), ParameterBlock>,
 }

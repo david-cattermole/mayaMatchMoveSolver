@@ -440,6 +440,7 @@ fn parse_nuke_file_lines(lines: Vec<String>) -> Result<NukeLensData> {
     let mut layer_count: LayerSize = 0;
     let mut layer_lens_model_types = Vec::new();
     let mut layer_frame_range = Vec::new();
+    let mut layer_node_names = Vec::new();
     let mut camera_parameters = CameraParameters::default();
     let mut lens_parameters = HashMap::new();
     for node in nodes {
@@ -1120,12 +1121,14 @@ fn parse_nuke_file_lines(lines: Vec<String>) -> Result<NukeLensData> {
 
         layer_frame_range.push((min_frame, max_frame));
         layer_lens_model_types.push(node.lens_model_type);
+        layer_node_names.push(node.node_name.clone());
     }
 
     Ok(NukeLensData {
         layer_count,
         layer_lens_model_types,
         layer_frame_range,
+        layer_node_names,
         camera_parameters,
         lens_parameters,
     })

@@ -551,6 +551,62 @@ pub fn calc_sample_standard_deviation<
     Ok(variance.sqrt())
 }
 
+/// Compute population variance using Welford's online algorithm.
+///
+/// This function processes data as an iterator, computing mean and
+/// variance in a single pass without materializing the data into a
+/// Vec.  Useful when you want to avoid intermediate allocations.
+///
+/// Mathematics:
+/// Welford's online algorithm:
+///   count += 1
+///   delta = value - mean
+///   mean += delta / count
+///   delta2 = value - mean
+///   m2 += delta * delta2
+///   variance = m2 / count  (population)
+///
+/// Parameters:
+/// - iter: Iterator of float values
+///
+/// Returns:
+/// - `(mean, population_variance)`
+///
+/// Usage:
+/// - Online/streaming variance computation
+/// - Avoid allocating intermediate residuals Vec
+///
+/// References:
+/// - B. P. Welford (1962). "Note on a Method for Calculating Corrected
+///   Sums of Squares and Products". Technometrics, 4(3), 419-420.
+/// - Wikipedia: Algorithms for calculating variance
+///   <https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm>
+pub fn welford_population_variance<T: FloatType>(
+    iter: impl IntoIterator<Item = T>,
+) -> Result<(T, T)> {
+    let mut count = T::zero();
+    let mut mean = T::zero();
+    let mut m2 = T::zero();
+
+    for value in iter {
+        if !value.is_finite() {
+            bail!(StatisticsError::InputValueIsNotFinite);
+        }
+        count = count + T::one();
+        let delta = value - mean;
+        mean = mean + delta / count;
+        let delta2 = value - mean;
+        m2 = m2 + delta * delta2;
+    }
+
+    if count == T::zero() {
+        bail!(StatisticsError::EmptyDataSlice);
+    }
+
+    let variance = m2 / count;
+    Ok((mean, variance))
+}
+
 /// Calculates Population Coefficient of Variation (CV).
 ///
 /// The coefficient of variation describes dispersion of data around

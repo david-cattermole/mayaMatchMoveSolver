@@ -25,6 +25,7 @@
 
 use anyhow::Result;
 
+mod ba_test_problem;
 mod common;
 pub mod schur_complement;
 mod sparse_levenberg_marquardt;

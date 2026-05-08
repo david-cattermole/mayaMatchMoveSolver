@@ -214,12 +214,18 @@ impl<E: Evaluator + Sync> Evaluator for CachingEvaluator<E> {
             return cost;
         }
 
-        // Cache miss: compute result
+        // Cache miss: acquire write lock and double-check to prevent
+        // redundant evaluations from concurrent threads.
+        let mut cache = self.cache.write().unwrap();
+        if let Some(&cost) = cache.get(&key) {
+            drop(cache);
+            self.hits.fetch_add(1, Ordering::Relaxed);
+            return cost;
+        }
         self.misses.fetch_add(1, Ordering::Relaxed);
         let cost = self.inner.evaluate(x);
-
-        // Store result with write lock
-        self.cache.write().unwrap().insert(key, cost);
+        cache.insert(key, cost);
+        drop(cache);
 
         cost
     }

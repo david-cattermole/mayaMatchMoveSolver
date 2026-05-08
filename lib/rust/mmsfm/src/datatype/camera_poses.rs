@@ -20,8 +20,8 @@
 
 //! Per-frame Camera Pose data structure.
 
+use mmcore::collections::SortedVecMap;
 use mmio::uvtrack_reader::FrameNumber;
-use std::collections::BTreeMap;
 use std::ops::{Index, IndexMut};
 
 use crate::datatype::camera_pose::CameraPose;
@@ -32,83 +32,82 @@ const DEBUG: bool = false;
 
 /// HashMap-like wrapper for storing camera poses per frame.
 ///
-/// TODO: The underlying data structure should be completely
-/// changed to using contiguous memory for both keys and values.
+/// Backed by a `SortedVecMap` for contiguous, cache-friendly storage.
 ///
-/// The aim is to provide a HashMap-like API but backed by a
-/// different data structure to avoid the hashing overhead.
-///
-/// The API should stay the same or similar to the HashMap because
-/// we want this to be a (almost) drop-in replacement for the
-/// direct HashMap.
+/// Frame numbers are kept sorted ascending so that binary search
+/// gives O(log n) lookups and `generate_sorted_frame_list` is a free
+/// clone with no extra sort.
 #[derive(Clone)]
 pub struct CameraPoses {
-    data: BTreeMap<FrameNumber, CameraPose>,
+    inner: SortedVecMap<FrameNumber, CameraPose>,
 }
 
 impl CameraPoses {
     pub fn new() -> CameraPoses {
         CameraPoses {
-            data: BTreeMap::new(),
+            inner: SortedVecMap::new(),
+        }
+    }
+
+    pub fn with_capacity(capacity: usize) -> CameraPoses {
+        CameraPoses {
+            inner: SortedVecMap::with_capacity(capacity),
         }
     }
 
     pub fn insert(&mut self, frame: FrameNumber, camera_pose: CameraPose) {
-        self.data.insert(frame, camera_pose);
+        self.inner.insert(frame, camera_pose);
     }
 
     pub fn clear(&mut self) {
-        self.data.clear();
+        self.inner.clear();
     }
 
     pub fn len(&self) -> usize {
-        self.data.len()
+        self.inner.len()
     }
 
     pub fn is_empty(&self) -> bool {
-        self.data.is_empty()
+        self.inner.is_empty()
     }
 
     pub fn get(&self, frame: &FrameNumber) -> Option<&CameraPose> {
-        self.data.get(frame)
+        self.inner.get(frame)
     }
 
     pub fn get_mut(&mut self, frame: &FrameNumber) -> Option<&mut CameraPose> {
-        self.data.get_mut(frame)
+        self.inner.get_mut(frame)
     }
 
     pub fn keys(&self) -> impl Iterator<Item = &FrameNumber> {
-        self.data.keys()
+        self.inner.keys()
     }
 
     pub fn values(&self) -> impl Iterator<Item = &CameraPose> {
-        self.data.values()
+        self.inner.values()
     }
 
     pub fn values_mut(&mut self) -> impl Iterator<Item = &mut CameraPose> {
-        self.data.values_mut()
+        self.inner.values_mut()
     }
 
     pub fn iter(&self) -> impl Iterator<Item = (&FrameNumber, &CameraPose)> {
-        self.data.iter()
+        self.inner.iter()
     }
 
     pub fn iter_mut(
         &mut self,
     ) -> impl Iterator<Item = (&FrameNumber, &mut CameraPose)> {
-        self.data.iter_mut()
+        self.inner.iter_mut()
     }
 
     pub fn contains_key(&self, frame: &FrameNumber) -> bool {
-        self.data.contains_key(frame)
+        self.inner.contains_key(frame)
     }
 
     pub fn generate_sorted_frame_list(&self) -> Vec<FrameNumber> {
-        let mut frame_list: Vec<FrameNumber> =
-            self.data.keys().copied().collect();
-        // TODO: The sorting may not actually be needed.
-        frame_list.sort_unstable();
-        frame_list
+        // Already sorted — just clone.
+        self.inner.keys().copied().collect()
     }
 }
 
@@ -123,13 +122,48 @@ impl Index<&FrameNumber> for CameraPoses {
     type Output = CameraPose;
 
     fn index(&self, frame: &FrameNumber) -> &Self::Output {
-        &self.data[frame]
+        &self.inner[frame]
     }
 }
 
 // Implement IndexMut trait for mutable indexing
 impl IndexMut<&FrameNumber> for CameraPoses {
     fn index_mut(&mut self, frame: &FrameNumber) -> &mut Self::Output {
-        self.data.get_mut(frame).expect("Frame not found")
+        &mut self.inner[frame]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use nalgebra::{Matrix3, Point3};
+
+    fn make_pose(v: f64) -> CameraPose {
+        CameraPose::new(Matrix3::identity(), Point3::new(v, v, v))
+    }
+
+    #[test]
+    fn test_generate_sorted_frame_list() {
+        let mut poses = CameraPoses::new();
+        for &f in &[5u32, 3, 1, 4, 2] {
+            poses.insert(f, make_pose(f as f64));
+        }
+        let list = poses.generate_sorted_frame_list();
+        assert_eq!(list, vec![1, 2, 3, 4, 5]);
+    }
+
+    #[test]
+    fn test_index() {
+        let mut poses = CameraPoses::new();
+        poses.insert(10, make_pose(42.0));
+        assert_eq!(poses[&10].center().x, 42.0);
+    }
+
+    #[test]
+    fn test_index_mut() {
+        let mut poses = CameraPoses::new();
+        poses.insert(10, make_pose(1.0));
+        *poses[&10].center_mut() = Point3::new(99.0, 0.0, 0.0);
+        assert_eq!(poses.get(&10).unwrap().center().x, 99.0);
     }
 }

@@ -68,6 +68,7 @@ const DEBUG: bool = false;
 ///
 /// ```rust
 /// use mmoptimise_rust::solver::common::ParameterScalingMode;
+/// use mmoptimise_rust::solver::common::ReportingMode;
 /// use mmoptimise_rust::solver::levenberg_marquardt::LevenbergMarquardtConfig;
 ///
 /// // High-precision configuration for demanding problems
@@ -82,6 +83,7 @@ const DEBUG: bool = false;
 ///     scaling_mode: ParameterScalingMode::Auto, // Automatic parameter scaling.
 ///     min_step_quality: 1e-4,          // Standard step acceptance.
 ///     epsilon_factor: 1.0,             // Standard numerical precision.
+///     reporting_mode: ReportingMode::Full,
 /// };
 ///
 /// // Fast approximation for real-time use
@@ -96,6 +98,7 @@ const DEBUG: bool = false;
 ///     scaling_mode: ParameterScalingMode::Auto,
 ///     min_step_quality: 1e-3,          // Accept lower quality steps.
 ///     epsilon_factor: 1.0,
+///     reporting_mode: ReportingMode::Full,
 /// };
 ///
 /// // Verify the configurations

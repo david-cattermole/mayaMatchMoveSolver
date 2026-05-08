@@ -263,6 +263,7 @@ impl SolverStatus {
 /// ## Basic Example: Exponential Curve Fitting
 ///
 /// ```rust
+/// use mmoptimise_rust::solver::common::EmptySparsityPattern;
 /// use mmoptimise_rust::solver::common::OptimisationProblem;
 /// use anyhow::Result;
 /// use std::ops::{Add, Sub, Mul, Div};
@@ -275,6 +276,8 @@ impl SolverStatus {
 /// }
 ///
 /// impl OptimisationProblem for QuadraticFitting {
+///     type Sparsity = EmptySparsityPattern;
+///
 ///     fn residuals<T>(
 ///         &self,
 ///         parameters: &[T],
@@ -316,6 +319,7 @@ impl SolverStatus {
 /// ## Advanced Example: Parameter Constraints
 ///
 /// ```rust
+/// use mmoptimise_rust::solver::common::EmptySparsityPattern;
 /// use mmoptimise_rust::solver::common::OptimisationProblem;
 /// use anyhow::Result;
 /// use std::ops::{Add, Sub, Mul, Div};
@@ -327,6 +331,8 @@ impl SolverStatus {
 /// }
 ///
 /// impl OptimisationProblem for ConstrainedProblem {
+///     type Sparsity = EmptySparsityPattern;
+///
 ///     fn residuals<T>(&self, parameters: &[T], out_residuals: &mut [T]) -> Result<()>
 ///     where T: Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T>
 ///             + From<f64> + Sized + Zero + Float,

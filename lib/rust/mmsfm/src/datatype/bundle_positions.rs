@@ -20,8 +20,8 @@
 
 //! Bundle Position data structure.
 
+use mmcore::collections::SortedVecMap;
 use nalgebra::Point3;
-use std::collections::BTreeMap;
 use std::ops::{Index, IndexMut};
 
 /// Compile-time flag to enable verbose debug output.
@@ -31,59 +31,55 @@ const DEBUG: bool = false;
 /// The index of a marker.
 pub type MarkerIndex = usize;
 
+/// HashMap-like wrapper for storing 3-D bundle positions keyed by marker index.
+///
+/// Backed by a `SortedVecMap` for contiguous, cache-friendly storage.
 #[derive(Clone)]
 pub struct BundlePositions {
-    // TODO: The underlying data structure should be completely
-    // changed to using contiguous memory for both keys and values.
-    //
-    // The aim is to provide a HashMap-like API but backed by a
-    // different data structure to avoid the hashing overhead.
-    //
-    // The API should stay the same or similar to the HashMap because
-    // we want this to be a (almost) drop-in replacement for the
-    // direct HashMap.
-    data: BTreeMap<MarkerIndex, Point3<f64>>,
-    // TODO: Could this struct also combine the "marker_indices"
-    // variable that is often used through-out the code?
+    inner: SortedVecMap<MarkerIndex, Point3<f64>>,
 }
 
 impl BundlePositions {
     pub fn new() -> BundlePositions {
         BundlePositions {
-            data: BTreeMap::new(),
+            inner: SortedVecMap::new(),
         }
     }
 
-    pub fn keys(
-        &self,
-    ) -> std::collections::btree_map::Keys<'_, MarkerIndex, Point3<f64>> {
-        self.data.keys()
+    pub fn with_capacity(capacity: usize) -> BundlePositions {
+        BundlePositions {
+            inner: SortedVecMap::with_capacity(capacity),
+        }
     }
 
-    pub fn values(
-        &self,
-    ) -> std::collections::btree_map::Values<'_, MarkerIndex, Point3<f64>> {
-        self.data.values()
+    pub fn reserve(&mut self, additional: usize) {
+        self.inner.reserve(additional);
     }
 
-    pub fn values_mut(
-        &mut self,
-    ) -> std::collections::btree_map::ValuesMut<'_, MarkerIndex, Point3<f64>>
-    {
-        self.data.values_mut()
+    pub fn capacity(&self) -> usize {
+        self.inner.capacity()
     }
 
-    pub fn iter(
-        &self,
-    ) -> std::collections::btree_map::Iter<'_, MarkerIndex, Point3<f64>> {
-        self.data.iter()
+    pub fn keys(&self) -> impl Iterator<Item = &MarkerIndex> {
+        self.inner.keys()
+    }
+
+    pub fn values(&self) -> impl Iterator<Item = &Point3<f64>> {
+        self.inner.values()
+    }
+
+    pub fn values_mut(&mut self) -> impl Iterator<Item = &mut Point3<f64>> {
+        self.inner.values_mut()
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = (&MarkerIndex, &Point3<f64>)> {
+        self.inner.iter()
     }
 
     pub fn iter_mut(
         &mut self,
-    ) -> std::collections::btree_map::IterMut<'_, MarkerIndex, Point3<f64>>
-    {
-        self.data.iter_mut()
+    ) -> impl Iterator<Item = (&MarkerIndex, &mut Point3<f64>)> {
+        self.inner.iter_mut()
     }
 
     pub fn insert(
@@ -91,48 +87,48 @@ impl BundlePositions {
         marker_index: MarkerIndex,
         bundle_position: Point3<f64>,
     ) -> Option<Point3<f64>> {
-        self.data.insert(marker_index, bundle_position)
+        self.inner.insert(marker_index, bundle_position)
     }
 
     pub fn remove(
         &mut self,
         marker_index: &MarkerIndex,
     ) -> Option<Point3<f64>> {
-        self.data.remove(marker_index)
+        self.inner.remove(marker_index)
     }
 
     pub fn get(&self, marker_index: &MarkerIndex) -> Option<&Point3<f64>> {
-        self.data.get(marker_index)
+        self.inner.get(marker_index)
     }
 
     pub fn get_mut(
         &mut self,
         marker_index: &MarkerIndex,
     ) -> Option<&mut Point3<f64>> {
-        self.data.get_mut(marker_index)
+        self.inner.get_mut(marker_index)
     }
 
     pub fn get_point_at_index(
         &self,
         marker_index: &MarkerIndex,
     ) -> Point3<f64> {
-        self.data[marker_index]
+        self.inner[marker_index]
     }
 
     pub fn contains_key(&self, marker_index: &MarkerIndex) -> bool {
-        self.data.contains_key(marker_index)
+        self.inner.contains_key(marker_index)
     }
 
     pub fn clear(&mut self) {
-        self.data.clear();
+        self.inner.clear();
     }
 
     pub fn len(&self) -> usize {
-        self.data.len()
+        self.inner.len()
     }
 
     pub fn is_empty(&self) -> bool {
-        self.data.is_empty()
+        self.inner.is_empty()
     }
 }
 
@@ -146,14 +142,40 @@ impl Index<&MarkerIndex> for BundlePositions {
     type Output = Point3<f64>;
 
     fn index(&self, marker_index: &MarkerIndex) -> &Self::Output {
-        &self.data[marker_index]
+        &self.inner[marker_index]
     }
 }
 
 impl IndexMut<&MarkerIndex> for BundlePositions {
     fn index_mut(&mut self, marker_index: &MarkerIndex) -> &mut Self::Output {
-        self.data
-            .get_mut(marker_index)
-            .expect("marker index not found")
+        &mut self.inner[marker_index]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use nalgebra::Point3;
+
+    fn pt(v: f64) -> Point3<f64> {
+        Point3::new(v, v * 2.0, v * 3.0)
+    }
+
+    #[test]
+    fn test_sorted_key_order() {
+        let mut b = BundlePositions::new();
+        for &k in &[30usize, 10, 20] {
+            b.insert(k, pt(k as f64));
+        }
+        let keys: Vec<usize> = b.keys().copied().collect();
+        assert_eq!(keys, vec![10, 20, 30]);
+    }
+
+    #[test]
+    fn test_get_point_at_index() {
+        let mut b = BundlePositions::new();
+        b.insert(4, pt(4.0));
+        let p = b.get_point_at_index(&4);
+        assert_eq!(p.x, 4.0);
     }
 }

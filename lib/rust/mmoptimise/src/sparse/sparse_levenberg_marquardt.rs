@@ -39,6 +39,9 @@ use crate::solver::reporting::{
     print_problem_summary, print_timing_breakdown, IterationMetrics,
     ProblemSummary, SolverTimings,
 };
+use crate::sparse::schur_complement::{
+    self, SchurComplementWorkspace, SchurStructuredProblem,
+};
 use crate::sparse::SparseOptimisationProblem;
 
 const ENABLE_REPORTING: bool = false;
@@ -1257,6 +1260,501 @@ impl SparseLevenbergMarquardtSolver {
             jacobian_evaluations: njev,
             message: "Maximum iterations reached",
         })
+    }
+
+    /// Solve a Schur-structured bundle adjustment problem.
+    ///
+    /// This method uses the Schur complement trick to reduce the
+    /// normal equations, which is much faster than the full solve
+    /// when `num_points >> num_cameras`.
+    ///
+    /// The algorithm is identical to `solve_problem` except the
+    /// linear solve step replaces the full `(J^T J + lambda D^2)`
+    /// CHOLMOD solve with:
+    ///   1. Block Hessian assembly from Jacobian blocks
+    ///   2. Schur complement formation (eliminating points)
+    ///   3. Reduced camera system solve
+    ///   4. Point back-substitution
+    // TODO: There is a lot of duplication between this method and
+    // `solve_problem`, which should be refactored to reduce the
+    // amount of code.
+    pub fn solve_problem_schur<P: SchurStructuredProblem>(
+        &self,
+        problem: &P,
+        workspace: &mut SparseLevenbergMarquardtWorkspace,
+        schur_ws: &mut SchurComplementWorkspace,
+    ) -> Result<OptimisationResult> {
+        let n = workspace.n;
+        let machine_epsilon = f64::EPSILON * self.config.epsilon_factor;
+
+        let mut nfev: usize = 0;
+        let mut njev: usize = 0;
+        let mut delta = self.config.initial_trust_factor;
+        let mut best_cost = f64::INFINITY;
+        let mut previous_cost;
+
+        // Initial evaluation: compute residuals + Jacobian blocks.
+        problem.compute_jacobian_blocks(
+            workspace.parameters.as_slice(),
+            workspace.residuals.as_mut_slice(),
+            &mut schur_ws.camera_jac_blocks,
+            &mut schur_ws.point_jac_blocks,
+        )?;
+        nfev += 1;
+        njev += 1;
+
+        let mut current_cost =
+            crate::sparse::common::compute_least_squares_cost(
+                &workspace.residuals,
+            );
+
+        if !current_cost.is_finite() {
+            return Err(OptimisationError::SolverError(format!(
+                "Initial cost is not finite (cost={:.3e})",
+                current_cost
+            ))
+            .into());
+        }
+        if current_cost < best_cost {
+            best_cost = current_cost;
+            workspace.best_parameters.copy_from(&workspace.parameters);
+            workspace.best_residuals.copy_from(&workspace.residuals);
+        }
+
+        // Build scaling from Jacobian blocks (column norms).
+        let mut scaling_cameras = vec![1.0; schur_ws.total_cam_params];
+        let mut scaling_points = vec![1.0; schur_ws.total_pt_params];
+
+        // Main iteration loop.
+        for iteration in 0..self.config.max_iterations {
+            previous_cost = current_cost;
+
+            // Check absolute cost convergence.
+            if current_cost < machine_epsilon {
+                return Ok(OptimisationResult {
+                    status: SolverStatus::Success,
+                    parameters: workspace.parameters.as_slice().to_vec(),
+                    residuals: workspace.residuals.as_slice().to_vec(),
+                    cost: current_cost,
+                    iterations: iteration,
+                    function_evaluations: nfev,
+                    jacobian_evaluations: njev,
+                    message: "Converged: cost near zero",
+                });
+            }
+
+            // Check relative cost improvement.
+            if iteration > 0 && previous_cost > current_cost {
+                let relative_improvement =
+                    (previous_cost - current_cost) / previous_cost.max(1.0);
+                if relative_improvement < self.config.function_tolerance
+                    && current_cost < self.config.absolute_cost_tolerance
+                {
+                    return Ok(OptimisationResult {
+                        status: SolverStatus::ToleranceReached,
+                        parameters: workspace
+                            .parameters
+                            .as_slice()
+                            .to_vec(),
+                        residuals: workspace
+                            .residuals
+                            .as_slice()
+                            .to_vec(),
+                        cost: current_cost,
+                        iterations: iteration,
+                        function_evaluations: nfev,
+                        jacobian_evaluations: njev,
+                        message: "Converged: relative cost improvement below tolerance",
+                    });
+                }
+            }
+
+            // Compute scaling from Jacobian block column norms
+            // (first iteration only for Auto mode).
+            if iteration == 0
+                || self.config.scaling_mode == ParameterScalingMode::Auto
+            {
+                self.compute_schur_scaling(
+                    schur_ws,
+                    &mut scaling_cameras,
+                    &mut scaling_points,
+                );
+            }
+
+            // Assemble block Hessian with current lambda.
+            schur_complement::assemble_block_hessian(
+                schur_ws,
+                workspace.residuals.as_slice(),
+                &scaling_cameras,
+                &scaling_points,
+                workspace.lambda,
+                self.config.lambda_regularization,
+            );
+
+            // Compute full gradient for convergence check.
+            // gradient = [g_c; g_p]
+            for i in 0..schur_ws.total_cam_params {
+                workspace.gradient[i] = schur_ws.gradient_cameras[i];
+            }
+            // Map point gradient back to full parameter ordering.
+            for pt_idx in 0..schur_ws.num_points {
+                let pt_offset = schur_ws.point_param_offset[pt_idx];
+                if pt_offset == usize::MAX {
+                    continue;
+                }
+                let full_offset = schur_ws.num_cameras
+                    * schur_ws.cam_block_size
+                    + pt_idx * schur_ws.pt_block_size;
+                for i in 0..schur_ws.pt_block_size {
+                    if full_offset + i < n {
+                        workspace.gradient[full_offset + i] =
+                            schur_ws.gradient_points[pt_offset + i];
+                    }
+                }
+            }
+
+            // Initialize trust region on first iteration.
+            if iteration == 0 {
+                let scaled_x_norm = (0..n)
+                    .map(|i| {
+                        let sx = workspace.scaling[i] * workspace.parameters[i];
+                        sx * sx
+                    })
+                    .sum::<f64>()
+                    .sqrt();
+
+                delta = self.config.initial_trust_factor * scaled_x_norm;
+                if delta < machine_epsilon {
+                    delta = self.config.initial_trust_factor;
+                }
+
+                // Estimate initial lambda.
+                let gradient_norm = workspace.gradient.norm();
+                if delta > machine_epsilon && gradient_norm > machine_epsilon {
+                    workspace.lambda = gradient_norm / delta;
+                } else {
+                    workspace.lambda = 1.0;
+                }
+                workspace.lambda = workspace.lambda.max(machine_epsilon);
+            }
+
+            // Check gradient convergence.
+            let gradient_norm =
+                workspace.gradient.norm() / current_cost.max(1.0);
+            if gradient_norm < self.config.gradient_tolerance {
+                return Ok(OptimisationResult {
+                    status: SolverStatus::SmallGradient,
+                    parameters: workspace.parameters.as_slice().to_vec(),
+                    residuals: workspace.residuals.as_slice().to_vec(),
+                    cost: current_cost,
+                    iterations: iteration,
+                    function_evaluations: nfev,
+                    jacobian_evaluations: njev,
+                    message: "Converged: gradient norm below tolerance",
+                });
+            }
+
+            // Check function evaluation limit.
+            if nfev >= self.config.max_function_evaluations {
+                return Ok(OptimisationResult {
+                    status: SolverStatus::MaxIterationsReached,
+                    parameters: workspace.best_parameters.as_slice().to_vec(),
+                    residuals: workspace.best_residuals.as_slice().to_vec(),
+                    cost: best_cost,
+                    iterations: iteration,
+                    function_evaluations: nfev,
+                    jacobian_evaluations: njev,
+                    message: "Maximum function evaluations reached",
+                });
+            }
+
+            // Inner loop: solve trust region sub-problem.
+            let mut step_accepted = false;
+            let mut inner_iterations = 0;
+            const MAX_INNER_ITERATIONS: usize = 20;
+
+            while inner_iterations < MAX_INNER_ITERATIONS && !step_accepted {
+                inner_iterations += 1;
+
+                // Check trust region size.
+                if delta < self.config.min_trust_radius {
+                    return Ok(OptimisationResult {
+                        status: SolverStatus::SmallStepSize,
+                        parameters: workspace
+                            .best_parameters
+                            .as_slice()
+                            .to_vec(),
+                        residuals: workspace.best_residuals.as_slice().to_vec(),
+                        cost: best_cost,
+                        iterations: iteration,
+                        function_evaluations: nfev,
+                        jacobian_evaluations: njev,
+                        message: "Trust region became too small",
+                    });
+                }
+
+                // Re-assemble with current lambda (lambda changes
+                // across inner iterations).
+                schur_complement::assemble_block_hessian(
+                    schur_ws,
+                    workspace.residuals.as_slice(),
+                    &scaling_cameras,
+                    &scaling_points,
+                    workspace.lambda,
+                    self.config.lambda_regularization,
+                );
+
+                // Schur complement solve — pick optimal direction.
+                let eliminate_cameras = schur_ws.should_eliminate_cameras();
+
+                let solve_ok = if eliminate_cameras {
+                    // Reverse: eliminate cameras, solve for points.
+                    schur_complement::invert_hcc_blocks(schur_ws)?;
+                    schur_complement::form_schur_complement_reverse(schur_ws);
+                    schur_complement::form_reduced_rhs_reverse(schur_ws);
+                    schur_complement::solve_reduced_system_reverse(schur_ws)
+                } else {
+                    // Standard: eliminate points, solve for cameras.
+                    schur_complement::invert_hpp_blocks(schur_ws)?;
+                    schur_complement::form_schur_complement(schur_ws);
+                    schur_complement::form_reduced_rhs(schur_ws);
+                    schur_complement::solve_reduced_system(schur_ws)
+                };
+
+                match solve_ok {
+                    Ok(()) => {
+                        if eliminate_cameras {
+                            schur_complement::back_substitute_reverse(schur_ws);
+                        } else {
+                            schur_complement::back_substitute(schur_ws);
+                        }
+
+                        // Assemble full step vector.
+                        let num_cam_params_total =
+                            schur_ws.num_cameras * schur_ws.cam_block_size;
+                        schur_complement::assemble_full_step(
+                            schur_ws,
+                            workspace.step.as_mut_slice(),
+                            num_cam_params_total,
+                        );
+
+                        // Check trust region constraint.
+                        let scaled_step_norm = (0..n)
+                            .map(|i| {
+                                let s =
+                                    workspace.step[i] * workspace.scaling[i];
+                                s * s
+                            })
+                            .sum::<f64>()
+                            .sqrt();
+
+                        if scaled_step_norm > delta * 1.1 {
+                            // Step too large, increase lambda.
+                            workspace.lambda *= 2.0;
+                            workspace.lambda = workspace.lambda.min(1e10);
+                            continue;
+                        }
+
+                        // Compute predicted reduction.
+                        let predicted_reduction =
+                            schur_complement::compute_predicted_reduction(
+                                schur_ws,
+                                workspace.gradient.as_slice(),
+                                workspace.step.as_slice(),
+                            );
+
+                        if iteration == 0 {
+                            delta = delta.min(scaled_step_norm);
+                        }
+
+                        // Compute trial point.
+                        workspace
+                            .trial_parameters
+                            .copy_from(&workspace.parameters);
+                        workspace.trial_parameters += &workspace.step;
+
+                        // Evaluate at trial point.
+                        let _ = problem.compute_sparse_jacobian(
+                            workspace.trial_parameters.as_slice(),
+                            workspace.trial_residuals.as_mut_slice(),
+                        )?;
+                        nfev += 1;
+
+                        let trial_cost =
+                            crate::sparse::common::compute_least_squares_cost(
+                                &workspace.trial_residuals,
+                            );
+                        let actual_reduction = current_cost - trial_cost;
+
+                        let ratio =
+                            if predicted_reduction.abs() > machine_epsilon {
+                                actual_reduction / predicted_reduction
+                            } else if predicted_reduction == 0.0
+                                && actual_reduction == 0.0
+                            {
+                                1.0
+                            } else {
+                                0.0
+                            };
+
+                        if ratio > self.config.min_step_quality
+                            && trial_cost.is_finite()
+                        {
+                            // Accept step.
+                            step_accepted = true;
+                            workspace
+                                .parameters
+                                .copy_from(&workspace.trial_parameters);
+                            workspace
+                                .residuals
+                                .copy_from(&workspace.trial_residuals);
+                            current_cost = trial_cost;
+
+                            if current_cost < best_cost {
+                                best_cost = current_cost;
+                                workspace
+                                    .best_parameters
+                                    .copy_from(&workspace.parameters);
+                                workspace
+                                    .best_residuals
+                                    .copy_from(&workspace.residuals);
+                            }
+
+                            // Re-evaluate Jacobian blocks.
+                            problem.compute_jacobian_blocks(
+                                workspace.parameters.as_slice(),
+                                workspace.residuals.as_mut_slice(),
+                                &mut schur_ws.camera_jac_blocks,
+                                &mut schur_ws.point_jac_blocks,
+                            )?;
+                            nfev += 1;
+                            njev += 1;
+
+                            // Adjust trust region.
+                            if ratio > 0.75 {
+                                delta = (2.0 * delta)
+                                    .min(self.config.max_trust_radius);
+                                workspace.lambda *= 0.5;
+                            } else if ratio > 0.25 {
+                                // Keep delta and lambda.
+                            } else {
+                                delta *= 0.75;
+                                workspace.lambda *= 1.5;
+                            }
+
+                            // Check parameter convergence.
+                            let param_change_norm = workspace.step.norm();
+                            let param_norm = workspace.parameters.norm();
+                            let relative_param_change =
+                                param_change_norm / param_norm.max(1.0);
+
+                            if relative_param_change
+                                < self.config.parameter_tolerance
+                            {
+                                return Ok(OptimisationResult {
+                                    status: SolverStatus::SmallStepSize,
+                                    parameters: workspace.parameters.as_slice().to_vec(),
+                                    residuals: workspace.residuals.as_slice().to_vec(),
+                                    cost: current_cost,
+                                    iterations: iteration + 1,
+                                    function_evaluations: nfev,
+                                    jacobian_evaluations: njev,
+                                    message: "Converged: parameter change below tolerance",
+                                });
+                            }
+                        } else {
+                            // Reject step.
+                            delta *= 0.25;
+                            workspace.lambda *= 4.0;
+                        }
+                    }
+                    Err(_) => {
+                        // Solve failed, increase lambda.
+                        workspace.lambda *= 10.0;
+                        workspace.lambda = workspace.lambda.min(1e10);
+                    }
+                }
+            }
+
+            if !step_accepted {
+                return Ok(OptimisationResult {
+                    status: SolverStatus::SmallStepSize,
+                    parameters: workspace.best_parameters.as_slice().to_vec(),
+                    residuals: workspace.best_residuals.as_slice().to_vec(),
+                    cost: best_cost,
+                    iterations: iteration,
+                    function_evaluations: nfev,
+                    jacobian_evaluations: njev,
+                    message: "Failed to find acceptable step",
+                });
+            }
+        }
+
+        // Max iterations reached.
+        Ok(OptimisationResult {
+            status: SolverStatus::MaxIterationsReached,
+            parameters: workspace.best_parameters.as_slice().to_vec(),
+            residuals: workspace.best_residuals.as_slice().to_vec(),
+            cost: best_cost,
+            iterations: self.config.max_iterations,
+            function_evaluations: nfev,
+            jacobian_evaluations: njev,
+            message: "Maximum iterations reached",
+        })
+    }
+
+    /// Compute parameter scaling from Jacobian block column norms.
+    fn compute_schur_scaling(
+        &self,
+        schur_ws: &SchurComplementWorkspace,
+        scaling_cameras: &mut [f64],
+        scaling_points: &mut [f64],
+    ) {
+        if self.config.scaling_mode == ParameterScalingMode::None {
+            scaling_cameras.fill(1.0);
+            scaling_points.fill(1.0);
+            return;
+        }
+
+        let cs = schur_ws.cam_block_size;
+        let ps = schur_ws.pt_block_size;
+
+        // Zero accumulators.
+        scaling_cameras.fill(0.0);
+        scaling_points.fill(0.0);
+
+        // Accumulate column norm^2 from Jacobian blocks.
+        for obs in 0..schur_ws.num_observations {
+            let cam_idx = schur_ws.obs_camera_idx[obs];
+            let pt_idx = schur_ws.obs_point_idx[obs];
+            let cam_offset = schur_ws.camera_param_offset[cam_idx];
+            let pt_offset = schur_ws.point_param_offset[pt_idx];
+
+            if cam_offset != usize::MAX {
+                let jc = schur_ws.camera_jac_block(obs);
+                for col in 0..cs {
+                    // Sum over 2 rows.
+                    let val = jc[col] * jc[col] + jc[cs + col] * jc[cs + col];
+                    scaling_cameras[cam_offset + col] += val;
+                }
+            }
+
+            if pt_offset != usize::MAX {
+                let jp = schur_ws.point_jac_block(obs);
+                for col in 0..ps {
+                    let val = jp[col] * jp[col] + jp[ps + col] * jp[ps + col];
+                    scaling_points[pt_offset + col] += val;
+                }
+            }
+        }
+
+        // Convert norm^2 to norms, clamp minimum.
+        for s in scaling_cameras.iter_mut() {
+            *s = s.sqrt().max(1.0);
+        }
+        for s in scaling_points.iter_mut() {
+            *s = s.sqrt().max(1.0);
+        }
     }
 }
 

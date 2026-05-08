@@ -30,13 +30,16 @@ pub mod schur_complement;
 mod sparse_levenberg_marquardt;
 mod test_problems;
 
-// Re-export Sparse LM solver types
+// Re-export Sparse LM solver types.
 pub use sparse_levenberg_marquardt::{
     SparseLevenbergMarquardtConfig, SparseLevenbergMarquardtSolver,
     SparseLevenbergMarquardtWorkspace,
 };
 
-// Re-export common utility functions
+// Re-export Schur complement types.
+pub use schur_complement::{SchurComplementWorkspace, SchurStructuredProblem};
+
+// Re-export common utility functions.
 pub use common::{
     assemble_jtj_with_damping, clear_sparse_coo, compute_jacobian_column_norms,
     compute_least_squares_cost, compute_normalized_gradient_norm,

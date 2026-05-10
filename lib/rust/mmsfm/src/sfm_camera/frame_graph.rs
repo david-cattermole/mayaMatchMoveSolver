@@ -87,15 +87,6 @@ impl Default for FrameEdge {
     }
 }
 
-/// A candidate frame for incremental reconstruction.
-#[derive(Debug, Clone)]
-pub struct FrameCandidate {
-    /// The candidate frame ID.
-    pub frame_id: FrameId,
-    /// Aggregate score based on connections to solved frames.
-    pub score: f32,
-}
-
 /// Counts elements common to two sorted slices using a merge pass.
 ///
 /// Both `a` and `b` must be sorted in ascending order.
@@ -691,66 +682,6 @@ impl FrameGraph {
         best
     }
 
-    /// Find candidate frames to add to an existing reconstruction.
-    pub fn find_next_frames(
-        &self,
-        solved_frames: &[FrameId],
-        min_connections: usize,
-    ) -> Vec<FrameCandidate> {
-        let solved_set: BTreeSet<FrameId> =
-            solved_frames.iter().copied().collect();
-        let mut candidates = Vec::new();
-
-        // Examine each unsolved frame.
-        for candidate_id in 0..self.num_frames as FrameId {
-            if solved_set.contains(&candidate_id) {
-                continue;
-            }
-
-            // Collect connections to solved frames.
-            let mut connections: Vec<(FrameId, f32)> = Vec::new();
-
-            for &solved_id in solved_frames {
-                let edge = self.get_edge(candidate_id, solved_id);
-                if !edge.is_valid() {
-                    continue;
-                }
-
-                let score = self.edge_heuristic(candidate_id, solved_id, edge);
-                if score > 0.0 && !score.is_nan() {
-                    connections.push((solved_id, score));
-                }
-            }
-
-            // Skip if insufficient connections.
-            if connections.len() < min_connections {
-                continue;
-            }
-
-            // Sort connections by score (best first).
-            connections.sort_by(|a, b| {
-                b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal)
-            });
-
-            // Aggregate score: sum of all connection scores.
-            let total_score: f32 = connections.iter().map(|(_, s)| s).sum();
-
-            candidates.push(FrameCandidate {
-                frame_id: candidate_id,
-                score: total_score,
-            });
-        }
-
-        // Sort candidates by total score (best first).
-        candidates.sort_by(|a, b| {
-            b.score
-                .partial_cmp(&a.score)
-                .unwrap_or(std::cmp::Ordering::Equal)
-        });
-
-        candidates
-    }
-
     /// Compute an approximate Minimum Connected Dominating Set (MCDS) for skeleton
     /// frame selection.
     ///
@@ -1054,33 +985,6 @@ impl FrameGraph {
         }
 
         components
-    }
-
-    /// Find multiple high-quality frames to add in parallel, enabling exponential
-    /// reconstruction growth.
-    ///
-    /// Returns up to `max_candidates` frames with score >= best_score * min_score_ratio.
-    pub fn find_next_frames_batch(
-        &self,
-        solved_frames: &[FrameId],
-        min_connections: usize,
-        max_candidates: usize,
-        min_score_ratio: f32,
-    ) -> Vec<FrameCandidate> {
-        let candidates = self.find_next_frames(solved_frames, min_connections);
-
-        if candidates.is_empty() {
-            return candidates;
-        }
-
-        let best_score = candidates[0].score;
-        let threshold = best_score * min_score_ratio;
-
-        candidates
-            .into_iter()
-            .take(max_candidates)
-            .take_while(|c| c.score >= threshold)
-            .collect()
     }
 
     /// Find the most diverse frame strictly between two frame indices.
@@ -1551,144 +1455,6 @@ mod tests {
         let (i, j, _score) = result.unwrap();
         // Should pick (0, 2) as the best initial pair.
         assert!((i == 0 && j == 2) || (i == 2 && j == 0));
-    }
-
-    #[test]
-    fn test_find_next_frames_single() {
-        let mut graph = FrameGraph::new(6);
-
-        graph.set_uniformity(0, 0.8);
-        graph.set_uniformity(1, 0.75);
-        graph.set_uniformity(2, 0.8);
-        graph.set_uniformity(3, 0.7);
-        graph.set_uniformity(4, 0.9);
-        graph.set_uniformity(5, 0.5);
-
-        // Solved frames: 0, 1 (initial pair).
-        // Candidates: 2, 3, 4, 5.
-
-        // Frame 2: connects to both solved frames (good).
-        graph.set_edge(0, 2, FrameEdge::new(100, 4.0));
-        graph.set_edge(1, 2, FrameEdge::new(90, 3.5));
-
-        // Frame 3: connects only to frame 0 (marginal).
-        graph.set_edge(0, 3, FrameEdge::new(80, 3.0));
-
-        // Frame 4: connects to both with excellent scores.
-        graph.set_edge(0, 4, FrameEdge::new(120, 5.0));
-        graph.set_edge(1, 4, FrameEdge::new(110, 4.5));
-
-        // Frame 5: no connections to solved frames.
-        let solved = vec![0, 1];
-        let candidates = graph.find_next_frames(&solved, 2);
-
-        // Should return frames 2 and 4 (both have 2+ connections).
-        assert_eq!(candidates.len(), 2);
-
-        // Frame 4 should be ranked first (better scores).
-        assert_eq!(candidates[0].frame_id, 4);
-
-        assert_eq!(candidates[1].frame_id, 2);
-    }
-
-    #[test]
-    fn test_find_next_frames_batch() {
-        let mut graph = FrameGraph::new(10);
-
-        graph.set_uniformity(0, 0.8);
-        graph.set_uniformity(1, 0.75);
-
-        // Solved: frames 0, 1.
-        // Create a bunch of candidates with varying quality.
-
-        for candidate in 2..10 {
-            let quality = (10 - candidate) as f32; // Decreasing quality.
-            graph.set_uniformity(candidate, 0.8 * quality / 10.0 + 0.2);
-            graph.set_edge(0, candidate, FrameEdge::new(100, quality));
-            graph.set_edge(1, candidate, FrameEdge::new(90, quality * 0.9));
-        }
-
-        let solved = vec![0, 1];
-
-        // Get top 3 candidates with at least 50% of best score.
-        let batch = graph.find_next_frames_batch(&solved, 2, 3, 0.5);
-
-        assert!(batch.len() <= 3);
-        assert!(batch.len() >= 1);
-
-        // All returned candidates should have score >= 50% of best.
-        if batch.len() > 1 {
-            let best_score = batch[0].score;
-            for c in &batch {
-                assert!(c.score >= best_score * 0.5);
-            }
-        }
-    }
-
-    #[test]
-    fn test_exponential_growth_simulation() {
-        // Simulate incremental reconstruction on a 20-frame sequence.
-        let mut graph = FrameGraph::new(20);
-
-        for i in 0..20 {
-            graph.set_uniformity(i as u32, 0.8);
-        }
-
-        // Create a densely connected graph (sequential + skip connections).
-        for i in 0..20u32 {
-            for j in (i + 1)..20u32 {
-                let distance = j - i;
-                if distance <= 5 {
-                    // Connect nearby frames.
-                    let quality = 1.0 / distance as f32;
-                    let obs = (100.0 / distance as f32) as i32;
-                    graph.set_edge(
-                        i,
-                        j,
-                        FrameEdge::new(obs.max(20), quality * 5.0),
-                    );
-                }
-            }
-        }
-
-        // Start with initial pair.
-        let initial = graph.find_initial_pair().unwrap();
-        let mut solved = vec![initial.0, initial.1];
-
-        let mut iterations = 0;
-        while solved.len() < 20 {
-            iterations += 1;
-
-            // Find batch of next frames (exponential growth).
-            let batch = graph.find_next_frames_batch(&solved, 2, 4, 0.3);
-
-            if batch.is_empty() {
-                // Fall back to single connection if needed.
-                let single = graph.find_next_frames(&solved, 1);
-                if let Some(c) = single.first() {
-                    solved.push(c.frame_id);
-                } else {
-                    break; // No more reachable frames.
-                }
-            } else {
-                for c in batch {
-                    if !solved.contains(&c.frame_id) {
-                        solved.push(c.frame_id);
-                    }
-                }
-            }
-        }
-
-        println!(
-            "Reconstructed {} frames in {} iterations",
-            solved.len(),
-            iterations
-        );
-
-        // With exponential growth, should complete in far fewer than 20 iterations.
-        // The exact count depends on the heuristic, but should be significantly
-        // better than linear growth (which would take ~18 iterations).
-        assert!(iterations < 20);
     }
 
     // ---- Max-Diversity Traversal tests ----

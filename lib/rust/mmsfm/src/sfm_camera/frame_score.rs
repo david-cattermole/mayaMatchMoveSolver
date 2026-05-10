@@ -1057,80 +1057,21 @@ pub fn analyze_frame_scoring_and_marker_selection(
     }
 
     // Use the combined results as the final output.
-    let (_selected_marker_count, selected_marker_indices, common_frame_numbers) = (
-        combined_result.selected_count,
-        combined_selected_indices,
-        combined_common_frame_numbers,
-    );
+    let selected_marker_indices = combined_selected_indices;
+    let common_frame_numbers = combined_common_frame_numbers;
 
-    // Calculate the highest uniformity frame pair and parallax residual for selected markers.
-    let selected_markers_mask: Vec<bool> = (0..marker_count)
-        .map(|i| selected_marker_indices.contains(&i))
-        .collect();
-
+    // Find the two highest parallax frames from the already-computed masks.
     let (highest_parallax_frame_pair, parallax_residual) =
         if common_frame_numbers.len() >= 2 {
-            // Calculate common frames for selected markers.
-            let analysis_data = build_marker_analysis_data(
-                markers,
-                scene_frame_range,
-                MAXIMUM_MARKER_COUNT,
-            );
-            let common_frames = calculate_common_frames_for_markers(
-                &selected_markers_mask,
-                &analysis_data,
-                scene_frame_count,
-            );
-
-            // Find the two highest parallax frames.
             let (_all_parallax_values, best_frame_result) =
                 compute_all_parallax_and_find_best(
-                    &selected_markers_mask,
+                    &combined_result.selected_markers,
                     markers,
-                    &common_frames,
+                    &combined_result.common_frames,
                     scene_frame_range,
                 );
 
-            if let Some((frame_a, frame_b, _parallax)) = best_frame_result {
-                // Extract marker positions for the two selected frames.
-                let mut points_a_x = Vec::new();
-                let mut points_a_y = Vec::new();
-                let mut points_b_x = Vec::new();
-                let mut points_b_y = Vec::new();
-
-                extract_frame_marker_positions(
-                    &selected_markers_mask,
-                    markers,
-                    frame_a,
-                    scene_frame_range,
-                    &mut points_a_x,
-                    &mut points_a_y,
-                );
-
-                extract_frame_marker_positions(
-                    &selected_markers_mask,
-                    markers,
-                    frame_b,
-                    scene_frame_range,
-                    &mut points_b_x,
-                    &mut points_b_y,
-                );
-
-                // Convert to coordinate pairs for parallax calculation.
-                let points_a: Vec<(f32, f32)> = points_a_x
-                    .iter()
-                    .zip(points_a_y.iter())
-                    .map(|(&x, &y)| (x, y))
-                    .collect();
-                let points_b: Vec<(f32, f32)> = points_b_x
-                    .iter()
-                    .zip(points_b_y.iter())
-                    .map(|(&x, &y)| (x, y))
-                    .collect();
-
-                // Calculate parallax.
-                let parallax = compute_parallax_residual(&points_a, &points_b);
-
+            if let Some((frame_a, frame_b, parallax)) = best_frame_result {
                 // Convert frame indices to frame numbers.
                 let frame_number_a =
                     scene_frame_range.start_frame + frame_a as FrameNumber;

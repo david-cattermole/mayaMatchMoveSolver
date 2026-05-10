@@ -140,6 +140,11 @@ fn test_camera_solve_clean_sta_sparse_lm() -> Result<()> {
 }
 
 #[test]
+fn test_camera_solve_clean_sta_schur_lm() -> Result<()> {
+    run_camera_solve_sta(false, BundleAdjustmentSolverType::SchurComplementLM)
+}
+
+#[test]
 #[ignore] // TODO: Make this run faster so we can test faster.
 fn test_camera_solve_noisy_sta_dense_lm() -> Result<()> {
     run_camera_solve_sta(true, BundleAdjustmentSolverType::DenseLM)
@@ -152,4 +157,10 @@ fn test_camera_solve_noisy_sta_sparse_lm() -> Result<()> {
         true,
         BundleAdjustmentSolverType::SparseLevenbergMarquardt,
     )
+}
+
+#[test]
+#[ignore]
+fn test_camera_solve_noisy_sta_schur_lm() -> Result<()> {
+    run_camera_solve_sta(true, BundleAdjustmentSolverType::SchurComplementLM)
 }

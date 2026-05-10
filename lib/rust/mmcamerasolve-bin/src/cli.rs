@@ -57,6 +57,35 @@ const ARG_OUTPUT_DIR: &str = "--output-dir";
 const ARG_PREFIX: &str = "--prefix";
 const ARG_INTERMEDIATE_OUTPUT: &str = "--intermediate-output";
 const ARG_NUKE_LENS: &str = "--nuke-lens";
+const ARG_BA_SOLVER: &str = "--ba-solver";
+
+/// Bundle adjustment backend solver type.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum BaSolverType {
+    /// Dense Levenberg-Marquardt.
+    DenseLM,
+    /// Sparse Levenberg-Marquardt with CHOLMOD.
+    SparseLM,
+    /// Sparse LM with Schur complement elimination (default).
+    #[default]
+    SchurLM,
+}
+
+impl std::str::FromStr for BaSolverType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "dense_lm" | "dense-lm" => Ok(BaSolverType::DenseLM),
+            "sparse_lm" | "sparse-lm" => Ok(BaSolverType::SparseLM),
+            "schur_lm" | "schur-lm" => Ok(BaSolverType::SchurLM),
+            _ => Err(format!(
+                "Invalid BA solver type '{}'. Valid options: dense_lm, sparse_lm, schur_lm",
+                s
+            )),
+        }
+    }
+}
 
 /// Solver type for focal length adjustment.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -147,6 +176,8 @@ pub struct CliArgs {
     /// End frame (None = use UV file default).
     pub end_frame: Option<u32>,
     pub solver: SolverType,
+    /// Bundle adjustment backend solver type.
+    pub ba_solver: BaSolverType,
     /// Thread count (None = auto-detect).
     pub threads: Option<usize>,
     pub output_dir: String,
@@ -176,6 +207,7 @@ impl Default for CliArgs {
             start_frame: None,
             end_frame: None,
             solver: SolverType::default(),
+            ba_solver: BaSolverType::default(),
             threads: None,
             output_dir: DEFAULT_OUTPUT_DIR.to_string(),
             prefix: None,
@@ -246,6 +278,10 @@ SOLVER SETTINGS:
                               evolution_refine  = DE with refinement
                               evolution_unknown = DE with uniform sampling
                               uniform_grid      = uniform grid search
+    --ba-solver <TYPE>        Bundle adjustment backend [default: schur_lm]
+                              dense_lm  = Dense Levenberg-Marquardt
+                              sparse_lm = Sparse LM with CHOLMOD
+                              schur_lm  = Sparse LM with Schur complement
     --threads <COUNT>         Thread count [default: auto]
 
 OUTPUT:
@@ -447,6 +483,17 @@ pub fn parse_args() -> ParseResult {
                 cli.solver = try_parse!(parser::parse_solver_type_arg(
                     &args, &mut i, ARG_SOLVER
                 ));
+            }
+            ARG_BA_SOLVER => {
+                let val = try_parse!(parser::parse_string_arg(
+                    &args,
+                    &mut i,
+                    ARG_BA_SOLVER
+                ));
+                cli.ba_solver = match val.parse() {
+                    Ok(t) => t,
+                    Err(e) => return ParseResult::Error(e),
+                };
             }
             ARG_THREADS => {
                 cli.threads =

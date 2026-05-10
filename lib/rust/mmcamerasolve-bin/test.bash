@@ -118,6 +118,47 @@ else
 fi
 echo ""
 
+# Test 5b: Cube A dataset with Sparse LM solver.
+echo "----------------------------------------------"
+echo "Test 5b: Cube A dataset (--ba-solver sparse_lm)"
+echo "----------------------------------------------"
+UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/test_cube_a_markers_v1_fmt.uv"
+if [ -f "${UV_FILE}" ]; then
+    ${MM_CAMERA_SOLVE} "${UV_FILE}" \
+        --focal-length 35 \
+        --film-back-width 36 \
+        --film-back-height 24 \
+        --image-width 3600 \
+        --image-height 2400 \
+        --ba-solver sparse_lm \
+        --prefix cube_a_sparse_lm \
+        --output-dir "${OUTPUT_BASE}" \
+        --console-level progress
+    echo "Output: ${OUTPUT_BASE}"
+else
+    echo "SKIP: ${UV_FILE} not found"
+fi
+echo ""
+
+# Test 5c: stA dataset with Sparse LM solver.
+echo "----------------------------------------------"
+echo "Test 5c: stA dataset (--ba-solver sparse_lm)"
+echo "----------------------------------------------"
+UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/stA_v1_format.uv"
+MMCAMERA_FILE="${PROJECT_ROOT}/tests/data/mmcamera/stA_copyCamera.mmcamera"
+if [ -f "${UV_FILE}" ] && [ -f "${MMCAMERA_FILE}" ]; then
+    ${MM_CAMERA_SOLVE} "${UV_FILE}" \
+        --mmcamera "${MMCAMERA_FILE}" \
+        --ba-solver sparse_lm \
+        --prefix stA_sparse_lm \
+        --output-dir "${OUTPUT_BASE}" \
+        --console-level progress
+    echo "Output: ${OUTPUT_BASE}"
+else
+    echo "SKIP: ${UV_FILE} or ${MMCAMERA_FILE} not found"
+fi
+echo ""
+
 # Test 6: stA dataset with nuke lens file.
 echo "----------------------------------------------"
 echo "Test 6: stA dataset (--nuke-lens)"
@@ -371,9 +412,6 @@ if [ -f "${UV_FILE}" ]; then
         --image-width 960 \
         --image-height 540 \
         --prefix garage \
-        --start-frame 2000 \
-        --end-frame 2706 \
-        --intermediate-output \
         --output-dir "${OUTPUT_BASE}" \
         --console-level progress
     echo "Output: ${OUTPUT_BASE}"
@@ -421,6 +459,50 @@ if [ -f "${UV_FILE}" ]; then
         --end-frame 10 \
         --solver evolution_refine \
         --prefix frame_range \
+        --output-dir "${OUTPUT_BASE}" \
+        --console-level progress
+    echo "Output: ${OUTPUT_BASE}"
+else
+    echo "SKIP: ${UV_FILE} not found"
+fi
+echo ""
+
+# Test 20: Soccer Cones v1 dataset.
+echo "----------------------------------------------"
+echo "Test 20: Soccer Cones v1 dataset"
+echo "----------------------------------------------"
+UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/tracking_soccer_cones_v1.uv"
+if [ -f "${UV_FILE}" ]; then
+    ${MM_CAMERA_SOLVE} "${UV_FILE}" \
+        --focal-length 70 \
+        --film-back-width 36 \
+        --film-back-height 20.25 \
+        --image-width 3840 \
+        --image-height 2160 \
+        --prefix soccer_cones_v1 \
+        --solver none \
+        --output-dir "${OUTPUT_BASE}" \
+        --console-level progress
+    echo "Output: ${OUTPUT_BASE}"
+else
+    echo "SKIP: ${UV_FILE} not found"
+fi
+echo ""
+
+# Test 21: Soccer Cones v2 dataset.
+echo "----------------------------------------------"
+echo "Test 21: Soccer Cones v2 dataset"
+echo "----------------------------------------------"
+UV_FILE="${PROJECT_ROOT}/tests/data/uvtrack/tracking_soccer_cones_v2.uv"
+if [ -f "${UV_FILE}" ]; then
+    ${MM_CAMERA_SOLVE} "${UV_FILE}" \
+        --focal-length 70 \
+        --film-back-width 36 \
+        --film-back-height 20.25 \
+        --image-width 3840 \
+        --image-height 2160 \
+        --prefix soccer_cones_v2 \
+        --solver none \
         --output-dir "${OUTPUT_BASE}" \
         --console-level progress
     echo "Output: ${OUTPUT_BASE}"

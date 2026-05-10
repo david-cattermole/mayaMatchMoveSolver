@@ -59,9 +59,10 @@ use mmsfm::datatype::{
 };
 use mmsfm::sfm_camera::{
     camera_solve, camera_solve_inner, AdjustmentParameter,
-    AdjustmentParameterKind, AdjustmentParameterLayout, CameraSolveConfig,
-    GlobalAdjustmentConfig, GlobalAdjustmentMode, IntermediateResultWriter,
-    ReprojectionErrorStats, SolveQuality, SolveQualityMetrics,
+    AdjustmentParameterKind, AdjustmentParameterLayout,
+    BundleAdjustmentSolverType, CameraSolveConfig, GlobalAdjustmentConfig,
+    GlobalAdjustmentMode, IntermediateResultWriter, ReprojectionErrorStats,
+    SolveQuality, SolveQualityMetrics,
 };
 use undistort::apply_lens_overrides;
 
@@ -84,7 +85,8 @@ const ENABLE_VISUALIZATIONS: bool = true;
 const ENABLE_VISUALIZATIONS: bool = false;
 
 use cli::{
-    parse_args, print_help, print_version, CliArgs, ParseResult, SolverType,
+    parse_args, print_help, print_version, BaSolverType, CliArgs, ParseResult,
+    SolverType,
 };
 use undistort::undistort_markers_with_lens;
 use write_data::{
@@ -751,6 +753,13 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
     );
 
     let mut config = CameraSolveConfig::default();
+    config.bundle_solver_type = match args.ba_solver {
+        BaSolverType::DenseLM => BundleAdjustmentSolverType::DenseLM,
+        BaSolverType::SparseLM => {
+            BundleAdjustmentSolverType::SparseLevenbergMarquardt
+        }
+        BaSolverType::SchurLM => BundleAdjustmentSolverType::SchurComplementLM,
+    };
     if let Some(ref s) = settings {
         config.origin_frame = s.origin_frame;
     }
@@ -796,6 +805,57 @@ fn run_camera_solve<L: Logger + Clone + Send + Sync>(
             mm_log_info!(logger, "  UV file contains both distorted and undistorted data; using stored undistorted positions.");
         } else {
             mm_log_warn!(logger, "  UV file contains only distorted marker positions but no lens file was provided. Solving will use distorted positions which may reduce accuracy.");
+            // Promote distorted coords (pos_dist) to primary coords
+            // (u_coords/v_coords) so the SfM pipeline has real
+            // observations to work with. Files exported from Maya
+            // without undistortion leave pos=[0,0] for every frame.
+            for frame_data in &mut markers.frame_data {
+                let all_zero = frame_data.u_coords.iter().all(|&u| u == 0.0)
+                    && frame_data.v_coords.iter().all(|&v| v == 0.0);
+                let has_dist = !frame_data.u_coords_dist.is_empty()
+                    && frame_data.u_coords_dist.len()
+                        == frame_data.u_coords.len();
+                if all_zero && has_dist {
+                    frame_data
+                        .u_coords
+                        .copy_from_slice(&frame_data.u_coords_dist);
+                    frame_data
+                        .v_coords
+                        .copy_from_slice(&frame_data.v_coords_dist);
+                }
+            }
+        }
+    }
+
+    // Remove markers visible in only a single frame — they cannot be
+    // triangulated and add noise to marker selection.
+    {
+        let keep: Vec<bool> = markers
+            .frame_data
+            .iter()
+            .map(|fd| fd.frames.len() > 1)
+            .collect();
+        let single_frame_count = keep.iter().filter(|&&k| !k).count();
+        if single_frame_count > 0 {
+            mm_log_info!(
+                logger,
+                "  Removing {} single-frame marker(s).",
+                single_frame_count
+            );
+            let mut new_markers =
+                MarkersData::with_capacity(markers.len() - single_frame_count);
+            for (i, keep_i) in keep.iter().enumerate() {
+                if *keep_i {
+                    new_markers.push_marker_full(
+                        markers.names[i].clone(),
+                        markers.frame_data[i].clone(),
+                        markers.set_names[i].clone(),
+                        markers.ids[i].clone(),
+                        markers.point_3d[i].clone(),
+                    );
+                }
+            }
+            markers = new_markers;
         }
     }
 

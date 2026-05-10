@@ -244,8 +244,7 @@ impl FrameGraph {
         let n = self.num_frames;
         (0..n as FrameId).flat_map(move |i| {
             ((i + 1)..n as FrameId).filter_map(move |j| {
-                let idx = (i as usize) * (2 * n - (i as usize) - 1) / 2
-                    + ((j - i - 1) as usize);
+                let idx = self.edge_index(i, j);
                 let edge = &self.edges[idx];
                 if edge.is_valid() {
                     Some((i, j, edge))
@@ -436,12 +435,14 @@ impl FrameGraph {
         (observation_count as f32) * uniformity * parallax
     }
 
-    /// Computes a Maximum Spanning Tree using observation count as the edge weight.
+    /// Prim's Maximum Spanning Tree using a caller-supplied edge weight function.
     ///
-    /// Unlike `maximum_spanning_tree()`, only requires valid edges with observation
-    /// counts, making it suitable for skeleton frame selection where zero-parallax
-    /// frames should still be connected.
-    pub fn maximum_spanning_tree_by_observations(&self) -> Self {
+    /// Shared implementation for both observation-count and parallax variants.
+    /// Returns an empty graph if there are no valid edges or fewer than 2 frames.
+    fn maximum_spanning_tree_impl<F>(&self, weight_fn: F) -> Self
+    where
+        F: Fn(&FrameEdge) -> Option<f32>,
+    {
         let n = self.num_frames;
         let mut mst = FrameGraph::new(n);
 
@@ -468,8 +469,8 @@ impl FrameGraph {
         }
 
         let mut in_mst = vec![false; n];
-        // Weight = observation count (always positive for valid edges).
-        let mut best_edge: Vec<(i32, FrameId)> = vec![(0, 0); n];
+        // best_weight[j] = (best score to reach j from MST, source frame).
+        let mut best_weight: Vec<(f32, FrameId)> = vec![(0.0, 0); n];
 
         in_mst[start as usize] = true;
 
@@ -478,18 +479,18 @@ impl FrameGraph {
                 continue;
             }
             let edge = self.get_edge(start, j as FrameId);
-            if let Some(obs) = edge.num_observations() {
-                if obs > best_edge[j].0 {
-                    best_edge[j] = (obs, start);
+            if let Some(w) = weight_fn(edge) {
+                if w > best_weight[j].0 {
+                    best_weight[j] = (w, start);
                 }
             }
         }
 
         for _ in 0..(n - 1) {
-            let mut best_score = 0i32;
+            let mut best_score = 0.0f32;
             let mut best_node = None;
 
-            for (node, &(score, _)) in best_edge.iter().enumerate() {
+            for (node, &(score, _)) in best_weight.iter().enumerate() {
                 if !in_mst[node] && score > best_score {
                     best_score = score;
                     best_node = Some(node);
@@ -501,7 +502,7 @@ impl FrameGraph {
             };
 
             in_mst[new_node] = true;
-            let (_, source) = best_edge[new_node];
+            let (_, source) = best_weight[new_node];
             let edge_data = *self.get_edge(source, new_node as FrameId);
             mst.set_edge(source, new_node as FrameId, edge_data);
 
@@ -510,15 +511,159 @@ impl FrameGraph {
                     continue;
                 }
                 let edge = self.get_edge(new_node as FrameId, j as FrameId);
-                if let Some(obs) = edge.num_observations() {
-                    if obs > best_edge[j].0 {
-                        best_edge[j] = (obs, new_node as FrameId);
+                if let Some(w) = weight_fn(edge) {
+                    if w > best_weight[j].0 {
+                        best_weight[j] = (w, new_node as FrameId);
                     }
                 }
             }
         }
 
         mst
+    }
+
+    /// Computes a Maximum Spanning Tree using observation count as the edge weight.
+    ///
+    /// Unlike `maximum_spanning_tree()`, only requires valid edges with observation
+    /// counts, making it suitable for skeleton frame selection where zero-parallax
+    /// frames should still be connected.
+    pub fn maximum_spanning_tree_by_observations(&self) -> Self {
+        self.maximum_spanning_tree_impl(|e| {
+            e.num_observations().map(|n| n as f32)
+        })
+    }
+
+    /// Computes a Maximum Spanning Tree using `parallax * ln(1 + observations)` as weight.
+    ///
+    /// Prefers edges with high parallax AND many observations, selecting geometrically
+    /// diverse frames over temporally adjacent (near-zero-parallax) frames.
+    /// Only edges with parallax > 0 contribute non-zero weight; falls back to
+    /// `maximum_spanning_tree_by_observations()` if no such edges exist.
+    pub fn maximum_spanning_tree_by_parallax(&self) -> Self {
+        // Fall back to observation-count MST when no parallax data is available.
+        let has_parallax = self
+            .edges
+            .iter()
+            .any(|e| e.parallax().map_or(false, |p| p > 0.0));
+        if !has_parallax {
+            return self.maximum_spanning_tree_by_observations();
+        }
+
+        self.maximum_spanning_tree_impl(|e| {
+            let obs = e.num_observations()?;
+            let p = e.parallax().filter(|&p| p > 0.0)?;
+            Some(p * (1.0 + obs as f32).ln())
+        })
+    }
+
+    /// Farthest-First Traversal to select `target_count` geometrically diverse frames.
+    ///
+    /// Starting from `seed_frames`, iteratively picks the unseen frame that minimises
+    /// maximum similarity to any already-selected frame, where
+    /// `similarity(u, v) = overlap(u, v) / (1 + parallax(u, v))`.
+    ///
+    /// Lower maximum similarity = less similar to the closest selected frame = more diverse.
+    /// Connected frames (with at least one edge to a selected frame) are preferred over
+    /// isolated frames (picked last). Always returns at least the seed frames. Never panics.
+    pub fn farthest_first_traversal(
+        &self,
+        seed_frames: &[FrameId],
+        target_count: usize,
+    ) -> Vec<FrameId> {
+        let n = self.num_frames;
+        if n == 0 || seed_frames.is_empty() {
+            return Vec::new();
+        }
+
+        let has_markers = self.has_marker_data();
+        let mut selected: Vec<FrameId> = Vec::new();
+        let mut in_selected = vec![false; n];
+
+        for &f in seed_frames {
+            let idx = f as usize;
+            if idx < n && !in_selected[idx] {
+                in_selected[idx] = true;
+                selected.push(f);
+            }
+        }
+
+        if selected.is_empty() || selected.len() >= target_count {
+            return selected;
+        }
+
+        // max_sim[c] = maximum similarity from c to any selected frame.
+        // Sentinel f32::MAX = "no edge to any selected frame" (isolated - pick last).
+        // Frames with actual edges start at 0.0 and grow.
+        // Pick the frame with MINIMUM max_sim:
+        //   low max_sim = not similar to even its closest selected neighbour = most diverse.
+        let sentinel = f32::MAX;
+        let mut max_sim = vec![sentinel; n];
+
+        // Initialise from seed frames.
+        for &seed in &selected {
+            for candidate in 0..n as FrameId {
+                if in_selected[candidate as usize] {
+                    continue;
+                }
+                if let Some(sim) =
+                    self.pairwise_similarity(candidate, seed, has_markers)
+                {
+                    let cur = &mut max_sim[candidate as usize];
+                    if *cur == sentinel {
+                        *cur = sim;
+                    } else {
+                        *cur = cur.max(sim);
+                    }
+                }
+            }
+        }
+
+        while selected.len() < target_count {
+            // Prefer connected frames (max_sim != sentinel).
+            // Among connected frames, pick the one with the lowest max_sim (most diverse).
+            // Fall back to any unselected isolated frame when no connected ones remain.
+            let best_connected = (0..n as FrameId)
+                .filter(|&c| {
+                    !in_selected[c as usize] && max_sim[c as usize] != sentinel
+                })
+                .min_by(|&a, &b| {
+                    max_sim[a as usize]
+                        .partial_cmp(&max_sim[b as usize])
+                        .unwrap_or(std::cmp::Ordering::Equal)
+                });
+
+            let best_candidate = best_connected.or_else(|| {
+                (0..n as FrameId).find(|&c| !in_selected[c as usize])
+            });
+
+            let Some(new_frame) = best_candidate else {
+                break;
+            };
+
+            // Update max_sim: adding new_frame to selected can only increase
+            // another frame's maximum similarity to the selected set.
+            for candidate in 0..n as FrameId {
+                let cidx = candidate as usize;
+                if in_selected[cidx] || candidate == new_frame {
+                    continue;
+                }
+                if let Some(sim) =
+                    self.pairwise_similarity(candidate, new_frame, has_markers)
+                {
+                    let cur = &mut max_sim[cidx];
+                    if *cur == sentinel {
+                        *cur = sim;
+                    } else {
+                        *cur = cur.max(sim);
+                    }
+                }
+            }
+
+            in_selected[new_frame as usize] = true;
+            selected.push(new_frame);
+        }
+
+        selected
     }
 
     /// Find the best initial frame pair to start reconstruction.

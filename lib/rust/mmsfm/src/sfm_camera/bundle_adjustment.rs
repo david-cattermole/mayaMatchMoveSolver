@@ -45,7 +45,7 @@ use crate::sfm_camera::bundle_adjustment_utils::{
     collect_observations_ndc, compute_noise_scales,
     convert_and_noise_bundle_positions, convert_and_noise_camera_poses,
     create_basic_dense_solver_config, create_sorted_indices,
-    execute_bundle_adjustment_solver, run_post_ba_validation,
+    execute_bundle_adjustment_solver_schur, run_post_ba_validation,
     run_pre_ba_validation, validate_ba_result,
 };
 use crate::sfm_camera::config::CameraSolveConfig;
@@ -448,7 +448,7 @@ pub fn run_general_bundle_adjustment(
     let solver_config = create_basic_dense_solver_config(max_iterations);
 
     // Run optimization.
-    let result = execute_bundle_adjustment_solver(
+    let result = execute_bundle_adjustment_solver_schur(
         &problem,
         &initial_params,
         &solver_config,

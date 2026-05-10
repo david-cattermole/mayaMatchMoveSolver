@@ -34,6 +34,7 @@ use mmoptimise::solver::levenberg_marquardt::{
     LevenbergMarquardtWorkspace,
 };
 use mmoptimise::sparse::{
+    SchurComplementWorkspace, SchurStructuredProblem,
     SparseLevenbergMarquardtConfig, SparseLevenbergMarquardtSolver,
     SparseLevenbergMarquardtWorkspace,
 };
@@ -482,5 +483,80 @@ where
         BundleAdjustmentSolverType::SchurComplementLM => {
             panic!("execute_bundle_adjustment_solver cannot handle SchurComplementLM; use execute_bundle_adjustment_solver_schur instead")
         }
+    }
+}
+
+/// Run bundle adjustment using the Schur complement solver path.
+///
+/// This function is used when the problem implements `SchurStructuredProblem`,
+/// enabling the Schur complement elimination of 3D point parameters for
+/// faster solves.
+pub fn execute_bundle_adjustment_solver_schur<P>(
+    problem: &P,
+    initial_params: &[f64],
+    solver_config: &LevenbergMarquardtConfig,
+    solver_type: &BundleAdjustmentSolverType,
+    debug_prefix: &str,
+) -> Result<mmoptimise::solver::common::OptimisationResult>
+where
+    P: OptimisationProblem
+        + mmoptimise::sparse::SparseOptimisationProblem
+        + SchurStructuredProblem,
+{
+    // TODO: The SparseLevenbergMarquardtConfig construction below is
+    // duplicated from execute_bundle_adjustment_solver. Extract into
+    // a shared helper function.
+    match solver_type {
+        BundleAdjustmentSolverType::SchurComplementLM => {
+            mm_eprintln_debug!(
+                "  {} Using Schur complement Levenberg-Marquardt solver",
+                debug_prefix
+            );
+
+            let sparse_lm_config = SparseLevenbergMarquardtConfig {
+                max_iterations: solver_config.max_iterations,
+                max_function_evaluations: solver_config
+                    .max_function_evaluations,
+                function_tolerance: solver_config.function_tolerance,
+                parameter_tolerance: solver_config.parameter_tolerance,
+                gradient_tolerance: solver_config.gradient_tolerance,
+                ..Default::default()
+            };
+
+            let observations: Vec<(usize, usize)> = (0..problem
+                .num_observations())
+                .map(|i| problem.observation_structure(i))
+                .collect();
+            let camera_unlocked: Vec<bool> = (0..problem.num_cameras())
+                .map(|i| problem.is_camera_unlocked(i))
+                .collect();
+            let point_unlocked: Vec<bool> = (0..problem.num_points())
+                .map(|i| problem.is_point_unlocked(i))
+                .collect();
+
+            let mut schur_ws = SchurComplementWorkspace::new(
+                problem.num_cameras(),
+                problem.num_points(),
+                problem.camera_block_size(),
+                problem.point_block_size(),
+                &observations,
+                &camera_unlocked,
+                &point_unlocked,
+            );
+
+            let solver = SparseLevenbergMarquardtSolver::new(sparse_lm_config);
+            let mut workspace = SparseLevenbergMarquardtWorkspace::new(
+                problem,
+                initial_params,
+            )?;
+            solver.solve_problem_schur(problem, &mut workspace, &mut schur_ws)
+        }
+        _ => execute_bundle_adjustment_solver(
+            problem,
+            initial_params,
+            solver_config,
+            solver_type,
+            debug_prefix,
+        ),
     }
 }

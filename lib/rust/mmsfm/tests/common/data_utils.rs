@@ -42,10 +42,59 @@ const DEBUG: bool = false;
 pub use mmsfm_rust::visualization::FramePair;
 
 /// Loads marker data from a uvtrack file.
+///
+/// Applies two data-quality fixes before returning:
+///
+/// 1. **Coordinate promotion** – when a file was exported without
+///    undistortion (`pos` is all-zero but `pos_dist` has real data),
+///    the distorted coordinates are promoted to `u_coords`/`v_coords`.
+///
+/// 2. **Single-frame filter** – markers visible in only one frame
+///    cannot contribute to triangulation and are removed.
 pub fn load_marker_data(file_name: &str) -> Result<(MarkersData, FrameRange)> {
     let data_dir = find_data_dir()?;
     let in_file_path = construct_uvtrack_input_file_path(&data_dir, file_name)?;
-    let (_file_info, markers) = parse_file(&in_file_path)?;
+    let (_file_info, mut markers) = parse_file(&in_file_path)?;
+
+    // Promote distorted coords when the primary coords were not exported.
+    for frame_data in &mut markers.frame_data {
+        let all_zero = frame_data.u_coords.iter().all(|&u| u == 0.0)
+            && frame_data.v_coords.iter().all(|&v| v == 0.0);
+        let has_dist = !frame_data.u_coords_dist.is_empty()
+            && frame_data.u_coords_dist.len() == frame_data.u_coords.len();
+        if all_zero && has_dist {
+            frame_data
+                .u_coords
+                .copy_from_slice(&frame_data.u_coords_dist);
+            frame_data
+                .v_coords
+                .copy_from_slice(&frame_data.v_coords_dist);
+        }
+    }
+
+    // Remove markers visible in only a single frame — they cannot be
+    // triangulated and only add noise to marker selection.
+    let keep: Vec<bool> = markers
+        .frame_data
+        .iter()
+        .map(|fd| fd.frames.len() > 1)
+        .collect();
+    if keep.iter().any(|&k| !k) {
+        let mut new_markers =
+            MarkersData::with_capacity(keep.iter().filter(|&&k| k).count());
+        for (i, keep_i) in keep.iter().enumerate() {
+            if *keep_i {
+                new_markers.push_marker_full(
+                    markers.names[i].clone(),
+                    markers.frame_data[i].clone(),
+                    markers.set_names[i].clone(),
+                    markers.ids[i].clone(),
+                    markers.point_3d[i].clone(),
+                );
+            }
+        }
+        markers = new_markers;
+    }
 
     let mut min_frame = u32::MAX;
     let mut max_frame = 0;

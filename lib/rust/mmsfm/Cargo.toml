@@ -32,6 +32,10 @@ approx = { workspace = true }
 criterion = { workspace = true }
 rayon = { workspace = true }
 
+[[bench]]
+name = "bench_camera_solve"
+harness = false
+
 [lints.clippy]
 # Complexity checks.
 too_many_arguments = "warn"

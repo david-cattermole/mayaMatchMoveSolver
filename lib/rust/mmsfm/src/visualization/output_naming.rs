@@ -70,6 +70,7 @@ impl DataCondition {
 pub enum NamingSolverType {
     DenseLM,
     SparseLevenbergMarquardt,
+    SchurComplementLM,
 }
 
 impl NamingSolverType {
@@ -77,6 +78,7 @@ impl NamingSolverType {
         match self {
             NamingSolverType::DenseLM => "dense_lm",
             NamingSolverType::SparseLevenbergMarquardt => "sparse_lm",
+            NamingSolverType::SchurComplementLM => "schur_lm",
         }
     }
 }
@@ -88,6 +90,9 @@ pub fn bundle_adjustment_solver_type_to_naming(
         BundleAdjustmentSolverType::DenseLM => NamingSolverType::DenseLM,
         BundleAdjustmentSolverType::SparseLevenbergMarquardt => {
             NamingSolverType::SparseLevenbergMarquardt
+        }
+        BundleAdjustmentSolverType::SchurComplementLM => {
+            NamingSolverType::SchurComplementLM
         }
     }
 }

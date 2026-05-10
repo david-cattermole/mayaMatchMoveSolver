@@ -154,6 +154,12 @@ pub enum BundleAdjustmentSolverType {
     DenseLM,
     /// Sparse Levenberg-Marquardt with direct CHOLMOD factorization.
     SparseLevenbergMarquardt,
+    /// Sparse Levenberg-Marquardt with Schur complement elimination.
+    /// Exploits the block structure of bundle adjustment problems
+    /// to eliminate 3D point parameters first, solving a much smaller
+    /// camera-only system. Faster than SparseLevenbergMarquardt when
+    /// the number of 3D points is much larger than the number of cameras.
+    SchurComplementLM,
 }
 
 /// Global adjustment mode for focal length optimization.

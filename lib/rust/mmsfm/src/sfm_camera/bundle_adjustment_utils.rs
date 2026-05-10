@@ -479,5 +479,8 @@ where
             )?;
             solver.solve_problem(problem, &mut workspace)
         }
+        BundleAdjustmentSolverType::SchurComplementLM => {
+            panic!("execute_bundle_adjustment_solver cannot handle SchurComplementLM; use execute_bundle_adjustment_solver_schur instead")
+        }
     }
 }

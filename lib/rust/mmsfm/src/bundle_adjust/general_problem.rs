@@ -651,3 +651,81 @@ impl mmoptimise::sparse::SparseOptimisationProblem
         self.sparsity_pattern.observation_map.len() * 2
     }
 }
+
+// Implementation of SchurStructuredProblem for Schur complement
+// solver path.
+impl mmoptimise::sparse::SchurStructuredProblem
+    for GeneralBundleAdjustmentProblem
+{
+    fn num_cameras(&self) -> usize {
+        self.num_cameras
+    }
+
+    fn num_points(&self) -> usize {
+        self.num_points
+    }
+
+    fn camera_block_size(&self) -> usize {
+        6
+    }
+
+    fn point_block_size(&self) -> usize {
+        3
+    }
+
+    fn observation_structure(&self, obs_idx: usize) -> (usize, usize) {
+        self.sparsity_pattern.observation_map[obs_idx]
+    }
+
+    fn num_observations(&self) -> usize {
+        self.sparsity_pattern.observation_map.len()
+    }
+
+    fn is_camera_unlocked(&self, _idx: usize) -> bool {
+        true // All cameras unlocked in general BA.
+    }
+
+    fn is_point_unlocked(&self, _idx: usize) -> bool {
+        true // All points unlocked in general BA.
+    }
+
+    fn compute_jacobian_blocks(
+        &self,
+        parameters: &[f64],
+        out_residuals: &mut [f64],
+        out_camera_blocks: &mut [f64],
+        out_point_blocks: &mut [f64],
+    ) -> Result<()> {
+        // Compute residuals.
+        self.residuals(parameters, out_residuals)?;
+
+        // Compute Jacobian blocks using existing dual-number method.
+        let mut jacobian_blocks = SparseJacobianBlocks::<f64>::new();
+        self.sparse_jacobian_blocks(parameters, &mut jacobian_blocks)?;
+
+        // Copy blocks into flat output arrays (row-major layout).
+        for (obs_idx, &(_residual_idx, camera_block, point_block)) in
+            jacobian_blocks.blocks.iter().enumerate()
+        {
+            // Camera block: 2x6 -> flat row-major, 12 values.
+            let jc_start = obs_idx * 2 * 6;
+            for row in 0..2 {
+                for col in 0..6 {
+                    out_camera_blocks[jc_start + row * 6 + col] =
+                        camera_block[row][col];
+                }
+            }
+
+            // Point block: 2x3 -> flat row-major, 6 values.
+            let jp_start = obs_idx * 2 * 3;
+            for row in 0..2 {
+                for col in 0..3 {
+                    out_point_blocks[jp_start + row * 3 + col] =
+                        point_block[row][col];
+                }
+            }
+        }
+
+        Ok(())
+    }
+}

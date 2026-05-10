@@ -35,7 +35,8 @@ use super::bundle_adjustment::run_two_camera_bundle_adjustment;
 use super::camera_pnp::collect_all_camera_pnp_results;
 use super::config::{CameraSolveConfig, SolveQuality, SolveQualityMetrics};
 use super::constants::{
-    ORIGIN_FRAME_TOLERANCE_PIXELS, SKELETON_DENSIFY_ITERATIONS,
+    ORIGIN_FRAME_TOLERANCE_PIXELS, RECOMENDED_MARKERS_FOR_PNP,
+    SKELETON_DENSIFY_ITERATIONS,
 };
 use super::frame_graph::FrameGraph;
 use super::frame_score::analyze_frame_scoring_and_marker_selection;
@@ -46,7 +47,7 @@ use super::reprojection::{
 use super::solve_frame_selection::find_best_next_unsolved_frames;
 use super::solve_frame_selection::{
     build_frame_graph_for_full_range, build_frame_graph_skeleton_frames,
-    find_best_frame_pair,
+    find_best_frame_pair, find_next_frames_by_solvability,
 };
 use super::solve_retriangulate::expand_marker_selection_and_retriangulate;
 use super::solve_timing::RoundTimingData;
@@ -198,14 +199,38 @@ fn run_incremental_loop<L: Logger>(
         }
 
         // Select frames to attempt this round.
+        //
+        // Draft pass (final_rounds=false): Approach E - order by count of
+        // visible triangulated bundles so the most-solvable frame is always
+        // attempted first. Re-evaluated every round so newly triangulated
+        // bundles are reflected immediately.
+        //
+        // Final pass (final_rounds=true): fall back to skeleton/max-diversity
+        // ordering for frames that were not solvable during the draft pass.
         let (unsolved_frames, skeleton_frames_tried): (Vec<FrameNumber>, bool) =
-            find_best_next_unsolved_frames(
-                scene_frame_range,
-                &solved_frames,
-                frame_graph,
-                skeleton_frame_numbers,
-                final_rounds,
-            );
+            if !final_rounds {
+                let candidates = find_next_frames_by_solvability(
+                    scene_frame_range,
+                    &solved_frames,
+                    observations,
+                    bundle_positions,
+                    marker_indices,
+                    RECOMENDED_MARKERS_FOR_PNP,
+                    scene_frame_range.frame_count() as usize,
+                    skeleton_frame_numbers, // restrict to skeleton: diverse subset only
+                );
+                // skeleton_frames_tried=true so that empty->switch to final pass.
+                (candidates, true)
+            } else {
+                (
+                    find_best_next_unsolved_frames(
+                        scene_frame_range,
+                        &solved_frames,
+                        frame_graph,
+                    ),
+                    false,
+                )
+            };
 
         if DEBUG {
             let formatted_unsolved_frames = format_frame_list(&unsolved_frames);
@@ -275,11 +300,14 @@ fn run_incremental_loop<L: Logger>(
 
         // If skeleton frames were tried but none succeeded, stop
         // this loop so the caller can decide what to do next
-        // (e.g. run a second pass without skeleton).
+        // (e.g. run the final pass for all remaining frames).
+        // Skeleton frames that can't be PnP-solved (insufficient
+        // triangulated bundles visible) are simply skipped here;
+        // the final pass will handle all remaining frames.
         if skeleton_frames_tried && cameras_added_this_round == 0 {
             mm_log_debug!(
                 logger,
-                "  Skeleton frames failed to add cameras - stopping loop."
+                "  Skeleton frames failed to add cameras - stopping draft loop."
             );
             break;
         }
@@ -330,56 +358,65 @@ fn run_incremental_loop<L: Logger>(
                 ),
             );
         }
-        *previous_stats = Some(stats);
+        *previous_stats = Some(stats.clone());
 
         // Bundle Adjustment.
-        mm_log_debug!(
-            logger,
-            "\n  Round {} ({}): Running global bundle adjustment...",
-            round_number,
-            pass_label
-        );
-        let ba_start = Instant::now();
-        let validation_config = BundleValidationConfig::default();
-        run_general_bundle_adjustment(
-            markers,
-            camera_poses,
-            bundle_positions,
-            camera_intrinsics,
-            image_size,
-            config.bundle_iter_num,
-            config,
-            Some(&validation_config),
-            Some(&validation_config),
-        )?;
-        let ba_duration = ba_start.elapsed();
-        total_phase3_ba_duration += ba_duration;
-
-        // Calculate reprojection errors after global bundle
-        // adjustment.
-        let stats = calculate_reprojection_errors(
-            &format!("Round {} - After Global Bundle Adjustment", round_number),
-            markers,
-            marker_indices,
-            camera_poses,
-            bundle_positions,
-            camera_intrinsics,
-            image_size,
-            previous_stats.as_ref(),
-        );
-        if PROGRESS && print_summary {
-            progress_row(
+        let ba_duration = if final_rounds == false {
+            let ba_start = Instant::now();
+            mm_log_debug!(
                 logger,
-                3,
-                solve_start,
-                stats.mean,
-                stats.median,
-                camera_poses.len(),
-                bundle_positions.len(),
-                &format!("Round {} ({}): BA", round_number, pass_label),
+                "\n  Round {} ({}): Running global bundle adjustment...",
+                round_number,
+                pass_label
             );
-        }
-        *previous_stats = Some(stats.clone());
+            let validation_config = BundleValidationConfig::default();
+            run_general_bundle_adjustment(
+                markers,
+                camera_poses,
+                bundle_positions,
+                camera_intrinsics,
+                image_size,
+                config.bundle_iter_num,
+                config,
+                Some(&validation_config),
+                Some(&validation_config),
+            )?;
+            let ba_duration = ba_start.elapsed();
+            total_phase3_ba_duration += ba_duration;
+
+            // Calculate reprojection errors after global bundle
+            // adjustment.
+            let stats = calculate_reprojection_errors(
+                &format!(
+                    "Round {} - After Global Bundle Adjustment",
+                    round_number
+                ),
+                markers,
+                marker_indices,
+                camera_poses,
+                bundle_positions,
+                camera_intrinsics,
+                image_size,
+                previous_stats.as_ref(),
+            );
+            if PROGRESS && print_summary {
+                progress_row(
+                    logger,
+                    3,
+                    solve_start,
+                    stats.mean,
+                    stats.median,
+                    camera_poses.len(),
+                    bundle_positions.len(),
+                    &format!("Round {} ({}): BA", round_number, pass_label),
+                );
+            }
+            *previous_stats = Some(stats.clone());
+
+            ba_duration
+        } else {
+            Duration::ZERO
+        };
 
         // Write intermediate results in the background if a writer
         // is configured.
@@ -830,9 +867,16 @@ pub fn camera_solve_inner<L: Logger>(
             logger,
             "  Building frame graph for Phase 3 frame selection..."
         );
+        // Use ALL markers for frame graph construction (not just the
+        // selected subset). The selected markers are optimized for the
+        // initial pair region and may not cover the full sequence.
+        // The frame graph needs full-sequence connectivity to build a
+        // skeleton that spans all frames.
+        let all_marker_indices: Vec<usize> =
+            (0..markers.frame_data.len()).collect();
         let frame_graph_for_phase3 = Some(build_frame_graph_for_full_range(
             markers,
-            &marker_indices,
+            &all_marker_indices,
             &scene_frame_range,
         ));
 

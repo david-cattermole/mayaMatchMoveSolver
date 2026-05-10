@@ -92,6 +92,7 @@ pub mod camera_poses;
 pub mod camera_to_scene_correspondence;
 pub mod common;
 pub mod conversions;
+pub mod frame_marker_index;
 pub mod image_size;
 pub mod marker_observations;
 pub mod millimeter_unit;
@@ -116,6 +117,7 @@ pub use camera_intrinsics::CameraIntrinsics;
 pub use camera_pose::{is_valid_pose, CameraPose};
 pub use camera_poses::CameraPoses;
 pub use camera_to_scene_correspondence::CameraToSceneCorrespondence;
+pub use frame_marker_index::{FrameMarkerIndex, FrameMarkerIndexBuilder};
 pub use image_size::ImageSize;
 pub use marker_observations::MarkerObservations;
 pub use millimeter_unit::{

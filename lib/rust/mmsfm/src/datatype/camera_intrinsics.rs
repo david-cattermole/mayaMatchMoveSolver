@@ -760,7 +760,7 @@ mod tests {
 
         assert_relative_eq!(horizontal_fov_deg, 46.8, epsilon = 0.1);
         println!(
-            "STA dataset: {}mm focal length = {:.1}° horizontal FoV",
+            "STA dataset: {}mm focal length = {:.1}deg horizontal FoV",
             41.6, horizontal_fov_deg
         );
     }
@@ -777,7 +777,7 @@ mod tests {
 
         assert_relative_eq!(horizontal_fov_deg, 22.4, epsilon = 0.1);
         println!(
-            "Opera House dataset: {}mm focal length = {:.1}° horizontal FoV",
+            "Opera House dataset: {}mm focal length = {:.1}deg horizontal FoV",
             91.0, horizontal_fov_deg
         );
     }
@@ -834,7 +834,7 @@ mod tests {
             // Additional assertion for better error messages.
             if (actual_fov_deg - expected_fov_deg).abs() > 0.2 {
                 panic!(
-                    "{}mm lens should have ~{:.1}° FoV, got {:.1}°",
+                    "{}mm lens should have ~{:.1}deg FoV, got {:.1}deg",
                     focal_mm, expected_fov_deg, actual_fov_deg
                 );
             }

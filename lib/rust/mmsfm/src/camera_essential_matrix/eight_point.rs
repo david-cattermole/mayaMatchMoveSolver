@@ -421,7 +421,7 @@ mod tests {
             .compute_essential_matrix(&correspondences)
             .unwrap();
 
-        // For pure translation, E should be anti-symmetric: E + E^T ≈ 0.
+        // For pure translation, E should be anti-symmetric: E + E^T ~= 0.
         let transpose = essential_matrix.transpose();
         let antisymmetric_test = &essential_matrix + &transpose;
         assert!(

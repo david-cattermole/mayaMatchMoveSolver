@@ -846,7 +846,7 @@ pub fn compute_parallax_residual(
     // Fit similarity transform (translation + rotation + uniform scale).
     //
     // Compute cross-covariance matrix elements and scale factors directly
-    // from centered coordinates — no intermediate Vec allocation.
+    // from centered coordinates - no intermediate Vec allocation.
     let mut sum_xx = 0.0f32;
     let mut sum_xy = 0.0f32;
     let mut sum_yx = 0.0f32;
@@ -880,7 +880,7 @@ pub fn compute_parallax_residual(
     let similarity_transform =
         SimilarityTransform2D::new(translation, rotation, scale);
 
-    // Compute residual mean and variance with Welford's online algorithm —
+    // Compute residual mean and variance with Welford's online algorithm -
     // no residuals Vec allocation needed.
     const RESIDUAL_SCALE: f32 = 100.0;
     let residuals = points_a.iter().zip(points_b.iter()).map(|(pa, pb)| {

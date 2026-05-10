@@ -295,7 +295,7 @@ mod tests {
         let idx = build_simple();
         let mut out_coords_a = Vec::new();
         let mut out_coords_b = Vec::new();
-        // Frame 0 ∩ Frame 1 = markers {3, 5}
+        // Frame 0 intersection Frame 1 = markers {3, 5}
         idx.intersect_coords(0, 1, &mut out_coords_a, &mut out_coords_b);
         assert_eq!(out_coords_a, vec![(0.3, 0.4), (0.5, 0.6)]);
         assert_eq!(out_coords_b, vec![(0.31, 0.41), (0.51, 0.61)]);
@@ -331,7 +331,7 @@ mod tests {
 
         let mut a = vec![(9.0f32, 9.0f32); 5];
         let mut b = vec![(9.0f32, 9.0f32); 5];
-        idx.intersect_coords(0, 2, &mut a, &mut b); // frame 2 is empty → no intersection
+        idx.intersect_coords(0, 2, &mut a, &mut b); // frame 2 is empty -> no intersection
         assert!(a.is_empty());
         assert!(b.is_empty());
     }

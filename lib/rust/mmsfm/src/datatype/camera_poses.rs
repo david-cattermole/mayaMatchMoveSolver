@@ -106,7 +106,7 @@ impl CameraPoses {
     }
 
     pub fn generate_sorted_frame_list(&self) -> Vec<FrameNumber> {
-        // Already sorted — just clone.
+        // Already sorted - just clone.
         self.inner.keys().copied().collect()
     }
 }

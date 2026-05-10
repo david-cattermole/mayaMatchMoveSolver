@@ -20,9 +20,7 @@
 
 use anyhow::Result;
 
-use mmcore::statistics::{
-    calc_population_variance, UnsortedDataSlice, UnsortedDataSliceOps,
-};
+use mmcore::statistics::welford_population_variance;
 use mmio::uvtrack_reader::{FrameData, FrameNumber, FrameRange, MarkersData};
 
 use crate::sfm_camera::constants::UNIFORMITY_GRID_SIZE_MAX;
@@ -833,93 +831,71 @@ pub fn compute_parallax_residual(
     assert!(!points_a.is_empty());
     assert!(!points_b.is_empty());
 
-    // Fit similarity transform (translation + rotation + scale).
-    let similarity_transform = if points_a.len() < 2 {
-        SimilarityTransform2D::new((0.0, 0.0), 0.0, 1.0)
-    } else {
-        // Compute centroids.
-        let centroid_a = {
-            let sum_x: f32 = points_a.iter().map(|p| p.0).sum();
-            let sum_y: f32 = points_a.iter().map(|p| p.1).sum();
-            let n = points_a.len() as f32;
-            (sum_x / n, sum_y / n)
-        };
+    let n = points_a.len() as f32;
 
-        let centroid_b = {
-            let sum_x: f32 = points_b.iter().map(|p| p.0).sum();
-            let sum_y: f32 = points_b.iter().map(|p| p.1).sum();
-            let n = points_b.len() as f32;
-            (sum_x / n, sum_y / n)
-        };
-
-        // Center point sets.
-        let centered_a: Vec<(f32, f32)> = points_a
-            .iter()
-            .map(|p| (p.0 - centroid_a.0, p.1 - centroid_a.1))
-            .collect();
-        let centered_b: Vec<(f32, f32)> = points_b
-            .iter()
-            .map(|p| (p.0 - centroid_b.0, p.1 - centroid_b.1))
-            .collect();
-
-        // Compute cross-covariance matrix elements and scale factors.
-        let mut sum_xx = 0.0f32;
-        let mut sum_xy = 0.0f32;
-        let mut sum_yx = 0.0f32;
-        let mut sum_yy = 0.0f32;
-        let mut sq_sum_a = 0.0f32;
-        let mut sq_sum_b = 0.0f32;
-
-        for (pa, pb) in centered_a.iter().zip(centered_b.iter()) {
-            sum_xx += pa.0 * pb.0;
-            sum_xy += pa.0 * pb.1;
-            sum_yx += pa.1 * pb.0;
-            sum_yy += pa.1 * pb.1;
-            sq_sum_a += pa.0 * pa.0 + pa.1 * pa.1;
-            sq_sum_b += pb.0 * pb.0 + pb.1 * pb.1;
-        }
-
-        // Rotation angle from cross-correlation matrix.
-        let rotation = f32::atan2(sum_xy - sum_yx, sum_xx + sum_yy);
-
-        // Scale factor from the ratio of point cloud magnitudes.
-        let scale = if sq_sum_a > 0.0 {
-            (sq_sum_b / sq_sum_a).sqrt()
-        } else {
-            1.0
-        };
-
-        // Translation is difference in centroids.
-        let translation =
-            (centroid_b.0 - centroid_a.0, centroid_b.1 - centroid_a.1);
-
-        SimilarityTransform2D::new(translation, rotation, scale)
-    };
-
-    // Compute residuals after similarity transform compensation.
-    let residuals: Vec<f32> = points_a
+    // Compute centroids in one pass each.
+    let (sum_ax, sum_ay) = points_a
         .iter()
-        .zip(points_b.iter())
-        .map(|(pa, pb)| {
-            let transformed = similarity_transform.transform_point(*pa);
-            const RESIDUAL_SCALE: f32 = 100.0;
-            let dx = (transformed.0 - pb.0) * RESIDUAL_SCALE;
-            let dy = (transformed.1 - pb.1) * RESIDUAL_SCALE;
-            (dx * dx + dy * dy).sqrt()
-        })
-        .collect();
+        .fold((0.0f32, 0.0f32), |(sx, sy), p| (sx + p.0, sy + p.1));
+    let (sum_bx, sum_by) = points_b
+        .iter()
+        .fold((0.0f32, 0.0f32), |(sx, sy), p| (sx + p.0, sy + p.1));
+    let centroid_a = (sum_ax / n, sum_ay / n);
+    let centroid_b = (sum_bx / n, sum_by / n);
 
-    // Compute mean and variance of the residuals.
-    let data_slice = UnsortedDataSlice::new(&residuals, None)
-        .expect("residuals should be valid");
-    let mean = data_slice.mean();
-    let variance = calc_population_variance(&data_slice)
-        .expect("population variance should be computable");
+    // Fit similarity transform (translation + rotation + uniform scale).
+    //
+    // Compute cross-covariance matrix elements and scale factors directly
+    // from centered coordinates — no intermediate Vec allocation.
+    let mut sum_xx = 0.0f32;
+    let mut sum_xy = 0.0f32;
+    let mut sum_yx = 0.0f32;
+    let mut sum_yy = 0.0f32;
+    let mut sq_sum_a = 0.0f32;
+    let mut sq_sum_b = 0.0f32;
+
+    for (pa, pb) in points_a.iter().zip(points_b.iter()) {
+        let ca = (pa.0 - centroid_a.0, pa.1 - centroid_a.1);
+        let cb = (pb.0 - centroid_b.0, pb.1 - centroid_b.1);
+        sum_xx += ca.0 * cb.0;
+        sum_xy += ca.0 * cb.1;
+        sum_yx += ca.1 * cb.0;
+        sum_yy += ca.1 * cb.1;
+        sq_sum_a += ca.0 * ca.0 + ca.1 * ca.1;
+        sq_sum_b += cb.0 * cb.0 + cb.1 * cb.1;
+    }
+
+    // Rotation angle from cross-correlation matrix.
+    let rotation = f32::atan2(sum_xy - sum_yx, sum_xx + sum_yy);
+    // Scale from ratio of point cloud magnitudes.
+    let scale = if sq_sum_a > 0.0 {
+        (sq_sum_b / sq_sum_a).sqrt()
+    } else {
+        1.0
+    };
+    // Translation is the centroid difference.
+    let translation =
+        (centroid_b.0 - centroid_a.0, centroid_b.1 - centroid_a.1);
+
+    let similarity_transform =
+        SimilarityTransform2D::new(translation, rotation, scale);
+
+    // Compute residual mean and variance with Welford's online algorithm —
+    // no residuals Vec allocation needed.
+    const RESIDUAL_SCALE: f32 = 100.0;
+    let residuals = points_a.iter().zip(points_b.iter()).map(|(pa, pb)| {
+        let transformed = similarity_transform.transform_point(*pa);
+        let dx = (transformed.0 - pb.0) * RESIDUAL_SCALE;
+        let dy = (transformed.1 - pb.1) * RESIDUAL_SCALE;
+        (dx * dx + dy * dy).sqrt()
+    });
+    let (residual_mean, variance) =
+        welford_population_variance(residuals).unwrap_or((0.0, 0.0));
 
     // Use both mean and variance for the score. Higher variance indicates
     // more "structure" in the residual (parallax), rather than just
     // uniform noise or misalignment.
-    mean.abs() * variance.abs()
+    residual_mean.abs() * variance.abs()
 }
 
 pub fn analyze_frame_scoring_and_marker_selection(

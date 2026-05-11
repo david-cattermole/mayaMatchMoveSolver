@@ -20,6 +20,7 @@
 
 //! Centralized output file naming for mmsfm visualizations.
 
+use anyhow::Context;
 use anyhow::Result;
 use std::path::PathBuf;
 
@@ -336,7 +337,12 @@ impl OutputFileNaming {
         let dir_path = self.directory_path()?;
 
         if !dir_path.exists() {
-            std::fs::create_dir_all(&dir_path)?;
+            std::fs::create_dir_all(&dir_path).with_context(|| {
+                format!(
+                    "Failed to create output directory: {}",
+                    dir_path.display()
+                )
+            })?;
         }
 
         let mut path = dir_path;

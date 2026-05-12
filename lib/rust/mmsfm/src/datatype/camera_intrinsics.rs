@@ -93,8 +93,10 @@ impl CameraIntrinsics {
         film_back: CameraFilmBack<f64>,
     ) -> Self {
         // Normalize focal lengths by film back dimensions.
-        let focal_length_x = focal_length_mm.value() / film_back.width.value();
-        let focal_length_y = focal_length_mm.value() / film_back.height.value();
+        let focal_length_x =
+            focal_length_mm.value() / film_back.width_mm.value();
+        let focal_length_y =
+            focal_length_mm.value() / film_back.height_mm.value();
 
         // Convert lens center from film back coordinates to NDC coordinates.
         //
@@ -104,10 +106,10 @@ impl CameraIntrinsics {
         // normalize by film back dimensions and scale by 2.
         let principal_point = NdcPoint2::new(
             NdcValue::new(
-                (2.0 * lens_center_x_mm.value()) / film_back.width.value(),
+                (2.0 * lens_center_x_mm.value()) / film_back.width_mm.value(),
             ),
             NdcValue::new(
-                (2.0 * lens_center_y_mm.value()) / film_back.height.value(),
+                (2.0 * lens_center_y_mm.value()) / film_back.height_mm.value(),
             ),
         );
 
@@ -160,7 +162,7 @@ impl CameraIntrinsics {
         // Convert normalized focal length back to millimeters.
         // We use focal_length_x since both should give the same physical focal length.
         let focal_length_mm = MillimeterUnit::new(
-            self.focal_length_x * self.film_back.width.value(),
+            self.focal_length_x * self.film_back.width_mm.value(),
         );
 
         // Convert NDC principal point back to lens center coordinates.
@@ -168,11 +170,13 @@ impl CameraIntrinsics {
         // In NDC space, (0,0) is center with range [-1,1], so we
         // scale by film back dimensions and divide by 2.
         let lens_center_x_mm = MillimeterUnit::new(
-            self.principal_point.x.value() * self.film_back.width.value() * 0.5,
+            self.principal_point.x.value()
+                * self.film_back.width_mm.value()
+                * 0.5,
         );
         let lens_center_y_mm = MillimeterUnit::new(
             self.principal_point.y.value()
-                * self.film_back.height.value()
+                * self.film_back.height_mm.value()
                 * 0.5,
         );
 
@@ -184,7 +188,9 @@ impl CameraIntrinsics {
     /// # Returns
     /// Horizontal focal length in millimeters.
     pub fn horizontal_focal_length_mm(&self) -> MillimeterUnit<f64> {
-        MillimeterUnit::new(self.focal_length_x * self.film_back.width.value())
+        MillimeterUnit::new(
+            self.focal_length_x * self.film_back.width_mm.value(),
+        )
     }
 
     /// Calculate the vertical focal length in millimeters.
@@ -192,7 +198,9 @@ impl CameraIntrinsics {
     /// # Returns
     /// Vertical focal length in millimeters.
     pub fn vertical_focal_length_mm(&self) -> MillimeterUnit<f64> {
-        MillimeterUnit::new(self.focal_length_y * self.film_back.height.value())
+        MillimeterUnit::new(
+            self.focal_length_y * self.film_back.height_mm.value(),
+        )
     }
 
     /// Calculate the horizontal field of view in radians.
@@ -205,8 +213,8 @@ impl CameraIntrinsics {
         // focal_length_x is normalized by width, so we need the actual focal
         // length in mm.
         let focal_length_mm =
-            self.focal_length_x * self.film_back.width.value();
-        2.0 * (self.film_back.width.value() / (2.0 * focal_length_mm)).atan()
+            self.focal_length_x * self.film_back.width_mm.value();
+        2.0 * (self.film_back.width_mm.value() / (2.0 * focal_length_mm)).atan()
     }
 
     /// Calculate the horizontal field of view in degrees.
@@ -224,8 +232,9 @@ impl CameraIntrinsics {
     pub fn vertical_fov_radians(&self) -> f64 {
         // FoV = 2 * arctan(sensor_height / (2 * focal_length))
         let focal_length_mm =
-            self.focal_length_y * self.film_back.height.value();
-        2.0 * (self.film_back.height.value() / (2.0 * focal_length_mm)).atan()
+            self.focal_length_y * self.film_back.height_mm.value();
+        2.0 * (self.film_back.height_mm.value() / (2.0 * focal_length_mm))
+            .atan()
     }
 
     /// Calculate the vertical field of view in degrees.
@@ -242,13 +251,13 @@ impl CameraIntrinsics {
     /// Diagonal field of view angle in radians
     pub fn diagonal_fov_radians(&self) -> f64 {
         // Calculate diagonal sensor dimension.
-        let diagonal_mm = (self.film_back.width.value().powi(2)
-            + self.film_back.height.value().powi(2))
+        let diagonal_mm = (self.film_back.width_mm.value().powi(2)
+            + self.film_back.height_mm.value().powi(2))
         .sqrt();
 
         // Use horizontal focal length for diagonal calculation.
         let focal_length_mm =
-            self.focal_length_x * self.film_back.width.value();
+            self.focal_length_x * self.film_back.width_mm.value();
         2.0 * (diagonal_mm / (2.0 * focal_length_mm)).atan()
     }
 
@@ -295,8 +304,8 @@ mod tests {
             -0.4,
             epsilon = 1e-10
         );
-        assert_eq!(intrinsics.film_back.width.value(), 36.0);
-        assert_eq!(intrinsics.film_back.height.value(), 24.0);
+        assert_eq!(intrinsics.film_back.width_mm.value(), 36.0);
+        assert_eq!(intrinsics.film_back.height_mm.value(), 24.0);
     }
 
     #[test]

@@ -141,8 +141,8 @@ fn write_mmcamera_output_inner(
     let (focal_length_mm, _lens_cx, _lens_cy) =
         camera_intrinsics.to_physical_parameters();
     let focal_length_val = focal_length_mm.value();
-    let film_back_width_val = film_back.width.value();
-    let film_back_height_val = film_back.height.value();
+    let film_back_width_val = film_back.width_mm.value();
+    let film_back_height_val = film_back.height_mm.value();
 
     let mut translate_x = Vec::with_capacity(frame_list.len());
     let mut translate_y = Vec::with_capacity(frame_list.len());

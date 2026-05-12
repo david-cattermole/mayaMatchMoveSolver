@@ -56,11 +56,9 @@ use crate::datatype::millimeter_unit::MillimeterUnit;
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct CameraFilmBack<T> {
     /// Width of the film back/sensor in millimeters.
-    // TODO: Change the field name to `width_mm`.
-    pub width: MillimeterUnit<T>,
+    pub width_mm: MillimeterUnit<T>,
     /// Height of the film back/sensor in millimeters.
-    // TODO: Change the field name to `height_mm`.
-    pub height: MillimeterUnit<T>,
+    pub height_mm: MillimeterUnit<T>,
 }
 
 impl<T> CameraFilmBack<T>
@@ -81,11 +79,14 @@ where
     ///     MillimeterUnit::new(36.0),
     ///     MillimeterUnit::new(24.0)
     /// );
-    /// assert_eq!(film_back.width.value(), 36.0);
-    /// assert_eq!(film_back.height.value(), 24.0);
+    /// assert_eq!(film_back.width_mm.value(), 36.0);
+    /// assert_eq!(film_back.height_mm.value(), 24.0);
     /// ```
     pub fn new(width: MillimeterUnit<T>, height: MillimeterUnit<T>) -> Self {
-        Self { width, height }
+        Self {
+            width_mm: width,
+            height_mm: height,
+        }
     }
 
     /// Create a new camera film back from raw millimeter values.
@@ -99,13 +100,13 @@ where
     /// use mmsfm_rust::datatype::*;
     ///
     /// let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
-    /// assert_eq!(film_back.width.value(), 36.0);
-    /// assert_eq!(film_back.height.value(), 24.0);
+    /// assert_eq!(film_back.width_mm.value(), 36.0);
+    /// assert_eq!(film_back.height_mm.value(), 24.0);
     /// ```
     pub fn from_millimeters(width_mm: T, height_mm: T) -> Self {
         Self {
-            width: MillimeterUnit::new(width_mm),
-            height: MillimeterUnit::new(height_mm),
+            width_mm: MillimeterUnit::new(width_mm),
+            height_mm: MillimeterUnit::new(height_mm),
         }
     }
 }
@@ -132,7 +133,7 @@ where
     /// assert_eq!(square.aspect_ratio(), 1.0);
     /// ```
     pub fn aspect_ratio(&self) -> T {
-        self.width.value() / self.height.value()
+        self.width_mm.value() / self.height_mm.value()
     }
 }
 
@@ -141,7 +142,7 @@ where
     T: fmt::Display + Copy + fmt::Debug + PartialEq,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}mm x {}mm", self.width, self.height)
+        write!(f, "{}mm x {}mm", self.width_mm, self.height_mm)
     }
 }
 
@@ -156,15 +157,15 @@ mod tests {
             MillimeterUnit::new(36.0),
             MillimeterUnit::new(24.0),
         );
-        assert_eq!(film_back.width.value(), 36.0);
-        assert_eq!(film_back.height.value(), 24.0);
+        assert_eq!(film_back.width_mm.value(), 36.0);
+        assert_eq!(film_back.height_mm.value(), 24.0);
     }
 
     #[test]
     fn test_camera_film_back_from_millimeters() {
         let film_back = CameraFilmBack::from_millimeters(36.0, 24.0);
-        assert_eq!(film_back.width.value(), 36.0);
-        assert_eq!(film_back.height.value(), 24.0);
+        assert_eq!(film_back.width_mm.value(), 36.0);
+        assert_eq!(film_back.height_mm.value(), 24.0);
     }
 
     #[test]

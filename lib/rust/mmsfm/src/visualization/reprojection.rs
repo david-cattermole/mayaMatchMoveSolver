@@ -218,8 +218,8 @@ pub fn visualize_marker_reprojections_2d_scatter(
         );
         mm_eprintln_debug!(
             "  Film back A: {:.1}mm x {:.1}mm (aspect: {:.3})",
-            intrinsics_a.film_back.width.value(),
-            intrinsics_a.film_back.height.value(),
+            intrinsics_a.film_back.width_mm.value(),
+            intrinsics_a.film_back.height_mm.value(),
             intrinsics_a.film_back.aspect_ratio()
         );
 
@@ -236,8 +236,8 @@ pub fn visualize_marker_reprojections_2d_scatter(
         );
         mm_eprintln_debug!(
             "  Film back B: {:.1}mm x {:.1}mm (aspect: {:.3})",
-            intrinsics_a.film_back.width.value(),
-            intrinsics_a.film_back.height.value(),
+            intrinsics_a.film_back.width_mm.value(),
+            intrinsics_a.film_back.height_mm.value(),
             intrinsics_a.film_back.aspect_ratio()
         );
 

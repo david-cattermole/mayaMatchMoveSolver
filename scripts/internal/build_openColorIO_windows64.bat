@@ -150,14 +150,6 @@ IF errorlevel 1 GOTO failed_to_install_cpp
 CHDIR "%PROJECT_ROOT%"
 EXIT /b 0
 
-:failed_to_generate_cpp_header
-ECHO Failed to Generate C++ header files from Rust.
-EXIT /b 1
-
-:failed_to_build_rust
-ECHO Failed to build Rust code.
-EXIT /b 1
-
 :failed_to_generate_cpp
 ECHO Failed to generate C++ build files.
 EXIT /b 1

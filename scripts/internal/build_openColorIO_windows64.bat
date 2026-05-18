@@ -140,6 +140,18 @@ SET MMSOLVER_OCIO_NAMESPACE="OpenColorIO_mmSolver"
     %SOURCE_ROOT%
 IF errorlevel 1 GOTO failed_to_generate_cpp
 
+:: Build ZLIB explicitly before the rest of OpenColorIO.
+::
+:: On Windows, OpenColorIO's external project dependency graph can
+:: suffer from a race condition where 'minizip-ng_install' starts
+:: compiling before 'ZLIB_install' has finished installing headers to
+:: 'ext/dist/include'. This leaves minizip-ng unable to find 'zlib.h'.
+::
+:: By building ZLIB first we guarantee the headers are in place before
+:: any dependent target needs them.
+%CMAKE_EXE% --build . --target ZLIB_install
+IF errorlevel 1 GOTO failed_to_build_cpp
+
 %CMAKE_EXE% --build . --parallel
 IF errorlevel 1 GOTO failed_to_build_cpp
 

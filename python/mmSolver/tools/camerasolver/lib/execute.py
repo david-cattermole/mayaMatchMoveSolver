@@ -143,13 +143,17 @@ def _start_solve_process(cmd_args):
     stdout_thread = threading.Thread(
         target=_read_stream,
         args=(proc.stdout, stdout_lines, LOG.info),
-        daemon=True,
     )
     stderr_thread = threading.Thread(
         target=_read_stream,
         args=(proc.stderr, stderr_lines, LOG.warning),
-        daemon=True,
     )
+
+    # Setting the property, rather than an argument to support older
+    # Maya versions (eg. Maya 2020) with Python 2.x.
+    stdout_thread.daemon = True
+    stderr_thread.daemon = True
+
     stdout_thread.start()
     stderr_thread.start()
     return SolveProcess(proc, stdout_thread, stderr_thread, stdout_lines, stderr_lines)

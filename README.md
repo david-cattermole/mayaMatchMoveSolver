@@ -48,6 +48,8 @@ changes.
 
 | Releases                                                                                | Description                                        |
 |-----------------------------------------------------------------------------------------|----------------------------------------------------|
+| [v0.7.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.7.1)   | Improve Camera Solver performance and quality.     |
+| [v0.7.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.7.0)   | Add Camera Solver.                                 |
 | [v0.6.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.6.1)   | Minor bug fix for Simplify Anim Curves tool.       |
 | [v0.6.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.6.0)   | Simplify Anim Curves tool and build system change. |
 | [v0.5.8](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.5.8)   | Bug fix for Solving Maya Rig Nodes.                |

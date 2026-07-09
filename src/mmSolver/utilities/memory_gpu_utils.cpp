@@ -63,6 +63,20 @@ MStatus gpu_memory_usage(size_t &total_memory, size_t &free_memory,
     free_memory = 0;
     used_memory = 0;
 
+    // Guard: if the VP2 renderer isn't available there is no real GPU
+    // (e.g. virtual X11 display / no GPU hardware).  Touching the
+    // legacy MHardwareRenderer below without this check can segfault
+    // when a software OpenGL context is present but has no actual GPU.
+    const MHWRender::MRenderer *vp2_renderer =
+        MHWRender::MRenderer::theRenderer();
+    if (!vp2_renderer) {
+        MMSOLVER_MAYA_WRN(
+            "mmmemorygpu::gpu_memory_usage: "
+            "Failed to get Maya MRenderer! "
+            "Maybe running on a machine without a GPU?");
+        return MStatus::kFailure;
+    }
+
     MGLFunctionTable *gGLFT = nullptr;
     const MHardwareRenderer *hardware_renderer_ptr =
         MHardwareRenderer::theRenderer();
@@ -75,9 +89,10 @@ MStatus gpu_memory_usage(size_t &total_memory, size_t &free_memory,
     }
 
     if (!gGLFT) {
-        MMSOLVER_MAYA_ERR(
+        MMSOLVER_MAYA_WRN(
             "mmmemorygpu::gpu_memory_usage: "
-            "Could not get OpenGL Function Table!");
+            "Could not get OpenGL Function Table! "
+            "Maybe running on a machine without a GPU?");
         return MStatus::kFailure;
     }
 
@@ -136,10 +151,11 @@ MStatus gpu_memory_usage(size_t &total_memory, size_t &free_memory,
                       kilobytes_to_bytes;
         used_memory = total_memory - free_memory;
     } else {
-        MMSOLVER_MAYA_ERR(
+        MMSOLVER_MAYA_WRN(
             "mmmemorygpu::gpu_memory_usage: "
             "Neither GL_NVX_gpu_memory_info nor GL_ATI_meminfo "
-            "extensions are supported on this system.");
+            "extensions are supported on this system. "
+            "Maybe running on a machine without a GPU?");
         status = MStatus::kFailure;
     }
 

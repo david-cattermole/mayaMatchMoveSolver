@@ -31,14 +31,28 @@ LOG = mmSolver.logger.get_logger()
 
 
 def get_gpu_memory_total_bytes():
-    total_bytes = maya.cmds.mmMemoryGPU(query=True, total=True)
+    try:
+        total_bytes = maya.cmds.mmMemoryGPU(query=True, total=True)
+    except RuntimeError:
+        LOG.warning(
+            'mmMemoryGPU: failed to query total GPU memory; '
+            'assuming no GPU is available.'
+        )
+        return 0
     if total_bytes is None:
         return 0
     return int(total_bytes)
 
 
 def get_gpu_memory_used_bytes():
-    used_bytes = maya.cmds.mmMemoryGPU(query=True, used=True)
+    try:
+        used_bytes = maya.cmds.mmMemoryGPU(query=True, used=True)
+    except RuntimeError:
+        LOG.warning(
+            'mmMemoryGPU: failed to query used GPU memory; '
+            'assuming no GPU is available.'
+        )
+        return 0
     if used_bytes is None:
         return 0
     return int(used_bytes)

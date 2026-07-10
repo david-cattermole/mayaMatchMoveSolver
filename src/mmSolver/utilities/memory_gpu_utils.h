@@ -28,6 +28,13 @@
 
 namespace mmmemorygpu {
 
+// Returns true when the MMSOLVER_DISABLE_GPU_CACHE environment
+// variable is set to a non-zero value. When enabled, all GPU memory
+// queries report zero without touching the Maya renderer or OpenGL,
+// because doing so can crash (SIGSEGV) on machines with a display but
+// no (working) GPU, such as a virtual X11 session.
+bool memory_queries_disabled_via_env_var();
+
 MStatus memory_total_size_in_bytes(size_t &out_size_in_bytes);
 MStatus memory_used_size_in_bytes(size_t &out_size_in_bytes);
 MStatus memory_free_size_in_bytes(size_t &out_size_in_bytes);

@@ -296,7 +296,11 @@ void ImageCache::set_gpu_capacity_bytes(
     // If we are at capacity remove the least recently used items
     // until our capacity is under 'new_used_bytes' or we reach the minimum
     // number of items
-    while (!m_gpu_item_map.empty() &&
+    //
+    // The texture manager may be nullptr on machines without a
+    // (working) GPU; that is safe because the GPU cache is empty on
+    // such machines, so no eviction is ever needed.
+    while ((texture_manager != nullptr) && !m_gpu_item_map.empty() &&
            (m_gpu_item_map.size() > m_gpu_item_count_minumum) &&
            (m_gpu_used_bytes > m_gpu_capacity_bytes)) {
         const CacheEvictionResult result =

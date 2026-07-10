@@ -649,7 +649,13 @@ MStatus uninitializePlugin(MObject obj) {
                       << ::mmsolver::build_info::module_full_name());
 
 #if MMSOLVER_BUILD_RENDERER == 1
-    MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
+    // Never force renderer initialization; on a machine with a
+    // display but no (working) GPU, initializing Viewport 2.0 on
+    // demand can crash (SIGSEGV). If the renderer was never
+    // initialized, no render overrides were registered either.
+    const bool initialize_renderer = false;
+    MHWRender::MRenderer* renderer =
+        MHWRender::MRenderer::theRenderer(initialize_renderer);
     if (renderer) {
         // Find override with the given name and deregister
         const MHWRender::MRenderOverride* default_renderer_ptr =

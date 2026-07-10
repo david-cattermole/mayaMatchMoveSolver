@@ -384,11 +384,17 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
 
 inline MStatus get_texture_manager(
     MHWRender::MTextureManager *&texture_manager) {
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+    // Never force renderer initialization; on a machine with a
+    // display but no (working) GPU (such as a virtual X11 session),
+    // initializing Viewport 2.0 on demand can crash (SIGSEGV).
+    const bool initialize_renderer = false;
+    MHWRender::MRenderer *renderer =
+        MHWRender::MRenderer::theRenderer(initialize_renderer);
     if (!renderer) {
-        MMSOLVER_MAYA_ERR(
+        MMSOLVER_MAYA_WRN(
             "MMImageCacheCmd::get_texture_manager: "
-            "Could not get MRenderer!");
+            "Could not get MRenderer! "
+            "Maybe running on a machine without a GPU?");
         return MStatus::kFailure;
     }
 
@@ -435,9 +441,12 @@ inline MStatus set_values(image::ImageCache &image_cache,
         MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
                           << "flag=\"" << GPU_CAPACITY_FLAG_LONG << "\"");
 
+        // Without a renderer (no GPU) the texture manager stays
+        // nullptr; setting the capacity is still safe because the
+        // texture manager is only used to evict existing GPU cache
+        // items, which cannot exist without a GPU.
         MHWRender::MTextureManager *texture_manager = nullptr;
-        status = get_texture_manager(texture_manager);
-        MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
+        get_texture_manager(texture_manager);
 
         image_cache.set_gpu_capacity_bytes(texture_manager, gpu_capacity_bytes);
     } else if (command_flag == ImageCacheFlagMode::kCpuCapacity) {

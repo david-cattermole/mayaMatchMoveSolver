@@ -162,16 +162,11 @@ MStatus MMMemoryGPUCmd::doIt(const MArgList &args) {
     MStatus status = parseArgs(args);
     MMSOLVER_CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // When running without a GPU (for example in a Docker container),
-    // don't Spam the user with warnings and errors that the MRenderer
-    // cannot be found.
-    const MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-    if (!renderer) {
-        MMSOLVER_MAYA_WRN(
-            "mmMemoryGPU: Failed to get Maya MRenderer! "
-            "Maybe running on a machine without a GPU?");
-        return MStatus::kSuccess;
-    }
+    // Never force renderer initialization; on a machine with a
+    // display but no (working) GPU (such as a virtual X11 session),
+    // initializing Viewport 2.0 on demand can crash (SIGSEGV). The
+    // memory query functions below fall back to zero when the
+    // renderer is unavailable.
 
     size_t bytes_value = 0;
     if (m_memory_total) {

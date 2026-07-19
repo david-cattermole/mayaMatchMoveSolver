@@ -42,18 +42,18 @@
 
 namespace mmmemorygpu {
 
-bool memory_queries_disabled_via_env_var() {
-    static const bool disabled = []() {
-        const char *value = std::getenv("MMSOLVER_DISABLE_GPU_CACHE");
-        return value && (std::strcmp(value, "") != 0) &&
-               (std::strcmp(value, "0") != 0);
+bool gpu_enabled_via_env_var() {
+    static const bool enabled = []() {
+        const char *value = std::getenv("MMSOLVER_USE_GPU");
+        // Enabled by default; only "0" disables the GPU.
+        return !value || (std::strcmp(value, "0") != 0);
     }();
-    return disabled;
+    return enabled;
 }
 
 MStatus memory_total_size_in_bytes(size_t &out_size_in_bytes) {
     out_size_in_bytes = 0;
-    if (memory_queries_disabled_via_env_var()) {
+    if (!gpu_enabled_via_env_var()) {
         return MStatus::kSuccess;
     }
     // Never force renderer initialization; on a machine with a
@@ -83,7 +83,7 @@ MStatus gpu_memory_usage(size_t &total_memory, size_t &free_memory,
     free_memory = 0;
     used_memory = 0;
 
-    if (memory_queries_disabled_via_env_var()) {
+    if (!gpu_enabled_via_env_var()) {
         return MStatus::kSuccess;
     }
 
@@ -240,7 +240,7 @@ MStatus memory_free_size_in_bytes(size_t &out_size_in_bytes) {
 MStatus current_maya_process_memory_used_size_in_bytes(
     size_t &out_size_in_bytes) {
     out_size_in_bytes = 0;
-    if (memory_queries_disabled_via_env_var()) {
+    if (!gpu_enabled_via_env_var()) {
         return MStatus::kSuccess;
     }
     // Never force renderer initialization; it can crash (SIGSEGV)
@@ -263,7 +263,7 @@ MStatus current_maya_process_memory_used_size_in_bytes(
 // These methods can be used to inform Maya's internal system of any
 // GPU memory that we allocate/de-allocate.
 MStatus register_allocated_memory_size_in_bytes(const size_t size_in_bytes) {
-    if (memory_queries_disabled_via_env_var()) {
+    if (!gpu_enabled_via_env_var()) {
         return MStatus::kSuccess;
     }
     // Never force renderer initialization; it can crash (SIGSEGV)
@@ -283,7 +283,7 @@ MStatus register_allocated_memory_size_in_bytes(const size_t size_in_bytes) {
 }
 
 MStatus register_deallocated_memory_size_in_bytes(const size_t size_in_bytes) {
-    if (memory_queries_disabled_via_env_var()) {
+    if (!gpu_enabled_via_env_var()) {
         return MStatus::kSuccess;
     }
     // Never force renderer initialization; it can crash (SIGSEGV)

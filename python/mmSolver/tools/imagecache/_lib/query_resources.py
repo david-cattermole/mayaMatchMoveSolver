@@ -35,7 +35,7 @@ LOG = mmSolver.logger.get_logger()
 # which disables the GPU image cache. This avoids querying the
 # graphics driver at all, which can crash Maya (SIGSEGV) on machines
 # with a display but no (working) GPU, such as a virtual X11 session.
-_DISABLE_GPU_CACHE = bool(int(os.environ.get('MMSOLVER_DISABLE_GPU_CACHE', 0)))
+_DISABLE_GPU_CACHE = bool(int(os.environ.get('MMSOLVER_USE_GPU', 1)))
 
 
 def get_gpu_memory_total_bytes():

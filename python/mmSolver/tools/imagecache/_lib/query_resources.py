@@ -31,40 +31,16 @@ import mmSolver.logger
 
 LOG = mmSolver.logger.get_logger()
 
-# When enabled, GPU memory is never queried and is reported as zero,
-# which disables the GPU image cache. This avoids querying the
-# graphics driver at all, which can crash Maya (SIGSEGV) on machines
-# with a display but no (working) GPU, such as a virtual X11 session.
-_DISABLE_GPU_CACHE = bool(int(os.environ.get('MMSOLVER_USE_GPU', 1)))
-
 
 def get_gpu_memory_total_bytes():
-    if _DISABLE_GPU_CACHE:
-        return 0
-    try:
-        total_bytes = maya.cmds.mmMemoryGPU(query=True, total=True)
-    except RuntimeError:
-        LOG.warning(
-            'mmMemoryGPU: failed to query total GPU memory; '
-            'assuming no GPU is available.'
-        )
-        return 0
+    total_bytes = maya.cmds.mmMemoryGPU(query=True, total=True)
     if total_bytes is None:
         return 0
     return int(total_bytes)
 
 
 def get_gpu_memory_used_bytes():
-    if _DISABLE_GPU_CACHE:
-        return 0
-    try:
-        used_bytes = maya.cmds.mmMemoryGPU(query=True, used=True)
-    except RuntimeError:
-        LOG.warning(
-            'mmMemoryGPU: failed to query used GPU memory; '
-            'assuming no GPU is available.'
-        )
-        return 0
+    used_bytes = maya.cmds.mmMemoryGPU(query=True, used=True)
     if used_bytes is None:
         return 0
     return int(used_bytes)

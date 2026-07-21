@@ -95,12 +95,31 @@ MStatus gpu_memory_usage(size_t &total_memory, size_t &free_memory,
     // Never force renderer initialization; initializing Viewport 2.0
     // on demand can itself crash (SIGSEGV) without a working GPU.
     const bool initialize_renderer = false;
-    const MHWRender::MRenderer *vp2_renderer =
+    MHWRender::MRenderer *vp2_renderer =
         MHWRender::MRenderer::theRenderer(initialize_renderer);
     if (!vp2_renderer) {
         MMSOLVER_MAYA_WRN(
             "mmmemorygpu::gpu_memory_usage: "
             "Failed to get Maya MRenderer! "
+            "Maybe running on a machine without a GPU?");
+        return MStatus::kSuccess;
+    }
+
+    // The VP2 MRenderer singleton can be non-null even when the
+    // viewport renderer failed to truly initialize (e.g. headless
+    // mayapy, a virtual X11 display, or no working GPU). In that
+    // state the legacy Viewport 1.0 MGLFunctionTable below may also
+    // come back non-null, but its internal OpenGL function pointers
+    // are never bound, and calling into it crashes (SIGSEGV). A
+    // missing MTextureManager is a reliable signal that the renderer
+    // never finished initializing, so check that first and bail out
+    // before touching the legacy GL function table.
+    MHWRender::MTextureManager *texture_manager =
+        vp2_renderer->getTextureManager();
+    if (!texture_manager) {
+        MMSOLVER_MAYA_WRN(
+            "mmmemorygpu::gpu_memory_usage: "
+            "Could not get MTextureManager! "
             "Maybe running on a machine without a GPU?");
         return MStatus::kSuccess;
     }

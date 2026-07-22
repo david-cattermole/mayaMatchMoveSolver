@@ -42,6 +42,7 @@
 #include "mmSolver/mayahelper/maya_string_utils.h"
 #include "mmSolver/utilities/assert_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/memory_gpu_utils.h"
 #include "mmSolver/utilities/path_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
@@ -394,15 +395,16 @@ inline MStatus get_texture_manager(
         MMSOLVER_MAYA_WRN(
             "MMImageCacheCmd::get_texture_manager: "
             "Could not get MRenderer! "
-            "Maybe running on a machine without a GPU?");
+            << mmmemorygpu::USE_GPU_ENV_VAR_QUESTION);
         return MStatus::kFailure;
     }
 
     texture_manager = renderer->getTextureManager();
     if (!texture_manager) {
-        MMSOLVER_MAYA_ERR(
+        MMSOLVER_MAYA_WRN(
             "MMImageCacheCmd::get_texture_manager: "
-            "Could not get MTextureManager!");
+            "Could not get MTextureManager! "
+            << mmmemorygpu::USE_GPU_ENV_VAR_QUESTION);
         return MStatus::kFailure;
     }
 

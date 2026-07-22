@@ -28,11 +28,20 @@
 
 namespace mmmemorygpu {
 
-// Returns true when the MMSOLVER_USE_GPU environment
-// variable is set to a non-zero value. When enabled, all GPU memory
-// queries report zero without touching the Maya renderer or OpenGL,
-// because doing so can crash (SIGSEGV) on machines with a display but
-// no (working) GPU, such as a virtual X11 session.
+// Messages to show users in error cases.
+static const char *GPU_DISABLED_MESSAGE =
+    "GPU has been disabled with MMSOLVER_USE_GPU=0 environment variable.";
+static const char *USE_GPU_ENV_VAR_QUESTION =
+    "Maybe running on a machine without a GPU? "
+    "Try setting the environment variable MMSOLVER_USE_GPU=0";
+
+// Returns true when the MMSOLVER_USE_GPU environment variable is set
+// to a non-zero value.
+//
+// When enabled, all GPU memory queries report zero without touching
+// the Maya renderer or OpenGL, because doing so can crash (SIGSEGV)
+// on machines with a display but no (working) GPU, such as a virtual
+// X11 session.
 bool gpu_enabled_via_env_var();
 
 MStatus memory_total_size_in_bytes(size_t &out_size_in_bytes);

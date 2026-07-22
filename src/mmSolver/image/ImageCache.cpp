@@ -294,6 +294,10 @@ void ImageCache::set_gpu_capacity_bytes(
     // (working) GPU; that is safe because the GPU cache is empty on
     // such machines, so no eviction is ever needed.
     if (texture_manager == nullptr) {
+        MMSOLVER_MAYA_WRN(
+            "mmsolver::ImageCache::set_gpu_capacity_bytes: "
+            << "Cannot set GPU capacity because texture manager is not valid."
+            << m_gpu_capacity_bytes);
         return;
     }
 
@@ -301,8 +305,8 @@ void ImageCache::set_gpu_capacity_bytes(
     // the given capacity.
     //
     // If we are at capacity remove the least recently used items
-    // until our capacity is under 'new_used_bytes' or we reach the minimum
-    // number of items
+    // until our capacity is under 'new_used_bytes' or we reach the
+    // minimum number of items.
     while (!m_gpu_item_map.empty() &&
            (m_gpu_item_map.size() > m_gpu_item_count_minumum) &&
            (m_gpu_used_bytes > m_gpu_capacity_bytes)) {

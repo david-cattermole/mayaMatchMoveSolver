@@ -44,9 +44,18 @@ namespace mmmemorygpu {
 
 bool gpu_enabled_via_env_var() {
     static const bool enabled = []() {
+        // Enabled by default. A value of "0" disables the GPU.
         const char *value = std::getenv("MMSOLVER_USE_GPU");
-        // Enabled by default; only "0" disables the GPU.
-        return !value || (std::strcmp(value, "0") != 0);
+        if (!value) {
+            return true;
+        }
+
+        const bool is_disabled = (std::strcmp(value, "0") == 0);
+        if (is_disabled) {
+            return false;
+        }
+
+        return true;
     }();
     return enabled;
 }
@@ -54,8 +63,11 @@ bool gpu_enabled_via_env_var() {
 MStatus memory_total_size_in_bytes(size_t &out_size_in_bytes) {
     out_size_in_bytes = 0;
     if (!gpu_enabled_via_env_var()) {
+        MMSOLVER_MAYA_WRN("mmmemorygpu::memory_total_size_in_bytes: "
+                          << GPU_DISABLED_MESSAGE);
         return MStatus::kSuccess;
     }
+
     // Never force renderer initialization; on a machine with a
     // display but no (working) GPU, initializing Viewport 2.0 on
     // demand can crash (SIGSEGV). If the renderer does not already
@@ -67,7 +79,7 @@ MStatus memory_total_size_in_bytes(size_t &out_size_in_bytes) {
         MMSOLVER_MAYA_WRN(
             "mmmemorygpu::memory_total_size_in_bytes: "
             "Failed to get Maya MRenderer! "
-            "Maybe running on a machine without a GPU?");
+            << USE_GPU_ENV_VAR_QUESTION);
         return MStatus::kSuccess;
     }
     out_size_in_bytes = static_cast<size_t>(renderer->GPUtotalMemorySize());
@@ -84,6 +96,8 @@ MStatus gpu_memory_usage(size_t &total_memory, size_t &free_memory,
     used_memory = 0;
 
     if (!gpu_enabled_via_env_var()) {
+        MMSOLVER_MAYA_WRN(
+            "mmmemorygpu::gpu_memory_usage: " << GPU_DISABLED_MESSAGE);
         return MStatus::kSuccess;
     }
 
@@ -101,7 +115,7 @@ MStatus gpu_memory_usage(size_t &total_memory, size_t &free_memory,
         MMSOLVER_MAYA_WRN(
             "mmmemorygpu::gpu_memory_usage: "
             "Failed to get Maya MRenderer! "
-            "Maybe running on a machine without a GPU?");
+            << USE_GPU_ENV_VAR_QUESTION);
         return MStatus::kSuccess;
     }
 
@@ -120,7 +134,7 @@ MStatus gpu_memory_usage(size_t &total_memory, size_t &free_memory,
         MMSOLVER_MAYA_WRN(
             "mmmemorygpu::gpu_memory_usage: "
             "Could not get MTextureManager! "
-            "Maybe running on a machine without a GPU?");
+            << USE_GPU_ENV_VAR_QUESTION);
         return MStatus::kSuccess;
     }
 
@@ -139,7 +153,7 @@ MStatus gpu_memory_usage(size_t &total_memory, size_t &free_memory,
         MMSOLVER_MAYA_WRN(
             "mmmemorygpu::gpu_memory_usage: "
             "Could not get OpenGL Function Table! "
-            "Maybe running on a machine without a GPU?");
+            << USE_GPU_ENV_VAR_QUESTION);
         return MStatus::kSuccess;
     }
 
@@ -260,6 +274,10 @@ MStatus current_maya_process_memory_used_size_in_bytes(
     size_t &out_size_in_bytes) {
     out_size_in_bytes = 0;
     if (!gpu_enabled_via_env_var()) {
+        MMSOLVER_MAYA_WRN(
+            "mmmemorygpu::current_maya_process_memory_used_size_in_bytes: "
+            "GPU query was disabled with "
+            "MMSOLVER_USE_GPU environment variable.");
         return MStatus::kSuccess;
     }
     // Never force renderer initialization; it can crash (SIGSEGV)
@@ -271,7 +289,7 @@ MStatus current_maya_process_memory_used_size_in_bytes(
         MMSOLVER_MAYA_WRN(
             "mmmemorygpu::current_maya_process_memory_used_size_in_bytes: "
             "Failed to get Maya MRenderer! "
-            "Maybe running on a machine without a GPU?");
+            << USE_GPU_ENV_VAR_QUESTION);
         return MStatus::kSuccess;
     }
     out_size_in_bytes = static_cast<size_t>(renderer->GPUUsedMemorySize(
@@ -283,8 +301,12 @@ MStatus current_maya_process_memory_used_size_in_bytes(
 // GPU memory that we allocate/de-allocate.
 MStatus register_allocated_memory_size_in_bytes(const size_t size_in_bytes) {
     if (!gpu_enabled_via_env_var()) {
+        MMSOLVER_MAYA_WRN(
+            "mmmemorygpu::register_allocated_memory_size_in_bytes: "
+            << GPU_DISABLED_MESSAGE);
         return MStatus::kSuccess;
     }
+
     // Never force renderer initialization; it can crash (SIGSEGV)
     // without a working GPU.
     const bool initialize_renderer = false;
@@ -294,7 +316,7 @@ MStatus register_allocated_memory_size_in_bytes(const size_t size_in_bytes) {
         MMSOLVER_MAYA_WRN(
             "mmmemorygpu::register_allocated_memory_size_in_bytes: "
             "Failed to get Maya MRenderer! "
-            "Maybe running on a machine without a GPU?");
+            << GPU_DISABLED_MESSAGE);
         return MStatus::kSuccess;
     }
     MInt64 *evictedGPUMemSize = nullptr;
@@ -303,8 +325,12 @@ MStatus register_allocated_memory_size_in_bytes(const size_t size_in_bytes) {
 
 MStatus register_deallocated_memory_size_in_bytes(const size_t size_in_bytes) {
     if (!gpu_enabled_via_env_var()) {
+        MMSOLVER_MAYA_WRN(
+            "mmmemorygpu::register_deallocated_memory_size_in_bytes: "
+            << GPU_DISABLED_MESSAGE);
         return MStatus::kSuccess;
     }
+
     // Never force renderer initialization; it can crash (SIGSEGV)
     // without a working GPU.
     const bool initialize_renderer = false;
@@ -314,7 +340,7 @@ MStatus register_deallocated_memory_size_in_bytes(const size_t size_in_bytes) {
         MMSOLVER_MAYA_WRN(
             "mmmemorygpu::register_deallocated_memory_size_in_bytes: "
             "Failed to get Maya MRenderer! "
-            "Maybe running on a machine without a GPU?");
+            << USE_GPU_ENV_VAR_QUESTION);
         return MStatus::kSuccess;
     }
     return renderer->releaseGPUMemory(size_in_bytes);

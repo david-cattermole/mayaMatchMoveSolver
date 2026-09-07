@@ -3,6 +3,7 @@ David Cattermole
 Anil Reddy
 Kazuma Tonegawa
 Patcha Saheb Binginapalli
+Michael Dinitz
 
 Special Thanks to:
 (alphabetical order)

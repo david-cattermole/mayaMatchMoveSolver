@@ -56,6 +56,8 @@ call scripts/build_mmSolver_windows64_maya2025.bat
 :: Windows - Maya 2026 Build
 call scripts/build_mmSolver_windows64_maya2026.bat
 
+:: Windows - Maya 2027 Build
+call scripts/build_mmSolver_windows64_maya2027.bat
 
 :: Docker common variables.
 set DOCKERFILE_DIR=%PROJECT_ROOT%\share\docker
@@ -85,3 +87,8 @@ docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver
 set NAME=mmsolver-linux-maya2026-build
 docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2026" -t %NAME% "%PROJECT_ROOT%"
 docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2026.bash'"
+
+:: Linux - Maya 2027 Build
+set NAME=mmsolver-linux-maya2027-build
+docker buildx build --file "%DOCKERFILE_DIR%\Dockerfile_maya2027" -t %NAME% "%PROJECT_ROOT%"
+docker container run --volume %VOLUME% %NAME% "bash -c './scripts/build_mmSolver_linux_maya2027.bash'"

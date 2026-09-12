@@ -62,3 +62,6 @@ docker_build_project 2025
 
 # Linux - Maya 2026 Build.
 docker_build_project 2026
+
+# Linux - Maya 2027 Build.
+docker_build_project 2027

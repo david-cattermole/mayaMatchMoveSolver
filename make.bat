@@ -21,6 +21,7 @@ if "%1" == "build_2023" goto build_2023
 if "%1" == "build_2024" goto build_2024
 if "%1" == "build_2025" goto build_2025
 if "%1" == "build_2026" goto build_2026
+if "%1" == "build_2027" goto build_2027
 
 REM Test targets.
 if "%1" == "test_2018" goto test_2018
@@ -31,6 +32,7 @@ if "%1" == "test_2023" goto test_2023
 if "%1" == "test_2024" goto test_2024
 if "%1" == "test_2025" goto test_2025
 if "%1" == "test_2026" goto test_2026
+if "%1" == "test_2027" goto test_2027
 
 REM Clean all targets.
 if "%1" == "clean_2018" goto clean_2018
@@ -41,6 +43,7 @@ if "%1" == "clean_2023" goto clean_2023
 if "%1" == "clean_2024" goto clean_2024
 if "%1" == "clean_2025" goto clean_2025
 if "%1" == "clean_2026" goto clean_2026
+if "%1" == "clean_2027" goto clean_2027
 
 REM Clean mmSolver targets.
 if "%1" == "clean_mmSolver_2018" goto clean_mmSolver_2018
@@ -51,6 +54,7 @@ if "%1" == "clean_mmSolver_2023" goto clean_mmSolver_2023
 if "%1" == "clean_mmSolver_2024" goto clean_mmSolver_2024
 if "%1" == "clean_mmSolver_2025" goto clean_mmSolver_2025
 if "%1" == "clean_mmSolver_2026" goto clean_mmSolver_2026
+if "%1" == "clean_mmSolver_2027" goto clean_mmSolver_2027
 
 REM Clean OpenColorIO targets.
 if "%1" == "clean_openColorIO_2018" goto clean_openColorIO_2018
@@ -61,6 +65,7 @@ if "%1" == "clean_openColorIO_2023" goto clean_openColorIO_2023
 if "%1" == "clean_openColorIO_2024" goto clean_openColorIO_2024
 if "%1" == "clean_openColorIO_2025" goto clean_openColorIO_2025
 if "%1" == "clean_openColorIO_2026" goto clean_openColorIO_2026
+if "%1" == "clean_openColorIO_2027" goto clean_openColorIO_2027
 
 echo Unknown target: %1
 goto help
@@ -77,6 +82,7 @@ echo   build_2023    Build for Maya 2023
 echo   build_2024    Build for Maya 2024
 echo   build_2025    Build for Maya 2025
 echo   build_2026    Build for Maya 2026
+echo   build_2027    Build for Maya 2027
 echo.
 echo Test targets:
 echo   test_2018     Test for Maya 2018
@@ -87,6 +93,7 @@ echo   test_2023     Test for Maya 2023
 echo   test_2024     Test for Maya 2024
 echo   test_2025     Test for Maya 2025
 echo   test_2026     Test for Maya 2026
+echo   test_2027     Test for Maya 2027
 echo.
 echo Clean all targets:
 echo   clean_2018              Clean all builds for Maya 2018
@@ -97,6 +104,7 @@ echo   clean_2023              Clean all builds for Maya 2023
 echo   clean_2024              Clean all builds for Maya 2024
 echo   clean_2025              Clean all builds for Maya 2025
 echo   clean_2026              Clean all builds for Maya 2026
+echo   clean_2027              Clean all builds for Maya 2027
 echo.
 echo Clean mmSolver targets:
 echo   clean_mmSolver_2018     Clean mmSolver build for Maya 2018
@@ -107,6 +115,7 @@ echo   clean_mmSolver_2023     Clean mmSolver build for Maya 2023
 echo   clean_mmSolver_2024     Clean mmSolver build for Maya 2024
 echo   clean_mmSolver_2025     Clean mmSolver build for Maya 2025
 echo   clean_mmSolver_2026     Clean mmSolver build for Maya 2026
+echo   clean_mmSolver_2027     Clean mmSolver build for Maya 2027
 echo.
 echo Clean OpenColorIO targets:
 echo   clean_openColorIO_2018  Clean OpenColorIO build for Maya 2018
@@ -117,6 +126,7 @@ echo   clean_openColorIO_2023  Clean OpenColorIO build for Maya 2023
 echo   clean_openColorIO_2024  Clean OpenColorIO build for Maya 2024
 echo   clean_openColorIO_2025  Clean OpenColorIO build for Maya 2025
 echo   clean_openColorIO_2026  Clean OpenColorIO build for Maya 2026
+echo   clean_openColorIO_2027  Clean OpenColorIO build for Maya 2027
 echo.
 echo Examples:
 echo   make build_2024
@@ -160,6 +170,10 @@ goto end
 call scripts\build_mmSolver_windows64_maya2026.bat
 goto end
 
+:build_2027
+call scripts\build_mmSolver_windows64_maya2027.bat
+goto end
+
 REM Test targets - pass remaining arguments using %*
 :test_2018
 shift
@@ -199,6 +213,11 @@ goto end
 :test_2026
 shift
 call scripts\test_mmSolver_windows64_maya2026.bat %*
+goto end
+
+:test_2027
+shift
+call scripts\test_mmSolver_windows64_maya2027.bat %*
 goto end
 
 REM Clean all targets.
@@ -242,6 +261,11 @@ call make clean_openColorIO_2026
 call make clean_mmSolver_2026
 goto end
 
+:clean_2027
+call make clean_openColorIO_2027
+call make clean_mmSolver_2027
+goto end
+
 REM Clean mmSolver targets.
 :clean_mmSolver_2018
 call scripts\clean_mmSolver_windows64_maya2018.bat
@@ -275,6 +299,10 @@ goto end
 call scripts\clean_mmSolver_windows64_maya2026.bat
 goto end
 
+:clean_mmSolver_2027
+call scripts\clean_mmSolver_windows64_maya2027.bat
+goto end
+
 REM Clean OpenColorIO targets.
 :clean_openColorIO_2018
 call scripts\clean_openColorIO_windows64_maya2018.bat
@@ -306,6 +334,10 @@ goto end
 
 :clean_openColorIO_2026
 call scripts\clean_openColorIO_windows64_maya2026.bat
+goto end
+
+:clean_openColorIO_2027
+call scripts\clean_openColorIO_windows64_maya2027.bat
 goto end
 
 :end

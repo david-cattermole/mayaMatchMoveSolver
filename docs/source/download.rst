@@ -25,6 +25,10 @@ Download the latest release **mmSolver v0.7.1**:
      - Maya 2026
      - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.1/mayaMatchMoveSolver-0.7.1-maya2026-linux.tar.gz>`_
 
+   * - Linux
+     - Maya 2027
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.1/mayaMatchMoveSolver-0.7.1-maya2027-linux.tar.gz>`_
+
    * - Windows
      - Maya 2020
      - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.1/mayaMatchMoveSolver-0.7.1-maya2020-win64.zip>`_
@@ -48,6 +52,10 @@ Download the latest release **mmSolver v0.7.1**:
    * - Windows
      - Maya 2026
      - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.1/mayaMatchMoveSolver-0.7.1-maya2026-win64.zip>`_
+
+   * - Windows
+     - Maya 2027
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.7.1/mayaMatchMoveSolver-0.7.1-maya2027-win64.zip>`_
 
 Older versions and full release notes can be found on the GitHub releases_ page.
 
